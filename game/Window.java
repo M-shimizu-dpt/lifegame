@@ -21,8 +21,6 @@
  *
  *お金がマイナスになった時、物件を持っていれば持っている物件の中から売却する
  *
- *カードを使用した際に2枚連続で使用できないようにする
- *
  *移動中に残り移動可能距離と目的地までの最短距離を表示する
  *始めは正しく表示することが出来るが、移動すると最短ルートの先導や最短距離を算出できなくなる問題
  *
@@ -33,12 +31,13 @@
  *稀によくmoveButtonが無くならない問題
  *
  *マルチスレッドでは参照型の変数に注意
+ *
+ *ぶっとびカードを使った後少し画面を停止したい。(どこに移動したか分かるようにしたい)
  */
 
 package lifegame.game;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -102,7 +101,6 @@ public class Window implements ActionListener{
 	private int minAssets=0;
 	private ArrayList<String> alreadys = new ArrayList<String>();
 	private int saveGoal;
-	public static boolean usedCard;
 	public static int count;//最短経路
 	public static long time;//経過時間
 	private Map<Integer,ArrayList<ArrayList<Coordinates>>> trajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//移動の軌跡
@@ -167,7 +165,16 @@ public class Window implements ActionListener{
 			}
     		if(year>endYear)break;
     		//debug
-    		//searchShortestRoute();
+    		/*
+    		searchShortestRoute();
+    		while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 500) {
+    			try {
+    				Thread.sleep(100);
+    			}catch(InterruptedException e) {
+    				e.printStackTrace();
+    			}
+    		}
+    		*/
     		saveGoal=japan.goal;
     		returnMaps();//画面遷移が少し遅い
     		closeMoveButton();
@@ -175,7 +182,6 @@ public class Window implements ActionListener{
     		mainInfo.setVisible(false);
     		mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
     		mainInfo.setVisible(true);
-    		Window.usedCard=false;
     		while(!turnEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
     			try {
     				Thread.sleep(100);
@@ -206,9 +212,9 @@ public class Window implements ActionListener{
 		System.exit(0);
     }
 
-
-	//目的地までの最短ルートを探索し、最短距離を算出
-	private void searchShortestRoute() {//計算が全く間に合っていない
+	//最寄り駅を探索
+	private void searchNearestStation() {
+		Window.time = System.currentTimeMillis();
 		Window.count=100;
 		MultiThread.savecount=0;
 		Thread t = new Thread();
@@ -238,15 +244,44 @@ public class Window implements ActionListener{
 			}
 			i++;
 		}
-		Window.time = System.currentTimeMillis();
-		while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 500) {
-			try {
-				Thread.sleep(100);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+
 		System.out.println("OK");
+	}
+
+
+	//目的地までの最短ルートを探索し、最短距離を算出
+	private void searchShortestRoute() {//計算が全く間に合っていない
+		Window.time = System.currentTimeMillis();
+		Window.count=100;
+		StationSearchThread.savecount=0;
+		Thread t = new Thread();
+		trajectoryList.clear();
+		ArrayList<Coordinates> vList = new ArrayList<Coordinates>();
+		for(int i=0;i<4;i++) {
+			vList.add(new Coordinates());
+		}
+		vList.get(0).x=0;vList.get(0).y=-1;
+		vList.get(1).x=0;vList.get(1).y=1;
+		vList.get(2).x=-1;vList.get(2).y=0;
+		vList.get(3).x=1;vList.get(3).y=0;
+		int i=0;
+
+		//探索すべき方角の数を数える
+		ArrayList<Boolean> list = japan.getVector(players.get(turn).nowMass.x,players.get(turn).nowMass.y,1);
+		for(Boolean bool:list) {
+			if(bool) {
+				//Threadを立ち上げる
+				StationSearchThread thread = new StationSearchThread(this);
+				thread.moveTrajectory.add(new Coordinates(players.get(turn).nowMass.x,players.get(turn).nowMass.y));
+				synchronized(StationSearchThread.lock3) {
+					thread.setMass(players.get(turn).nowMass.x+vList.get(i).x, players.get(turn).nowMass.y+vList.get(i).y);
+				}
+				t = new Thread(thread);
+				t.start();
+			}
+			i++;
+		}
+
 	}
 
 	//探索結果を格納
@@ -317,7 +352,6 @@ public class Window implements ActionListener{
 			cardFull();
 		}
 		System.out.println(Card.cardList.get(rand).name);
-		//debug
 		//turnEndFlag=true;
 	}
 
@@ -339,11 +373,6 @@ public class Window implements ActionListener{
 		error.add(titleName);
 
 		playFrame.setVisible(false);
-
-		for(Component com:error.getComponents()) {
-			System.out.println(com.getX()+":"+com.getY());
-		}
-
 		errorFrame.setVisible(true);
 	}
 
@@ -722,7 +751,9 @@ public class Window implements ActionListener{
 	private void ableMenu() {
 		saikoro.setEnabled(true);
 		company.setEnabled(true);
-		cardB.setEnabled(true);
+		if(!Card.usedCard) {
+			cardB.setEnabled(true);
+		}
 		minimap.setEnabled(true);
 		allmap.setEnabled(true);
 	}
@@ -736,8 +767,8 @@ public class Window implements ActionListener{
 		back.setVisible(true);
 	}
 
-	//サイコロ類
-	private void dice() {
+	//サイコロ画面表示
+	private void printDice() {
 		//サイコロ処理
 		diceFrame.setSize(200, 250);
 		diceFrame.setLayout(null);
@@ -932,11 +963,29 @@ public class Window implements ActionListener{
 		}
 		if(players.get(turn).move<=0) {
 			moveTrajectory.clear();
-			massEvent();
+			dice.clearResult();
+			dice.clearNum();
+			if(!Card.usedRandomCard) {
+				massEvent();
+			}
 		}
 		mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス");
 	}
 
+	//プレイマップの画面遷移処理
+		private void moveMaps(int player,Coordinates to) {//今はボタンを入力できない状態にできないので、状態遷移できない状態にした。(ComponentからJButtomに変換できれば可能)
+			System.out.println("random move  x:"+to.x+"  y:"+to.y);
+			int x=(to.x-players.get(player).nowMass.x)*130;
+			int y=(to.y-players.get(player).nowMass.y)*130;
+			for(int i=0;i<play.getComponentCount();i++) {
+				if(play.getComponent(i).getName()==null) {
+
+				}else if(play.getComponent(i).getName().equals(players.get(player).name)) {
+					play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
+				}
+			}
+			players.get(player).nowMass.setValue(to);
+		}
 
 	private void moveMaps() {
 		moveTrajectory.add(play.getComponentAt(400, 300).getName());
@@ -1351,14 +1400,16 @@ public class Window implements ActionListener{
 		}
 	}
 
+
 	//初期化
   	private void init() {
   		initMaps();
   		createMoveButton();
   		japan.initGoal();
+  		dice.init();
   		setGoalColor();
-  		Card.init();
-  		for(int i=0;i<4;i++) {//Playerクラスですべき？
+  		Card.init(this);
+  		for(int i=0;i<4;i++) {
   			players.put(i,new Player("player"+(i+1),1000));
   			players.get(i).colt = createText(401,301,20,20,10,players.get(i).name);
   	  		players.get(i).colt.setBackground(Color.BLACK);
@@ -1368,12 +1419,12 @@ public class Window implements ActionListener{
   	}
 
 	//ボタンを押した時の操作
- 	public void actionPerformed(ActionEvent e){
-		String cmd = e.getActionCommand();
+ 	public void actionPerformed(ActionEvent act){
+		String cmd = act.getActionCommand();
 		System.out.println(cmd);
 		if(cmd.equals("サイコロ")) {
 			enableMenu();
-			dice();
+			printDice();
 		}else if(cmd.equals("カード")) {
 			enableMenu();
 			printCard();
@@ -1388,16 +1439,23 @@ public class Window implements ActionListener{
 			allMap();
 		}else if(cmd.equals("回す")) {
 			for(int i=0;i<dice.num;i++) {//サイコロの数だけサイコロを回わす；
+				if(Card.usedFixedCard)break;//初めからresultが入力されていれば
 				dice.shuffle();
 				System.out.println("result"+i+":"+dice.result);
 			}
 			System.out.println("allResult:"+dice.result+"  num:"+dice.num);
 			players.get(turn).move = dice.result;
-			moveMaps();
-			printMoveButton();
+			if(players.get(turn).move==0) {
+				massEvent();
+			}else {
+				moveMaps();
+				printMoveButton();
+			}
 			closeMenu();
 			dice.clearResult();
 			dice.clearNum();
+			Card.resetUsedCard();
+			Card.resetUsedFixedCard();
 			//dice画面を閉じる
 			closeDice();
 		}else if(cmd.equals("サイコロを閉じる")) {
@@ -1421,19 +1479,55 @@ public class Window implements ActionListener{
 			closeGoal();
 		}else if(cmd.equals("右")) {
 			moveMaps(-130,0);
-			//searchShortestRoute();
+			/*
+			searchShortestRoute();
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 500) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			*/
 			printMoveButton();
 		}else if(cmd.equals("左")) {
 			moveMaps(130,0);
-			//searchShortestRoute();
+			/*
+			searchShortestRoute();
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 500) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			*/
 			printMoveButton();
 		}else if(cmd.equals("上")) {
 			moveMaps(0,130);
-			//searchShortestRoute();
+			/*
+			searchShortestRoute();
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 500) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			*/
 			printMoveButton();
 		}else if(cmd.equals("下")) {
 			moveMaps(0,-130);
-			//searchShortestRoute();
+			/*
+			searchShortestRoute();
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 500) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			*/
 			printMoveButton();
 		}else if(cmd.equals("→") || cmd.equals("←") || cmd.equals("↑") || cmd.equals("↓")) {
 			moveMaps(cmd);
@@ -1446,28 +1540,66 @@ public class Window implements ActionListener{
 		String excursion[] = cmd.split("周遊");
 		for(int i=0;i<Card.cardList.size();i++) {
 			if(cmd.equals(Card.cardList.get(i).name)) {//カードを使う
-				Window.usedCard=true;//カード使用済みにする
 				//カードの能力を使用
 				if(Card.cardList.get(i).moveAbility!=0) {
 					dice.num = Card.cardList.get(i).useAbility();
-				}else if(Card.cardList.get(i).fixedMoveAbility!=0){
+				}else if(Card.cardList.get(i).fixedMoveAbility!=-1){
 					dice.result = Card.cardList.get(i).useAbility();
 				}else if(Card.cardList.get(i).randomMoveAbility!=0){
+					Card.usedRandomCard();
+					Coordinates coor = new Coordinates();
 					//誰に影響を与えるのか
-					players.get(turn).nowMass = Card.cardList.get(i).useRandomAbility();
-				}else if(Card.cardList.get(i).moneyAbility!=0){
-					//誰に影響を与えるのか
+					if(cmd.equals("サミットカード")) {
+						coor.setValue(players.get(turn).nowMass);
+						for(int roop=0;roop<4;roop++) {
+							if(roop==turn)continue;
+							moveMaps(roop,coor);
+						}
+					}else {
+						if(cmd.equals("北へ！カード")) {
+							do {
+								coor = Card.cardList.get(i).useRandomAbility();
+							}while(players.get(turn).nowMass.y<coor.y);
+						}else if(cmd.equals("ピッタリカード")){
+							int rand;
+							do {
+								rand=(int)(Math.random()*100.0)%4;
+							}while(rand==turn);
+							coor.setValue(players.get(rand).nowMass);
+						}else if(cmd.equals("最寄り駅カード")){
+							searchNearestStation();///////////////////////////////////////////////////////
+						}else {
+							coor = Card.cardList.get(i).useRandomAbility();
+						}
+						moveMaps(turn,coor);
+						try {
+							Thread.sleep(100);
+						}catch(InterruptedException e) {
+							e.printStackTrace();
+						}
+						players.get(turn).nowMass.setValue(coor);
+					}
+				}else if(Card.cardList.get(i).othersAbility!=0){
+					//誰に影響どんなを与えるのか
 					players.get(turn).money = Card.cardList.get(i).useAbility();
 				}
 				//周遊カードの場合は確率でカードを破壊
 				if(excursion.length==2) {
-					if(Math.random()<0.5) {
+					double rand=Math.random();
+					Card.cardList.get(i).count++;
+					if(rand<0.3 || Card.cardList.get(i).count>5) {
 						players.get(turn).cards.remove(Card.cardList.get(i));
-					}else {
-						//players.get(turn).cards.
 					}
 				}else {
 					players.get(turn).cards.remove(Card.cardList.get(i));
+				}
+
+				if(cmd.equals("足踏みカード") || cmd.equals("1進めるカード") || cmd.equals("2進めるカード")
+						|| cmd.equals("3進めるカード") || cmd.equals("4進めるカード") || cmd.equals("5進めるカード") || cmd.equals("6進めるカード")) {
+					Card.usedFixedCard();
+				}
+				if(!cmd.equals("徳政令??")) {
+					Card.usedCard();
 				}
 				ableMenu();
 				closeCard();
@@ -1478,6 +1610,13 @@ public class Window implements ActionListener{
 				playFrame.setVisible(true);
 				break;
 			}
+		}
+		if(Card.usedRandomCard) {
+			Card.resetUsedCard();
+			Card.resetUsedFixedCard();
+			Card.resetUsedRandomCard();
+			ableMenu();
+			turnEndFlag=true;
 		}
 		String pre[] = cmd.split(":");
 		if(pre.length==2) {

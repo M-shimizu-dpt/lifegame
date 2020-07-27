@@ -13,9 +13,11 @@ public class Dice {
 	public void shuffle() {
 		int rand = (int)(Math.random()*10.0)%6;
 		this.result += rand+1;
-		if(Window.usedCard) {
+	}
 
-		}
+	public void init() {
+		clearResult();
+		clearNum();
 	}
 
 	public void clearResult() {
