@@ -13,7 +13,7 @@ public class Player {
 	public Coordinates nowMass;//現在地
 	public int shortest;//目的地までの最短距離(最短距離を求めるアルゴリズムを考える必要がある)
 	public JLabel colt;//プレイヤーの駒
-	
+
 	public Player(String name,int money) {
 		this.money=0;
 		this.move=0;
@@ -25,7 +25,7 @@ public class Player {
 		this.nowMass.setValue(6, 9);
 		clearMove();
 	}
-	
+
 	public void addCard(Card card) {
 		cards.add(card);
 	}

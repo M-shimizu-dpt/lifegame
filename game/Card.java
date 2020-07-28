@@ -19,6 +19,7 @@ public class Card {
 	public static boolean usedCard;
 	public static boolean usedFixedCard;
 	public static boolean usedRandomCard;
+	public static boolean usedOthersCard;
 	private static Window window;
 
 	public Card() {
@@ -62,6 +63,14 @@ public class Card {
 		Card.usedRandomCard=true;
 	}
 
+	public static void resetUsedOthersCard() {
+		Card.usedOthersCard=false;
+	}
+
+	public static void usedOthersCard() {
+		Card.usedOthersCard=true;
+	}
+
 	private void setMoveAbility(int ability) {
 		this.moveAbility = ability;
 	}
@@ -91,8 +100,8 @@ public class Card {
 		Coordinates movedMass=new Coordinates();
 		int x,y;
 		while(true) {
-			x=((int)(Math.random()*1000.0)%16)+1;
-			y=((int)(Math.random()*1000.0)%16)+1;
+			x=((int)(Math.random()*Math.random()*1000.0)%16)+1;
+			y=((int)(Math.random()*Math.random()*1000.0)%16)+1;
 			if(window.japan.contains(x, y)) {
 				break;
 			}
@@ -111,8 +120,9 @@ public class Card {
 		resetUsedCard();
 		resetUsedFixedCard();
 		resetUsedRandomCard();
+		resetUsedOthersCard();
 
-		/*
+
 		//周遊カードシリーズ(使う度にrandom関数を使い壊れるかを判定、5回使っても壊れなかった場合強制破壊)
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る"));
 		cardList.get(cardList.size()-1).setMoveAbility(2);
@@ -147,19 +157,18 @@ public class Card {
 		cardList.get(cardList.size()-1).setFixedMoveAbility(6);
 
 
-		*/
+
 		//どこかへ移動する
 		cardList.add(new Card("ぶっとびカード",10000,1,"どこかに移動することが出来る"));
 		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		cardList.add(new Card("ぶっとび周遊カード",2,40000,"何度かどこかに移動することが出来る"));
+		cardList.add(new Card("ぶっとび周遊カード",40000,2,"何度かどこかに移動することが出来る"));
 		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
 		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る"));
 		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
 		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る"));
 		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
 		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);/*
-		//↑OK
+		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
 		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る"));
 		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
 		//cardList.add(new Card("星に願いをカード",2,40000,"最寄りのカードショップに移動することが出来る"));
@@ -167,7 +176,7 @@ public class Card {
 
 
 		//お金・カードがもらえる
-		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人よりも多くのお金がもらえる"));
+		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる"));
 		cardList.get(cardList.size()-1).setMoneyAbility(1);
 		cardList.add(new Card("起死回生カード",16000,2,"持ち金のマイナスがそのままプラスになる"));
 		cardList.get(cardList.size()-1).setMoneyAbility(1);
@@ -177,7 +186,8 @@ public class Card {
 		cardList.get(cardList.size()-1).setMoneyAbility(1);
 		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする"));
 		cardList.get(cardList.size()-1).setMoneyAbility(1);
-*/
+		cardList.add(new Card("徳政令カード",500,1,"全ての人の所持金を均一にする"));
+		cardList.get(cardList.size()-1).setMoneyAbility(1);
 
 		Card.sort();
 

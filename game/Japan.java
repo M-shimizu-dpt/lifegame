@@ -874,8 +874,8 @@ public class Japan {
 	public void initGoal() {
 		int x=0,y=0;
 		while(!(this.prefectureContains(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
-			x=(int)(Math.random()*100.0)%16;
-			y=(int)(Math.random()*100.0)%17;
+			x=(int)(Math.random()*Math.random()*100.0)%16;
+			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
 				Thread.sleep(10);
 			}catch(InterruptedException e) {
@@ -883,14 +883,14 @@ public class Japan {
 			}
 		}
 		goal = getIndexOfPrefecture(x,y);
-		System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
+		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
 	}
 
 	public void changeGoal() {
 		int x=0,y=0;
 		while((!this.prefectureContains(x, y)) || goal==getIndexOfPrefecture(x,y)) {
-			x=(int)(Math.random()*100.0)%16;
-			y=(int)(Math.random()*100.0)%17;
+			x=(int)(Math.random()*Math.random()*100.0)%16;
+			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
 				Thread.sleep(10);
 			}catch(InterruptedException e) {
@@ -898,7 +898,7 @@ public class Japan {
 			}
 		}
 		goal = getIndexOfPrefecture(x,y);
-		System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
+		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
 	}
 
 	public int getIndexOf(int x,int y) {
@@ -969,7 +969,6 @@ public class Japan {
 		return rail;
 	}
 
-	//競合している可能性がある
 	public ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<prefectures.size();list++) {
 			if(prefectures.get(list).x == x/size && prefectures.get(list).y == y/size) {//駅の座標が来たら
@@ -993,16 +992,6 @@ public class Japan {
 		}
 		return null;
 	}
-
-	/*探索アルゴリズム
-	 *
-	 * 移動してきた軌跡とカウントを保持したThreadを用意
-	 *
-	 * trueが複数ある場合n(trueの数)-1個のcopyThreadを作成
-	 * 行き止まりの場合、軌跡とカウントを返し終了
-	 *
-	 */
-
 
 }
 
@@ -1049,19 +1038,19 @@ class MultiThread implements Runnable{
 			end=true;
 			flag=false;
 			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
-				System.out.println("not shorter");
+				//System.out.println("not shorter");
 				break;
 			}
 			if(savecount>1000) {
-				System.out.println("all killed");
+				//System.out.println("all killed");
 				break;
 			}
 			if(count>35) {
-				System.out.println("count over");
+				//System.out.println("count over");
 				break;
 			}
-			if(System.currentTimeMillis()-Window.time>=500) {
-				System.out.println("time out");
+			if(System.currentTimeMillis()-Window.time>=300) {
+				//System.out.println("time out");
 				break;
 			}
 
@@ -1076,13 +1065,13 @@ class MultiThread implements Runnable{
 				list = window.japan.getVector(this.nowMass.x,this.nowMass.y,1);
 			}
 			if(list==null) {
-				System.out.println("list_null");
+				//System.out.println("list_null");
 				break;
 			}
 			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
 			if((goalX==this.nowMass.x && goalY==this.nowMass.y)){
 				goal();
-				System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
+				//System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
 				break;
 			}
 			for(Boolean bool:list) {
@@ -1117,10 +1106,8 @@ class MultiThread implements Runnable{
 					if(flag) {
 						//Threadを立ち上げる
 						MultiThread thread = new MultiThread(window);
-						synchronized(MultiThread.lock2) {
-							thread.threadCopy(this);
-						}
 						synchronized(MultiThread.lock3) {
+							thread.threadCopy(this);
 							thread.setMass(this.nowMass.x+vList.get(i).x, this.nowMass.y+vList.get(i).y);//移動
 						}
 						Thread t = new Thread(thread);
@@ -1142,7 +1129,7 @@ class MultiThread implements Runnable{
 			}
 			//行き先が無い場合終了
 			if(end) {
-				System.out.println("正常終了end");
+				//System.out.println("正常終了end");
 				break;
 			}
 			Thread.yield();
@@ -1160,7 +1147,9 @@ class MultiThread implements Runnable{
 	}
 
 	private void goal() {
-		window.setSearchResult(count,moveTrajectory);
+		synchronized(MultiThread.lock2) {
+			window.setSearchResult(count,moveTrajectory);
+		}
 	}
 }
 
@@ -1204,23 +1193,23 @@ class StationSearchThread implements Runnable{
 			end=true;
 			flag=false;
 			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
-				System.out.println("not shorter");
+				//System.out.println("not shorter");
 				break;
 			}
 			if(savecount>1000) {
-				System.out.println("all killed");
+				//System.out.println("all killed");
 				break;
 			}
-			if(count>35) {
-				System.out.println("count over");
+			if(count>15) {
+				//System.out.println("count over");
 				break;
 			}
-			if(System.currentTimeMillis()-Window.time>=500) {
-				System.out.println("time out");
+			if(System.currentTimeMillis()-Window.time>=300) {
+				//System.out.println("time out");
 				break;
 			}
 			if(window.japan.prefectureContains(this.nowMass.x,this.nowMass.y)) {
-				System.out.println("goal");
+				//System.out.println("goal");
 				setResult();
 				break;
 			}
@@ -1236,7 +1225,7 @@ class StationSearchThread implements Runnable{
 				list = window.japan.getVector(this.nowMass.x,this.nowMass.y,1);
 			}
 			if(list==null) {
-				System.out.println("list_null");
+				//System.out.println("list_null");
 				break;
 			}
 			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
@@ -1273,10 +1262,8 @@ class StationSearchThread implements Runnable{
 					if(flag) {
 						//Threadを立ち上げる
 						StationSearchThread thread = new StationSearchThread(window);
-						synchronized(StationSearchThread.lock2) {
-							thread.threadCopy(this);
-						}
 						synchronized(StationSearchThread.lock3) {
+							thread.threadCopy(this);
 							thread.setMass(this.nowMass.x+vList.get(i).x, this.nowMass.y+vList.get(i).y);//移動
 						}
 						Thread t = new Thread(thread);
@@ -1298,7 +1285,7 @@ class StationSearchThread implements Runnable{
 			}
 			//行き先が無い場合終了
 			if(end) {
-				System.out.println("正常終了end");
+				//System.out.println("正常終了end");
 				break;
 			}
 			Thread.yield();
@@ -1316,7 +1303,9 @@ class StationSearchThread implements Runnable{
 	}
 
 	private void setResult() {
-		window.setSearchResult(count, moveTrajectory);
+		synchronized(StationSearchThread.lock2) {
+			window.setNearestStationResult(count, nowMass);
+		}
 	}
 
 }

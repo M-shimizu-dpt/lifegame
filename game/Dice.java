@@ -11,7 +11,7 @@ public class Dice {
 
 	//サイコロの数に応じたサイコロ処理
 	public void shuffle() {
-		int rand = (int)(Math.random()*10.0)%6;
+		int rand = (int)(Math.random()*Math.random()*10.0)%6;
 		this.result += rand+1;
 	}
 
