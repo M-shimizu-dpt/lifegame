@@ -685,7 +685,7 @@ public class Japan {
 		red.add(new Coordinates(5,6));
 		red.add(new Coordinates(5,17));
 		red.add(new Coordinates(6,6));
-		red.add(new Coordinates(7,2));
+		red.add(new Coordinates(7,3));
 		red.add(new Coordinates(7,14));
 		red.add(new Coordinates(8,5));
 		red.add(new Coordinates(8,7));
@@ -718,7 +718,7 @@ public class Japan {
 		railMapping.put(red.get(5),getBoolList(false,false,true,true));
 		railMapping.put(red.get(6),getBoolList(true,false,false,true));
 		railMapping.put(red.get(7),getBoolList(true,false,true,false));
-		railMapping.put(red.get(8),getBoolList(true,true,false,false));
+		railMapping.put(red.get(8),getBoolList(true,false,true,true));
 		railMapping.put(red.get(9),getBoolList(true,false,true,false));
 		railMapping.put(red.get(10),getBoolList(true,false,false,true));
 		railMapping.put(red.get(11),getBoolList(false,false,true,true));
@@ -874,8 +874,8 @@ public class Japan {
 	public void initGoal() {
 		int x=0,y=0;
 		while(!(this.prefectureContains(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
-			x=(int)(Math.random()*100.0)%16;
-			y=(int)(Math.random()*100.0)%17;
+			x=(int)(Math.random()*Math.random()*100.0)%16;
+			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
 				Thread.sleep(10);
 			}catch(InterruptedException e) {
@@ -883,14 +883,14 @@ public class Japan {
 			}
 		}
 		goal = getIndexOfPrefecture(x,y);
-		System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
+		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
 	}
 
 	public void changeGoal() {
 		int x=0,y=0;
 		while((!this.prefectureContains(x, y)) || goal==getIndexOfPrefecture(x,y)) {
-			x=(int)(Math.random()*100.0)%16;
-			y=(int)(Math.random()*100.0)%17;
+			x=(int)(Math.random()*Math.random()*100.0)%16;
+			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
 				Thread.sleep(10);
 			}catch(InterruptedException e) {
@@ -898,7 +898,7 @@ public class Japan {
 			}
 		}
 		goal = getIndexOfPrefecture(x,y);
-		System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
+		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
 	}
 
 	public int getIndexOf(int x,int y) {
@@ -969,7 +969,6 @@ public class Japan {
 		return rail;
 	}
 
-	//競合している可能性がある
 	public ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<prefectures.size();list++) {
 			if(prefectures.get(list).x == x/size && prefectures.get(list).y == y/size) {//駅の座標が来たら
@@ -993,16 +992,6 @@ public class Japan {
 		}
 		return null;
 	}
-
-	/*探索アルゴリズム
-	 *
-	 * 移動してきた軌跡とカウントを保持したThreadを用意
-	 *
-	 * trueが複数ある場合n(trueの数)-1個のcopyThreadを作成
-	 * 行き止まりの場合、軌跡とカウントを返し終了
-	 *
-	 */
-
 
 }
 
@@ -1049,19 +1038,19 @@ class MultiThread implements Runnable{
 			end=true;
 			flag=false;
 			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
-				System.out.println("not shorter");
+				//System.out.println("not shorter");
 				break;
 			}
 			if(savecount>1000) {
-				System.out.println("all killed");
+				//System.out.println("all killed");
 				break;
 			}
 			if(count>35) {
-				System.out.println("count over");
+				//System.out.println("count over");
 				break;
 			}
-			if(System.currentTimeMillis()-Window.time>=500) {
-				System.out.println("time out");
+			if(System.currentTimeMillis()-Window.time>=300) {
+				//System.out.println("time out");
 				break;
 			}
 
@@ -1076,13 +1065,13 @@ class MultiThread implements Runnable{
 				list = window.japan.getVector(this.nowMass.x,this.nowMass.y,1);
 			}
 			if(list==null) {
-				System.out.println("list_null");
+				//System.out.println("list_null");
 				break;
 			}
 			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
 			if((goalX==this.nowMass.x && goalY==this.nowMass.y)){
 				goal();
-				System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
+				//System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
 				break;
 			}
 			for(Boolean bool:list) {
@@ -1117,10 +1106,8 @@ class MultiThread implements Runnable{
 					if(flag) {
 						//Threadを立ち上げる
 						MultiThread thread = new MultiThread(window);
-						synchronized(MultiThread.lock2) {
-							thread.threadCopy(this);
-						}
 						synchronized(MultiThread.lock3) {
+							thread.threadCopy(this);
 							thread.setMass(this.nowMass.x+vList.get(i).x, this.nowMass.y+vList.get(i).y);//移動
 						}
 						Thread t = new Thread(thread);
@@ -1142,7 +1129,7 @@ class MultiThread implements Runnable{
 			}
 			//行き先が無い場合終了
 			if(end) {
-				System.out.println("正常終了end");
+				//System.out.println("正常終了end");
 				break;
 			}
 			Thread.yield();
@@ -1160,6 +1147,165 @@ class MultiThread implements Runnable{
 	}
 
 	private void goal() {
-		window.setSearchResult(count,moveTrajectory);
+		synchronized(MultiThread.lock2) {
+			window.setSearchResult(count,moveTrajectory);
+		}
 	}
+}
+
+//上のスレッドをimplements的なことをしてgoal()だけoverrideすべき？
+//最寄り駅を探索するためのスレッド
+class StationSearchThread implements Runnable{
+	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
+	public static int savecount=0;
+	public static final Object lock1 = new Object();
+	public static final Object lock2 = new Object();
+	public static final Object lock3 = new Object();
+	public static final Object lock4 = new Object();
+	private int count=0;
+	private Coordinates nowMass=new Coordinates();
+	private Window window;
+
+	public StationSearchThread(Window window) {
+		this.window=window;
+	}
+
+
+	public void run() {
+		ArrayList<Boolean> list;
+		ArrayList<Coordinates> vList = new ArrayList<Coordinates>();
+		for(int i=0;i<4;i++) {
+			vList.add(new Coordinates());
+		}
+		vList.get(0).x=-1;vList.get(0).y=0;
+		vList.get(1).x=1;vList.get(1).y=0;
+		vList.get(2).x=0;vList.get(2).y=-1;
+		vList.get(3).x=0;vList.get(3).y=1;
+
+		int i;
+		boolean flag;
+		boolean end;
+		boolean setMassFlag;
+		int x,y;
+		while(true) {
+			x=0;y=0;
+			setMassFlag=false;
+			end=true;
+			flag=false;
+			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
+				//System.out.println("not shorter");
+				break;
+			}
+			if(savecount>1000) {
+				//System.out.println("all killed");
+				break;
+			}
+			if(count>15) {
+				//System.out.println("count over");
+				break;
+			}
+			if(System.currentTimeMillis()-Window.time>=300) {
+				//System.out.println("time out");
+				break;
+			}
+			if(window.japan.prefectureContains(this.nowMass.x,this.nowMass.y)) {
+				//System.out.println("goal");
+				setResult();
+				break;
+			}
+
+			count++;
+			savecount++;
+			i=0;
+			//なぜlistがnullになるのか…？？
+			//やっぱりベクトルが異常値を取ってしまう
+			// →1インスタンス内の複数のスレッドが同時にアクセスしようとした場合にロックが可能なので
+			//	 Thread型のインスタンスを1つに絞りたい（インスタンスを複数作成している為）
+			synchronized(StationSearchThread.lock1) {
+				list = window.japan.getVector(this.nowMass.x,this.nowMass.y,1);
+			}
+			if(list==null) {
+				//System.out.println("list_null");
+				break;
+			}
+			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
+
+			for(Boolean bool:list) {
+				if(bool) {
+					boolean conti=false;
+					for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
+						int vx=vList.get(i).x;
+						int vy=vList.get(i).y;
+						synchronized(StationSearchThread.lock4) {
+							if(!window.japan.contains(this.nowMass.x+vx,this.nowMass.y+vy)) {
+								vx*=2;
+								vy*=2;
+							}
+						}
+						if((moveTrajectory.get(j).x == this.nowMass.x+vx) &&
+								(moveTrajectory.get(j).y == this.nowMass.y+vy)) {//同じ場合、1つ前のmoveTrajectoryを削除
+							i++;
+							conti=true;
+							break;
+						}
+					}
+					if(conti) {
+						continue;
+					}
+					//2マス移動(競合の可能性)
+					synchronized(StationSearchThread.lock4) {
+						if(!window.japan.contains(this.nowMass.x+vList.get(i).x,this.nowMass.y+vList.get(i).y)) {
+							vList.get(i).x*=2;
+							vList.get(i).y*=2;
+						}
+					}
+					if(flag) {
+						//Threadを立ち上げる
+						StationSearchThread thread = new StationSearchThread(window);
+						synchronized(StationSearchThread.lock3) {
+							thread.threadCopy(this);
+							thread.setMass(this.nowMass.x+vList.get(i).x, this.nowMass.y+vList.get(i).y);//移動
+						}
+						Thread t = new Thread(thread);
+						t.start();
+					}else {
+						x=this.nowMass.x+vList.get(i).x;
+						y=this.nowMass.y+vList.get(i).y;
+						setMassFlag=true;
+						flag=true;
+					}
+					end=false;
+				}
+				i++;
+			}
+			if(setMassFlag) {
+				synchronized(StationSearchThread.lock3) {
+					this.setMass(x, y);//移動
+				}
+			}
+			//行き先が無い場合終了
+			if(end) {
+				//System.out.println("正常終了end");
+				break;
+			}
+			Thread.yield();
+		}
+	}
+
+	public void setMass(int x,int y) {
+		this.nowMass.x=x;
+		this.nowMass.y=y;
+	}
+
+	private void threadCopy(StationSearchThread original) {
+		this.count=original.count;
+		this.moveTrajectory.addAll(original.moveTrajectory);
+	}
+
+	private void setResult() {
+		synchronized(StationSearchThread.lock2) {
+			window.setNearestStationResult(count, nowMass);
+		}
+	}
+
 }
