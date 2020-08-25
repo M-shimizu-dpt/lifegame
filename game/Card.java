@@ -89,7 +89,7 @@ public class Card {
 		if(moveAbility>0) {
 			return moveAbility;
 		}
-		if(fixedMoveAbility>=0) {
+		if(fixedMoveAbility!=-1) {
 			return fixedMoveAbility;
 		}
 
@@ -156,6 +156,9 @@ public class Card {
 		cardList.add(new Card("6進めるカード",10000,3,"6マス進める"));
 		cardList.get(cardList.size()-1).setFixedMoveAbility(6);
 
+		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす"));
+		cardList.get(cardList.size()-1).setFixedMoveAbility(-3);
+
 
 
 		//どこかへ移動する
@@ -186,8 +189,7 @@ public class Card {
 		cardList.get(cardList.size()-1).setMoneyAbility(1);
 		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする"));
 		cardList.get(cardList.size()-1).setMoneyAbility(1);
-		cardList.add(new Card("徳政令カード",500,1,"全ての人の所持金を均一にする"));
-		cardList.get(cardList.size()-1).setMoneyAbility(1);
+
 
 		Card.sort();
 
