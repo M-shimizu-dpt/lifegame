@@ -9,10 +9,12 @@ public class Dice {
 		this.num=1;
 	}
 
-	//サイコロの数に応じたサイコロ処理
-	public void shuffle() {
+	public void shuffle(Player player) {
 		int rand = (int)(Math.random()*Math.random()*10.0)%6;
-		this.result += rand+1;
+		this.result += rand+1+player.buff.effect;
+		if(this.result<=0) {
+			this.result=1;
+		}
 	}
 
 	public void init() {

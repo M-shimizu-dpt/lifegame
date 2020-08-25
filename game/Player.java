@@ -8,7 +8,7 @@ public class Player {
 	public String name;//名前
 	public int money;//所持金
 	public int move;//進めるマス
-	public int boost;//カードを使った時の移動用ブースト
+	public Buff buff;//一定期間の持続効果
 	public ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
 	public Coordinates nowMass;//現在地
 	public int shortest;//目的地までの最短距離(最短距離を求めるアルゴリズムを考える必要がある)
@@ -17,7 +17,7 @@ public class Player {
 	public Player(String name,int money) {
 		this.money=0;
 		this.move=0;
-		this.boost=0;
+		this.buff=new Buff();
 		cards = new ArrayList<Card>();
 		setName(name);
 		addMoney(money);
@@ -48,5 +48,40 @@ public class Player {
 
 	public void addMoney(int money) {
 		this.money += money;
+	}
+}
+
+class Buff{
+	int effect;
+	int period;
+	public Buff() {
+		this.effect=0;
+		this.period=0;
+	}
+	//新規effect
+	public void addBuff(int effect,int period) {
+		this.period=period;
+		this.effect=effect;
+		System.out.println("effect:"+effect+"     period:"+period);
+	}
+	public void elapsed() {
+		if(period > 0) {
+			this.period--;
+		}
+		if(period == 0) {
+			clearEffect();
+		}else if(period < 0) {
+			System.out.println("periodの値が不適切です。");
+		}
+	}
+	public void clearEffect() {
+		this.effect=0;
+	}
+	public boolean isEffect() {
+		if(this.effect != 0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 }
