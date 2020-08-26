@@ -1,5 +1,4 @@
 /*
- *
  * <todo>
  * CPUの実装
  * カード購買処理
@@ -11,6 +10,8 @@
  *
  *メインウィンドウ以外の×ボタンを消す（消せたら）
  *
+ *カードショップを作る
+ *
  *マップ表示のところでjapan.contains()を使って行数を減らす
  *
  *お金がマイナスになった時、物件を持っていれば持っている物件の中から売却する(実装中:printTakePrefectures())
@@ -19,7 +20,7 @@
  *
  *マスの疎結合問題
  *各マスのリンクをtrue/falseにするのではなく、そのマスから移動できるマスリストのようなものを各マスが所持し、
- *各マスがどのマスに行けてどのマスから来れるのかを持つようにする。(from 疎結合 to 双方向連結)(大大大工事)
+ *各マスがどのマスに行けてどのマスから来れるのかを持つようにする。(from 疎結合 to 双方向連結による密結合)(大大大工事)
  *
  *コールバック関数を使ってサブスレッドから情報を受け取る?
  *
@@ -27,6 +28,10 @@
  *
  *2重無限ループを使って無理やりターンが終わるまで止めているが、
  *joinを使ってサブスレッドが終了するのをトリガーにするのが望ましい
+ *
+ *web開発を行いたいと思っている人がいるのであれば、このゲームをweb上で動かせるような環境構築を行う
+ *
+ *
  *
  */
 
@@ -170,7 +175,7 @@ public class Window implements ActionListener{
 			}
     		if(year>endYear)break;
     		searchShortestRoute();
-    		while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 300) {
+    		while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
     			try {
     				Thread.sleep(100);
     			}catch(InterruptedException e) {
@@ -371,7 +376,7 @@ public class Window implements ActionListener{
 		result -= result%100;
 		System.out.println(result);
 		players.get(turn).addMoney(result);
-		if(Math.random()*Math.random() < 0.1) {
+		if(Math.random()*Math.random() < 0.03) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -396,7 +401,7 @@ public class Window implements ActionListener{
 			}while(players.get(turn).money<0);
 		}
 		*/
-		if(Math.random()*Math.random() < 0.1) {
+		if(Math.random()*Math.random() < 0.03) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -429,7 +434,7 @@ public class Window implements ActionListener{
 			cardFull();
 		}
 		System.out.println("Card Get! name:"+Card.cardList.get(index).name+"  rarity"+Card.cardList.get(index).rarity);
-		if(Math.random()*Math.random() < 0.1) {
+		if(Math.random()*Math.random() < 0.03) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -461,7 +466,7 @@ public class Window implements ActionListener{
 	//店イベント(未実装)
 	private void shopEvent() {
 		System.out.println("shopEvent");
-		if(Math.random()*Math.random() < 0.1) {
+		if(Math.random()*Math.random() < 0.03) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -1716,7 +1721,7 @@ public class Window implements ActionListener{
 		propertyFrame.removeAll();
 		if(!mapFrame.isShowing()) {
 			playFrame.setVisible(true);
-			if(Math.random()*Math.random() < 0.1) {
+			if(Math.random()*Math.random() < 0.03) {
 				randomEvent();
 			}else {
 				turnEndFlag=true;
@@ -1881,7 +1886,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("右")) {
 			moveMaps(-130,0);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 300) {
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -1892,7 +1897,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("左")) {
 			moveMaps(130,0);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 300) {
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -1903,7 +1908,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("上")) {
 			moveMaps(0,130);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 300) {
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -1914,7 +1919,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("下")) {
 			moveMaps(0,-130);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 300) {
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -2008,7 +2013,7 @@ public class Window implements ActionListener{
 						coor.setValue(players.get(rand).nowMass);
 					}else if(cmd.equals("最寄り駅カード")){
 						searchNearestStation();
-						while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 300) {
+						while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
 							try {
 								Thread.sleep(100);
 							}catch(InterruptedException e) {
