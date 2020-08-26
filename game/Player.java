@@ -13,17 +13,27 @@ public class Player {
 	public Coordinates nowMass;//現在地
 	public int shortest;//目的地までの最短距離(最短距離を求めるアルゴリズムを考える必要がある)
 	public JLabel colt;//プレイヤーの駒
+	public ArrayList<Property> propertys;
 
 	public Player(String name,int money) {
 		this.money=0;
 		this.move=0;
 		this.buff=new Buff();
-		cards = new ArrayList<Card>();
+		this.cards = new ArrayList<Card>();
+		this.propertys = new ArrayList<Property>();
 		setName(name);
 		addMoney(money);
-		nowMass = new Coordinates();
+		this.nowMass = new Coordinates();
 		this.nowMass.setValue(6, 9);
 		clearMove();
+	}
+
+	public void addProperty(Property property) {
+		this.propertys.add(property);
+	}
+
+	public void removeProperty(Property proerty) {
+		this.propertys.remove(proerty);
 	}
 
 	public void addCard(Card card) {

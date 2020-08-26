@@ -1049,7 +1049,7 @@ class MultiThread implements Runnable{
 				//System.out.println("count over");
 				break;
 			}
-			if(System.currentTimeMillis()-Window.time>=300) {
+			if(System.currentTimeMillis()-Window.time>=200) {
 				//System.out.println("time out");
 				break;
 			}
@@ -1204,7 +1204,7 @@ class StationSearchThread implements Runnable{
 				//System.out.println("count over");
 				break;
 			}
-			if(System.currentTimeMillis()-Window.time>=300) {
+			if(System.currentTimeMillis()-Window.time>=200) {
 				//System.out.println("time out");
 				break;
 			}
