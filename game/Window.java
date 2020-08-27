@@ -3,6 +3,7 @@
  * CPUの実装
  * カード購買処理
  * ボンビー処理
+ * 決算処理(恐らく未完成)
  *
  *設定でマップをrandomに変更できる
  *	→双方向連結に実装したマップであればスレッドを用いてマップをランダムに構築することが可能
@@ -24,14 +25,19 @@
  *
  *コールバック関数を使ってサブスレッドから情報を受け取る?
  *
- *ターン終了判定を統一する(各イベントでフラグを立てる　→　massEvent()でフラグを立てる)
+ *ターン終了判定を統一する(各イベントでフラグを立てる　→　massEvent()でフラグを立てる)急務！！！
  *
  *2重無限ループを使って無理やりターンが終わるまで止めているが、
  *joinを使ってサブスレッドが終了するのをトリガーにするのが望ましい
  *
  *web開発を行いたいと思っている人がいるのであれば、このゲームをweb上で動かせるような環境構築を行う
  *
+ *現在、randomイベントはマスにとまった後に発生するものだが、"どこかの飲食店の売り上げが上がったのでお金がもらえる"等の
+ *イベントがターンの初めに起きるrandomイベントを追加したい
  *
+ *フォルダ構成を改善する
+ *
+ *グローバル変数を減らす
  *
  */
 
@@ -45,6 +51,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -86,11 +93,10 @@ public class Window implements ActionListener{
     private JFrame dubbingCardFrame = new JFrame("ダビング");//カード複製用フレーム
 	private JLayeredPane dubbing = dubbingCardFrame.getLayeredPane();
 	private JFrame sellPrefectureFrame = new JFrame("売却");//物件売却用フレーム
-	private JLayeredPane sellPrefecture = sellPrefectureFrame.getLayeredPane();
-	private JFrame randomFrame;
+	private JFrame randomFrame;//randomイベント用フレーム
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
-	private Boolean turnEndFlag=false,closingEndFlag=false;//ターンを交代するためのフラグ
+	public static Boolean turnEndFlag=false,closingEndFlag=false;//ターンを交代するためのフラグ
 	private int turn=0;//現在のターン
 	private Dice dice = new Dice();//サイコロ処理
 	public Japan japan = new Japan();//物件やマス情報
@@ -140,7 +146,11 @@ public class Window implements ActionListener{
     	// ウィンドウを表示
         playFrame.setVisible(true);
 
-        play(endYear);
+        try {
+        	play(endYear);
+        }catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
 	}
 
 	//メイン画面の上に書いてあるプレイヤーの情報を更新
@@ -156,7 +166,7 @@ public class Window implements ActionListener{
 	}
 
   	//プレイ中の動作
-	private void play(int endYear) {
+	private void play(int endYear) throws InterruptedException{
     	Boolean flag=true;
     	text.add(new JLabel());
     	reload(players.get(turn).name,players.get(turn).money,month,year);
@@ -176,11 +186,7 @@ public class Window implements ActionListener{
     		if(year>endYear)break;
     		searchShortestRoute();
     		while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-    			try {
-    				Thread.sleep(100);
-    			}catch(InterruptedException e) {
-    				e.printStackTrace();
-    			}
+    			Thread.sleep(100);
     		}
     		saveGoal=japan.goal;
     		returnMaps();//画面遷移が少し遅い
@@ -203,13 +209,9 @@ public class Window implements ActionListener{
     			}
     		}
     		mainInfo.setVisible(true);
-    		while(!turnEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
-    			try {
-    				Thread.sleep(100);
-    			}catch(InterruptedException e) {
-    				e.printStackTrace();
-    			}
-    		}
+    		Thread thread = new Thread(new WaitThread());
+    		thread.start();
+    		thread.join();
     		turnEndFlag=false;
     		alreadys.clear();
     		printMenu();
@@ -367,16 +369,17 @@ public class Window implements ActionListener{
 
 	//青マスイベント
 	private void blueEvent() {
+		Random rand = new Random();
 		System.out.println("blueEvent");
 		int result=0;
 		while(result<500) {
-			result = (int)(Math.random()*Math.random()*2000);
+			result =rand.nextInt(2000);
 		}
 		result += result*(year/10);
 		result -= result%100;
 		System.out.println(result);
 		players.get(turn).addMoney(result);
-		if(Math.random()*Math.random() < 0.03) {
+		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -385,23 +388,33 @@ public class Window implements ActionListener{
 
 	//赤マスイベント
 	private void redEvent() {
+		Random rand = new Random();
 		System.out.println("redEvent");
 		int result=0;
 		while(result<500) {
-			result = (int)(Math.random()*Math.random()*2000);
+			result = rand.nextInt(2000);
 		}
 		result += result*(year/10);
 		result -= result%100;
 		System.out.println(-result);
 		players.get(turn).addMoney(-result);
-		/*
-		if(players.get(turn).money<0) {
-			do {
-
-			}while(players.get(turn).money<0);
+		if(players.get(turn).money < 0 && players.get(turn).propertys.size() > 0) {
+			printTakePrefectures();
 		}
-		*/
-		if(Math.random()*Math.random() < 0.03) {
+		//thread.sleepかループどちらかでも読まれるとフリーズする
+		while(players.get(turn).money < 0 && players.get(turn).propertys.size() > 0) {
+			try {
+	            Thread.sleep(100);
+	        } catch (InterruptedException e) {
+	        }
+		}
+		Thread thread = new Thread(new WaitThread());
+		thread.start();
+		try {
+			thread.join();
+        } catch (InterruptedException e) {
+        }
+		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -410,17 +423,17 @@ public class Window implements ActionListener{
 
 	//黄マスイベント
 	private void yellowEvent() {
+		Random rand = new Random();
 		System.out.println("yellowEvent");
 		boolean flag=false;
 		int index=0;
 		while(true) {
 			flag=false;
-			index = (int)(Math.random()*Math.random()*10000.0)%Card.cardList.size();
+			index = rand.nextInt(Card.cardList.size());
 			int i=0;
 			System.out.println("candidate card, name:"+Card.cardList.get(index).name+"  rarity"+Card.cardList.get(index).rarity);
 			do {
-				double rand = Math.random()*Math.random();
-				if(rand<0.3) {
+				if(rand.nextInt(100)<30) {
 					flag=true;
 				}
 				i++;
@@ -434,7 +447,7 @@ public class Window implements ActionListener{
 			cardFull();
 		}
 		System.out.println("Card Get! name:"+Card.cardList.get(index).name+"  rarity"+Card.cardList.get(index).rarity);
-		if(Math.random()*Math.random() < 0.03) {
+		if(rand.nextInt() < 3) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -465,8 +478,9 @@ public class Window implements ActionListener{
 
 	//店イベント(未実装)
 	private void shopEvent() {
+		Random rand = new Random();
 		System.out.println("shopEvent");
-		if(Math.random()*Math.random() < 0.03) {
+		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
 			turnEndFlag=true;
@@ -475,6 +489,7 @@ public class Window implements ActionListener{
 
 	//randomイベント
 	private void randomEvent() {
+		Random rand = new Random();
 		playFrame.setVisible(false);
 		randomFrame = new JFrame();
 		JLayeredPane random = randomFrame.getLayeredPane();
@@ -486,7 +501,7 @@ public class Window implements ActionListener{
 		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
 		closeButton.setActionCommand("randomイベントを閉じる");
 		random.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-		double randomNum = Math.random();
+		double randomNum = rand.nextDouble();
 		if(randomNum < 0.1) {
 			randomFrame.setName("スリの銀一");
 			text1 = createText(10,10,600,100,20,"スリの銀一が現れた！");
@@ -543,7 +558,7 @@ public class Window implements ActionListener{
 			randomFrame.setName("偉い人");
 			text1 = createText(10,10,600,100,20,"偉い人が現れた！");
 			text2 = createText(10,110,600,100,20,"山形の開発工事を行いたいを思っているので所持金全部投資してください");
-			if(Math.random()*Math.random() < 0.5) {
+			if(rand.nextInt(100) < 50) {
 				text3 = createText(10,210,600,100,20,"事業が成功し、所持金が倍になります");
 				players.get(turn).addMoney(players.get(turn).money);
 			}else {
@@ -1528,6 +1543,7 @@ public class Window implements ActionListener{
 	//ゴール画面を表示
 	private void goal() {
 		int goalMoney;
+		Random rand = new Random();
 		playFrame.setVisible(false);
 		goalFrame.setSize(500, 300);
 		goalFrame.setLayout(null);
@@ -1535,7 +1551,7 @@ public class Window implements ActionListener{
 		JButton closeButton = createButton(380,180,100,50,10,"閉じる");
 		closeButton.setActionCommand("ゴール画面を閉じる");
 		goalMoney=10000*year;
-		goalMoney+=Math.random()*Math.random()*10000.0;
+		goalMoney+=rand.nextInt(10000);
 		goalMoney-=goalMoney%100;
 		System.out.println(goalMoney);
 		players.get(turn).addMoney(goalMoney);
@@ -1578,36 +1594,33 @@ public class Window implements ActionListener{
 	private void printTakePrefectures() {
 		playFrame.setVisible(false);
 		int takeProCount=0;
-		int i;
+		int i=0;
+		JLayeredPane sellPrefecture = sellPrefectureFrame.getLayeredPane();
 		sellPrefecture.add(createText(150,10,200,40,20,"物件名"));
 		sellPrefecture.add(createText(400,10,150,40,20,"値段"));
 		sellPrefecture.add(createText(550,10,100,40,20,"利益率"));
 		sellPrefecture.add(createText(650,10,100,40,20,"所有者"));
-		for(Coordinates coor:japan.prefectures) {
-			i=0;
-			for(Property property:japan.prefectureInfo.get(japan.prefectureMapping.get(coor))) {
-				if(property.owner.equals(players.get(turn).name)) {
-					takeProCount++;
-					JButton sellButton = createButton(80,15+(takeProCount+1)*35,60,30,10,"売却");
-					sellButton.setActionCommand(property.name+"s:"+i);
+		for(Property property:players.get(turn).propertys) {
+			takeProCount++;
+			JButton sellButton = createButton(80,15+(takeProCount+1)*35,60,30,10,"売却");
+			sellButton.setActionCommand(property.name+"s:"+i);
 
-					sellPrefecture.add(sellButton);
-					int rate = (int)((double)japan.prefectureInfo.get(property.name).get(i).rate.get(property.level) * 100);//利益率(3段階)
-					sellPrefecture.add(createText(150,10+(i+1)*35,200,40,15,property.name));
-					if(property.money<10000) {
-						sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money+"万円"));
-					}else if(property.money%10000==0){
-						sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億円"));
-					}else {//今登録している物件では呼ばれないかも
-						sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億"+property.money%10000+"万円"));
-					}
-					sellPrefecture.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
-					sellPrefecture.add(createText(650,10+(i+1)*35,100,40,15,property.owner));
-				}
-				i++;
+			sellPrefecture.add(sellButton);
+			int rate = property.getRate();//利益率(3段階)
+			int pMoney = property.money/2;
+			sellPrefecture.add(createText(150,10+(i+1)*35,200,40,15,property.name));
+			if(pMoney<10000) {
+				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,pMoney+"万円"));
+			}else if(pMoney%10000==0){
+				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億円"));
+			}else {//今登録している物件では呼ばれないかも
+				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億"+pMoney%10000+"万円"));
 			}
+			sellPrefecture.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
+			sellPrefecture.add(createText(650,10+(i+1)*35,100,40,15,property.owner));
+			i++;
 		}
-		sellPrefectureFrame.setSize(800, 35*takeProCount+150);
+		sellPrefectureFrame.setSize(800, 35*players.get(turn).propertys.size()+150);
 
 		sellPrefectureFrame.setVisible(true);
 	}
@@ -1615,37 +1628,27 @@ public class Window implements ActionListener{
 	//自分の持ち物件一覧を表示する(未実装)(合計収益や物件数なんかが出るといいね)
 	private void printTakePrefectures(String name) {
 		playFrame.setVisible(false);
-		int takeProCount=0;
-		int i;
+		int i=0;
+		JLayeredPane sellPrefecture = sellPrefectureFrame.getLayeredPane();
 		sellPrefecture.add(createText(150,10,200,40,20,"物件名"));
 		sellPrefecture.add(createText(400,10,150,40,20,"値段"));
 		sellPrefecture.add(createText(550,10,100,40,20,"利益率"));
 		sellPrefecture.add(createText(650,10,100,40,20,"所有者"));
-		for(Coordinates coor:japan.prefectures) {
-			i=0;
-			for(Property property:japan.prefectureInfo.get(japan.prefectureMapping.get(coor))) {
-				if(property.owner.equals(players.get(turn).name)) {
-					takeProCount++;
-					JButton sellButton = createButton(80,15+(takeProCount+1)*35,60,30,10,"売却");
-					sellButton.setActionCommand(property.name+"s:"+i);
-
-					sellPrefecture.add(sellButton);
-					int rate = (int)((double)japan.prefectureInfo.get(property.name).get(i).rate.get(property.level) * 100);//利益率(3段階)
-					sellPrefecture.add(createText(150,10+(i+1)*35,200,40,15,property.name));
-					if(property.money<10000) {
-						sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money+"万円"));
-					}else if(property.money%10000==0){
-						sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億円"));
-					}else {//今登録している物件では呼ばれないかも
-						sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億"+property.money%10000+"万円"));
-					}
-					sellPrefecture.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
-					sellPrefecture.add(createText(650,10+(i+1)*35,100,40,15,property.owner));
-				}
-				i++;
+		for(Property property:players.get(turn).propertys) {
+			int rate = property.getRate();//利益率(3段階)
+			sellPrefecture.add(createText(150,10+(i+1)*35,200,40,15,property.name));
+			if(property.money<10000) {
+				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money+"万円"));
+			}else if(property.money%10000==0){
+				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億円"));
+			}else {//今登録している物件では呼ばれないかも
+				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億"+property.money%10000+"万円"));
 			}
+			sellPrefecture.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
+			sellPrefecture.add(createText(650,10+(i+1)*35,100,40,15,property.owner));
+			i++;
 		}
-		sellPrefectureFrame.setSize(800, 35*takeProCount+150);
+		sellPrefectureFrame.setSize(800, 35*players.get(turn).propertys.size()+150);
 
 		sellPrefectureFrame.setVisible(true);
 	}
@@ -1683,11 +1686,6 @@ public class Window implements ActionListener{
 					|| (!owner.equals("") && !owner.equals(players.get(turn).name)) || players.get(turn).money<japan.prefectureInfo.get(name).get(i).money) {
 				buyButton.setEnabled(false);
 			}
-			/*
-			if(mapFrame.isShowing() || !owner.equals(players.get(turn).name)) {
-				sellButton.setEnabled(false);
-			}
-			*/
 			for(String already:alreadys) {
 				if(already.equals(japan.prefectureInfo.get(name).get(i).name+i)) {
 					buyButton.setEnabled(false);
@@ -1717,11 +1715,12 @@ public class Window implements ActionListener{
 
 	//駅の物件情報を閉じる
 	private void closePropertys() {
+		Random rand = new Random();
 		propertyFrame.setVisible(false);
 		propertyFrame.removeAll();
 		if(!mapFrame.isShowing()) {
 			playFrame.setVisible(true);
-			if(Math.random()*Math.random() < 0.03) {
+			if(rand.nextInt(100) < 3) {
 				randomEvent();
 			}else {
 				turnEndFlag=true;
@@ -1756,14 +1755,13 @@ public class Window implements ActionListener{
 	//物件購入・増築処理
 	private void buyPropertys(String name, int index) {
 		if(japan.prefectureInfo.get(name).get(index).owner.equals("")) {
-			japan.prefectureInfo.get(name).get(index).buy(players.get(turn).name,0);
+			japan.prefectureInfo.get(name).get(index).buy(players.get(turn),0);
 			if(isMonopoly(japan.prefectureInfo.get(name))) {
 				monopolyOn(japan.prefectureInfo.get(name));
 			}
 		}else {
-			japan.prefectureInfo.get(name).get(index).buy(players.get(turn).name,japan.prefectureInfo.get(name).get(index).level+1);
+			japan.prefectureInfo.get(name).get(index).buy(players.get(turn),japan.prefectureInfo.get(name).get(index).level+1);
 		}
-		players.get(turn).addMoney(-japan.prefectureInfo.get(name).get(index).money);
 		alreadys.add(japan.prefectureInfo.get(name).get(index).name+index);
 
 		System.out.println(japan.prefectureInfo.get(name).get(index).name+"を購入"+"("+index+")");
@@ -1773,18 +1771,18 @@ public class Window implements ActionListener{
 	}
 
 	//物件売却処理
-	private void sellPropertys(String name, int index) {
-		japan.prefectureInfo.get(name).get(index).sell();
-		players.get(turn).addMoney(japan.prefectureInfo.get(name).get(index).money/2);
-		alreadys.add(japan.prefectureInfo.get(name).get(index).name+index);
+	private void sellPropertys(Property property) {
+		property.sell(players.get(turn));
+		/*独占解除処理(未実装)
 		if(!isMonopoly(japan.prefectureInfo.get(name))) {
 			monopolyOff(japan.prefectureInfo.get(name));
 		}
+		*/
 
-		System.out.println(japan.prefectureInfo.get(name).get(index).name+"を売却"+"("+index+")");
-		propertyFrame.setVisible(false);
-		propertyFrame.removeAll();
-		printPropertys(name);
+		System.out.println(property.name+"を売却");
+		sellPrefectureFrame.setVisible(false);
+		sellPrefectureFrame.removeAll();
+		printTakePrefectures();
 	}
 
 	//プレイマップの中央位置を初期位置(大阪)に設定
@@ -1936,6 +1934,7 @@ public class Window implements ActionListener{
 			}
 		}
 		String excursion[] = cmd.split("周遊");
+		Random rand = new Random();
 		for(int i=0;i<Card.cardList.size();i++) {
 			if(cmd.equals(Card.cardList.get(i).name)) {//カードを使う
 				//カードの能力を使用
@@ -1946,8 +1945,8 @@ public class Window implements ActionListener{
 						int enemy;
 						int period;
 						do {
-							enemy = (int)(Math.random()*1000.0) % 4;
-							period = (int)(Math.random()*1000.0)%5;
+							enemy = rand.nextInt(4);
+							period = rand.nextInt(5);
 						}while(enemy == turn || period <= 1);
 						players.get(enemy).buff.addBuff(Card.cardList.get(i).useAbility(), period);
 						System.out.println(players.get(enemy).name);
@@ -1970,17 +1969,15 @@ public class Window implements ActionListener{
 							players.get(turn).money=-players.get(turn).money;
 						}
 					}else if(cmd.equals("福袋カード")) {
-						double rand;
 						int count=0;
 						do {
-							rand=Math.random()*Math.random();
-							int randcard = (int)(Math.random()*Math.random()*10000.0)%Card.cardList.size();
+							int randcard = rand.nextInt(Card.cardList.size());
 							players.get(turn).addCard(Card.cardList.get(randcard));
 							if(players.get(turn).cards.size()>8) {
 								cardFull();
 							}
 							count++;
-						}while(rand<0.5 && count<5);
+						}while(rand.nextInt(100)<50 && count<5);
 					}else if(cmd.equals("ダビングカード")) {
 						printDubbing();
 					}else if(cmd.equals("徳政令カード")) {
@@ -2006,11 +2003,7 @@ public class Window implements ActionListener{
 							coor = Card.cardList.get(i).useRandomAbility();
 						}while(players.get(turn).nowMass.y<coor.y);
 					}else if(cmd.equals("ピッタリカード")){
-						int rand;
-						do {
-							rand=(int)(Math.random()*Math.random()*100.0)%4;
-						}while(rand==turn);
-						coor.setValue(players.get(rand).nowMass);
+						coor.setValue(players.get(rand.nextInt(4)).nowMass);
 					}else if(cmd.equals("最寄り駅カード")){
 						searchNearestStation();
 						while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
@@ -2020,8 +2013,7 @@ public class Window implements ActionListener{
 								e.printStackTrace();
 							}
 						}
-						int rand = (int)(Math.random()*Math.random()*1000.0)%nearestStationList.size();
-						coor.setValue(nearestStationList.get(rand));
+						coor.setValue(nearestStationList.get(rand.nextInt(nearestStationList.size())));
 					}else {
 						coor = Card.cardList.get(i).useRandomAbility();
 					}
@@ -2035,9 +2027,8 @@ public class Window implements ActionListener{
 				}
 				//周遊カードの場合は確率でカードを破壊
 				if(excursion.length==2) {
-					double rand=Math.random()*Math.random();
 					Card.cardList.get(i).count++;
-					if(rand<0.3 || Card.cardList.get(i).count>5) {
+					if(rand.nextInt(100)<30 || Card.cardList.get(i).count>5) {
 						players.get(turn).cards.remove(Card.cardList.get(i));
 					}
 				}else {
@@ -2081,12 +2072,29 @@ public class Window implements ActionListener{
 				if(pre[0].equals(japan.prefectureMapping.get(japan.prefectures.get(i))+"b")) {//物件を購入
 					buyPropertys(pre[0].substring(0, pre[0].length()-1),Integer.parseInt(pre[1]));
 					break;
-				}else if(pre[0].equals(japan.prefectureMapping.get(japan.prefectures.get(i))+"s")) {//物件を売却
-					sellPropertys(pre[0].substring(0, pre[0].length()-1),Integer.parseInt(pre[1]));
+				}
+			}
+			for(Property property:players.get(turn).propertys) {
+				System.out.println("owner:"+property.owner+"  sellproperty.name:"+property.name+"player:  "+players.get(turn));
+				if(pre[0].equals(property.name+"s")) {//物件を売却
+					System.out.println("sellpropertys");
+					sellPropertys(property);
 					break;
 				}
 			}
-
 		}
 	}
 }
+
+class WaitThread implements Runnable{
+	public void run() {
+		while(!Window.turnEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
+			try {
+				Thread.sleep(100);
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
