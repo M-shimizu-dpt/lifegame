@@ -1,5 +1,7 @@
 package lifegame.game;
 
+import java.util.Random;
+
 public class Dice {
 	public int result;
 	public int num;
@@ -10,8 +12,8 @@ public class Dice {
 	}
 
 	public void shuffle(Player player) {
-		int rand = (int)(Math.random()*Math.random()*10.0)%6;
-		this.result += rand+1+player.buff.effect;
+		Random rand = new Random();
+		this.result += rand.nextInt(6)+1+player.buff.effect;
 		if(this.result<=0) {
 			this.result=1;
 		}

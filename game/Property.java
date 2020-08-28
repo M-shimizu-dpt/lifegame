@@ -39,6 +39,10 @@ public class Property {
 		}
 	}
 
+	public int getRate() {
+		return (int)((double)rate.get(level)*100.0);
+	}
+
 	//利益計算
 	public int getProfit() {
 		int profit=0;
@@ -46,13 +50,17 @@ public class Property {
 		return profit;
 	}
 
-	public void buy(String owner,int level) {
-		this.owner=owner;
+	public void buy(Player player,int level) {
+		this.owner=player.name;
+		player.addProperty(this);
+		player.addMoney(-this.money);
 		this.level=level;
 	}
 
-	public void sell() {
+	public void sell(Player player) {
 		this.owner="";
+		player.removeProperty(this);
+		player.addMoney(this.money/2);
 		this.level=0;
 	}
 }
