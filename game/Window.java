@@ -23,7 +23,6 @@
  *各マスのリンクをtrue/falseにするのではなく、そのマスから移動できるマスリストのようなものを各マスが所持し、
  *各マスがどのマスに行けてどのマスから来れるのかを持つようにする。(from 疎結合 to 双方向連結による密結合)(大大大工事)
  *
- *コールバック関数を使ってサブスレッドから情報を受け取る?
  *
  *ターン終了判定を統一する(各イベントでフラグを立てる　→　massEvent()でフラグを立てる)急務！！！
  *
@@ -185,9 +184,9 @@ public class Window implements ActionListener{
 			}
     		if(year>endYear)break;
     		searchShortestRoute();
-    		while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-    			Thread.sleep(100);
-    		}
+    		Thread search = new Thread(new WaitThread(2));
+    		search.start();
+    		search.join();
     		saveGoal=japan.goal;
     		returnMaps();//画面遷移が少し遅い
     		mainInfo.setVisible(false);
@@ -209,9 +208,9 @@ public class Window implements ActionListener{
     			}
     		}
     		mainInfo.setVisible(true);
-    		Thread thread = new Thread(new WaitThread());
-    		thread.start();
-    		thread.join();
+    		Thread turnEnd = new Thread(new WaitThread(0));
+    		turnEnd.start();
+    		turnEnd.join();
     		turnEndFlag=false;
     		alreadys.clear();
     		printMenu();
@@ -344,8 +343,9 @@ public class Window implements ActionListener{
 		}
 	}
 
-	//マスに到着した時のマスのイベント処理(randomイベントを実装予定)
+	//マスに到着した時のマスのイベント処理
 	private void massEvent() {
+		Random rand = new Random();
 		closeMoveButton();
 		String massName = play.getComponentAt(400, 300).getName();
 		if(massName.substring(0, 1).equals("青")) {
@@ -364,6 +364,11 @@ public class Window implements ActionListener{
 				printPropertys(massName);
 			}
 		}
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
 		ableMenu();
 	}
 
@@ -379,11 +384,6 @@ public class Window implements ActionListener{
 		result -= result%100;
 		System.out.println(result);
 		players.get(turn).addMoney(result);
-		if(rand.nextInt(100) < 3) {
-			randomEvent();
-		}else {
-			turnEndFlag=true;
-		}
 	}
 
 	//赤マスイベント
@@ -398,27 +398,19 @@ public class Window implements ActionListener{
 		result -= result%100;
 		System.out.println(-result);
 		players.get(turn).addMoney(-result);
+		/*
 		if(players.get(turn).money < 0 && players.get(turn).propertys.size() > 0) {
 			printTakePrefectures();
 		}
 		//thread.sleepかループどちらかでも読まれるとフリーズする
-		while(players.get(turn).money < 0 && players.get(turn).propertys.size() > 0) {
-			try {
-	            Thread.sleep(100);
-	        } catch (InterruptedException e) {
-	        }
-		}
-		Thread thread = new Thread(new WaitThread());
+		Thread thread = new Thread(new WaitThread(1,players.get(turn).money,players.get(turn).propertys.size()));
 		thread.start();
 		try {
 			thread.join();
         } catch (InterruptedException e) {
+        	e.printStackTrace();
         }
-		if(rand.nextInt(100) < 3) {
-			randomEvent();
-		}else {
-			turnEndFlag=true;
-		}
+        */
 	}
 
 	//黄マスイベント
@@ -447,11 +439,6 @@ public class Window implements ActionListener{
 			cardFull();
 		}
 		System.out.println("Card Get! name:"+Card.cardList.get(index).name+"  rarity"+Card.cardList.get(index).rarity);
-		if(rand.nextInt() < 3) {
-			randomEvent();
-		}else {
-			turnEndFlag=true;
-		}
 	}
 
 	//所持カードが最大を超えた場合、捨てるカードを選択
@@ -478,13 +465,7 @@ public class Window implements ActionListener{
 
 	//店イベント(未実装)
 	private void shopEvent() {
-		Random rand = new Random();
 		System.out.println("shopEvent");
-		if(rand.nextInt(100) < 3) {
-			randomEvent();
-		}else {
-			turnEndFlag=true;
-		}
 	}
 
 	//randomイベント
@@ -702,12 +683,12 @@ public class Window implements ActionListener{
 		closing.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 
 		closingFrame.setVisible(true);
-		while(!closingEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
-			try {
-				Thread.sleep(100);
-			}catch(InterruptedException e) {
-
-			}
+		Thread thread = new Thread(new WaitThread(3));
+		thread.start();
+		try {
+			thread.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
 		}
 		closingEndFlag=false;
 		closingFrame.setVisible(false);
@@ -762,12 +743,11 @@ public class Window implements ActionListener{
 		closing.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 
 		closingFrame.setVisible(true);
-		while(!closingEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
-			try {
-				Thread.sleep(100);
-			}catch(InterruptedException e) {
-
-			}
+		thread.start();
+		try {
+			thread.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
 		}
 		closingEndFlag=false;
 		closingFrame.setVisible(false);
@@ -1884,45 +1864,45 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("右")) {
 			moveMaps(-130,0);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-				try {
-					Thread.sleep(100);
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
+			Thread thread = new Thread(new WaitThread(2));
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
 			}
 			printMoveButton();
 		}else if(cmd.equals("左")) {
 			moveMaps(130,0);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-				try {
-					Thread.sleep(100);
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
+			Thread thread = new Thread(new WaitThread(2));
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
 			}
 			printMoveButton();
 		}else if(cmd.equals("上")) {
 			moveMaps(0,130);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-				try {
-					Thread.sleep(100);
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
+			Thread thread = new Thread(new WaitThread(2));
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
 			}
 			printMoveButton();
 		}else if(cmd.equals("下")) {
 			moveMaps(0,-130);
 			searchShortestRoute();
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-				try {
-					Thread.sleep(100);
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
+			Thread thread = new Thread(new WaitThread(2));
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
 			}
 			printMoveButton();
 		}else if(cmd.equals("→") || cmd.equals("←") || cmd.equals("↑") || cmd.equals("↓")) {
@@ -2006,12 +1986,12 @@ public class Window implements ActionListener{
 						coor.setValue(players.get(rand.nextInt(4)).nowMass);
 					}else if(cmd.equals("最寄り駅カード")){
 						searchNearestStation();
-						while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
-							try {
-								Thread.sleep(100);
-							}catch(InterruptedException e) {
-								e.printStackTrace();
-							}
+						Thread thread = new Thread(new WaitThread(2));
+						thread.start();
+						try {
+							thread.join();
+						}catch(InterruptedException e) {
+							e.printStackTrace();
 						}
 						coor.setValue(nearestStationList.get(rand.nextInt(nearestStationList.size())));
 					}else {
@@ -2086,14 +2066,61 @@ public class Window implements ActionListener{
 	}
 }
 
+//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→探索待ち,id=3→決算待ち
 class WaitThread implements Runnable{
+	private int id;
+	private int money;
+	private int size;
+	public WaitThread(int id) {
+		this.id=id;
+	}
+
+	public WaitThread(int id,int money,int size) {
+		this.id=id;
+		this.money=money;
+		this.size=size;
+	}
+
 	public void run() {
-		while(!Window.turnEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
-			try {
-				Thread.sleep(100);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
+		switch(id) {
+		case 0:
+			while(!Window.turnEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+			break;
+		case 1:
+			while(this.money < 0 && this.size > 0) {
+				try {
+		            Thread.sleep(100);
+		        } catch (InterruptedException e) {
+		        	e.printStackTrace();
+		        }
+			}
+			break;
+		case 2:
+			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 200) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			break;
+		case 3:
+			while(!Window.closingEndFlag) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+
+				}
+			}
+			break;
+		default:
+			break;
 		}
 	}
 }
