@@ -13,7 +13,8 @@ public class Japan {
 	ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マス
 	ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マス
 	ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋
-	Map<Coordinates,ArrayList<Boolean>> railMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
+	Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
+	Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
 	public int goal;//目的地の要素番号
 
 	//1マス10
@@ -420,7 +421,6 @@ public class Japan {
 		property.add(new Property("牡蠣養殖工場", 80000, 0.05, 0.06, 0.07));//2
 		property.add(new Property("牡蠣養殖工場", 80000, 0.05, 0.06, 0.07));//2
 
-
 		prefectureInfo.put("赤穂",new ArrayList<Property>());
 		for(int i=0;i<6;i++) {
 			prefectureInfo.get("赤穂").add(property.get(i));
@@ -586,47 +586,49 @@ public class Japan {
 			prefectureInfo.get("鳥羽").add(property.get(i));
 		}
 
-		railMapping.put(prefectures.get(0),getBoolList(true,false,false,true));
-		railMapping.put(prefectures.get(1),getBoolList(false,true,true,true));
-		railMapping.put(prefectures.get(2),getBoolList(true,true,false,true));
-		railMapping.put(prefectures.get(3),getBoolList(true,false,false,false));
-		railMapping.put(prefectures.get(4),getBoolList(false,true,true,false));
-		railMapping.put(prefectures.get(5),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(6),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(7),getBoolList(false,false,true,true));
-		railMapping.put(prefectures.get(8),getBoolList(false,true,false,true));
-		railMapping.put(prefectures.get(9),getBoolList(false,false,true,false));
-		railMapping.put(prefectures.get(10),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(11),getBoolList(false,true,false,true));
-		railMapping.put(prefectures.get(12),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(13),getBoolList(true,true,false,true));
-		railMapping.put(prefectures.get(14),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(15),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(16),getBoolList(true,true,true,true));
-		railMapping.put(prefectures.get(17),getBoolList(true,true,false,true));
-		railMapping.put(prefectures.get(18),getBoolList(true,true,true,true));
-		railMapping.put(prefectures.get(19),getBoolList(false,true,true,true));
-		railMapping.put(prefectures.get(20),getBoolList(false,false,true,true));
-		railMapping.put(prefectures.get(21),getBoolList(true,true,true,true));
-		railMapping.put(prefectures.get(22),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(23),getBoolList(true,false,false,true));
-		railMapping.put(prefectures.get(24),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(25),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(26),getBoolList(true,true,true,true));
-		railMapping.put(prefectures.get(27),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(28),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(29),getBoolList(false,false,true,false));
-		railMapping.put(prefectures.get(30),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(31),getBoolList(false,false,true,true));
-		railMapping.put(prefectures.get(32),getBoolList(false,false,true,true));
-		railMapping.put(prefectures.get(33),getBoolList(false,true,true,false));
-		railMapping.put(prefectures.get(34),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(35),getBoolList(true,false,true,false));
-		railMapping.put(prefectures.get(36),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(37),getBoolList(true,true,true,false));
-		railMapping.put(prefectures.get(38),getBoolList(true,true,false,false));
-		railMapping.put(prefectures.get(39),getBoolList(true,false,false,true));
-		railMapping.put(prefectures.get(40),getBoolList(false,false,true,false));
+		railBoolMapping.put(prefectures.get(0),getBoolList(true,false,false,true));
+		railBoolMapping.put(prefectures.get(1),getBoolList(false,true,true,true));
+		railBoolMapping.put(prefectures.get(2),getBoolList(true,true,false,true));
+		railBoolMapping.put(prefectures.get(3),getBoolList(true,false,false,false));
+		railBoolMapping.put(prefectures.get(4),getBoolList(false,true,true,false));
+		railBoolMapping.put(prefectures.get(5),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(6),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(7),getBoolList(false,false,true,true));
+		railBoolMapping.put(prefectures.get(8),getBoolList(false,true,false,true));
+		railBoolMapping.put(prefectures.get(9),getBoolList(false,false,true,false));
+		railBoolMapping.put(prefectures.get(10),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(11),getBoolList(false,true,false,true));
+		railBoolMapping.put(prefectures.get(12),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(13),getBoolList(true,true,false,true));
+		railBoolMapping.put(prefectures.get(14),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(15),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(16),getBoolList(true,true,true,true));
+		railBoolMapping.put(prefectures.get(17),getBoolList(true,true,false,true));
+		railBoolMapping.put(prefectures.get(18),getBoolList(true,true,true,true));
+		railBoolMapping.put(prefectures.get(19),getBoolList(false,true,true,true));
+		railBoolMapping.put(prefectures.get(20),getBoolList(false,false,true,true));
+		railBoolMapping.put(prefectures.get(21),getBoolList(true,true,true,true));
+		railBoolMapping.put(prefectures.get(22),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(23),getBoolList(true,false,false,true));
+		railBoolMapping.put(prefectures.get(24),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(25),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(26),getBoolList(true,true,true,true));
+		railBoolMapping.put(prefectures.get(27),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(28),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(29),getBoolList(false,false,true,false));
+		railBoolMapping.put(prefectures.get(30),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(31),getBoolList(false,false,true,true));
+		railBoolMapping.put(prefectures.get(32),getBoolList(false,false,true,true));
+		railBoolMapping.put(prefectures.get(33),getBoolList(false,true,true,false));
+		railBoolMapping.put(prefectures.get(34),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(35),getBoolList(true,false,true,false));
+		railBoolMapping.put(prefectures.get(36),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(37),getBoolList(true,true,true,false));
+		railBoolMapping.put(prefectures.get(38),getBoolList(true,true,false,false));
+		railBoolMapping.put(prefectures.get(39),getBoolList(true,false,false,true));
+		railBoolMapping.put(prefectures.get(40),getBoolList(false,false,true,false));
+
+
 
 		//青マス
 		blue.add(new Coordinates(5,9));
@@ -653,28 +655,30 @@ public class Japan {
 		blue.add(new Coordinates(12,1));
 
 
-		railMapping.put(blue.get(0),getBoolList(false,true,true,true));
-		railMapping.put(blue.get(1),getBoolList(true,false,true,false));
-		railMapping.put(blue.get(2),getBoolList(false,false,true,true));
-		railMapping.put(blue.get(3),getBoolList(false,true,false,true));
-		railMapping.put(blue.get(4),getBoolList(false,true,true,false));
-		railMapping.put(blue.get(5),getBoolList(true,false,true,true));
-		railMapping.put(blue.get(6),getBoolList(false,true,false,true));
-		railMapping.put(blue.get(7),getBoolList(true,false,true,true));
-		railMapping.put(blue.get(8),getBoolList(false,true,false,true));
-		railMapping.put(blue.get(9),getBoolList(true,false,true,false));
-		railMapping.put(blue.get(10),getBoolList(false,false,true,true));
-		railMapping.put(blue.get(11),getBoolList(true,false,true,false));
-		railMapping.put(blue.get(12),getBoolList(false,true,false,true));
-		railMapping.put(blue.get(13),getBoolList(false,true,false,true));
-		railMapping.put(blue.get(14),getBoolList(true,true,true,false));
-		railMapping.put(blue.get(15),getBoolList(true,true,false,false));
-		railMapping.put(blue.get(16),getBoolList(false,true,true,false));
-		railMapping.put(blue.get(17),getBoolList(true,false,true,false));
-		railMapping.put(blue.get(18),getBoolList(true,false,true,false));
-		railMapping.put(blue.get(19),getBoolList(true,true,false,true));
-		railMapping.put(blue.get(20),getBoolList(false,false,true,true));
-		railMapping.put(blue.get(21),getBoolList(false,true,true,false));
+		railBoolMapping.put(blue.get(0),getBoolList(false,true,true,true));
+		railBoolMapping.put(blue.get(1),getBoolList(true,false,true,false));
+		railBoolMapping.put(blue.get(2),getBoolList(false,false,true,true));
+		railBoolMapping.put(blue.get(3),getBoolList(false,true,false,true));
+		railBoolMapping.put(blue.get(4),getBoolList(false,true,true,false));
+		railBoolMapping.put(blue.get(5),getBoolList(true,false,true,true));
+		railBoolMapping.put(blue.get(6),getBoolList(false,true,false,true));
+		railBoolMapping.put(blue.get(7),getBoolList(true,false,true,true));
+		railBoolMapping.put(blue.get(8),getBoolList(false,true,false,true));
+		railBoolMapping.put(blue.get(9),getBoolList(true,false,true,false));
+		railBoolMapping.put(blue.get(10),getBoolList(false,false,true,true));
+		railBoolMapping.put(blue.get(11),getBoolList(true,false,true,false));
+		railBoolMapping.put(blue.get(12),getBoolList(false,true,false,true));
+		railBoolMapping.put(blue.get(13),getBoolList(false,true,false,true));
+		railBoolMapping.put(blue.get(14),getBoolList(true,true,true,false));
+		railBoolMapping.put(blue.get(15),getBoolList(true,true,false,false));
+		railBoolMapping.put(blue.get(16),getBoolList(false,true,true,false));
+		railBoolMapping.put(blue.get(17),getBoolList(true,false,true,false));
+		railBoolMapping.put(blue.get(18),getBoolList(true,false,true,false));
+		railBoolMapping.put(blue.get(19),getBoolList(true,true,false,true));
+		railBoolMapping.put(blue.get(20),getBoolList(false,false,true,true));
+		railBoolMapping.put(blue.get(21),getBoolList(false,true,true,false));
+
+
 
 		//赤マス
 		red.add(new Coordinates(1,7));
@@ -710,38 +714,40 @@ public class Japan {
 		red.add(new Coordinates(2,4));
 		red.add(new Coordinates(10,1));
 
-		railMapping.put(red.get(0),getBoolList(true,true,false,true));
-		railMapping.put(red.get(1),getBoolList(true,false,true,false));
-		railMapping.put(red.get(2),getBoolList(false,false,true,true));
-		railMapping.put(red.get(3),getBoolList(false,true,true,false));
-		railMapping.put(red.get(4),getBoolList(true,true,false,true));
-		railMapping.put(red.get(5),getBoolList(false,false,true,true));
-		railMapping.put(red.get(6),getBoolList(true,false,false,true));
-		railMapping.put(red.get(7),getBoolList(true,false,true,false));
-		railMapping.put(red.get(8),getBoolList(true,false,true,true));
-		railMapping.put(red.get(9),getBoolList(true,false,true,false));
-		railMapping.put(red.get(10),getBoolList(true,false,false,true));
-		railMapping.put(red.get(11),getBoolList(false,false,true,true));
-		railMapping.put(red.get(12),getBoolList(false,false,true,true));
-		railMapping.put(red.get(13),getBoolList(false,true,false,true));
-		railMapping.put(red.get(14),getBoolList(true,false,true,false));
-		railMapping.put(red.get(15),getBoolList(false,true,true,false));
-		railMapping.put(red.get(16),getBoolList(true,false,true,true));
-		railMapping.put(red.get(17),getBoolList(true,true,false,false));
-		railMapping.put(red.get(18),getBoolList(true,true,false,false));
-		railMapping.put(red.get(19),getBoolList(true,true,false,false));
-		railMapping.put(red.get(20),getBoolList(true,true,false,true));
-		railMapping.put(red.get(21),getBoolList(false,true,false,true));
-		railMapping.put(red.get(22),getBoolList(false,true,false,true));
-		railMapping.put(red.get(23),getBoolList(false,false,true,true));
-		railMapping.put(red.get(24),getBoolList(false,true,false,true));
-		railMapping.put(red.get(25),getBoolList(true,false,true,false));
-		railMapping.put(red.get(26),getBoolList(true,true,false,false));
-		railMapping.put(red.get(27),getBoolList(true,true,false,false));
-		railMapping.put(red.get(28),getBoolList(true,true,false,false));
-		railMapping.put(red.get(29),getBoolList(true,false,true,true));
-		railMapping.put(red.get(30),getBoolList(false,true,false,true));
-		railMapping.put(red.get(31),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(0),getBoolList(true,true,false,true));
+		railBoolMapping.put(red.get(1),getBoolList(true,false,true,false));
+		railBoolMapping.put(red.get(2),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(3),getBoolList(false,true,true,false));
+		railBoolMapping.put(red.get(4),getBoolList(true,true,false,true));
+		railBoolMapping.put(red.get(5),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(6),getBoolList(true,false,false,true));
+		railBoolMapping.put(red.get(7),getBoolList(true,false,true,false));
+		railBoolMapping.put(red.get(8),getBoolList(true,false,true,true));
+		railBoolMapping.put(red.get(9),getBoolList(true,false,true,false));
+		railBoolMapping.put(red.get(10),getBoolList(true,false,false,true));
+		railBoolMapping.put(red.get(11),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(12),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(13),getBoolList(false,true,false,true));
+		railBoolMapping.put(red.get(14),getBoolList(true,false,true,false));
+		railBoolMapping.put(red.get(15),getBoolList(false,true,true,false));
+		railBoolMapping.put(red.get(16),getBoolList(true,false,true,true));
+		railBoolMapping.put(red.get(17),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(18),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(19),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(20),getBoolList(true,true,false,true));
+		railBoolMapping.put(red.get(21),getBoolList(false,true,false,true));
+		railBoolMapping.put(red.get(22),getBoolList(false,true,false,true));
+		railBoolMapping.put(red.get(23),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(24),getBoolList(false,true,false,true));
+		railBoolMapping.put(red.get(25),getBoolList(true,false,true,false));
+		railBoolMapping.put(red.get(26),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(27),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(28),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(29),getBoolList(true,false,true,true));
+		railBoolMapping.put(red.get(30),getBoolList(false,true,false,true));
+		railBoolMapping.put(red.get(31),getBoolList(false,false,true,true));
+
+
 
 		//黄マス
 		yellow.add(new Coordinates(3,8));
@@ -773,58 +779,210 @@ public class Japan {
 		yellow.add(new Coordinates(1,2));
 		yellow.add(new Coordinates(1,3));
 
-		railMapping.put(yellow.get(0),getBoolList(true,true,false,true));
-		railMapping.put(yellow.get(1),getBoolList(true,true,false,true));
-		railMapping.put(yellow.get(2),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(3),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(4),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(5),getBoolList(true,false,false,true));
-		railMapping.put(yellow.get(6),getBoolList(false,false,false,true));
-		railMapping.put(yellow.get(7),getBoolList(false,true,false,true));
-		railMapping.put(yellow.get(8),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(9),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(10),getBoolList(false,true,false,true));
-		railMapping.put(yellow.get(11),getBoolList(true,false,true,false));
-		railMapping.put(yellow.get(12),getBoolList(false,false,true,true));
-		railMapping.put(yellow.get(13),getBoolList(false,false,true,true));//8,1
-		railMapping.put(yellow.get(14),getBoolList(false,true,true,false));
-		railMapping.put(yellow.get(15),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(16),getBoolList(false,false,true,true));//9,1
-		railMapping.put(yellow.get(17),getBoolList(false,true,true,true));
-		railMapping.put(yellow.get(18),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(19),getBoolList(false,true,false,true));
-		railMapping.put(yellow.get(20),getBoolList(true,true,true,false));
-		railMapping.put(yellow.get(21),getBoolList(true,true,false,false));
-		railMapping.put(yellow.get(22),getBoolList(true,true,true,true));//10,10
-		railMapping.put(yellow.get(23),getBoolList(false,true,true,true));
-		railMapping.put(yellow.get(24),getBoolList(false,true,false,false));
-		railMapping.put(yellow.get(25),getBoolList(true,true,true,false));
-		railMapping.put(yellow.get(26),getBoolList(false,false,false,true));
-		railMapping.put(yellow.get(27),getBoolList(false,true,false,true));
+		railBoolMapping.put(yellow.get(0),getBoolList(true,true,false,true));
+		railBoolMapping.put(yellow.get(1),getBoolList(true,true,false,true));
+		railBoolMapping.put(yellow.get(2),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(3),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(4),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(5),getBoolList(true,false,false,true));
+		railBoolMapping.put(yellow.get(6),getBoolList(false,false,false,true));
+		railBoolMapping.put(yellow.get(7),getBoolList(false,true,false,true));
+		railBoolMapping.put(yellow.get(8),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(9),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(10),getBoolList(false,true,false,true));
+		railBoolMapping.put(yellow.get(11),getBoolList(true,false,true,false));
+		railBoolMapping.put(yellow.get(12),getBoolList(false,false,true,true));
+		railBoolMapping.put(yellow.get(13),getBoolList(false,false,true,true));//8,1
+		railBoolMapping.put(yellow.get(14),getBoolList(false,true,true,false));
+		railBoolMapping.put(yellow.get(15),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(16),getBoolList(false,false,true,true));//9,1
+		railBoolMapping.put(yellow.get(17),getBoolList(false,true,true,true));
+		railBoolMapping.put(yellow.get(18),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(19),getBoolList(false,true,false,true));
+		railBoolMapping.put(yellow.get(20),getBoolList(true,true,true,false));
+		railBoolMapping.put(yellow.get(21),getBoolList(true,true,false,false));
+		railBoolMapping.put(yellow.get(22),getBoolList(true,true,true,true));//10,10
+		railBoolMapping.put(yellow.get(23),getBoolList(false,true,true,true));
+		railBoolMapping.put(yellow.get(24),getBoolList(false,true,false,false));
+		railBoolMapping.put(yellow.get(25),getBoolList(true,true,true,false));
+		railBoolMapping.put(yellow.get(26),getBoolList(false,false,false,true));
+		railBoolMapping.put(yellow.get(27),getBoolList(false,true,false,true));
 
 		//店
 		shop.add(new Coordinates());
 
+		//リンク作成
+		for(Coordinates from : getAllCoordinates()) {
+			for(Coordinates to : getAllCoordinates()) {
+				//if(from.contains(to))continue;
+				int x = from.x-to.x;
+				int y = from.y-to.y;
+				if(!((x>=-2 && x<=2) && (y>=-2 && y<=2)))continue;//処理数を減らす
+				if(prefectureContains(from.x,from.y)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(0))) {
+						if(x==2) {
+							if(!contains(from.x-1,from.y)) {
+								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!contains(from.x+1,from.y)) {
+								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!contains(from.x,from.y-1)) {
+								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!contains(from.x,from.y+1)) {
+								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							}
+						}else {
+							prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+						}
+					}
+					railMapping.put(prefectures.get(getIndexOfPrefecture(from.x,from.y)),prefectures.get(getIndexOfPrefecture(from.x,from.y)).links);
+				}
+				if(blueContains(from.x,from.y)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(0))) {
+						if(x==2) {
+							if(!contains(from.x-1,from.y)) {
+								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!contains(from.x+1,from.y)) {
+								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!contains(from.x,from.y-1)) {
+								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!contains(from.x,from.y+1)) {
+								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							}
+						}else {
+							blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+						}
+					}
+					railMapping.put(blue.get(getIndexOfBlue(from.x,from.y)),blue.get(getIndexOfBlue(from.x,from.y)).links);
+				}
+				if(redContains(from.x,from.y)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(0))) {
+						if(x==2) {
+							if(!contains(from.x-1,from.y)) {
+								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!contains(from.x+1,from.y)) {
+								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!contains(from.x,from.y-1)) {
+								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!contains(from.x,from.y+1)) {
+								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							}
+						}else {
+							red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+						}
+					}
+					railMapping.put(red.get(getIndexOfRed(from.x,from.y)),red.get(getIndexOfRed(from.x,from.y)).links);
+				}
+				if(yellowContains(from.x,from.y)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(0))) {
+						if(x==2) {
+							if(!contains(from.x-1,from.y)) {
+								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!contains(from.x+1,from.y)) {
+								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!contains(from.x,from.y-1)) {
+								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!contains(from.x,from.y+1)) {
+								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							}
+						}else {
+							yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+						}
+					}
+					railMapping.put(yellow.get(getIndexOfYellow(from.x,from.y)),yellow.get(getIndexOfYellow(from.x,from.y)).links);
+				}
+				if(shopContains(from.x,from.y)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(0))) {
+						if(x==2) {
+							if(!contains(from.x-1,from.y)) {
+								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!contains(from.x+1,from.y)) {
+								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!contains(from.x,from.y-1)) {
+								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!contains(from.x,from.y+1)) {
+								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							}
+						}else {
+							shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+						}
+					}
+					railMapping.put(shop.get(getIndexOfShop(from.x,from.y)),shop.get(getIndexOfShop(from.x,from.y)).links);
+				}
+			}
+		}
+		for(Coordinates coor : prefectures.get(getIndexOfPrefecture(6,11)).links) {
+			System.out.println("x:"+coor.x+"   y:"+coor.y);
+		}
 	}
 
+	//全てのマス座標を取得
+	public ArrayList<Coordinates> getAllCoordinates(){
+		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
+		list.addAll(prefectures);
+		list.addAll(blue);
+		list.addAll(red);
+		list.addAll(yellow);
+		list.addAll(shop);
+		return list;
+	}
+
+	//指定の座標にマスが存在するか
 	public synchronized Boolean contains(int x,int y) {
 		Boolean flag=false;
-		ArrayList<ArrayList<Coordinates>> list = new ArrayList<ArrayList<Coordinates>>();
-		list.add(prefectures);
-		list.add(blue);
-		list.add(red);
-		list.add(yellow);
-		list.add(shop);
-		for(ArrayList<Coordinates> coordinates:list) {
-			for(Coordinates coor:coordinates) {
-				if(coor.x==x && coor.y==y) {
-					flag=true;
-				}
+		for(Coordinates coor:getAllCoordinates()) {
+			if(coor.x==x && coor.y==y) {
+				flag=true;
 			}
 		}
 		return flag;
 	}
 
+	//指定の座標に駅が存在するか
 	public Boolean prefectureContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:prefectures) {
@@ -834,6 +992,7 @@ public class Japan {
 		}
 		return flag;
 	}
+	//指定のに青マスが存在するか
 	public Boolean blueContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:blue) {
@@ -843,6 +1002,7 @@ public class Japan {
 		}
 		return flag;
 	}
+	//指定の座標に赤マスが存在するか
 	public Boolean redContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:red) {
@@ -852,6 +1012,7 @@ public class Japan {
 		}
 		return flag;
 	}
+	//指定の座標に黄マスが存在するか
 	public Boolean yellowContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:yellow) {
@@ -861,6 +1022,7 @@ public class Japan {
 		}
 		return flag;
 	}
+	//指定の座標に店マスが存在するか
 	public Boolean shopContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:shop) {
@@ -870,7 +1032,7 @@ public class Japan {
 		}
 		return flag;
 	}
-
+	//ゴールマスを設定
 	public void initGoal() {
 		int x=0,y=0;
 		while(!(this.prefectureContains(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
@@ -885,7 +1047,7 @@ public class Japan {
 		goal = getIndexOfPrefecture(x,y);
 		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
 	}
-
+	//ゴールマスを変更
 	public void changeGoal() {
 		int x=0,y=0;
 		while((!this.prefectureContains(x, y)) || goal==getIndexOfPrefecture(x,y)) {
@@ -900,7 +1062,7 @@ public class Japan {
 		goal = getIndexOfPrefecture(x,y);
 		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
 	}
-
+	//指定の座標のマスの配列番号を取得
 	public int getIndexOf(int x,int y) {
 		int result;
 		result=getIndexOfPrefecture(x,y);
@@ -916,6 +1078,7 @@ public class Japan {
 		return -1;
 	}
 
+	//指定の座標の駅の配列番号を取得
 	public int getIndexOfPrefecture(int x,int y){
 		for(int list=0;list<this.prefectures.size();list++) {
 			if(this.prefectures.get(list).x == x && this.prefectures.get(list).y == y) {//駅の座標が来たら
@@ -925,6 +1088,7 @@ public class Japan {
 		return -1;
 	}
 
+	//指定の座標の青マスの配列番号を取得
 	public int getIndexOfBlue(int x,int y){
 		for(int list=0;list<this.blue.size();list++) {
 			if(this.blue.get(list).x == x && this.blue.get(list).y == y) {//駅の座標が来たら
@@ -933,7 +1097,7 @@ public class Japan {
 		}
 		return -1;
 	}
-
+	//指定の座標の赤マスの配列番号を取得
 	public int getIndexOfRed(int x,int y){
 		for(int list=0;list<this.red.size();list++) {
 			if(this.red.get(list).x == x && this.red.get(list).y == y) {//駅の座標が来たら
@@ -942,7 +1106,7 @@ public class Japan {
 		}
 		return -1;
 	}
-
+	//指定の座標の黄マスの配列番号を取得
 	public int getIndexOfYellow(int x,int y){
 		for(int list=0;list<this.yellow.size();list++) {
 			if(this.yellow.get(list).x == x && this.yellow.get(list).y == y) {//駅の座標が来たら
@@ -951,6 +1115,7 @@ public class Japan {
 		}
 		return -1;
 	}
+	//指定の座標の店マスの配列番号を取得
 	public int getIndexOfShop(int x,int y){
 		for(int list=0;list<this.shop.size();list++) {
 			if(this.shop.get(list).x == x && this.shop.get(list).y == y) {//駅の座標が来たら
@@ -959,7 +1124,7 @@ public class Japan {
 		}
 		return -1;
 	}
-
+	//
 	private ArrayList<Boolean> getBoolList(Boolean top,Boolean bottom,Boolean left,Boolean right){
 		ArrayList<Boolean> rail = new ArrayList<Boolean>();
 		rail.add(left);
@@ -968,30 +1133,47 @@ public class Japan {
 		rail.add(bottom);
 		return rail;
 	}
-
+	//指定の座標の移動可能方向を取得（変更すべき）
 	public ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<prefectures.size();list++) {
 			if(prefectures.get(list).x == x/size && prefectures.get(list).y == y/size) {//駅の座標が来たら
-				return railMapping.get(prefectures.get(list));
+				return railBoolMapping.get(prefectures.get(list));
 			}
 		}
 		for(int list=0;list<blue.size();list++) {
 			if(blue.get(list).x == x/size && blue.get(list).y == y/size) {
-				return railMapping.get(blue.get(list));
+				return railBoolMapping.get(blue.get(list));
 			}
 		}
 		for(int list=0;list<red.size();list++) {
 			if(red.get(list).x == x/size && red.get(list).y == y/size) {
-				return railMapping.get(red.get(list));
+				return railBoolMapping.get(red.get(list));
 			}
 		}
 		for(int list=0;list<yellow.size();list++) {
 			if(yellow.get(list).x == x/size && yellow.get(list).y == y/size) {
-				return railMapping.get(yellow.get(list));
+				return railBoolMapping.get(yellow.get(list));
 			}
 		}
 		return null;
 	}
+	public ArrayList<Coordinates> getMovePossibles(int x,int y) {
+		if(prefectureContains(x,y)) {
+			return railMapping.get(prefectures.get(getIndexOfPrefecture(x,y)));
+		}else if(blueContains(x,y)) {
+			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
+		}else if(redContains(x,y)) {
+			return railMapping.get(red.get(getIndexOfRed(x,y)));
+		}else if(yellowContains(x,y)) {
+			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
+		}else if(shopContains(x,y)) {
+			return railMapping.get(shop.get(getIndexOfShop(x,y)));
+		}else {
+
+			return null;
+		}
+	}
+
 
 }
 
@@ -1011,7 +1193,152 @@ class MultiThread implements Runnable{
 	}
 
 
-	//駅マス以外での探索が鈍いように感じる
+	public void run() {
+		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
+		//内容をコピーした上で自分とは別方向に移動させる。
+		ArrayList<Coordinates> list;
+
+		boolean flag;
+		boolean end;
+		boolean setMassFlag;
+		int x,y;
+		int goalX=window.japan.prefectures.get(window.japan.goal).x;
+		int goalY=window.japan.prefectures.get(window.japan.goal).y;
+		while(true) {
+			x=0;y=0;
+			setMassFlag=false;
+			end=true;
+			flag=false;
+			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
+				//System.out.println("not shorter");
+				break;
+			}
+			if(savecount>1000) {
+				//System.out.println("all killed");
+				break;
+			}
+			if(count>35) {
+				//System.out.println("count over");
+				break;
+			}
+			if(System.currentTimeMillis()-Window.time>=200) {
+				//System.out.println("time out");
+				break;
+			}
+
+			count++;
+			savecount++;
+			//なぜlistがnullになるのか…？？
+			//やっぱりベクトルが異常値を取ってしまう
+			// →1インスタンス内の複数のスレッドが同時にアクセスしようとした場合にロックが可能なので
+			//	 Thread型のインスタンスを1つに絞りたい（インスタンスを複数作成している為）
+			synchronized(MultiThread.lock1) {
+				list = window.japan.getMovePossibles(this.nowMass.x,this.nowMass.y);
+			}
+			if(list==null) {
+				//System.out.println("list_null");
+				break;
+			}
+			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
+			if((goalX==this.nowMass.x && goalY==this.nowMass.y)){
+				goal();
+				//System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
+				break;
+			}
+			for(Coordinates coor:list) {
+				boolean conti=false;
+				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
+					int vx=coor.x;
+					int vy=coor.y;
+					synchronized(MultiThread.lock4) {
+						if(!window.japan.contains(vx,vy)) {
+							vx*=2;
+							vy*=2;
+						}
+					}
+					if((moveTrajectory.get(j).x == vx) &&
+							(moveTrajectory.get(j).y == vy)) {//同じ場合、1つ前のmoveTrajectoryを削除
+						conti=true;
+						break;
+					}
+				}
+				if(conti) {
+					continue;
+				}
+				//2マス移動(競合の可能性)
+				int vx = coor.x;
+				int vy = coor.y;
+				synchronized(MultiThread.lock4) {
+					if(!window.japan.contains(coor.x,coor.y)) {
+						vx*=2;
+						vy*=2;
+					}
+				}
+				if(flag) {
+					//Threadを立ち上げる
+					MultiThread thread = new MultiThread(window);
+					synchronized(MultiThread.lock3) {
+						thread.threadCopy(this);
+						thread.setMass(vx, vy);//移動
+					}
+					Thread t = new Thread(thread);
+					t.start();
+				}else {
+					x=vx;
+					y=vy;
+					setMassFlag=true;
+					flag=true;
+				}
+				end=false;
+			}
+			if(setMassFlag) {
+				synchronized(MultiThread.lock3) {
+					this.setMass(x, y);//移動
+				}
+			}
+			//行き先が無い場合終了
+			if(end) {
+				//System.out.println("正常終了end");
+				break;
+			}
+			Thread.yield();
+		}
+	}
+
+	public void setMass(int x,int y) {
+		this.nowMass.x=x;
+		this.nowMass.y=y;
+	}
+
+	private void threadCopy(MultiThread original) {
+		this.count=original.count;
+		this.moveTrajectory.addAll(original.moveTrajectory);
+	}
+
+	private void goal() {
+		synchronized(MultiThread.lock2) {
+			window.setSearchResult(count,moveTrajectory);
+		}
+	}
+}
+
+/*
+class MultiThread implements Runnable{
+	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
+	public static int savecount=0;
+	public static final Object lock1 = new Object();
+	public static final Object lock2 = new Object();
+	public static final Object lock3 = new Object();
+	public static final Object lock4 = new Object();
+	private int count=0;
+	private Coordinates nowMass=new Coordinates();
+	private Window window;
+
+	public MultiThread(Window window) {
+		this.window=window;
+	}
+
+
 	public void run() {
 		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
 		//内容をコピーした上で自分とは別方向に移動させる。
@@ -1151,7 +1478,7 @@ class MultiThread implements Runnable{
 			window.setSearchResult(count,moveTrajectory);
 		}
 	}
-}
+}*/
 
 //上のスレッドをimplements的なことをしてgoal()だけoverrideすべき？
 //最寄り駅を探索するためのスレッド

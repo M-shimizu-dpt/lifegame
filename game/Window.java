@@ -38,6 +38,7 @@
  *
  *グローバル変数を減らす
  *
+ *マス移動後に目的地までの残りマスの更新がずれている問題
  */
 
 package lifegame.game;
@@ -250,30 +251,17 @@ public class Window implements ActionListener{
 			t = new Thread(thread);
 			t.start();
 		}else {
-			ArrayList<Coordinates> vList = new ArrayList<Coordinates>();
-			for(int i=0;i<4;i++) {
-				vList.add(new Coordinates());
-			}
-			vList.get(0).x=-1;vList.get(0).y=0;
-			vList.get(1).x=1;vList.get(1).y=0;
-			vList.get(2).x=0;vList.get(2).y=-1;
-			vList.get(3).x=0;vList.get(3).y=1;
-			int i=0;
-
 			//探索すべき方角の数を数える
-			ArrayList<Boolean> list = japan.getVector(players.get(turn).nowMass.x,players.get(turn).nowMass.y,1);
-			for(Boolean bool:list) {
-				if(bool) {
-					//Threadを立ち上げる
-					StationSearchThread thread = new StationSearchThread(this);
-					thread.moveTrajectory.add(new Coordinates(players.get(turn).nowMass.x,players.get(turn).nowMass.y));
-					synchronized(StationSearchThread.lock3) {
-						thread.setMass(players.get(turn).nowMass.x+vList.get(i).x, players.get(turn).nowMass.y+vList.get(i).y);
-					}
-					t = new Thread(thread);
-					t.start();
+			ArrayList<Coordinates> list = japan.getMovePossibles(players.get(turn).nowMass.x,players.get(turn).nowMass.y);
+			for(Coordinates coor:list) {
+				//Threadを立ち上げる
+				StationSearchThread thread = new StationSearchThread(this);
+				thread.moveTrajectory.add(new Coordinates(players.get(turn).nowMass.x,players.get(turn).nowMass.y));
+				synchronized(StationSearchThread.lock3) {
+					thread.setMass(coor.x, coor.y);
 				}
-				i++;
+				t = new Thread(thread);
+				t.start();
 			}
 		}
 
@@ -304,30 +292,17 @@ public class Window implements ActionListener{
 		MultiThread.savecount=0;
 		Thread t = new Thread();
 		trajectoryList.clear();
-		ArrayList<Coordinates> vList = new ArrayList<Coordinates>();
-		for(int i=0;i<4;i++) {
-			vList.add(new Coordinates());
-		}
-		vList.get(0).x=-1;vList.get(0).y=0;
-		vList.get(1).x=1;vList.get(1).y=0;
-		vList.get(2).x=0;vList.get(2).y=-1;
-		vList.get(3).x=0;vList.get(3).y=1;
-		int i=0;
-
 		//探索すべき方角の数を数える
-		ArrayList<Boolean> list = japan.getVector(players.get(turn).nowMass.x,players.get(turn).nowMass.y,1);
-		for(Boolean bool:list) {
-			if(bool) {
-				//Threadを立ち上げる
-				MultiThread thread = new MultiThread(this);
-				thread.moveTrajectory.add(new Coordinates(players.get(turn).nowMass.x,players.get(turn).nowMass.y));
-				synchronized(MultiThread.lock3) {
-					thread.setMass(players.get(turn).nowMass.x+vList.get(i).x, players.get(turn).nowMass.y+vList.get(i).y);
-				}
-				t = new Thread(thread);
-				t.start();
+		ArrayList<Coordinates> list = japan.getMovePossibles(players.get(turn).nowMass.x,players.get(turn).nowMass.y);
+		for(Coordinates coor:list) {
+			//Threadを立ち上げる
+			MultiThread thread = new MultiThread(this);
+			thread.moveTrajectory.add(new Coordinates(players.get(turn).nowMass.x,players.get(turn).nowMass.y));
+			synchronized(MultiThread.lock3) {
+				thread.setMass(coor.x, coor.y);
 			}
-			i++;
+			t = new Thread(thread);
+			t.start();
 		}
 
 	}
@@ -1304,7 +1279,7 @@ public class Window implements ActionListener{
 					check=true;
 				}
 				if(check) {
-					drawLine(playFrame.getLayeredPane(),j*distance+20,i*distance+20,distance);
+					drawLine(playFrame.getLayeredPane(),j,i,distance,20);
 				}
 			}
 		}
@@ -1372,7 +1347,7 @@ public class Window implements ActionListener{
 					check=true;
 				}
 				if(check) {
-					drawLine(mapFrame.getLayeredPane(),j*distance+10,i*distance+10,distance);
+					drawLine(mapFrame.getLayeredPane(),j,i,distance,10);
 				}
 			}
 		}
@@ -1426,7 +1401,7 @@ public class Window implements ActionListener{
 					check=true;
 				}
 				if(check) {
-					drawLine(mapFrame.getLayeredPane(),j*distance+5,i*distance+5,distance);
+					drawLine(mapFrame.getLayeredPane(),j,i,distance,5);
 				}
 			}
 		}
@@ -1438,44 +1413,28 @@ public class Window implements ActionListener{
 		maps.removeAll();
 	}
 
-
 	//線路を引く(Boxで代用)
-	private void drawLine(Container lines,int x,int y,int size) {
-		ArrayList<Boolean> vector = new ArrayList<Boolean>();//線を引くべき方角
-		//Container lines=mapFrame.getLayeredPane();//線をまとめたコンテナ
-		vector = japan.getVector(x,y,size);
-		if(vector!=null) {
-			if(vector.get(0)) {
-				JPanel line = new JPanel();
-				line.setBackground(Color.BLACK);
-				line.setLocation(x-size, y);
+	private void drawLine(JLayeredPane lines,int x,int y,int size,int somethig) {
+		ArrayList<Coordinates> list = japan.getMovePossibles(x, y);
+		for(Coordinates coor : list) {
+			JPanel line = new JPanel();
+			line.setBackground(Color.BLACK);
+			if(x>coor.x) {
+				line.setLocation(x*size+somethig-size, y*size+somethig);
 				line.setSize(size,2);
-				lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
-			}
-			if(vector.get(1)) {
-				JPanel line = new JPanel();
-				line.setBackground(Color.BLACK);
-				line.setLocation(x, y);
+			}else if(x<coor.x) {
+				line.setLocation(x*size+somethig, y*size+somethig);
 				line.setSize(size,2);
-				lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
-			}
-			if(vector.get(2)) {
-				JPanel line = new JPanel();
-				line.setBackground(Color.BLACK);
-				line.setLocation(x, y-size);
+			}else if(y>coor.y) {
+				line.setLocation(x*size+somethig, y*size+somethig-size);
 				line.setSize(2,size);
-				lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
-			}
-			if(vector.get(3)) {
-				JPanel line = new JPanel();
-				line.setBackground(Color.BLACK);
-				line.setLocation(x, y);
+			}else if(y<coor.y) {
+				line.setLocation(x*size+somethig, y*size+somethig);
 				line.setSize(2,size);
-				lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 			}
+			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 		}
 	}
-
 
 
 	/*
@@ -1780,7 +1739,6 @@ public class Window implements ActionListener{
 			}
 		}
 	}
-
 
 	//初期化
   	private void init() {
