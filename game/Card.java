@@ -3,6 +3,7 @@ package lifegame.game;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class Card {
 	public String name;//名前
@@ -97,11 +98,12 @@ public class Card {
 	}
 
 	public Coordinates useRandomAbility() {
+		Random rand = new Random();
 		Coordinates movedMass=new Coordinates();
 		int x,y;
 		while(true) {
-			x=((int)(Math.random()*Math.random()*1000.0)%16)+1;
-			y=((int)(Math.random()*Math.random()*1000.0)%16)+1;
+			x=rand.nextInt(17);
+			y=rand.nextInt(17);
 			if(window.japan.contains(x, y)) {
 				break;
 			}

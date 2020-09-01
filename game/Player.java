@@ -13,7 +13,7 @@ public class Player {
 	public Coordinates nowMass;//現在地
 	public int shortest;//目的地までの最短距離(最短距離を求めるアルゴリズムを考える必要がある)
 	public JLabel colt;//プレイヤーの駒
-	public ArrayList<Property> propertys;
+	public ArrayList<Property> propertys;//プレイヤーが保有している物件情報
 
 	public Player(String name,int money) {
 		this.money=0;
