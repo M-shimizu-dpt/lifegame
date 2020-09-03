@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JLabel;
 
 public class Player {
-	public String name;//名前
+	private String name;//名前
 	public int money;//所持金
 	public int move;//進めるマス
 	public Buff buff;//一定期間の持続効果
@@ -72,6 +72,42 @@ public class Player {
 
 	public void addMoney(int money) {
 		this.money += money;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getMoney() {
+		return this.money;
+	}
+
+	public int getMove() {
+		return this.move;
+	}
+
+	public Buff getBuff() {
+		return this.buff;
+	}
+
+	public ArrayList<Card> getCards(){
+		return this.cards;
+	}
+
+	public Coordinates getNowMass() {
+		return this.nowMass;
+	}
+
+	public int getShortest() {
+		return this.shortest;
+	}
+
+	public JLabel getColt() {
+		return this.colt;
+	}
+
+	public ArrayList<Property> getProperty() {
+		return this.propertys;
 	}
 }
 
