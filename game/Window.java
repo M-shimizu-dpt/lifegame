@@ -1,7 +1,6 @@
 /*
  * <todo>
  * CPUの実装
- * カード購買処理
  * ボンビー処理
  * 決算処理(恐らく未完成)
  *
@@ -11,20 +10,9 @@
  *
  *メインウィンドウ以外の×ボタンを消す（消せたら）
  *
- *カードショップを作る
- *
  *マップ表示のところでjapan.contains()を使って行数を減らす
  *
- *お金がマイナスになった時、物件を持っていれば持っている物件の中から売却する(実装中:printTakePrefectures())
- *
  *ぶっとびカードを使った後少し画面を停止したい。(どこに移動したか分かるようにしたい)
- *
- *
- *ターン終了判定を統一する(各イベントでフラグを立てる　→　massEvent()でフラグを立てる)急務！！！
- *	→ターン終了フラグをcloseのところで立てるようにしてスタックするループが複数できないようにする。
- *
- *2重無限ループを使って無理やりターンが終わるまで止めているが、
- *joinを使ってサブスレッドが終了するのをトリガーにするのが望ましい
  *
  *web開発を行いたいと思っている人がいるのであれば、このゲームをweb上で動かせるような環境構築を行う
  *
@@ -36,8 +24,6 @@
  *グローバル変数を減らす
  *
  *マス移動後に目的地までの残りマスの更新がずれている問題
- *
- *たまにプレイヤーの入れ替わりがおかしく、4人プレイして1ターンにならないことがある(join操作が上手くいっていない？)
  *
  *カードが最大所持数を超えた場合ターン終了の関係で正しいプレイヤーのカードが表示されないかもしれない
  */
@@ -93,7 +79,7 @@ public class Window implements ActionListener{
     private JLabel moveLabel;//後何マス移動できるか、目的地までの最短距離を表示するラベル
     private JFrame dubbingCardFrame = new JFrame("ダビング");//カード複製用フレーム
 	private JLayeredPane dubbing = dubbingCardFrame.getLayeredPane();
-	private JFrame sellPrefectureFrame = new JFrame("売却");//物件売却用フレーム
+	private JFrame sellPrefectureFrame;//物件売却用フレーム
 	private JFrame randomFrame;//randomイベント用フレーム
 	private JFrame shopFrontFrame;//カードshopイベント用フレーム
 	private JFrame shopFrame;//カードshop購買イベント用フレーム
@@ -380,7 +366,6 @@ public class Window implements ActionListener{
 		result -= result%100;
 		System.out.println(-result);
 		players.get(turn).addMoney(-result);
-		/*
 		if(players.get(turn).money < 0 && players.get(turn).propertys.size() > 0) {
 			printTakePrefectures();
 		}else{
@@ -389,12 +374,6 @@ public class Window implements ActionListener{
 			}else {
 				turnEndFlag=true;
 			}
-		}
-        */
-		if(rand.nextInt(100) < 3) {
-			randomEvent();
-		}else {
-			turnEndFlag=true;
 		}
 	}
 
@@ -1700,8 +1679,15 @@ public class Window implements ActionListener{
 
 	//自分の持ち物件一覧を閉じる
 	private void closeTakePrefectures() {
-		playFrame.setVisible(true);
+		Random rand = new Random();
 		sellPrefectureFrame.setVisible(false);
+		sellPrefectureFrame.removeAll();
+		playFrame.setVisible(true);
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
 	}
 
 	//持ち物件を売却するための画面を表示(未実装)
@@ -1709,6 +1695,7 @@ public class Window implements ActionListener{
 		playFrame.setVisible(false);
 		int takeProCount=0;
 		int i=0;
+		sellPrefectureFrame = new JFrame("売却");
 		JLayeredPane sellPrefecture = sellPrefectureFrame.getLayeredPane();
 		sellPrefecture.add(createText(150,10,200,40,20,"物件名"));
 		sellPrefecture.add(createText(400,10,150,40,20,"値段"));
@@ -1896,7 +1883,11 @@ public class Window implements ActionListener{
 		System.out.println(property.name+"を売却");
 		sellPrefectureFrame.setVisible(false);
 		sellPrefectureFrame.removeAll();
-		printTakePrefectures();
+		if(players.get(turn).propertys.size()>0) {
+			printTakePrefectures();
+		}else {
+			closeTakePrefectures();
+		}
 	}
 
 	//プレイマップの中央位置を初期位置(大阪)に設定
