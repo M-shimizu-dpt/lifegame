@@ -19,12 +19,9 @@
  *
  *ぶっとびカードを使った後少し画面を停止したい。(どこに移動したか分かるようにしたい)
  *
- *マスの疎結合問題
- *各マスのリンクをtrue/falseにするのではなく、そのマスから移動できるマスリストのようなものを各マスが所持し、
- *各マスがどのマスに行けてどのマスから来れるのかを持つようにする。(from 疎結合 to 双方向連結による密結合)(大大大工事)
- *
  *
  *ターン終了判定を統一する(各イベントでフラグを立てる　→　massEvent()でフラグを立てる)急務！！！
+ *	→ターン終了フラグをcloseのところで立てるようにしてスタックするループが複数できないようにする。
  *
  *2重無限ループを使って無理やりターンが終わるまで止めているが、
  *joinを使ってサブスレッドが終了するのをトリガーにするのが望ましい
@@ -39,6 +36,10 @@
  *グローバル変数を減らす
  *
  *マス移動後に目的地までの残りマスの更新がずれている問題
+ *
+ *たまにプレイヤーの入れ替わりがおかしく、4人プレイして1ターンにならないことがある(join操作が上手くいっていない？)
+ *
+ *カードが最大所持数を超えた場合ターン終了の関係で正しいプレイヤーのカードが表示されないかもしれない
  */
 
 package lifegame.game;
@@ -94,9 +95,13 @@ public class Window implements ActionListener{
 	private JLayeredPane dubbing = dubbingCardFrame.getLayeredPane();
 	private JFrame sellPrefectureFrame = new JFrame("売却");//物件売却用フレーム
 	private JFrame randomFrame;//randomイベント用フレーム
+	private JFrame shopFrontFrame;//カードshopイベント用フレーム
+	private JFrame shopFrame;//カードshop購買イベント用フレーム
+	private JLayeredPane shopBuy;
+	private JLayeredPane shopSell;
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
-	public static Boolean turnEndFlag=false,closingEndFlag=false;//ターンを交代するためのフラグ
+	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false;//ターンを交代するためのフラグ
 	private int turn=0;//現在のターン
 	private Dice dice = new Dice();//サイコロ処理
 	public Japan japan = new Japan();//物件やマス情報
@@ -116,6 +121,7 @@ public class Window implements ActionListener{
 	public static long time;//マルチスレッド開始からの経過時間
 	private Map<Integer,ArrayList<ArrayList<Coordinates>>> trajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//移動の軌跡
 	private ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
+	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
 	public Window(int endYear){
 		int w = 800, h = 600;
@@ -208,6 +214,7 @@ public class Window implements ActionListener{
     				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
     			}
     		}
+
     		mainInfo.setVisible(true);
     		Thread turnEnd = new Thread(new WaitThread(0));
     		turnEnd.start();
@@ -320,7 +327,6 @@ public class Window implements ActionListener{
 
 	//マスに到着した時のマスのイベント処理
 	private void massEvent() {
-		Random rand = new Random();
 		closeMoveButton();
 		String massName = play.getComponentAt(400, 300).getName();
 		if(massName.substring(0, 1).equals("青")) {
@@ -339,11 +345,7 @@ public class Window implements ActionListener{
 				printPropertys(massName);
 			}
 		}
-		if(rand.nextInt(100) < 3) {
-			randomEvent();
-		}else {
-			turnEndFlag=true;
-		}
+
 		ableMenu();
 	}
 
@@ -359,6 +361,11 @@ public class Window implements ActionListener{
 		result -= result%100;
 		System.out.println(result);
 		players.get(turn).addMoney(result);
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
 	}
 
 	//赤マスイベント
@@ -376,36 +383,38 @@ public class Window implements ActionListener{
 		/*
 		if(players.get(turn).money < 0 && players.get(turn).propertys.size() > 0) {
 			printTakePrefectures();
+		}else{
+			if(rand.nextInt(100) < 3) {
+				randomEvent();
+			}else {
+				turnEndFlag=true;
+			}
 		}
-		//thread.sleepかループどちらかでも読まれるとフリーズする
-		Thread thread = new Thread(new WaitThread(1,players.get(turn).money,players.get(turn).propertys.size()));
-		thread.start();
-		try {
-			thread.join();
-        } catch (InterruptedException e) {
-        	e.printStackTrace();
-        }
         */
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
 	}
 
 	//黄マスイベント
 	private void yellowEvent() {
 		Random rand = new Random();
-		System.out.println("yellowEvent");
-		boolean flag=false;
+		boolean get=false;
 		int index=0;
 		while(true) {
-			flag=false;
+			get=false;
 			index = rand.nextInt(Card.cardList.size());
 			int i=0;
 			System.out.println("candidate card, name:"+Card.cardList.get(index).name+"  rarity"+Card.cardList.get(index).rarity);
 			do {
 				if(rand.nextInt(100)<30) {
-					flag=true;
+					get=true;
 				}
 				i++;
 			}while(i<Card.cardList.get(index).rarity);
-			if(!flag) {
+			if(!get) {
 				break;
 			}
 		}
@@ -414,6 +423,11 @@ public class Window implements ActionListener{
 			cardFull();
 		}
 		System.out.println("Card Get! name:"+Card.cardList.get(index).name+"  rarity"+Card.cardList.get(index).rarity);
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
 	}
 
 	//所持カードが最大を超えた場合、捨てるカードを選択
@@ -440,7 +454,149 @@ public class Window implements ActionListener{
 
 	//店イベント(未実装)
 	private void shopEvent() {
-		System.out.println("shopEvent");
+		playFrame.setVisible(false);
+		shopFrontFrame = new JFrame("カードショップ");
+		JLayeredPane shop = shopFrontFrame.getLayeredPane();
+		shopFrontFrame.setSize(300,400);
+		shopFrontFrame.setLocationRelativeTo(null);
+		JButton closeButton = createButton(100,210,100,50,10,"出る");
+		closeButton.setActionCommand("店を出る");
+		shop.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		JButton buyButton = createButton(100,10,100,50,10,"買う");
+		buyButton.setActionCommand("カードを買う");
+		shop.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
+		JButton sellButton = createButton(100,110,100,50,10,"売る");
+		sellButton.setActionCommand("カードを売る");
+		if(players.get(turn).cards.size()==0) {
+			sellButton.setEnabled(false);
+		}
+
+		Random rand = new Random();
+		boolean get=false;
+		int index=0;
+		for(int i = 0;i<8;i++) {//表示するカード8枚を選出
+			do {
+				get=false;
+				boolean flag;
+				do {//今まで選出したカードと今回選出したカードが被った場合は再選
+					flag=true;
+					index = rand.nextInt(Card.cardList.size());
+					for(Card card : canBuyCardlist) {
+						if(card.name.equals(Card.cardList.get(index).name)) {
+							flag=false;
+						}
+					}
+				}while(!flag);
+				int rarity=0;
+				do {
+					if(rand.nextInt(100)<30) {
+						get=true;
+					}
+					rarity++;
+				}while(rarity<Card.cardList.get(index).rarity);
+			}while(!get);
+			canBuyCardlist.add(Card.cardList.get(index));
+		}
+
+		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
+		shopFrontFrame.setVisible(true);
+	}
+
+	//店用フレームを閉じる
+	private void closeShop() {
+		Random rand = new Random();
+		shopFrontFrame.setVisible(false);
+		shopFrontFrame.removeAll();
+		canBuyCardlist.clear();
+		Window.shoppingEndFlag=true;
+		playFrame.setVisible(true);
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
+	}
+
+	//カードショップの購入画面
+	private void printBuyShop() {
+		shopFrontFrame.setVisible(false);
+		shopFrame = new JFrame("購入");
+		shopBuy = shopFrame.getLayeredPane();
+		shopFrame.setSize(600, 600);
+		shopFrame.setLocationRelativeTo(null);
+		JButton closeButton = createButton(500,500,70,50,10,"戻る");
+		closeButton.setActionCommand("カード購入を終える");
+		shopBuy.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		JLabel myMoney = createText(10,5,400,40,10,"所持金"+players.get(turn).money);
+		shopBuy.add(myMoney);
+
+		for(int i=1; i<=canBuyCardlist.size(); i++) {
+			JButton buyButton = createButton(500,i*50,70,50,10,"購入");
+			buyButton.setActionCommand(canBuyCardlist.get(i-1).name+":b");
+			if(canBuyCardlist.get(i-1).buyPrice > players.get(turn).money || players.get(turn).cards.size() > 7) {
+				buyButton.setEnabled(false);
+			}
+			shopBuy.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
+			JLabel name = createText(10,i*50,300,50,10,canBuyCardlist.get(i-1).name);
+			shopBuy.add(name,JLayeredPane.PALETTE_LAYER,-1);
+			JLabel amount = createText(320,i*50,100,50,10,String.valueOf(canBuyCardlist.get(i-1).buyPrice));
+			shopBuy.add(amount,JLayeredPane.PALETTE_LAYER,-1);
+		}
+
+		if(players.get(turn).cards.size() > 7) {
+			JLabel cardFull = createText(450,5,130,40,10,"カードがいっぱいです");
+			shopBuy.add(cardFull);
+		}
+
+		shopFrame.setVisible(true);
+	}
+
+	private void buyCard(Card card) {
+		players.get(turn).buyCard(card);
+		shopFrame.setVisible(false);
+		shopFrame.removeAll();
+		printBuyShop();
+	}
+
+	//カードショップの売却画面
+	private void printSellShop() {
+		shopFrontFrame.setVisible(false);
+		shopFrame = new JFrame("売却");
+		shopSell = shopFrame.getLayeredPane();
+		shopFrame.setSize(600, 600);
+		shopFrame.setLocationRelativeTo(null);
+		JButton closeButton = createButton(500,500,70,50,10,"戻る");
+		closeButton.setActionCommand("カード売却を終える");
+		shopSell.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		for(int i=1; i<=players.get(turn).cards.size(); i++) {
+			JButton sellButton = createButton(500,i*50,70,50,10,"売却");
+			sellButton.setActionCommand(players.get(turn).cards.get(i-1).name+":s");
+			shopSell.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
+			JLabel name = createText(10,i*50,300,50,10,players.get(turn).cards.get(i-1).name);
+			shopSell.add(name,JLayeredPane.PALETTE_LAYER,-1);
+			JLabel amount = createText(320,i*50,100,50,10,String.valueOf(players.get(turn).cards.get(i-1).sellPrice));
+			shopSell.add(amount,JLayeredPane.PALETTE_LAYER,-1);
+		}
+		shopFrame.setVisible(true);
+	}
+
+	private void sellCard(Card card) {
+		players.get(turn).sellCard(card);
+		shopFrame.setVisible(false);
+		shopFrame.removeAll();
+		printSellShop();
+	}
+
+	//カードショップの売買画面を閉じる
+	private void backShop() {
+		shopFrame.setVisible(false);
+		shopFrame.removeAll();
+		if(players.get(turn).cards.size()>0) {
+			shopFrontFrame.getLayeredPane().getComponentAt(100,110).setEnabled(true);
+		}else {
+			shopFrontFrame.getLayeredPane().getComponentAt(100,110).setEnabled(false);
+		}
+		shopFrontFrame.setVisible(true);
 	}
 
 	//randomイベント
@@ -549,7 +705,7 @@ public class Window implements ActionListener{
 		randomFrame.setVisible(true);
 	}
 
-	private void closeEvent() {
+	private void closeRandomEvent() {
 		randomFrame.setVisible(false);
 		randomFrame.removeAll();
 		playFrame.setVisible(true);
@@ -812,6 +968,14 @@ public class Window implements ActionListener{
 		return p;
 	}
 
+	//店マスを作成
+	private JPanel createShopMass(int x,int y,int size) {
+		JPanel p = new JPanel();
+		p.setBounds(x, y, size, size);
+		p.setBackground(Color.GRAY);
+		return p;
+	}
+
 	//ボタンを作成
 	private JButton createButton(int x,int y,int w,int h,int size,String name) {
 		JButton button = new JButton(name);
@@ -865,7 +1029,6 @@ public class Window implements ActionListener{
 		playTop.setVisible(false);
 		playBottom.setVisible(false);
 		moveLabel.setVisible(false);
-		System.out.println("moveButton非表示");
 	}
 
 	//メイン画面での移動ボタンを表示
@@ -908,7 +1071,6 @@ public class Window implements ActionListener{
 		if(players.get(turn).move <= 0) {
 			closeMoveButton();
 		}
-		System.out.println("moveButton表示");
 	}
 
 	//メイン画面でのメニューボタンを表示
@@ -1277,6 +1439,12 @@ public class Window implements ActionListener{
 					yellow.setName("黄"+japan.getIndexOfYellow(j, i));
 					play.add(yellow,JLayeredPane.DEFAULT_LAYER,0);
 					check=true;
+				}else if(japan.shopContains(j,i)) {
+					list=japan.getIndexOfShop(j, i);
+					JPanel shop = createShopMass(j*distance,i*distance,distance/3);
+					shop.setName("店"+japan.getIndexOfShop(j, i));
+					play.add(shop,JLayeredPane.DEFAULT_LAYER,0);
+					check=true;
 				}
 				if(check) {
 					drawLine(playFrame.getLayeredPane(),j,i,distance,20);
@@ -1345,6 +1513,9 @@ public class Window implements ActionListener{
 				}else if(japan.yellowContains(j,i)) {
 					maps.add(createCardMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
 					check=true;
+				}else if(japan.shopContains(j,i)) {
+					maps.add(createShopMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
+					check=true;
 				}
 				if(check) {
 					drawLine(mapFrame.getLayeredPane(),j,i,distance,10);
@@ -1398,6 +1569,9 @@ public class Window implements ActionListener{
 					check=true;
 				}else if(japan.yellowContains(j,i)) {
 					maps.add(createCardMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
+					check=true;
+				}else if(japan.shopContains(j,i)) {
+					maps.add(createShopMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
 					check=true;
 				}
 				if(check) {
@@ -1529,6 +1703,7 @@ public class Window implements ActionListener{
 		playFrame.setVisible(true);
 		sellPrefectureFrame.setVisible(false);
 	}
+
 	//持ち物件を売却するための画面を表示(未実装)
 	private void printTakePrefectures() {
 		playFrame.setVisible(false);
@@ -1818,7 +1993,15 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("ゴール画面を閉じる")) {
 			closeGoal();
 		}else if(cmd.equals("randomイベントを閉じる")) {
-			closeEvent();
+			closeRandomEvent();
+		}else if(cmd.equals("店を出る")) {
+			closeShop();
+		}else if(cmd.equals("カード購入を終える") || cmd.equals("カード売却を終える")) {
+			backShop();
+		}else if(cmd.equals("カードを買う")) {
+			printBuyShop();
+		}else if(cmd.equals("カードを売る")) {
+			printSellShop();
 		}else if(cmd.equals("右")) {
 			moveMaps(-130,0);
 			searchShortestRoute();
@@ -2006,6 +2189,18 @@ public class Window implements ActionListener{
 		}
 		String pre[] = cmd.split(":");
 		if(pre.length==2) {
+			for(Card card:players.get(turn).cards) {
+				if(pre[0].equals(card.name) && pre[1].equals("s")) {//カード売却
+					sellCard(card);
+					break;
+				}
+			}
+			for(Card card:Card.cardList) {
+				if(pre[0].equals(card.name) && pre[1].equals("b")) {//カード購入
+					buyCard(card);
+					break;
+				}
+			}
 			for(int i=0;i<japan.prefectures.size();i++) {
 				if(pre[0].equals(japan.prefectureMapping.get(japan.prefectures.get(i))+"b")) {//物件を購入
 					buyPropertys(pre[0].substring(0, pre[0].length()-1),Integer.parseInt(pre[1]));
@@ -2076,6 +2271,17 @@ class WaitThread implements Runnable{
 
 				}
 			}
+			Window.closingEndFlag=false;
+			break;
+		case 4:
+			while(!Window.shoppingEndFlag) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+
+				}
+			}
+			Window.shoppingEndFlag=false;
 			break;
 		default:
 			break;
