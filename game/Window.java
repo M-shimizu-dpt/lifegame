@@ -10,8 +10,6 @@
  *
  *メインウィンドウ以外の×ボタンを消す（消せたら）
  *
- *マップ表示のところでjapan.contains()を使って行数を減らす
- *
  *ぶっとびカードを使った後少し画面を停止したい。(どこに移動したか分かるようにしたい)
  *
  *web開発を行いたいと思っている人がいるのであれば、このゲームをweb上で動かせるような環境構築を行う
@@ -26,6 +24,12 @@
  *マス移動後に目的地までの残りマスの更新がずれている問題
  *
  *カードが最大所持数を超えた場合ターン終了の関係で正しいプレイヤーのカードが表示されないかもしれない
+ *
+ *・CPUが出来ること
+ *1)
+ *2)
+ *3)
+ *4)
  */
 
 package lifegame.game;
@@ -50,18 +54,11 @@ import javax.swing.SwingConstants;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
-	private JLayeredPane play = playFrame.getLayeredPane();
-	private JLayeredPane text = playFrame.getLayeredPane();
-	private JLayeredPane moveButton = playFrame.getLayeredPane();
 	private JFrame diceFrame = new JFrame("サイコロ");//サイコロ用フレーム
-	private JLayeredPane diceP = diceFrame.getLayeredPane();
 	private JFrame mapFrame = new JFrame("マップ");//マップ確認用フレーム
-	private JLayeredPane maps = mapFrame.getLayeredPane();
 	private JFrame infoFrame = new JFrame("会社情報");//会社情報用フレーム
-	private Container info = infoFrame.getContentPane();
 	private JFrame propertyFrame;//物件情報確認用フレーム
 	private JFrame cardFrame = new JFrame("カード");//所持カード一覧表示用フレーム
-	private JLayeredPane card = cardFrame.getLayeredPane();
 	private JButton playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
 	private JButton playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
 	private JButton playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
@@ -74,11 +71,9 @@ public class Window implements ActionListener{
     private JLabel mainInfo;//プレイマップで上に表示されるプレイヤー情報を表示するラベル
     private JPanel back = new JPanel();//メニューボタンの背景
     private JFrame goalFrame = new JFrame("ゴール");//ゴール画面用フレーム
-    private JLayeredPane goal = goalFrame.getLayeredPane();
     private JFrame errorFrame = new JFrame("カードが満タン");//カード削除用フレーム
     private JLabel moveLabel;//後何マス移動できるか、目的地までの最短距離を表示するラベル
     private JFrame dubbingCardFrame = new JFrame("ダビング");//カード複製用フレーム
-	private JLayeredPane dubbing = dubbingCardFrame.getLayeredPane();
 	private JFrame sellPrefectureFrame;//物件売却用フレーム
 	private JFrame randomFrame;//randomイベント用フレーム
 	private JFrame shopFrontFrame;//カードshopイベント用フレーム
@@ -154,13 +149,13 @@ public class Window implements ActionListener{
 		}
 		mainInfo.setBackground(Color.BLUE);
 		mainInfo.setName(name+money);
-		text.add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
+		playFrame.getLayeredPane().add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
 	}
 
   	//プレイ中の動作
 	private void play(int endYear) throws InterruptedException{
     	Boolean flag=true;
-    	text.add(new JLabel());
+    	playFrame.getLayeredPane().add(new JLabel());
     	reload(players.get(turn).name,players.get(turn).money,month,year);
     	moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+players.get(turn).move+"　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count);
     	moveLabel.setName("moves");
@@ -314,7 +309,7 @@ public class Window implements ActionListener{
 	//マスに到着した時のマスのイベント処理
 	private void massEvent() {
 		closeMoveButton();
-		String massName = play.getComponentAt(400, 300).getName();
+		String massName = playFrame.getLayeredPane().getComponentAt(400, 300).getName();
 		if(massName.substring(0, 1).equals("青")) {
 			blueEvent();
 		}else if(massName.substring(0, 1).equals("赤")) {
@@ -431,7 +426,7 @@ public class Window implements ActionListener{
 		errorFrame.setVisible(true);
 	}
 
-	//店イベント(未実装)
+	//店イベント
 	private void shopEvent() {
 		playFrame.setVisible(false);
 		shopFrontFrame = new JFrame("カードショップ");
@@ -923,36 +918,27 @@ public class Window implements ActionListener{
 		allAssetsList.add(assetsList);
 	}
 
-	//青マスを作成
- 	private JPanel createPlusMass(int x,int y,int size) {
-		JPanel p = new JPanel();
-		p.setBounds(x, y, size, size);
-		p.setBackground(Color.BLUE);
-		return p;
-	}
-
-	//赤マスを作成
-	private JPanel createMinusMass(int x,int y,int size) {
-		JPanel p = new JPanel();
-		p.setBounds(x, y, size, size);
-		p.setBackground(Color.RED);
-		return p;
-	}
-
-	//カードマスを作成
-	private JPanel createCardMass(int x,int y,int size) {
-		JPanel p = new JPanel();
-		p.setBounds(x, y, size, size);
-		p.setBackground(Color.YELLOW);
-		return p;
-	}
-
-	//店マスを作成
-	private JPanel createShopMass(int x,int y,int size) {
-		JPanel p = new JPanel();
-		p.setBounds(x, y, size, size);
-		p.setBackground(Color.GRAY);
-		return p;
+	//駅以外のマスを作成
+	private JPanel createMass(int j,int i,int distance) {
+		JPanel mass = new JPanel();
+		if(japan.blueContains(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.BLUE);
+			mass.setName("青"+japan.getIndexOfBlue(j, i));
+		}else if(japan.redContains(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.RED);
+			mass.setName("赤"+japan.getIndexOfRed(j, i));
+		}else if(japan.yellowContains(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.YELLOW);
+			mass.setName("黄"+japan.getIndexOfYellow(j, i));
+		}else if(japan.shopContains(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.GRAY);
+			mass.setName("店"+japan.getIndexOfShop(j, i));
+		}
+		return mass;
 	}
 
 	//ボタンを作成
@@ -979,6 +965,7 @@ public class Window implements ActionListener{
 
 	//メイン画面での移動ボタンを作成
 	private void createMoveButton() {
+		JLayeredPane moveButton = playFrame.getLayeredPane();
 		playRight.setActionCommand("右");
 		playLeft.setActionCommand("左");
 		playTop.setActionCommand("上");
@@ -1046,7 +1033,7 @@ public class Window implements ActionListener{
 		}
 		moveLabel.setText("残り移動可能マス数:"+players.get(turn).move+"　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count);
 		moveLabel.setVisible(true);
-		play.add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
+		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 		if(players.get(turn).move <= 0) {
 			closeMoveButton();
 		}
@@ -1094,7 +1081,7 @@ public class Window implements ActionListener{
 
 	//サイコロ画面表示
 	private void printDice() {
-		//サイコロ処理
+		JLayeredPane diceP = diceFrame.getLayeredPane();
 		diceFrame.setSize(200, 250);
 		diceFrame.setLayout(null);
 		JButton button =createButton(50,50,100,50,10,"回す");
@@ -1113,6 +1100,7 @@ public class Window implements ActionListener{
 
 	//所持カード一覧を表示
 	private void printCard() {
+		JLayeredPane card = cardFrame.getLayeredPane();
 		cardFrame.setSize(700, 500);
 		cardFrame.setLayout(null);
         JButton closeButton = createButton(570,400,100,40,10,"戻る");
@@ -1144,11 +1132,12 @@ public class Window implements ActionListener{
 	//所持カード一覧を閉じる
 	private void closeCard() {
 		cardFrame.setVisible(false);
-		card.removeAll();
+		cardFrame.getLayeredPane().removeAll();
 	}
 
 	//カードの複製を行う画面を表示
 	private void printDubbing() {
+		JLayeredPane dubbing = dubbingCardFrame.getLayeredPane();
 		dubbingCardFrame.setSize(700,500);
 		dubbingCardFrame.setLayout(null);
         JLabel titleName = createText(150,10,100,40,30,"名前");
@@ -1184,6 +1173,7 @@ public class Window implements ActionListener{
 		//会社情報の表示
 		infoFrame.setSize(800, 600);
 		infoFrame.setLayout(null);
+		Container info = infoFrame.getContentPane();
 		JButton closeButton = createButton(580,500,180,50,10,"戻る");
 		JLabel titleName = createText(20,20,100,100,20,"名前");
 		JLabel titleMoney = createText(120,20,100,100,20,"所持金");
@@ -1241,11 +1231,12 @@ public class Window implements ActionListener{
 	//会社情報を閉じる
 	private void closeInfo() {
 		infoFrame.setVisible(false);
-		info.removeAll();
+		infoFrame.getContentPane().removeAll();
 	}
 
 	//詳細マップの画面遷移処理
 	private void moveMaps(String cmd) {//今はボタンを入力できない状態にできないので、状態遷移できない状態にした。(ComponentからJButtomに変換できれば可能)
+		JLayeredPane maps = mapFrame.getLayeredPane();
 		int x=0,y=0;
 		for(int i=0;i<maps.getComponentCount();i++) {
 			if(i>=0&&i<5) {//標準装備のコンポーネント以外
@@ -1278,6 +1269,7 @@ public class Window implements ActionListener{
 	//プレイマップの画面遷移処理
 	private void moveMaps(int x,int y) {//今はボタンを入力できない状態にできないので、状態遷移できない状態にした。(ComponentからJButtomに変換できれば可能)
 		String name;//if文が長すぎる為
+		JLayeredPane play = playFrame.getLayeredPane();
 		do {
 			//移動
 			if(x<0) {
@@ -1348,14 +1340,12 @@ public class Window implements ActionListener{
 	}
 
 	//プレイマップの画面遷移処理
-	private void moveMaps(int player,Coordinates to) {//今はボタンを入力できない状態にできないので、状態遷移できない状態にした。(ComponentからJButtomに変換できれば可能)
-		System.out.println("random move  x:"+to.x+"  y:"+to.y);
+	private void moveMaps(int player,Coordinates to) {
+		JLayeredPane play = playFrame.getLayeredPane();
 		int x=(to.x-players.get(player).nowMass.x)*130;
 		int y=(to.y-players.get(player).nowMass.y)*130;
 		for(int i=0;i<play.getComponentCount();i++) {
-			if(play.getComponent(i).getName()==null) {
-
-			}else if(play.getComponent(i).getName().equals(players.get(player).name)) {
+			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(players.get(player).name)) {
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
 			}
 		}
@@ -1364,11 +1354,12 @@ public class Window implements ActionListener{
 
 	//移動履歴を保持
 	private void moveMaps() {
-		moveTrajectory.add(play.getComponentAt(400, 300).getName());
+		moveTrajectory.add(playFrame.getLayeredPane().getComponentAt(400, 300).getName());
 	}
 
 	//次のプレイヤーをプレイ画面の真ん中に位置させる
 	private void returnMaps() {
+		JLayeredPane play = playFrame.getLayeredPane();
 		int x = 401 - players.get(turn).colt.getX();
 		int y = 301 - players.get(turn).colt.getY();
 		String name;//if文が長すぎる為
@@ -1388,46 +1379,19 @@ public class Window implements ActionListener{
 
 	//プレイマップを表示
 	private void playMap() {
+		JLayeredPane play = playFrame.getLayeredPane();
 		int distance=130;
-		int list;
-		boolean check;
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				check=false;
+				if(!japan.contains(j, i))continue;
 				if(japan.prefectureContains(j,i)) {
-					list=japan.getIndexOfPrefecture(j, i);
-					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.prefectureMapping.get(japan.prefectures.get(list)));
+					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.prefectureMapping.get(japan.prefectures.get(japan.getIndexOfPrefecture(j, i))));
 					pre.setBackground(Color.WHITE);
 					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
-					check=true;
-				}else if(japan.blueContains(j,i)) {
-					list=japan.getIndexOfBlue(j, i);
-					JPanel blue = createPlusMass(j*distance,i*distance,distance/3);
-					blue.setName("青"+japan.getIndexOfBlue(j, i));
-					play.add(blue,JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.redContains(j,i)) {
-					list=japan.getIndexOfRed(j, i);
-					JPanel red = createMinusMass(j*distance,i*distance,distance/3);
-					red.setName("赤"+japan.getIndexOfRed(j, i));
-					play.add(red,JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.yellowContains(j,i)) {
-					list=japan.getIndexOfYellow(j, i);
-					JPanel yellow = createCardMass(j*distance,i*distance,distance/3);
-					yellow.setName("黄"+japan.getIndexOfYellow(j, i));
-					play.add(yellow,JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.shopContains(j,i)) {
-					list=japan.getIndexOfShop(j, i);
-					JPanel shop = createShopMass(j*distance,i*distance,distance/3);
-					shop.setName("店"+japan.getIndexOfShop(j, i));
-					play.add(shop,JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
+				}else {
+					play.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
 				}
-				if(check) {
-					drawLine(playFrame.getLayeredPane(),j,i,distance,20);
-				}
+				drawLine(playFrame.getLayeredPane(),j,i,distance,20);
 			}
 		}
 	}
@@ -1435,6 +1399,7 @@ public class Window implements ActionListener{
 
 	//詳細マップを表示
 	private void miniMap() {
+		JLayeredPane maps = mapFrame.getLayeredPane();
 		int distance=70;
 		JButton closeButton = createButton(580,500,180,50,10,"戻る");
 		JButton right = createButton(730,250,50,40,10,"→");
@@ -1450,16 +1415,12 @@ public class Window implements ActionListener{
 		mapFrame.setLayout(null);
 		mapFrame.setLocationRelativeTo(null);
 		mapFrame.setBackground(Color.ORANGE);
-		Container panel = mapFrame.getContentPane();
-		panel.setBackground(Color.ORANGE);
-		mapFrame.setVisible(true);
+		mapFrame.getContentPane().setBackground(Color.ORANGE);
 		maps.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		maps.add(right,JLayeredPane.PALETTE_LAYER,0);
 		maps.add(left,JLayeredPane.PALETTE_LAYER,0);
 		maps.add(top,JLayeredPane.PALETTE_LAYER,0);
 		maps.add(bottom,JLayeredPane.PALETTE_LAYER,0);
-		int list;
-		Boolean check;
 		JLabel p1 = createText(players.get(0).nowMass.x*distance-15, players.get(0).nowMass.y*distance-5, 20, 10, 10, "p"+1);
 		p1.setBackground(Color.BLACK);
 		JLabel p2 = createText(players.get(1).nowMass.x*distance+15, players.get(1).nowMass.y*distance-5, 20, 10, 10, "p"+2);
@@ -1474,49 +1435,35 @@ public class Window implements ActionListener{
 		maps.add(p4,JLayeredPane.PALETTE_LAYER,-1);
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				check=false;
+				if(!japan.contains(j, i))continue;
 				if(japan.prefectureContains(j,i)) {//駅の座標が来たら
-					list=japan.getIndexOfPrefecture(j, i);
+					int list=japan.getIndexOfPrefecture(j, i);
 					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,japan.prefectureMapping.get(japan.prefectures.get(list)));
 					if(list==japan.goal) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
-					check=true;
-				}else if(japan.blueContains(j,i)) {
-					maps.add(createPlusMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.redContains(j,i)) {
-					maps.add(createMinusMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.yellowContains(j,i)) {
-					maps.add(createCardMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.shopContains(j,i)) {
-					maps.add(createShopMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
+				}else {
+					maps.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
 				}
-				if(check) {
-					drawLine(mapFrame.getLayeredPane(),j,i,distance,10);
-				}
+				drawLine(maps,j,i,distance,10);
 			}
 		}
+		mapFrame.setVisible(true);
 	}
 
 
 	//全体マップを表示
 	private void allMap() {
+		JLayeredPane maps = mapFrame.getLayeredPane();
 		JButton closeButton = createButton(580,500,180,50,10,"戻る");
-		boolean check;
 		int distance=30;
 		mapFrame.setSize(800, 600);
 		mapFrame.setLayout(null);
 		mapFrame.setLocationRelativeTo(null);
 		mapFrame.getContentPane().setBackground(Color.ORANGE);
-		mapFrame.setVisible(true);
 		closeButton.setActionCommand("マップを閉じる");
 		maps.add(closeButton);
-		int list;
 		JLabel p1 = createText(players.get(0).nowMass.x*distance-5, players.get(0).nowMass.y*distance-5, distance/3, distance/3, 5, "1");
 		p1.setBackground(Color.BLACK);
 		JLabel p2 = createText(players.get(1).nowMass.x*distance+5, players.get(1).nowMass.y*distance-5, distance/3, distance/3, 5, "2");
@@ -1531,39 +1478,27 @@ public class Window implements ActionListener{
 		maps.add(p4,JLayeredPane.PALETTE_LAYER,-1);
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				check=false;
+				if(!japan.contains(j, i))continue;
 				if(japan.prefectureContains(j,i)) {//駅の座標が来たら
-					list=japan.getIndexOfPrefecture(j, i);
+					int list=japan.getIndexOfPrefecture(j, i);
 					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,japan.prefectureMapping.get(japan.prefectures.get(list)));
 					if(list==japan.goal) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
-					check=true;
-				}else if(japan.blueContains(j,i)) {
-					maps.add(createPlusMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.redContains(j,i)) {
-					maps.add(createMinusMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.yellowContains(j,i)) {
-					maps.add(createCardMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
-				}else if(japan.shopContains(j,i)) {
-					maps.add(createShopMass(j*distance,i*distance,distance/3),JLayeredPane.DEFAULT_LAYER,0);
-					check=true;
+				}else {
+					maps.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
 				}
-				if(check) {
-					drawLine(mapFrame.getLayeredPane(),j,i,distance,5);
-				}
+				drawLine(mapFrame.getLayeredPane(),j,i,distance,5);
 			}
 		}
+		mapFrame.setVisible(true);
 	}
 
 	//マップ画面を閉じる
 	private void closeMaps() {
 		mapFrame.setVisible(false);
-		maps.removeAll();
+		mapFrame.getLayeredPane().removeAll();
 	}
 
 	//線路を引く(Boxで代用)
@@ -1631,9 +1566,9 @@ public class Window implements ActionListener{
 	}
 	*/
 
-
 	//ゴール画面を表示
 	private void goal() {
+		JLayeredPane goal = goalFrame.getLayeredPane();
 		int goalMoney;
 		Random rand = new Random();
 		playFrame.setVisible(false);
@@ -1653,7 +1588,7 @@ public class Window implements ActionListener{
 		goal.add(label);
 		goalFrame.setVisible(true);
 
-		play.getComponentAt(400, 300).setBackground(Color.WHITE);
+		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 
 		japan.changeGoal();
 
@@ -1668,6 +1603,7 @@ public class Window implements ActionListener{
 
 	//目的地の色付け
 	private void setGoalColor() {
+		JLayeredPane play = playFrame.getLayeredPane();
 		for(int i=0;i<play.getComponentCount();i++) {
 			if(play.getComponent(i).getName()==null)continue;
 			if(play.getComponent(i).getName().equals(japan.prefectureMapping.get(japan.prefectures.get(japan.goal)))) {
@@ -1690,7 +1626,7 @@ public class Window implements ActionListener{
 		}
 	}
 
-	//持ち物件を売却するための画面を表示(未実装)
+	//持ち物件を売却するための画面を表示
 	private void printTakePrefectures() {
 		playFrame.setVisible(false);
 		int takeProCount=0;
@@ -1716,34 +1652,6 @@ public class Window implements ActionListener{
 				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億円"));
 			}else {//今登録している物件では呼ばれないかも
 				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億"+pMoney%10000+"万円"));
-			}
-			sellPrefecture.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
-			sellPrefecture.add(createText(650,10+(i+1)*35,100,40,15,property.owner));
-			i++;
-		}
-		sellPrefectureFrame.setSize(800, 35*players.get(turn).propertys.size()+150);
-
-		sellPrefectureFrame.setVisible(true);
-	}
-
-	//自分の持ち物件一覧を表示する(未実装)(合計収益や物件数なんかが出るといいね)
-	private void printTakePrefectures(String name) {
-		playFrame.setVisible(false);
-		int i=0;
-		JLayeredPane sellPrefecture = sellPrefectureFrame.getLayeredPane();
-		sellPrefecture.add(createText(150,10,200,40,20,"物件名"));
-		sellPrefecture.add(createText(400,10,150,40,20,"値段"));
-		sellPrefecture.add(createText(550,10,100,40,20,"利益率"));
-		sellPrefecture.add(createText(650,10,100,40,20,"所有者"));
-		for(Property property:players.get(turn).propertys) {
-			int rate = property.getRate();//利益率(3段階)
-			sellPrefecture.add(createText(150,10+(i+1)*35,200,40,15,property.name));
-			if(property.money<10000) {
-				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money+"万円"));
-			}else if(property.money%10000==0){
-				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億円"));
-			}else {//今登録している物件では呼ばれないかも
-				sellPrefecture.add(createText(400,10+(i+1)*35,150,40,15,property.money/10000+"億"+property.money%10000+"万円"));
 			}
 			sellPrefecture.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
 			sellPrefecture.add(createText(650,10+(i+1)*35,100,40,15,property.owner));
@@ -1892,6 +1800,8 @@ public class Window implements ActionListener{
 
 	//プレイマップの中央位置を初期位置(大阪)に設定
 	private void initMaps() {
+		JLayeredPane maps = mapFrame.getLayeredPane();
+		JLayeredPane play = playFrame.getLayeredPane();
 		int x=-400;
 		int y=-900;
 		for(int i=0;i<maps.getComponentCount();i++) {
@@ -1919,7 +1829,7 @@ public class Window implements ActionListener{
   			players.get(i).colt = createText(401,301,20,20,10,players.get(i).name);
   	  		players.get(i).colt.setBackground(Color.BLACK);
   	  		players.get(i).colt.setName(players.get(i).name);
-  			text.add(players.get(i).colt,JLayeredPane.DEFAULT_LAYER,0);
+  	  	playFrame.getLayeredPane().add(players.get(i).colt,JLayeredPane.DEFAULT_LAYER,0);
   		}
   	}
 
@@ -1943,14 +1853,7 @@ public class Window implements ActionListener{
 			playFrame.setVisible(false);
 			allMap();
 		}else if(cmd.equals("回す")) {
-			for(int i=0;i<dice.num;i++) {//サイコロの数だけサイコロを回わす；
-				if(Card.usedFixedCard)break;//初めからresultが入力されていれば
-				dice.shuffle(players.get(turn));
-				players.get(turn).buff.elapsed();
-				System.out.println("result"+i+":"+dice.result);
-			}
-			System.out.println("allResult:"+dice.result+"  num:"+dice.num);
-			players.get(turn).move = dice.result;
+			players.get(turn).move = dice.shuffle(players.get(turn));
 			if(players.get(turn).move==0) {
 				massEvent();
 			}else {
@@ -2201,7 +2104,6 @@ public class Window implements ActionListener{
 			for(Property property:players.get(turn).propertys) {
 				System.out.println("owner:"+property.owner+"  sellproperty.name:"+property.name+"player:  "+players.get(turn));
 				if(pre[0].equals(property.name+"s")) {//物件を売却
-					System.out.println("sellpropertys");
 					sellPropertys(property);
 					break;
 				}
