@@ -6,16 +6,16 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class Card {
-	public String name;//名前
-	public String cardText;//能力説明
-	public int moveAbility;//サイコロ数の変化能力
-	public int fixedMoveAbility;//固定値移動能力
-	public int randomMoveAbility;//ランダム移動持ちかどうか(T/Fにすべき)
-	public int othersAbility;//金銭能力持ちかどうか
-	public int sellPrice;//売る時の値段
-	public int buyPrice;//買う時の値段
-	public int count;
-	public int rarity;
+	private String name;//名前
+	private String cardText;//能力説明
+	private int moveAbility;//サイコロ数の変化能力
+	private int fixedMoveAbility;//固定値移動能力
+	private int randomMoveAbility;//ランダム移動持ちかどうか(T/Fにすべき)
+	private int othersAbility;//金銭能力持ちかどうか
+	private int sellPrice;//売る時の値段
+	private int buyPrice;//買う時の値段
+	private int count;//カード破壊カウント(周遊用)
+	private int rarity;
 	public static ArrayList<Card> cardList = new ArrayList<Card>();
 	public static boolean usedCard;
 	public static boolean usedFixedCard;
@@ -38,6 +38,50 @@ public class Card {
 		this.randomMoveAbility=0;
 		this.othersAbility=0;
 		this.cardText=cardText;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getText() {
+		return this.cardText;
+	}
+
+	public int getMoveAbility() {
+		return this.moveAbility;
+	}
+
+	public int getRandomMoveAbility() {
+		return this.randomMoveAbility;
+	}
+
+	public int getFixedMoveAbility() {
+		return this.fixedMoveAbility;
+	}
+
+	public int getOthersAbility() {
+		return this.othersAbility;
+	}
+
+	public int getSellPrice() {
+		return this.sellPrice;
+	}
+
+	public int getBuyPrice() {
+		return this.buyPrice;
+	}
+
+	public int getRarity() {
+		return this.rarity;
+	}
+
+	public int getCount() {
+		return this.count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 	public static void resetUsedCard() {
@@ -157,7 +201,6 @@ public class Card {
 		cardList.get(cardList.size()-1).setFixedMoveAbility(5);
 		cardList.add(new Card("6進めるカード",10000,3,"6マス進める"));
 		cardList.get(cardList.size()-1).setFixedMoveAbility(6);
-
 		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす"));
 		cardList.get(cardList.size()-1).setFixedMoveAbility(-3);
 
@@ -200,7 +243,7 @@ public class Card {
 
 class Comp implements Comparator<Card>{
 	public int compare(Card card1, Card card2) {
-		return card1.rarity < card2.rarity ? -1 : 1;
+		return card1.getRarity() < card2.getRarity() ? -1 : 1;
 	}
 
 }
