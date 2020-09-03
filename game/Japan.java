@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Japan {
-	Map<Coordinates,String> prefectureMapping = new HashMap<Coordinates,String>();//駅名、座標
+	Map<Coordinates,String> prefectureMapping = new HashMap<Coordinates,String>();//座標、駅名
 	ArrayList<Property> property = new ArrayList<Property>();//物件情報
 	Map<String,ArrayList<Property>> prefectureInfo = new HashMap<String,ArrayList<Property>>();//駅名、駅の物件
 	ArrayList<Coordinates> prefectures = new ArrayList<Coordinates>();//駅
