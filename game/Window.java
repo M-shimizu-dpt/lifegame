@@ -141,14 +141,36 @@ public class Window implements ActionListener{
 	}
 
 	//メイン画面の上に書いてあるプレイヤーの情報を更新
-	public void reload(String name,int money, int month, int year) {
+	public void reload() {
+		mainInfo.setVisible(false);
 		if(players.get(turn).buff.isEffect()){
-			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+name+"　持ち金："+money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
+			if(players.get(turn).money<10000) {
+				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
+			}else if(players.get(turn).money%10000==0){
+				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
+			}else {//今登録している物件では呼ばれないかも
+				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
+			}
 		}else {
-			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+name+"　持ち金："+money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス");
+			if(players.get(turn).money<10000) {
+				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
+			}else if(players.get(turn).money%10000==0){
+				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
+			}else {//今登録している物件では呼ばれないかも
+				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
+			}
+		}
+		mainInfo.setVisible(true);
+	}
+
+	private void initMenu() {
+		if(players.get(turn).buff.isEffect()){
+			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
+		}else {
+			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス");
 		}
 		mainInfo.setBackground(Color.BLUE);
-		mainInfo.setName(name+money);
+		mainInfo.setName(players.get(turn).name+players.get(turn).money);
 		playFrame.getLayeredPane().add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
 	}
 
@@ -156,7 +178,6 @@ public class Window implements ActionListener{
 	private void play(int endYear) throws InterruptedException{
     	Boolean flag=true;
     	playFrame.getLayeredPane().add(new JLabel());
-    	reload(players.get(turn).name,players.get(turn).money,month,year);
     	moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+players.get(turn).move+"　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count);
     	moveLabel.setName("moves");
     	playFrame.setBackground(Color.ORANGE);
@@ -177,26 +198,7 @@ public class Window implements ActionListener{
     		search.join();
     		saveGoal=japan.goal;
     		returnMaps();//画面遷移が少し遅い
-    		mainInfo.setVisible(false);
-    		if(players.get(turn).buff.isEffect()){
-    			if(players.get(turn).money<10000) {
-    				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
-    			}else if(players.get(turn).money%10000==0){
-    				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
-    			}else {//今登録している物件では呼ばれないかも
-    				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
-    			}
-    		}else {
-    			if(players.get(turn).money<10000) {
-    				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
-    			}else if(players.get(turn).money%10000==0){
-    				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
-    			}else {//今登録している物件では呼ばれないかも
-    				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
-    			}
-    		}
-
-    		mainInfo.setVisible(true);
+    		reload();
     		Thread turnEnd = new Thread(new WaitThread(0));
     		turnEnd.start();
     		turnEnd.join();
@@ -1320,23 +1322,6 @@ public class Window implements ActionListener{
 				massEvent();
 			}
 		}
-		if(players.get(turn).buff.isEffect()){
-			if(players.get(turn).money<10000) {
-				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
-			}else if(players.get(turn).money%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
-			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).buff.effect+")");
-			}
-		}else {
-			if(players.get(turn).money<10000) {
-				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
-			}else if(players.get(turn).money%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
-			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+players.get(turn).name+"　持ち金："+players.get(turn).money/10000+"億　"+players.get(turn).money%10000+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス");
-			}
-		}
 	}
 
 	//プレイマップの画面遷移処理
@@ -1831,6 +1816,7 @@ public class Window implements ActionListener{
   	  		players.get(i).colt.setName(players.get(i).name);
   	  	playFrame.getLayeredPane().add(players.get(i).colt,JLayeredPane.DEFAULT_LAYER,0);
   		}
+  		initMenu();
   	}
 
 	//ボタンを押した時の操作
@@ -1906,6 +1892,7 @@ public class Window implements ActionListener{
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}
+			reload();
 			printMoveButton();
 		}else if(cmd.equals("左")) {
 			moveMaps(130,0);
@@ -1917,6 +1904,7 @@ public class Window implements ActionListener{
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}
+			reload();
 			printMoveButton();
 		}else if(cmd.equals("上")) {
 			moveMaps(0,130);
@@ -1928,6 +1916,7 @@ public class Window implements ActionListener{
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}
+			reload();
 			printMoveButton();
 		}else if(cmd.equals("下")) {
 			moveMaps(0,-130);
@@ -1939,6 +1928,7 @@ public class Window implements ActionListener{
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}
+			reload();
 			printMoveButton();
 		}else if(cmd.equals("→") || cmd.equals("←") || cmd.equals("↑") || cmd.equals("↓")) {
 			moveMaps(cmd);
