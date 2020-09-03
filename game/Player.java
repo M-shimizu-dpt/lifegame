@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import javax.swing.JLabel;
 
 public class Player {
-	public String name;//名前
-	public int money;//所持金
-	public int move;//進めるマス
-	public Buff buff;//一定期間の持続効果
-	public ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
-	public Coordinates nowMass;//現在地
-	public int shortest;//目的地までの最短距離(最短距離を求めるアルゴリズムを考える必要がある)
-	public JLabel colt;//プレイヤーの駒
-	public ArrayList<Property> propertys;//プレイヤーが保有している物件情報
+	private String name;//名前
+	private int money;//所持金
+	private int move;//進めるマス
+	private Buff buff;//一定期間の持続効果
+	private ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
+	private Coordinates nowMass;//現在地
+	private JLabel colt;//プレイヤーの駒
+	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
 
 	public Player(String name,int money) {
 		this.money=0;
@@ -42,12 +41,12 @@ public class Player {
 
 	public void sellCard(Card card) {
 		this.removeCard(card);
-		this.addMoney(card.sellPrice);
+		this.addMoney(card.getSellPrice());
 	}
 
 	public void buyCard(Card card) {
 		this.addCard(card);
-		this.addMoney(-card.buyPrice);
+		this.addMoney(-card.getBuyPrice());
 	}
 
 	public void removeCard(Card card) {
@@ -72,6 +71,42 @@ public class Player {
 
 	public void addMoney(int money) {
 		this.money += money;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getMoney() {
+		return this.money;
+	}
+
+	public int getMove() {
+		return this.move;
+	}
+
+	public Buff getBuff() {
+		return this.buff;
+	}
+
+	public ArrayList<Card> getCards(){
+		return this.cards;
+	}
+
+	public Coordinates getNowMass() {
+		return this.nowMass;
+	}
+
+	public void setColt(JLabel colt) {
+		this.colt = colt;
+	}
+
+	public JLabel getColt() {
+		return this.colt;
+	}
+
+	public ArrayList<Property> getPropertys() {
+		return this.propertys;
 	}
 }
 

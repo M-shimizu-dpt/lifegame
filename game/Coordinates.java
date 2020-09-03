@@ -3,9 +3,9 @@ package lifegame.game;
 import java.util.ArrayList;
 
 public class Coordinates {
-	public int x;
-	public int y;
-	public ArrayList<Coordinates> links = new ArrayList<Coordinates>();
+	private int x;
+	private int y;
+	private ArrayList<Coordinates> links = new ArrayList<Coordinates>();
 
 	public Coordinates(int x,int y) {
 		this.x=x;
@@ -13,6 +13,14 @@ public class Coordinates {
 	}
 	public Coordinates() {
 
+	}
+
+	public int getX() {
+		return this.x;
+	}
+
+	public int getY() {
+		return this.y;
 	}
 
 	public void addLinks(Coordinates coor) {

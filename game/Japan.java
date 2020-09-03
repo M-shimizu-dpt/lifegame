@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Japan {
-	Map<Coordinates,String> prefectureMapping = new HashMap<Coordinates,String>();//座標、駅名
-	ArrayList<Property> property = new ArrayList<Property>();//物件情報
-	Map<String,ArrayList<Property>> prefectureInfo = new HashMap<String,ArrayList<Property>>();//駅名、駅の物件
-	ArrayList<Coordinates> prefectures = new ArrayList<Coordinates>();//駅
-	ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マス
-	ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マス
-	ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マス
-	ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋
-	Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
-	Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
+	public Map<Coordinates,String> prefectureMapping = new HashMap<Coordinates,String>();//座標、駅名
+	public ArrayList<Property> property = new ArrayList<Property>();//物件情報
+	public Map<String,ArrayList<Property>> prefectureInfo = new HashMap<String,ArrayList<Property>>();//駅名、駅の物件
+	public ArrayList<Coordinates> prefectures = new ArrayList<Coordinates>();//駅
+	public ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マス
+	public ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マス
+	public ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マス
+	public ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋
+	public Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
+	public Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
 	public int goal;//目的地の要素番号
 
 	//1マス10
@@ -829,143 +829,143 @@ public class Japan {
 		for(Coordinates from : getAllCoordinates()) {
 			for(Coordinates to : getAllCoordinates()) {
 				//if(from.contains(to))continue;
-				int x = from.x-to.x;
-				int y = from.y-to.y;
+				int x = from.getX()-to.getX();
+				int y = from.getY()-to.getY();
 				if(!((x>=-2 && x<=2) && (y>=-2 && y<=2)))continue;//処理数を減らす
-				if(prefectureContains(from.x,from.y)) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.x,from.y))).get(0))) {
+				if(prefectureContains(from.getX(),from.getY())) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(0))) {
 						if(x==2) {
-							if(!contains(from.x-1,from.y)) {
-								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()-1,from.getY())) {
+								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.x+1,from.y)) {
-								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()+1,from.getY())) {
+								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.x,from.y-1)) {
-								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()-1)) {
+								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.x,from.y+1)) {
-								prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()+1)) {
+								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
 							}
 						}else {
-							prefectures.get(getIndexOfPrefecture(from.x,from.y)).addLinks(to);
+							prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
 						}
 					}
-					railMapping.put(prefectures.get(getIndexOfPrefecture(from.x,from.y)),prefectures.get(getIndexOfPrefecture(from.x,from.y)).links);
+					railMapping.put(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())),prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).getLinks());
 				}
-				if(blueContains(from.x,from.y)) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.x,from.y))).get(0))) {
+				if(blueContains(from.getX(),from.getY())) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(0))) {
 						if(x==2) {
-							if(!contains(from.x-1,from.y)) {
-								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()-1,from.getY())) {
+								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.x+1,from.y)) {
-								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()+1,from.getY())) {
+								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.x,from.y-1)) {
-								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()-1)) {
+								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.x,from.y+1)) {
-								blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()+1)) {
+								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
 							}
 						}else {
-							blue.get(getIndexOfBlue(from.x,from.y)).addLinks(to);
+							blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
 						}
 					}
-					railMapping.put(blue.get(getIndexOfBlue(from.x,from.y)),blue.get(getIndexOfBlue(from.x,from.y)).links);
+					railMapping.put(blue.get(getIndexOfBlue(from.getX(),from.getY())),blue.get(getIndexOfBlue(from.getX(),from.getY())).getLinks());
 				}
-				if(redContains(from.x,from.y)) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.x,from.y))).get(0))) {
+				if(redContains(from.getX(),from.getY())) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(0))) {
 						if(x==2) {
-							if(!contains(from.x-1,from.y)) {
-								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()-1,from.getY())) {
+								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.x+1,from.y)) {
-								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()+1,from.getY())) {
+								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.x,from.y-1)) {
-								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()-1)) {
+								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.x,from.y+1)) {
-								red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()+1)) {
+								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
 							}
 						}else {
-							red.get(getIndexOfRed(from.x,from.y)).addLinks(to);
+							red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
 						}
 					}
-					railMapping.put(red.get(getIndexOfRed(from.x,from.y)),red.get(getIndexOfRed(from.x,from.y)).links);
+					railMapping.put(red.get(getIndexOfRed(from.getX(),from.getY())),red.get(getIndexOfRed(from.getX(),from.getY())).getLinks());
 				}
-				if(yellowContains(from.x,from.y)) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.x,from.y))).get(0))) {
+				if(yellowContains(from.getX(),from.getY())) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(0))) {
 						if(x==2) {
-							if(!contains(from.x-1,from.y)) {
-								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()-1,from.getY())) {
+								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.x+1,from.y)) {
-								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()+1,from.getY())) {
+								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.x,from.y-1)) {
-								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()-1)) {
+								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.x,from.y+1)) {
-								yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()+1)) {
+								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
 							}
 						}else {
-							yellow.get(getIndexOfYellow(from.x,from.y)).addLinks(to);
+							yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
 						}
 					}
-					railMapping.put(yellow.get(getIndexOfYellow(from.x,from.y)),yellow.get(getIndexOfYellow(from.x,from.y)).links);
+					railMapping.put(yellow.get(getIndexOfYellow(from.getX(),from.getY())),yellow.get(getIndexOfYellow(from.getX(),from.getY())).getLinks());
 				}
-				if(shopContains(from.x,from.y)) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.x,from.y))).get(0))) {
+				if(shopContains(from.getX(),from.getY())) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(0))) {
 						if(x==2) {
-							if(!contains(from.x-1,from.y)) {
-								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()-1,from.getY())) {
+								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.x+1,from.y)) {
-								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX()+1,from.getY())) {
+								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.x,from.y-1)) {
-								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()-1)) {
+								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.x,from.y+1)) {
-								shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							if(!contains(from.getX(),from.getY()+1)) {
+								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
 							}
 						}else {
-							shop.get(getIndexOfShop(from.x,from.y)).addLinks(to);
+							shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
 						}
 					}
-					railMapping.put(shop.get(getIndexOfShop(from.x,from.y)),shop.get(getIndexOfShop(from.x,from.y)).links);
+					railMapping.put(shop.get(getIndexOfShop(from.getX(),from.getY())),shop.get(getIndexOfShop(from.getX(),from.getY())).getLinks());
 				}
 			}
 		}
@@ -986,7 +986,7 @@ public class Japan {
 	public synchronized Boolean contains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:getAllCoordinates()) {
-			if(coor.x==x && coor.y==y) {
+			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
 		}
@@ -997,7 +997,7 @@ public class Japan {
 	public Boolean prefectureContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:prefectures) {
-			if(coor.x==x && coor.y==y) {
+			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
 		}
@@ -1007,7 +1007,7 @@ public class Japan {
 	public Boolean blueContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:blue) {
-			if(coor.x==x && coor.y==y) {
+			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
 		}
@@ -1017,7 +1017,7 @@ public class Japan {
 	public Boolean redContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:red) {
-			if(coor.x==x && coor.y==y) {
+			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
 		}
@@ -1027,7 +1027,7 @@ public class Japan {
 	public Boolean yellowContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:yellow) {
-			if(coor.x==x && coor.y==y) {
+			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
 		}
@@ -1037,7 +1037,7 @@ public class Japan {
 	public Boolean shopContains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:shop) {
-			if(coor.x==x && coor.y==y) {
+			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
 		}
@@ -1092,7 +1092,7 @@ public class Japan {
 	//指定の座標の駅の配列番号を取得
 	public int getIndexOfPrefecture(int x,int y){
 		for(int list=0;list<this.prefectures.size();list++) {
-			if(this.prefectures.get(list).x == x && this.prefectures.get(list).y == y) {//駅の座標が来たら
+			if(this.prefectures.get(list).getX() == x && this.prefectures.get(list).getY() == y) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1102,7 +1102,7 @@ public class Japan {
 	//指定の座標の青マスの配列番号を取得
 	public int getIndexOfBlue(int x,int y){
 		for(int list=0;list<this.blue.size();list++) {
-			if(this.blue.get(list).x == x && this.blue.get(list).y == y) {//駅の座標が来たら
+			if(this.blue.get(list).getX() == x && this.blue.get(list).getY() == y) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1111,7 +1111,7 @@ public class Japan {
 	//指定の座標の赤マスの配列番号を取得
 	public int getIndexOfRed(int x,int y){
 		for(int list=0;list<this.red.size();list++) {
-			if(this.red.get(list).x == x && this.red.get(list).y == y) {//駅の座標が来たら
+			if(this.red.get(list).getX() == x && this.red.get(list).getY() == y) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1120,7 +1120,7 @@ public class Japan {
 	//指定の座標の黄マスの配列番号を取得
 	public int getIndexOfYellow(int x,int y){
 		for(int list=0;list<this.yellow.size();list++) {
-			if(this.yellow.get(list).x == x && this.yellow.get(list).y == y) {//駅の座標が来たら
+			if(this.yellow.get(list).getX() == x && this.yellow.get(list).getY() == y) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1129,7 +1129,7 @@ public class Japan {
 	//指定の座標の店マスの配列番号を取得
 	public int getIndexOfShop(int x,int y){
 		for(int list=0;list<this.shop.size();list++) {
-			if(this.shop.get(list).x == x && this.shop.get(list).y == y) {//駅の座標が来たら
+			if(this.shop.get(list).getX() == x && this.shop.get(list).getY() == y) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1147,27 +1147,27 @@ public class Japan {
 	//指定の座標の移動可能方向を取得（変更すべき）
 	public ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<prefectures.size();list++) {
-			if(prefectures.get(list).x == x/size && prefectures.get(list).y == y/size) {//駅の座標が来たら
+			if(prefectures.get(list).getX() == x/size && prefectures.get(list).getY() == y/size) {//駅の座標が来たら
 				return railBoolMapping.get(prefectures.get(list));
 			}
 		}
 		for(int list=0;list<blue.size();list++) {
-			if(blue.get(list).x == x/size && blue.get(list).y == y/size) {
+			if(blue.get(list).getX() == x/size && blue.get(list).getY() == y/size) {
 				return railBoolMapping.get(blue.get(list));
 			}
 		}
 		for(int list=0;list<red.size();list++) {
-			if(red.get(list).x == x/size && red.get(list).y == y/size) {
+			if(red.get(list).getX() == x/size && red.get(list).getY() == y/size) {
 				return railBoolMapping.get(red.get(list));
 			}
 		}
 		for(int list=0;list<yellow.size();list++) {
-			if(yellow.get(list).x == x/size && yellow.get(list).y == y/size) {
+			if(yellow.get(list).getX() == x/size && yellow.get(list).getY() == y/size) {
 				return railBoolMapping.get(yellow.get(list));
 			}
 		}
 		for(int list=0;list<shop.size();list++) {
-			if(shop.get(list).x == x/size && shop.get(list).y == y/size) {
+			if(shop.get(list).getX() == x/size && shop.get(list).getY() == y/size) {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
@@ -1218,8 +1218,7 @@ class MultiThread implements Runnable{
 		boolean end;
 		boolean setMassFlag;
 		int x,y;
-		int goalX=window.japan.prefectures.get(window.japan.goal).x;
-		int goalY=window.japan.prefectures.get(window.japan.goal).y;
+		Coordinates goal = new Coordinates(window.japan.prefectures.get(window.japan.goal).getX(),window.japan.prefectures.get(window.japan.goal).getY());
 		while(true) {
 			x=0;y=0;
 			setMassFlag=false;
@@ -1249,14 +1248,14 @@ class MultiThread implements Runnable{
 			// →1インスタンス内の複数のスレッドが同時にアクセスしようとした場合にロックが可能なので
 			//	 Thread型のインスタンスを1つに絞りたい（インスタンスを複数作成している為）
 			synchronized(MultiThread.lock1) {
-				list = window.japan.getMovePossibles(this.nowMass.x,this.nowMass.y);
+				list = window.japan.getMovePossibles(this.nowMass.getX(),this.nowMass.getY());
 			}
 			if(list==null) {
 				//System.out.println("list_null");
 				break;
 			}
-			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
-			if((goalX==this.nowMass.x && goalY==this.nowMass.y)){
+			moveTrajectory.add(new Coordinates(nowMass.getX(),nowMass.getY()));
+			if((goal.getX()==this.nowMass.getX() && goal.getY()==this.nowMass.getY())){
 				goal();
 				//System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
 				break;
@@ -1264,16 +1263,16 @@ class MultiThread implements Runnable{
 			for(Coordinates coor:list) {
 				boolean conti=false;
 				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
-					int vx=coor.x;
-					int vy=coor.y;
+					int vx=coor.getX();
+					int vy=coor.getY();
 					synchronized(MultiThread.lock4) {
 						if(!window.japan.contains(vx,vy)) {
 							vx*=2;
 							vy*=2;
 						}
 					}
-					if((moveTrajectory.get(j).x == vx) &&
-							(moveTrajectory.get(j).y == vy)) {//同じ場合、1つ前のmoveTrajectoryを削除
+					if((moveTrajectory.get(j).getX() == vx) &&
+							(moveTrajectory.get(j).getY() == vy)) {//同じ場合、1つ前のmoveTrajectoryを削除
 						conti=true;
 						break;
 					}
@@ -1282,10 +1281,10 @@ class MultiThread implements Runnable{
 					continue;
 				}
 				//2マス移動(競合の可能性)
-				int vx = coor.x;
-				int vy = coor.y;
+				int vx = coor.getX();
+				int vy = coor.getY();
 				synchronized(MultiThread.lock4) {
-					if(!window.japan.contains(coor.x,coor.y)) {
+					if(!window.japan.contains(coor.getX(),coor.getY())) {
 						vx*=2;
 						vy*=2;
 					}
@@ -1322,8 +1321,7 @@ class MultiThread implements Runnable{
 	}
 
 	public void setMass(int x,int y) {
-		this.nowMass.x=x;
-		this.nowMass.y=y;
+		this.nowMass.setValue(x,y);
 	}
 
 	private void threadCopy(MultiThread original) {
@@ -1520,10 +1518,10 @@ class StationSearchThread implements Runnable{
 		for(int i=0;i<4;i++) {
 			vList.add(new Coordinates());
 		}
-		vList.get(0).x=-1;vList.get(0).y=0;
-		vList.get(1).x=1;vList.get(1).y=0;
-		vList.get(2).x=0;vList.get(2).y=-1;
-		vList.get(3).x=0;vList.get(3).y=1;
+		vList.get(0).setValue(-1,0);
+		vList.get(1).setValue(1,0);
+		vList.get(2).setValue(0,-1);
+		vList.get(3).setValue(0,1);
 
 		int i;
 		boolean flag;
@@ -1551,7 +1549,7 @@ class StationSearchThread implements Runnable{
 				//System.out.println("time out");
 				break;
 			}
-			if(window.japan.prefectureContains(this.nowMass.x,this.nowMass.y)) {
+			if(window.japan.prefectureContains(this.nowMass.getX(),this.nowMass.getY())) {
 				//System.out.println("goal");
 				setResult();
 				break;
@@ -1565,28 +1563,28 @@ class StationSearchThread implements Runnable{
 			// →1インスタンス内の複数のスレッドが同時にアクセスしようとした場合にロックが可能なので
 			//	 Thread型のインスタンスを1つに絞りたい（インスタンスを複数作成している為）
 			synchronized(StationSearchThread.lock1) {
-				list = window.japan.getVector(this.nowMass.x,this.nowMass.y,1);
+				list = window.japan.getVector(this.nowMass.getX(),this.nowMass.getY(),1);
 			}
 			if(list==null) {
 				//System.out.println("list_null");
 				break;
 			}
-			moveTrajectory.add(new Coordinates(nowMass.x,nowMass.y));
+			moveTrajectory.add(new Coordinates(nowMass.getX(),nowMass.getY()));
 
 			for(Boolean bool:list) {
 				if(bool) {
 					boolean conti=false;
 					for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
-						int vx=vList.get(i).x;
-						int vy=vList.get(i).y;
+						int vx=vList.get(i).getX();
+						int vy=vList.get(i).getY();
 						synchronized(StationSearchThread.lock4) {
-							if(!window.japan.contains(this.nowMass.x+vx,this.nowMass.y+vy)) {
+							if(!window.japan.contains(this.nowMass.getX()+vx,this.nowMass.getY()+vy)) {
 								vx*=2;
 								vy*=2;
 							}
 						}
-						if((moveTrajectory.get(j).x == this.nowMass.x+vx) &&
-								(moveTrajectory.get(j).y == this.nowMass.y+vy)) {//同じ場合、1つ前のmoveTrajectoryを削除
+						if((moveTrajectory.get(j).getX() == this.nowMass.getX()+vx) &&
+								(moveTrajectory.get(j).getY() == this.nowMass.getY()+vy)) {//同じ場合、1つ前のmoveTrajectoryを削除
 							i++;
 							conti=true;
 							break;
@@ -1597,9 +1595,8 @@ class StationSearchThread implements Runnable{
 					}
 					//2マス移動(競合の可能性)
 					synchronized(StationSearchThread.lock4) {
-						if(!window.japan.contains(this.nowMass.x+vList.get(i).x,this.nowMass.y+vList.get(i).y)) {
-							vList.get(i).x*=2;
-							vList.get(i).y*=2;
+						if(!window.japan.contains(this.nowMass.getX()+vList.get(i).getX(),this.nowMass.getY()+vList.get(i).getY())) {
+							vList.get(i).setValue(vList.get(i).getX()*2,vList.get(i).getY()*2);
 						}
 					}
 					if(flag) {
@@ -1607,13 +1604,13 @@ class StationSearchThread implements Runnable{
 						StationSearchThread thread = new StationSearchThread(window);
 						synchronized(StationSearchThread.lock3) {
 							thread.threadCopy(this);
-							thread.setMass(this.nowMass.x+vList.get(i).x, this.nowMass.y+vList.get(i).y);//移動
+							thread.setMass(this.nowMass.getX()+vList.get(i).getX(), this.nowMass.getY()+vList.get(i).getY());//移動
 						}
 						Thread t = new Thread(thread);
 						t.start();
 					}else {
-						x=this.nowMass.x+vList.get(i).x;
-						y=this.nowMass.y+vList.get(i).y;
+						x=this.nowMass.getX()+vList.get(i).getX();
+						y=this.nowMass.getY()+vList.get(i).getY();
 						setMassFlag=true;
 						flag=true;
 					}
@@ -1636,8 +1633,7 @@ class StationSearchThread implements Runnable{
 	}
 
 	public void setMass(int x,int y) {
-		this.nowMass.x=x;
-		this.nowMass.y=y;
+		this.nowMass.setValue(x,y);
 	}
 
 	private void threadCopy(StationSearchThread original) {
