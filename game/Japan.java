@@ -653,6 +653,7 @@ public class Japan {
 		blue.add(new Coordinates(1,5));
 		blue.add(new Coordinates(11,1));
 		blue.add(new Coordinates(12,1));
+		blue.add(new Coordinates(14,3));
 
 
 		railBoolMapping.put(blue.get(0),getBoolList(false,true,true,true));
@@ -676,7 +677,8 @@ public class Japan {
 		railBoolMapping.put(blue.get(18),getBoolList(true,false,true,false));
 		railBoolMapping.put(blue.get(19),getBoolList(true,true,false,true));
 		railBoolMapping.put(blue.get(20),getBoolList(false,false,true,true));
-		railBoolMapping.put(blue.get(21),getBoolList(false,true,true,false));
+		railBoolMapping.put(blue.get(21),getBoolList(false,true,true,true));
+		railBoolMapping.put(blue.get(22),getBoolList(false,true,true,false));
 
 
 
@@ -713,11 +715,12 @@ public class Japan {
 		red.add(new Coordinates(2,3));
 		red.add(new Coordinates(2,4));
 		red.add(new Coordinates(10,1));
+		red.add(new Coordinates(14,4));
 
 		railBoolMapping.put(red.get(0),getBoolList(true,true,false,true));
 		railBoolMapping.put(red.get(1),getBoolList(true,false,true,false));
 		railBoolMapping.put(red.get(2),getBoolList(false,false,true,true));
-		railBoolMapping.put(red.get(3),getBoolList(false,true,true,false));
+		railBoolMapping.put(red.get(3),getBoolList(true,true,true,false));
 		railBoolMapping.put(red.get(4),getBoolList(true,true,false,true));
 		railBoolMapping.put(red.get(5),getBoolList(false,false,true,true));
 		railBoolMapping.put(red.get(6),getBoolList(true,false,false,true));
@@ -746,6 +749,7 @@ public class Japan {
 		railBoolMapping.put(red.get(29),getBoolList(true,false,true,true));
 		railBoolMapping.put(red.get(30),getBoolList(false,true,false,true));
 		railBoolMapping.put(red.get(31),getBoolList(false,false,true,true));
+		railBoolMapping.put(red.get(32),getBoolList(true,true,false,false));
 
 
 
@@ -793,7 +797,7 @@ public class Japan {
 		railBoolMapping.put(yellow.get(11),getBoolList(true,false,true,false));
 		railBoolMapping.put(yellow.get(12),getBoolList(false,false,true,true));
 		railBoolMapping.put(yellow.get(13),getBoolList(false,false,true,true));//8,1
-		railBoolMapping.put(yellow.get(14),getBoolList(false,true,true,false));
+		railBoolMapping.put(yellow.get(14),getBoolList(false,true,true,true));
 		railBoolMapping.put(yellow.get(15),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(16),getBoolList(false,false,true,true));//9,1
 		railBoolMapping.put(yellow.get(17),getBoolList(false,true,true,true));
@@ -803,13 +807,23 @@ public class Japan {
 		railBoolMapping.put(yellow.get(21),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(22),getBoolList(true,true,true,true));//10,10
 		railBoolMapping.put(yellow.get(23),getBoolList(false,true,true,true));
-		railBoolMapping.put(yellow.get(24),getBoolList(false,true,false,false));
+		railBoolMapping.put(yellow.get(24),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(25),getBoolList(true,true,true,false));
 		railBoolMapping.put(yellow.get(26),getBoolList(false,false,false,true));
 		railBoolMapping.put(yellow.get(27),getBoolList(false,true,false,true));
 
 		//店
-		shop.add(new Coordinates());
+		shop.add(new Coordinates(13,1));
+		shop.add(new Coordinates(9,3));
+		shop.add(new Coordinates(14,5));
+		shop.add(new Coordinates(7,16));
+		shop.add(new Coordinates(3,6));
+
+		railBoolMapping.put(shop.get(0),getBoolList(false,false,true,false));
+		railBoolMapping.put(shop.get(1),getBoolList(false,false,true,false));
+		railBoolMapping.put(shop.get(2),getBoolList(true,true,false,false));
+		railBoolMapping.put(shop.get(3),getBoolList(false,false,true,true));
+		railBoolMapping.put(shop.get(4),getBoolList(false,true,false,false));
 
 		//リンク作成
 		for(Coordinates from : getAllCoordinates()) {
@@ -954,9 +968,6 @@ public class Japan {
 					railMapping.put(shop.get(getIndexOfShop(from.x,from.y)),shop.get(getIndexOfShop(from.x,from.y)).links);
 				}
 			}
-		}
-		for(Coordinates coor : prefectures.get(getIndexOfPrefecture(6,11)).links) {
-			System.out.println("x:"+coor.x+"   y:"+coor.y);
 		}
 	}
 
@@ -1153,6 +1164,11 @@ public class Japan {
 		for(int list=0;list<yellow.size();list++) {
 			if(yellow.get(list).x == x/size && yellow.get(list).y == y/size) {
 				return railBoolMapping.get(yellow.get(list));
+			}
+		}
+		for(int list=0;list<shop.size();list++) {
+			if(shop.get(list).x == x/size && shop.get(list).y == y/size) {
+				return railBoolMapping.get(shop.get(list));
 			}
 		}
 		return null;

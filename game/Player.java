@@ -40,6 +40,20 @@ public class Player {
 		cards.add(card);
 	}
 
+	public void sellCard(Card card) {
+		this.removeCard(card);
+		this.addMoney(card.sellPrice);
+	}
+
+	public void buyCard(Card card) {
+		this.addCard(card);
+		this.addMoney(-card.buyPrice);
+	}
+
+	public void removeCard(Card card) {
+		cards.remove(card);
+	}
+
 	public void setMass(int x,int y) {
 		this.nowMass.setValue(x, y);
 	}
