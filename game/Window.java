@@ -29,8 +29,6 @@
  *
  *最寄りのカードショップの探索機構を作成する。
  *
- *独占解除処理を実装する
- *
  *・CPUがすること
  *1)サイコロを回す
  *		→カードを使わない場合サイコロを回す
@@ -113,7 +111,7 @@ public class Window implements ActionListener{
 	public static int count;//目的のマスまでの最短距離
 	public static long time;//マルチスレッド開始からの経過時間
 	private Map<Integer,ArrayList<ArrayList<Coordinates>>> trajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//移動の軌跡
-	private ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
+	public ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
 	public Window(int endYear){
@@ -239,7 +237,7 @@ public class Window implements ActionListener{
     }
 
 	//最寄り駅を探索
-	private void searchNearestStation() {
+	public void searchNearestStation() {
 		Window.time = System.currentTimeMillis();
 		Window.count=100;
 		StationSearchThread.savecount=0;
@@ -418,7 +416,7 @@ public class Window implements ActionListener{
 	}
 
 	//所持カードが最大を超えた場合、捨てるカードを選択
-	private void cardFull() {
+	public void cardFull() {
 		errorFrame.setSize(400,500);
 		errorFrame.setLocationRelativeTo(null);
 		errorFrame.setLayout(null);
@@ -1142,7 +1140,7 @@ public class Window implements ActionListener{
 	}
 
 	//カードの複製を行う画面を表示
-	private void printDubbing() {
+	public void printDubbing() {
 		JLayeredPane dubbing = dubbingCardFrame.getLayeredPane();
 		dubbingCardFrame.setSize(700,500);
 		dubbingCardFrame.setLayout(null);
@@ -1171,7 +1169,6 @@ public class Window implements ActionListener{
 	private void closeDubbing() {
 		dubbingCardFrame.setVisible(false);
 		playFrame.setVisible(true);
-		turnEndFlag=true;
 	}
 
 	//会社情報を表示
@@ -1329,7 +1326,7 @@ public class Window implements ActionListener{
 	}
 
 	//プレイマップの画面遷移処理
-	private void moveMaps(int player,Coordinates to) {
+	public void moveMaps(int player,Coordinates to) {
 		JLayeredPane play = playFrame.getLayeredPane();
 		int x=(to.getX()-players.get(player).getNowMass().getX())*130;
 		int y=(to.getY()-players.get(player).getNowMass().getY())*130;
@@ -1749,7 +1746,7 @@ public class Window implements ActionListener{
 		return true;
 	}
 
-	//独占処理
+	//独占切り替え処理
 	private void monopoly(ArrayList<Property> list) {
 		for(int i=0;i<list.size();i++) {
 			list.get(i).monoChange();
@@ -1821,7 +1818,7 @@ public class Window implements ActionListener{
   		setGoalColor();
   		Card.init(this);
   		for(int i=0;i<4;i++) {
-  			players.put(i,new Player("player"+(i+1),1000));
+  			players.put(i,new Player("player"+(i+1),1000,i));
   			players.get(i).setColt(createText(401,301,20,20,10,players.get(i).getName()));
   	  		players.get(i).getColt().setBackground(Color.BLACK);
   	  		players.get(i).getColt().setName(players.get(i).getName());
@@ -1893,44 +1890,16 @@ public class Window implements ActionListener{
 			printBuyShop();
 		}else if(cmd.equals("カードを売る")) {
 			printSellShop();
-		}else if(cmd.equals("右")) {
-			moveMaps(-130,0);
-			searchShortestRoute();
-			Thread thread = new Thread(new WaitThread(2));
-			thread.start();
-			try {
-				thread.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
+		}else if(cmd.equals("右") || cmd.equals("左") || cmd.equals("上")  || cmd.equals("下")) {
+			if(cmd.equals("右")) {
+				moveMaps(-130,0);
+			}else if(cmd.equals("左")) {
+				moveMaps(130,0);
+			}else if(cmd.equals("上")) {
+				moveMaps(0,130);
+			}else if(cmd.equals("下")) {
+				moveMaps(0,-130);
 			}
-			reload();
-			printMoveButton();
-		}else if(cmd.equals("左")) {
-			moveMaps(130,0);
-			searchShortestRoute();
-			Thread thread = new Thread(new WaitThread(2));
-			thread.start();
-			try {
-				thread.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			reload();
-			printMoveButton();
-		}else if(cmd.equals("上")) {
-			moveMaps(0,130);
-			searchShortestRoute();
-			Thread thread = new Thread(new WaitThread(2));
-			thread.start();
-			try {
-				thread.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			reload();
-			printMoveButton();
-		}else if(cmd.equals("下")) {
-			moveMaps(0,-130);
 			searchShortestRoute();
 			Thread thread = new Thread(new WaitThread(2));
 			thread.start();
@@ -1949,115 +1918,10 @@ public class Window implements ActionListener{
 				printPropertys(cmd);
 			}
 		}
-		String excursion[] = cmd.split("周遊");
-		Random rand = new Random();
+
 		for(int i=0;i<Card.cardList.size();i++) {
 			if(cmd.equals(Card.cardList.get(i).getName())) {//カードを使う
-				//カードの能力を使用
-				if(Card.cardList.get(i).getMoveAbility()!=0) {
-					dice.setNum(Card.cardList.get(i).useAbility());
-				}else if(Card.cardList.get(i).getFixedMoveAbility()!=-1){
-					if(cmd.equals("牛歩カード")) {
-						int enemy;
-						int period;
-						do {
-							enemy = rand.nextInt(4);
-							period = rand.nextInt(5);
-						}while(enemy == turn || period <= 1);
-						players.get(enemy).getBuff().addBuff(Card.cardList.get(i).useAbility(), period);
-						System.out.println(players.get(enemy).getName());
-					}else {
-						dice.setResult(Card.cardList.get(i).useAbility());
-					}
-				}else if(Card.cardList.get(i).getOthersAbility()!=0){
-					Card.usedRandomCard();
-					//誰に影響どんなを与えるのか
-					if(cmd.equals("一頭地を抜くカード")) {
-						int maxMoney=0;
-						for(int player=0;player<4;player++) {
-							if(players.get(player).containsMoney(maxMoney)>0) {
-								maxMoney=players.get(player).getMoney();
-							}
-						}
-						players.get(turn).addMoney(maxMoney);
-					}else if(cmd.equals("起死回生カード")) {
-						if(players.get(turn).containsMoney(0)<0) {
-							players.get(turn).addMoney(-players.get(turn).getMoney());
-						}
-					}else if(cmd.equals("福袋カード")) {
-						int count=0;
-						do {
-							int randcard = rand.nextInt(Card.cardList.size());
-							players.get(turn).addCard(Card.cardList.get(randcard));
-							if(players.get(turn).getCards().size()>8) {
-								cardFull();
-							}
-							count++;
-						}while(rand.nextInt(100)<50 && count<5);
-					}else if(cmd.equals("ダビングカード")) {
-						printDubbing();
-					}else if(cmd.equals("徳政令カード")) {
-						for(int player=0;player<4;player++) {
-							if(players.get(player).containsMoney(0)<0) {
-								players.get(player).addMoney(-players.get(player).getMoney());
-							}
-						}
-					}
-					//players.get(turn).getMoney() += Card.cardList.get(i).useAbility();
-				}else if(Card.cardList.get(i).getRandomMoveAbility()!=0){
-					Card.usedRandomCard();
-					Coordinates coor = new Coordinates();
-					//誰に影響を与えるのか
-					if(cmd.equals("サミットカード")) {
-						coor.setValue(players.get(turn).getNowMass());
-						for(int roop=0;roop<4;roop++) {
-							if(roop==turn)continue;
-							moveMaps(roop,coor);
-						}
-					}else if(cmd.equals("北へ！カード")) {
-						do {
-							coor = Card.cardList.get(i).useRandomAbility();
-						}while(players.get(turn).getNowMass().getY()<coor.getY());
-					}else if(cmd.equals("ピッタリカード")){
-						coor.setValue(players.get(rand.nextInt(4)).getNowMass());
-					}else if(cmd.equals("最寄り駅カード")){
-						searchNearestStation();
-						Thread thread = new Thread(new WaitThread(2));
-						thread.start();
-						try {
-							thread.join();
-						}catch(InterruptedException e) {
-							e.printStackTrace();
-						}
-						coor.setValue(nearestStationList.get(rand.nextInt(nearestStationList.size())));
-					}else {
-						coor = Card.cardList.get(i).useRandomAbility();
-					}
-					moveMaps(turn,coor);
-					try {
-						Thread.sleep(100);
-					}catch(InterruptedException e) {
-						e.printStackTrace();
-					}
-					players.get(turn).getNowMass().setValue(coor);
-				}
-				//周遊カードの場合は確率でカードを破壊
-				if(excursion.length==2) {
-					Card.cardList.get(i).setCount(Card.cardList.get(i).getCount()+1);
-					if(rand.nextInt(100)<30 || Card.cardList.get(i).getCount()>5) {
-						players.get(turn).getCards().remove(Card.cardList.get(i));
-					}
-				}else {
-					players.get(turn).getCards().remove(Card.cardList.get(i));
-				}
-
-				if(cmd.equals("足踏みカード") || cmd.equals("1進めるカード") || cmd.equals("2進めるカード")
-						|| cmd.equals("3進めるカード") || cmd.equals("4進めるカード") || cmd.equals("5進めるカード") || cmd.equals("6進めるカード")) {
-					Card.usedFixedCard();
-				}
-				if(!cmd.equals("徳政令カード")) {
-					Card.usedCard();//カードを使ったことにする
-				}
+				Card.cardList.get(i).useAbility(this,dice,players,turn);
 				ableMenu();
 				closeCard();
 				break;
@@ -2072,6 +1936,7 @@ public class Window implements ActionListener{
 				break;
 			}
 		}
+
 		if(Card.usedRandomCard || Card.usedOthersCard) {
 			Card.resetUsedCard();
 			Card.resetUsedFixedCard();
@@ -2082,6 +1947,7 @@ public class Window implements ActionListener{
 				turnEndFlag=true;
 			}
 		}
+
 		String pre[] = cmd.split(":");
 		if(pre.length==2) {
 			for(Card card:players.get(turn).getCards()) {
