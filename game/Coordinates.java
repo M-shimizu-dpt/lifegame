@@ -11,6 +11,13 @@ public class Coordinates {
 		this.x=x;
 		this.y=y;
 	}
+
+	public Coordinates(Coordinates coor) {
+		this.x=coor.getX();
+		this.y=coor.getY();
+		this.links.addAll(coor.getLinks());
+	}
+
 	public Coordinates() {
 
 	}
