@@ -993,6 +993,17 @@ public class Japan {
 		return flag;
 	}
 
+	//指定の座標にマスが存在するか
+	public synchronized Boolean contains(Coordinates coordinates) {
+		Boolean flag=false;
+		for(Coordinates coor:getAllCoordinates()) {
+			if(coor.contains(coordinates)) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+
 	//指定の座標に駅が存在するか
 	public Boolean prefectureContains(int x,int y) {
 		Boolean flag=false;
@@ -1003,6 +1014,18 @@ public class Japan {
 		}
 		return flag;
 	}
+
+	//指定の座標に駅が存在するか
+	public Boolean prefectureContains(Coordinates coordinates) {
+		Boolean flag=false;
+		for(Coordinates coor:prefectures) {
+			if(coor.contains(coordinates)) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+
 	//指定のに青マスが存在するか
 	public Boolean blueContains(int x,int y) {
 		Boolean flag=false;
@@ -1013,6 +1036,18 @@ public class Japan {
 		}
 		return flag;
 	}
+
+	//指定のに青マスが存在するか
+	public Boolean blueContains(Coordinates coordinates) {
+		Boolean flag=false;
+		for(Coordinates coor:blue) {
+			if(coor.contains(coordinates)) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+
 	//指定の座標に赤マスが存在するか
 	public Boolean redContains(int x,int y) {
 		Boolean flag=false;
@@ -1023,6 +1058,18 @@ public class Japan {
 		}
 		return flag;
 	}
+
+	//指定の座標に赤マスが存在するか
+	public Boolean redContains(Coordinates coordinates) {
+		Boolean flag=false;
+		for(Coordinates coor:red) {
+			if(coor.contains(coordinates)) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+
 	//指定の座標に黄マスが存在するか
 	public Boolean yellowContains(int x,int y) {
 		Boolean flag=false;
@@ -1033,6 +1080,18 @@ public class Japan {
 		}
 		return flag;
 	}
+
+	//指定の座標に黄マスが存在するか
+	public Boolean yellowContains(Coordinates coordinates) {
+		Boolean flag=false;
+		for(Coordinates coor:yellow) {
+			if(coor.contains(coordinates)) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+
 	//指定の座標に店マスが存在するか
 	public Boolean shopContains(int x,int y) {
 		Boolean flag=false;
@@ -1043,6 +1102,18 @@ public class Japan {
 		}
 		return flag;
 	}
+
+	//指定の座標に店マスが存在するか
+	public Boolean shopContains(Coordinates coordinates) {
+		Boolean flag=false;
+		for(Coordinates coor:shop) {
+			if(coor.contains(coordinates)) {
+				flag=true;
+			}
+		}
+		return flag;
+	}
+
 	//ゴールマスを設定
 	public void initGoal() {
 		int x=0,y=0;

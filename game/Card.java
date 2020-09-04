@@ -23,10 +23,6 @@ public class Card {
 	public static boolean usedOthersCard;
 	private static Window window;
 
-	public Card() {
-
-	}
-
 	public Card(String name,int buy,int rarity,String cardText) {
 		this.name = name;
 		this.count=0;
@@ -38,6 +34,14 @@ public class Card {
 		this.randomMoveAbility=0;
 		this.othersAbility=0;
 		this.cardText=cardText;
+	}
+
+	public boolean contains(Card card) {
+		return this.name.equals(card.name);
+	}
+
+	public boolean contains(String name) {
+		return this.name.equals(name);
 	}
 
 	public String getName() {
