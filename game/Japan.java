@@ -6,13 +6,14 @@ import java.util.Map;
 
 public class Japan {
 	public Map<Coordinates,String> prefectureMapping = new HashMap<Coordinates,String>();//座標、駅名
-	public ArrayList<Property> property = new ArrayList<Property>();//物件情報
+	public ArrayList<Property> property = new ArrayList<Property>();//物件一覧
 	public Map<String,ArrayList<Property>> prefectureInfo = new HashMap<String,ArrayList<Property>>();//駅名、駅の物件
-	public ArrayList<Coordinates> prefectures = new ArrayList<Coordinates>();//駅
-	public ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マス
-	public ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マス
-	public ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マス
-	public ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋
+	public ArrayList<String> prefectureNameList = new ArrayList<String>();//駅名一覧
+	public ArrayList<Coordinates> prefectures = new ArrayList<Coordinates>();//駅の座標一覧
+	public ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
+	public ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
+	public ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
+	public ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
 	public Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
 	public Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
 	public int goal;//目的地の要素番号
@@ -62,47 +63,51 @@ public class Japan {
 		prefectures.add(new Coordinates(14,13));
 		prefectures.add(new Coordinates(15,13));
 
-		prefectureMapping.put(prefectures.get(0),"赤穂");
-		prefectureMapping.put(prefectures.get(1),"姫路");
-		prefectureMapping.put(prefectures.get(2),"明石");
-		prefectureMapping.put(prefectures.get(3),"淡路島");
-		prefectureMapping.put(prefectures.get(4),"城崎");
-		prefectureMapping.put(prefectures.get(5),"福知山");
-		prefectureMapping.put(prefectures.get(6),"三田");
-		prefectureMapping.put(prefectures.get(7),"神戸");
-		prefectureMapping.put(prefectures.get(8),"吹田");
-		prefectureMapping.put(prefectures.get(9),"出石");
-		prefectureMapping.put(prefectures.get(10),"天保山");
-		prefectureMapping.put(prefectures.get(11),"堺");
-		prefectureMapping.put(prefectures.get(12),"岸和田");
-		prefectureMapping.put(prefectures.get(13),"和歌山");
-		prefectureMapping.put(prefectures.get(14),"御坊");
-		prefectureMapping.put(prefectures.get(15),"白浜");
-		prefectureMapping.put(prefectures.get(16),"大阪");
-		prefectureMapping.put(prefectures.get(17),"なんば");
-		prefectureMapping.put(prefectures.get(18),"天王寺");
-		prefectureMapping.put(prefectures.get(19),"舞鶴");
-		prefectureMapping.put(prefectures.get(20),"北浜");
-		prefectureMapping.put(prefectures.get(21),"京橋");
-		prefectureMapping.put(prefectures.get(22),"鶴橋");
-		prefectureMapping.put(prefectures.get(23),"嵐山");
-		prefectureMapping.put(prefectures.get(24),"門真");
-		prefectureMapping.put(prefectures.get(25),"五條");
-		prefectureMapping.put(prefectures.get(26),"京都");
-		prefectureMapping.put(prefectures.get(27),"橿原");
-		prefectureMapping.put(prefectures.get(28),"祇園");
-		prefectureMapping.put(prefectures.get(29),"奈良");
-		prefectureMapping.put(prefectures.get(30),"新宮");
-		prefectureMapping.put(prefectures.get(31),"大津");
-		prefectureMapping.put(prefectures.get(32),"伊賀");
-		prefectureMapping.put(prefectures.get(33),"長浜");
-		prefectureMapping.put(prefectures.get(34),"彦根");
-		prefectureMapping.put(prefectures.get(35),"近江八幡");
-		prefectureMapping.put(prefectures.get(36),"四日市");
-		prefectureMapping.put(prefectures.get(37),"津");
-		prefectureMapping.put(prefectures.get(38),"松阪");
-		prefectureMapping.put(prefectures.get(39),"伊勢");
-		prefectureMapping.put(prefectures.get(40),"鳥羽");
+		prefectureNameList.add("赤穂");
+		prefectureNameList.add("姫路");
+		prefectureNameList.add("明石");
+		prefectureNameList.add("淡路島");
+		prefectureNameList.add("城崎");
+		prefectureNameList.add("福知山");
+		prefectureNameList.add("三田");
+		prefectureNameList.add("神戸");
+		prefectureNameList.add("吹田");
+		prefectureNameList.add("出石");
+		prefectureNameList.add("天保山");
+		prefectureNameList.add("堺");
+		prefectureNameList.add("岸和田");
+		prefectureNameList.add("和歌山");
+		prefectureNameList.add("御坊");
+		prefectureNameList.add("白浜");
+		prefectureNameList.add("大阪");
+		prefectureNameList.add("なんば");
+		prefectureNameList.add("天王寺");
+		prefectureNameList.add("舞鶴");
+		prefectureNameList.add("北浜");
+		prefectureNameList.add("京橋");
+		prefectureNameList.add("鶴橋");
+		prefectureNameList.add("嵐山");
+		prefectureNameList.add("門真");
+		prefectureNameList.add("五條");
+		prefectureNameList.add("京都");
+		prefectureNameList.add("橿原");
+		prefectureNameList.add("祇園");
+		prefectureNameList.add("奈良");
+		prefectureNameList.add("新宮");
+		prefectureNameList.add("大津");
+		prefectureNameList.add("伊賀");
+		prefectureNameList.add("長浜");
+		prefectureNameList.add("彦根");
+		prefectureNameList.add("近江八幡");
+		prefectureNameList.add("四日市");
+		prefectureNameList.add("津");
+		prefectureNameList.add("松阪");
+		prefectureNameList.add("伊勢");
+		prefectureNameList.add("鳥羽");
+
+		for(int i=0;i<prefectures.size();i++) {
+			prefectureMapping.put(prefectures.get(i),prefectureNameList.get(i));
+		}
 
 		//赤穂
 		property.add(new Property("塩饅頭屋", 1000, 0.5, 0.6, 0.7));
@@ -969,6 +974,14 @@ public class Japan {
 				}
 			}
 		}
+	}
+
+	public ArrayList<Property> getProperty(String name){
+		return prefectureInfo.get(name);
+	}
+
+	public void findPrefecture(Property property) {
+
 	}
 
 	//全てのマス座標を取得

@@ -49,17 +49,17 @@ public class Property {
 		return this.level;
 	}
 
-	public void monoOn() {
-		if(!this.monoflag) {
+	public boolean isMono() {
+		return monoflag;
+	}
+
+	public void monoChange() {
+		if(!isMono()) {
 			for(int i=0;i<this.rate.size();i++) {
 				this.rate.set(i,this.rate.get(i)*2);
 			}
 			this.monoflag=true;
-		}
-	}
-
-	public void monoOff() {
-		if(this.monoflag) {
+		}else {
 			for(int i=0;i<this.rate.size();i++) {
 				this.rate.set(i,this.rate.get(i)/2);
 			}
