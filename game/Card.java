@@ -268,8 +268,10 @@ public class Card {
 	public static void init(Window window) {
 		Card.window=window;
 		resetUsedCard();
+		resetUsedFixedCard();
+		resetUsedRandomCard();
+		resetUsedOthersCard();
 
-/*
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
 		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));
@@ -308,7 +310,7 @@ public class Card {
 		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる",4,0));
 		cardList.add(new Card("起死回生カード",16000,2,"持ち金のマイナスがそのままプラスになる",4,0));
 		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする",4,0));
-*/
+
 
 		//カードがもらえる
 		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5,0));
