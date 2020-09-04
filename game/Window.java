@@ -650,6 +650,13 @@ public class Window implements ActionListener{
 				if(japan.property.get(i).getOwner() != null && !japan.property.get(i).getOwner().equals("")) {
 					text3 = createText(10,210,600,100,20,"誰かの物件が破壊された(" + japan.property.get(i).getOwner() + "の" + japan.property.get(i).getName() + ")");
 					japan.property.get(i).setOwner("");
+					if(isMonopoly(japan.property.get(i))) {
+						for(String preName:japan.prefectureNameList) {
+							if(japan.prefectureInfo.get(preName).contains(japan.property.get(i))) {
+								monopoly(japan.prefectureInfo.get(preName));
+							}
+						}
+					}
 					break;
 				}
 			}
@@ -1718,7 +1725,7 @@ public class Window implements ActionListener{
 		}
 	}
 
-	//独占判定処理
+	//独占判定処理(引数：駅)
 	private boolean isMonopoly(ArrayList<Property> list) {
 		for(Property property:list) {
 			if(!list.get(0).containsOwner(property) || !property.isOwner()){
@@ -1728,17 +1735,24 @@ public class Window implements ActionListener{
 		return true;
 	}
 
-	//独占処理
-	private void monopolyOn(ArrayList<Property> list) {
-		for(int i=0;i<list.size();i++) {
-			list.get(i).monoOn();
+	//独占判定処理(引数：物件)
+	private boolean isMonopoly(Property property) {
+		for(String preName:japan.prefectureNameList) {
+			if(japan.prefectureInfo.get(preName).contains(property)) {
+				for(Property pro:japan.prefectureInfo.get(preName)) {//propertyが属する駅の物件一覧
+					if(!property.containsOwner(pro)) {
+						return false;
+					}
+				}
+			}
 		}
+		return true;
 	}
 
-	//独占解除処理
-	private void monopolyOff(ArrayList<Property> list) {
+	//独占処理
+	private void monopoly(ArrayList<Property> list) {
 		for(int i=0;i<list.size();i++) {
-			list.get(i).monoOff();
+			list.get(i).monoChange();
 		}
 	}
 
@@ -1747,7 +1761,7 @@ public class Window implements ActionListener{
 		if(!japan.prefectureInfo.get(name).get(index).isOwner()) {
 			japan.prefectureInfo.get(name).get(index).buy(players.get(turn),0);
 			if(isMonopoly(japan.prefectureInfo.get(name))) {
-				monopolyOn(japan.prefectureInfo.get(name));
+				monopoly(japan.prefectureInfo.get(name));
 			}
 		}else {
 			japan.prefectureInfo.get(name).get(index).buy(players.get(turn),japan.prefectureInfo.get(name).get(index).getLevel()+1);
@@ -1763,12 +1777,13 @@ public class Window implements ActionListener{
 	//物件売却処理
 	private void sellPropertys(Property property) {
 		property.sell(players.get(turn));
-		/*独占解除処理(未実装)
-		if(!isMonopoly(japan.prefectureInfo.get(name))) {
-			monopolyOff(japan.prefectureInfo.get(name));
+		if(isMonopoly(property)) {
+			for(String preName:japan.prefectureNameList) {
+				if(japan.prefectureInfo.get(preName).contains(property)) {
+					monopoly(japan.prefectureInfo.get(preName));
+				}
+			}
 		}
-		*/
-
 		System.out.println(property.getName()+"を売却");
 		sellPrefectureFrame.setVisible(false);
 		sellPrefectureFrame.removeAll();
