@@ -23,11 +23,27 @@
  *
  *カードが最大所持数を超えた場合ターン終了の関係で正しいプレイヤーのカードが表示されないかもしれない
  *
- *・CPUが出来ること
- *1)
- *2)
- *3)
- *4)
+ *確認ポップアップを作る
+ *
+ *最寄り駅探索で双方向連結マップを使用する
+ *
+ *最寄りのカードショップの探索機構を作成する。
+ *
+ *独占解除処理を実装する
+ *
+ *・CPUがすること
+ *1)サイコロを回す
+ *		→カードを使わない場合サイコロを回す
+ *2)適切なタイミングでカードを使う
+ *		→移動系のカードは目的地までの距離で決める
+ *3)CPUのレベルに応じて確率を操作する？
+ *4)借金時に適切に物件売却をする
+ *		→増築していない物件の内、利益率の低い物件で借金返済に最小限の金額の物件から順に売る
+ *5)店でカードを買う(売るはいらないかな？)
+ *		→目的地まで遠い時は移動系を買うとか？
+ *6)駅で物件を買う
+ *		→安い物件から順番に買う
+ *
  */
 
 package lifegame.game;
@@ -52,11 +68,6 @@ import javax.swing.SwingConstants;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
-	private JFrame diceFrame = new JFrame("サイコロ");//サイコロ用フレーム
-	private JFrame mapFrame = new JFrame("マップ");//マップ確認用フレーム
-	private JFrame infoFrame = new JFrame("会社情報");//会社情報用フレーム
-	private JFrame propertyFrame;//物件情報確認用フレーム
-	private JFrame cardFrame = new JFrame("カード");//所持カード一覧表示用フレーム
 	private JButton playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
 	private JButton playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
 	private JButton playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
@@ -68,16 +79,19 @@ public class Window implements ActionListener{
     private JButton allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
     private JLabel mainInfo;//プレイマップで上に表示されるプレイヤー情報を表示するラベル
     private JPanel back = new JPanel();//メニューボタンの背景
+    private JLabel moveLabel;//後何マス移動できるか、目的地までの最短距離を表示するラベル
+	private JFrame diceFrame = new JFrame("サイコロ");//サイコロ用フレーム
+	private JFrame mapFrame = new JFrame("マップ");//マップ確認用フレーム
+	private JFrame infoFrame = new JFrame("会社情報");//会社情報用フレーム
+	private JFrame propertyFrame;//物件情報確認用フレーム
+	private JFrame cardFrame = new JFrame("カード");//所持カード一覧表示用フレーム
     private JFrame goalFrame = new JFrame("ゴール");//ゴール画面用フレーム
     private JFrame errorFrame = new JFrame("カードが満タン");//カード削除用フレーム
-    private JLabel moveLabel;//後何マス移動できるか、目的地までの最短距離を表示するラベル
     private JFrame dubbingCardFrame = new JFrame("ダビング");//カード複製用フレーム
 	private JFrame sellPrefectureFrame;//物件売却用フレーム
 	private JFrame randomFrame;//randomイベント用フレーム
 	private JFrame shopFrontFrame;//カードshopイベント用フレーム
 	private JFrame shopFrame;//カードshop購買イベント用フレーム
-	private JLayeredPane shopBuy;
-	private JLayeredPane shopSell;
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false;//ターンを交代するためのフラグ
@@ -141,7 +155,7 @@ public class Window implements ActionListener{
 	//メイン画面の上に書いてあるプレイヤーの情報を更新
 	public void reload() {
 		mainInfo.setVisible(false);
-		if(players.get(turn).getBuff().isEffect()){
+		if(players.get(turn).isEffect()){
 			if(players.get(turn).getMoney()<10000) {
 				mainInfo.setText("自社情報　"+"名前："+players.get(turn).getName()+"　持ち金："+players.get(turn).getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"まで"+Window.count+"マス　効果発動中("+players.get(turn).getBuff().effect+")");
 			}else if(players.get(turn).getMoney()%10000==0){
@@ -162,7 +176,7 @@ public class Window implements ActionListener{
 	}
 
 	private void initMenu() {
-		if(players.get(turn).getBuff().isEffect()){
+		if(players.get(turn).isEffect()){
 			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+players.get(turn).getName()+"　持ち金："+players.get(turn).getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス　効果発動中("+players.get(turn).getBuff().effect+")");
 		}else {
 			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+players.get(turn).getName()+"　持ち金："+players.get(turn).getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.prefectureMapping.get(japan.prefectures.get(japan.goal))+"までの最短距離:"+Window.count+"マス");
@@ -200,6 +214,7 @@ public class Window implements ActionListener{
     		Thread turnEnd = new Thread(new WaitThread(0));
     		turnEnd.start();
     		turnEnd.join();
+    		Thread.sleep(1000);
     		turnEndFlag=false;
     		alreadys.clear();
     		printMenu();
@@ -230,7 +245,7 @@ public class Window implements ActionListener{
 		StationSearchThread.savecount=0;
 		Thread t = new Thread();
 		trajectoryList.clear();
-		if(japan.prefectureContains(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY())){
+		if(japan.prefectureContains(players.get(turn).getNowMass())){
 			StationSearchThread thread = new StationSearchThread(this);
 			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY()));
 			synchronized(StationSearchThread.lock3) {
@@ -454,7 +469,7 @@ public class Window implements ActionListener{
 					flag=true;
 					index = rand.nextInt(Card.cardList.size());
 					for(Card card : canBuyCardlist) {
-						if(card.getName().equals(Card.cardList.get(index).getName())) {
+						if(card.contains(Card.cardList.get(index))) {
 							flag=false;
 						}
 					}
@@ -493,7 +508,7 @@ public class Window implements ActionListener{
 	private void printBuyShop() {
 		shopFrontFrame.setVisible(false);
 		shopFrame = new JFrame("購入");
-		shopBuy = shopFrame.getLayeredPane();
+		JLayeredPane shopBuy = shopFrame.getLayeredPane();
 		shopFrame.setSize(600, 600);
 		shopFrame.setLocationRelativeTo(null);
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
@@ -534,7 +549,7 @@ public class Window implements ActionListener{
 	private void printSellShop() {
 		shopFrontFrame.setVisible(false);
 		shopFrame = new JFrame("売却");
-		shopSell = shopFrame.getLayeredPane();
+		JLayeredPane shopSell = shopFrame.getLayeredPane();
 		shopFrame.setSize(600, 600);
 		shopFrame.setLocationRelativeTo(null);
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
@@ -622,7 +637,7 @@ public class Window implements ActionListener{
 			text2 = createText(10,110,600,100,20,"ちゅんちゅんちゅんちゅんちゅんちゅんちゅんちゅんちゅん");
 			text3 = createText(10,210,600,100,20,"ちゅんちゅんちゅん(一頭地を抜くカードをもらった)");
 			for(int i=0;i<Card.cardList.size();i++) {
-				if(Card.cardList.get(i).getName().equals("一頭地を抜くカード")) {
+				if(Card.cardList.get(i).contains("一頭地を抜くカード")) {
 					players.get(turn).addCard(Card.cardList.get(i));
 				}
 			}
@@ -653,7 +668,7 @@ public class Window implements ActionListener{
 			randomFrame.setName("スキャンダル");
 			text1 = createText(10,10,600,100,20,"若者とキャッキャウフフしていたのがばれた");
 			text2 = createText(10,110,600,100,20,"世間体を気にして移動を自粛することにした");
-			if(players.get(turn).getBuff().isEffect()) {
+			if(players.get(turn).isEffect()) {
 				text3 = createText(10,210,600,100,20,"移動距離が-3される");
 			}else {
 				text3 = createText(10,210,600,100,20,"3カ月の間、移動距離が-3される");
@@ -862,13 +877,7 @@ public class Window implements ActionListener{
 	private void addProfit() {
 		for(int i=0;i<4;i++) {
 			//全ての物件の所有者にその物件の収益を加算
-			for(ArrayList<Property> list : japan.prefectureInfo.values()) {
-				for(Property property:list) {
-					if(players.get(i).getName().equals(property.getOwner())) {
-						players.get(i).addMoney(property.getProfit());
-					}
-				}
-			}
+			players.get(i).addProfit();
 		}
 	}
 
@@ -877,12 +886,8 @@ public class Window implements ActionListener{
 		Integer profitList[] = {0,0,0,0};
 		for(int i=0;i<4;i++) {
 			//全ての物件の所有者にその物件の収益を加算
-			for(ArrayList<Property> list : japan.prefectureInfo.values()) {
-				for(Property property:list) {
-					if(players.get(i).getName().equals(property.getOwner())) {
-						profitList[i]+=property.getProfit();
-					}
-				}
+			for(Property property:players.get(i).getPropertys()) {
+				profitList[i]+=property.getProfit();
 			}
 			if(maxProfit<profitList[i]) {
 				maxProfit=profitList[i];
@@ -899,12 +904,8 @@ public class Window implements ActionListener{
 		Integer assetsList[] = {0,0,0,0};
 		for(int i=0;i<4;i++) {
 			assetsList[i]+=players.get(i).getMoney();
-			for(ArrayList<Property> list : japan.prefectureInfo.values()) {
-				for(Property property:list) {
-					if(players.get(i).getName().equals(property.getOwner())) {
-						assetsList[i]+=property.getAmount();
-					}
-				}
+			for(Property property : players.get(i).getPropertys()) {
+				assetsList[i]+=property.getAmount();
 			}
 			if(maxAssets<assetsList[i]) {
 				maxAssets=assetsList[i];
@@ -1004,13 +1005,13 @@ public class Window implements ActionListener{
 			for(ArrayList<Coordinates> list:trajectoryList.get(Window.count)) {
 				for(Coordinates coor:list) {
 					for(int i=0;i<4;i++) {
-						if(coor.getX()==players.get(turn).getNowMass().getX()-1 && coor.getY()==players.get(turn).getNowMass().getY()) {
+						if(coor.contains(players.get(turn).getNowMass().getX()-1,players.get(turn).getNowMass().getY())) {
 							playLeft.setBackground(Color.MAGENTA);
-						}else if(coor.getX()==players.get(turn).getNowMass().getX()+1 && coor.getY()==players.get(turn).getNowMass().getY()) {
+						}else if(coor.contains(players.get(turn).getNowMass().getX()+1,players.get(turn).getNowMass().getY())) {
 							playRight.setBackground(Color.MAGENTA);
-						}else if(coor.getX()==players.get(turn).getNowMass().getX() && coor.getY()==players.get(turn).getNowMass().getY()-1) {
+						}else if(coor.contains(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY()-1)) {
 							playTop.setBackground(Color.MAGENTA);
-						}else if(coor.getX()==players.get(turn).getNowMass().getX() && coor.getY()==players.get(turn).getNowMass().getY()+1) {
+						}else if(coor.contains(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY()+1)) {
 							playBottom.setBackground(Color.MAGENTA);
 						}
 					}
@@ -1112,8 +1113,8 @@ public class Window implements ActionListener{
         	JLabel labelText = createText(300,35*(i+1)+30,350,30,10,players.get(turn).getCards().get(i).getText());
         	labelName.setBackground(Color.LIGHT_GRAY);
         	labelText.setBackground(Color.LIGHT_GRAY);
-        	useButton.setActionCommand(players.get(turn).getCards().get(i).getName());
-        	if(players.get(turn).getCards().get(i).getName().equals("ダビングカード") && players.get(turn).getCards().size()<2) {
+        	useButton.setActionCommand(players.get(turn).getCard(i).getName());
+        	if(players.get(turn).getCard(i).contains("ダビングカード") && players.get(turn).getCards().size()<2) {
         		useButton.setEnabled(false);
         	}
         	card.add(labelName);
@@ -1720,7 +1721,7 @@ public class Window implements ActionListener{
 	//独占判定処理
 	private boolean isMonopoly(ArrayList<Property> list) {
 		for(Property property:list) {
-			if(!list.get(0).getOwner().equals(property.getOwner()) || property.getOwner().equals("")){
+			if(!list.get(0).containsOwner(property) || !property.isOwner()){
 				return false;
 			}
 		}
@@ -1743,7 +1744,7 @@ public class Window implements ActionListener{
 
 	//物件購入・増築処理
 	private void buyPropertys(String name, int index) {
-		if(japan.prefectureInfo.get(name).get(index).getOwner().equals("")) {
+		if(!japan.prefectureInfo.get(name).get(index).isOwner()) {
 			japan.prefectureInfo.get(name).get(index).buy(players.get(turn),0);
 			if(isMonopoly(japan.prefectureInfo.get(name))) {
 				monopolyOn(japan.prefectureInfo.get(name));
@@ -1959,13 +1960,13 @@ public class Window implements ActionListener{
 					if(cmd.equals("一頭地を抜くカード")) {
 						int maxMoney=0;
 						for(int player=0;player<4;player++) {
-							if(maxMoney<players.get(player).getMoney()) {
+							if(players.get(player).containsMoney(maxMoney)>0) {
 								maxMoney=players.get(player).getMoney();
 							}
 						}
 						players.get(turn).addMoney(maxMoney);
 					}else if(cmd.equals("起死回生カード")) {
-						if(players.get(turn).getMoney()<0) {
+						if(players.get(turn).containsMoney(0)<0) {
 							players.get(turn).addMoney(-players.get(turn).getMoney());
 						}
 					}else if(cmd.equals("福袋カード")) {
@@ -1982,7 +1983,7 @@ public class Window implements ActionListener{
 						printDubbing();
 					}else if(cmd.equals("徳政令カード")) {
 						for(int player=0;player<4;player++) {
-							if(players.get(player).getMoney()<0) {
+							if(players.get(player).containsMoney(0)<0) {
 								players.get(player).addMoney(-players.get(player).getMoney());
 							}
 						}

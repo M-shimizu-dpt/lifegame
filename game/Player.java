@@ -27,6 +27,22 @@ public class Player {
 		clearMove();
 	}
 
+	public int containsMoney(int money) {
+		if(this.money>money) {
+			return 1;
+		}else if(this.money<money) {
+			return -1;
+		}else {
+			return 0;
+		}
+	}
+
+	public void addProfit() {
+		for(Property property:this.propertys) {
+			this.addMoney(property.getProfit());
+		}
+	}
+
 	public void addProperty(Property property) {
 		this.propertys.add(property);
 	}
@@ -93,6 +109,10 @@ public class Player {
 		return this.cards;
 	}
 
+	public Card getCard(int index) {
+		return this.cards.get(index);
+	}
+
 	public Coordinates getNowMass() {
 		return this.nowMass;
 	}
@@ -107,6 +127,14 @@ public class Player {
 
 	public ArrayList<Property> getPropertys() {
 		return this.propertys;
+	}
+
+	public boolean isEffect() {
+		if(getBuff().effect != 0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 }
 
@@ -136,11 +164,5 @@ class Buff{
 	public void clearEffect() {
 		this.effect=0;
 	}
-	public boolean isEffect() {
-		if(this.effect != 0) {
-			return true;
-		}else {
-			return false;
-		}
-	}
+
 }
