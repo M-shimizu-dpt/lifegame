@@ -243,6 +243,7 @@ public class Window implements ActionListener{
 		Window.time = System.currentTimeMillis();
 		Window.count=100;
 		StationSearchThread.savecount=0;
+		nearestStationList.clear();
 		Thread t = new Thread();
 		trajectoryList.clear();
 		if(japan.prefectureContains(players.get(turn).getNowMass())){
