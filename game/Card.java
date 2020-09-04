@@ -1,21 +1,30 @@
+/*
+ * id:能力カテゴリ
+ * 0:サイコロ数を増やす
+ * 1:固定値進む
+ * 2:ランダム移動
+ * 3:バフデバフ
+ * 4:金銭授受
+ * 5:カード授受
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Random;
 
 public class Card {
 	private String name;//名前
 	private String cardText;//能力説明
-	private int moveAbility;//サイコロ数の変化能力
-	private int fixedMoveAbility;//固定値移動能力
-	private int randomMoveAbility;//ランダム移動持ちかどうか(T/Fにすべき)
-	private int othersAbility;//金銭能力持ちかどうか
 	private int sellPrice;//売る時の値段
 	private int buyPrice;//買う時の値段
 	private int count;//カード破壊カウント(周遊用)
 	private int rarity;
+	private int ability;
+	private int id;
 	public static ArrayList<Card> cardList = new ArrayList<Card>();
 	public static boolean usedCard;
 	public static boolean usedFixedCard;
@@ -23,17 +32,15 @@ public class Card {
 	public static boolean usedOthersCard;
 	private static Window window;
 
-	public Card(String name,int buy,int rarity,String cardText) {
+	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
 		this.name = name;
 		this.count=0;
 		this.rarity=rarity;
 		this.sellPrice = buy/2;
 		this.buyPrice = buy;
-		this.moveAbility=0;
-		this.fixedMoveAbility=-1;
-		this.randomMoveAbility=0;
-		this.othersAbility=0;
 		this.cardText=cardText;
+		this.id=id;
+		this.ability=ability;
 	}
 
 	public boolean contains(Card card) {
@@ -44,28 +51,16 @@ public class Card {
 		return this.name.equals(name);
 	}
 
+	public int getID() {
+		return id;
+	}
+
 	public String getName() {
 		return this.name;
 	}
 
 	public String getText() {
 		return this.cardText;
-	}
-
-	public int getMoveAbility() {
-		return this.moveAbility;
-	}
-
-	public int getRandomMoveAbility() {
-		return this.randomMoveAbility;
-	}
-
-	public int getFixedMoveAbility() {
-		return this.fixedMoveAbility;
-	}
-
-	public int getOthersAbility() {
-		return this.othersAbility;
 	}
 
 	public int getSellPrice() {
@@ -86,6 +81,136 @@ public class Card {
 
 	public void setCount(int count) {
 		this.count = count;
+	}
+
+	public void setAbility(int ability) {
+		this.ability = ability;
+	}
+
+	//0,1
+	private void useAbility(Dice dice) {
+		if(this.id==0) {
+			dice.setNum(this.ability);
+		}else if(this.id == 1) {
+			Card.usedFixedCard();
+			dice.setResult(this.ability);
+		}
+	}
+
+	//2,5
+	private void useAbility(Window window,Map<Integer,Player> players,int turn) {
+		Random rand = new Random();
+		if(this.id==2) {
+			Coordinates coor = new Coordinates();
+			//誰に影響を与えるのか
+			Card.usedRandomCard();
+			if(name.equals("サミットカード")) {
+				coor.setValue(players.get(turn).getNowMass());
+				for(int roop=0;roop<4;roop++) {
+					if(roop==turn)continue;
+					window.moveMaps(roop,coor);
+				}
+			}else if(name.equals("北へ！カード")) {
+				do {
+					coor = this.useRandomAbility();
+				}while(players.get(turn).getNowMass().getY()<coor.getY());
+			}else if(name.equals("ピッタリカード")){
+				coor.setValue(players.get(rand.nextInt(4)).getNowMass());
+			}else if(name.equals("最寄り駅カード")){
+				window.searchNearestStation();
+				Thread thread = new Thread(new WaitThread(2));
+				thread.start();
+				try {
+					thread.join();
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+				coor.setValue(window.nearestStationList.get(rand.nextInt(window.nearestStationList.size())));
+			}else {
+				coor = this.useRandomAbility();
+			}
+			window.moveMaps(turn,coor);
+			try {
+				Thread.sleep(1000);
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+			players.get(turn).getNowMass().setValue(coor);
+		}else if(this.id==5) {
+			if(name.equals("福袋カード")) {
+				int count=0;
+				do {
+					int randcard = rand.nextInt(Card.cardList.size());
+					players.get(turn).addCard(Card.cardList.get(randcard));
+					if(players.get(turn).getCards().size()>8) {
+						window.cardFull();
+					}
+					count++;
+				}while(rand.nextInt(100)<50 && count<5);
+			}else if(name.equals("ダビングカード")) {
+				window.printDubbing();
+			}
+		}
+	}
+
+	//3,4
+	private void useAbility(Map<Integer,Player> players,int turn) {
+		if(this.id==3) {
+			Random rand = new Random();
+			int enemy = players.get(turn).getRandomEnemy();
+			int period;
+			do {
+				period = rand.nextInt(5);
+			}while(period <= 1);
+			players.get(enemy).getBuff().addBuff(this.ability, period);
+			System.out.println(players.get(turn).getName());
+		}else if(this.id==4) {
+			Card.usedOthersCard();
+			if(name.equals("一頭地を抜くカード")) {
+				int maxMoney=0;
+				for(Player player:players.values()) {
+					if(player.containsMoney(maxMoney)>0) {
+						maxMoney=player.getMoney();
+					}
+				}
+				players.get(turn).addMoney(maxMoney);
+			}else if(name.equals("起死回生カード")) {
+				if(players.get(turn).containsMoney(0)<0) {
+					players.get(turn).addMoney(-players.get(turn).getMoney()*2);
+				}
+			}else if(name.equals("徳政令カード")) {
+				for(int player=0;player<4;player++) {
+					if(players.get(player).containsMoney(0)<0) {
+						players.get(player).addMoney(-players.get(player).getMoney());
+					}
+				}
+			}
+		}
+	}
+
+
+	public void useAbility(Window window, Dice dice, Map<Integer,Player> players, int turn) {
+		if(id==0 || id==1) {
+			useAbility(dice);
+		}else if(id==2 || id==5){
+			useAbility(window,players,turn);
+		}else if(id==3 || id==4) {
+			useAbility(players,turn);
+		}
+
+		//周遊カードの場合は確率でカードを破壊
+		if(name.split("周遊").length==2) {
+			this.setCount(this.getCount()+1);
+			if(new Random().nextInt(100)<30 || this.getCount()>5) {
+				players.get(turn).getCards().remove(this);
+			}
+		}else {
+			players.get(turn).getCards().remove(this);
+		}
+
+		if(!name.equals("徳政令カード")) {
+			Card.usedCard();//カードを使ったことにする
+		}
 	}
 
 	public static void resetUsedCard() {
@@ -120,31 +245,6 @@ public class Card {
 		Card.usedOthersCard=true;
 	}
 
-	private void setMoveAbility(int ability) {
-		this.moveAbility = ability;
-	}
-	private void setFixedMoveAbility(int ability) {
-		this.fixedMoveAbility = ability;
-	}
-	private void setRandomMoveAbility(int ability) {
-		this.randomMoveAbility = ability;
-	}
-
-	private void setMoneyAbility(int ability) {
-		this.othersAbility = ability;
-	}
-
-	public int useAbility() {
-		if(moveAbility>0) {
-			return moveAbility;
-		}
-		if(fixedMoveAbility!=-1) {
-			return fixedMoveAbility;
-		}
-
-		return 0;
-	}
-
 	public Coordinates useRandomAbility() {
 		Random rand = new Random();
 		Coordinates movedMass=new Coordinates();
@@ -168,76 +268,51 @@ public class Card {
 	public static void init(Window window) {
 		Card.window=window;
 		resetUsedCard();
-		resetUsedFixedCard();
-		resetUsedRandomCard();
-		resetUsedOthersCard();
+
+/*
+		//サイコロ数
+		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
+		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));
+		cardList.add(new Card("特急カード",4000,2,"サイコロを3つ回すことが出来る",0,3));
+		cardList.add(new Card("特急周遊カード",30000,3,"何度かサイコロを3つ回すことが出来る",0,3));
+		cardList.add(new Card("新幹線カード",7000,3,"サイコロを4つ回すことが出来る",0,4));
+		cardList.add(new Card("新幹線周遊カード",50000,4,"何度かサイコロを4つ回すことが出来る",0,4));
+		cardList.add(new Card("のぞみカード",20000,4,"サイコロを5つ回すことが出来る",0,5));
 
 
-		//周遊カードシリーズ(使う度にrandom関数を使い壊れるかを判定、5回使っても壊れなかった場合強制破壊)
-		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(2);
-		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(2);
-		cardList.add(new Card("特急カード",4000,2,"サイコロを3つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(3);
-		cardList.add(new Card("特急周遊カード",30000,3,"何度かサイコロを3つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(3);
-		cardList.add(new Card("新幹線カード",7000,3,"サイコロを4つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(4);
-		cardList.add(new Card("新幹線周遊カード",50000,4,"何度かサイコロを4つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(4);
-		cardList.add(new Card("のぞみカード",20000,4,"サイコロを5つ回すことが出来る"));
-		cardList.get(cardList.size()-1).setMoveAbility(5);
-
-
-		//固定値進む
-		cardList.add(new Card("足踏みカード",4000,3,"その場に留まることが出来る"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(0);
-		cardList.add(new Card("1進めるカード",10000,3,"1マス進める"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(1);
-		cardList.add(new Card("2進めるカード",10000,3,"2マス進める"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(2);
-		cardList.add(new Card("3進めるカード",10000,3,"3マス進める"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(3);
-		cardList.add(new Card("4進めるカード",10000,3,"4マス進める"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(4);
-		cardList.add(new Card("5進めるカード",10000,3,"5マス進める"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(5);
-		cardList.add(new Card("6進めるカード",10000,3,"6マス進める"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(6);
-		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす"));
-		cardList.get(cardList.size()-1).setFixedMoveAbility(-3);
-
+		//固定値
+		cardList.add(new Card("足踏みカード",4000,3,"その場に留まることが出来る",1,0));
+		cardList.add(new Card("1進めるカード",10000,3,"1マス進める",1,1));
+		cardList.add(new Card("2進めるカード",10000,3,"2マス進める",1,2));
+		cardList.add(new Card("3進めるカード",10000,3,"3マス進める",1,3));
+		cardList.add(new Card("4進めるカード",10000,3,"4マス進める",1,4));
+		cardList.add(new Card("5進めるカード",10000,3,"5マス進める",1,5));
+		cardList.add(new Card("6進めるカード",10000,3,"6マス進める",1,6));
 
 
 		//どこかへ移動する
-		cardList.add(new Card("ぶっとびカード",10000,1,"どこかに移動することが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		cardList.add(new Card("ぶっとび周遊カード",40000,2,"何度かどこかに移動することが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る"));
-		cardList.get(cardList.size()-1).setRandomMoveAbility(1);
-		//cardList.add(new Card("星に願いをカード",2,40000,"最寄りのカードショップに移動することが出来る"));
-		//cardList.get(cardList.size()-1).setRandomMoveAbility(1);
+		cardList.add(new Card("ぶっとびカード",10000,1,"どこかに移動することが出来る",2,0));
+		cardList.add(new Card("ぶっとび周遊カード",40000,2,"何度かどこかに移動することが出来る",2,0));
+		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る",2,0));
+		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る",2,0));
+		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る",2,0));
+		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る",2,0));
+		//cardList.add(new Card("星に願いをカード",2,40000,"最寄りのカードショップに移動することが出来る",2,0));
 
 
-		//お金・カードがもらえる
-		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる"));
-		cardList.get(cardList.size()-1).setMoneyAbility(1);
-		cardList.add(new Card("起死回生カード",16000,2,"持ち金のマイナスがそのままプラスになる"));
-		cardList.get(cardList.size()-1).setMoneyAbility(1);
-		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる"));
-		cardList.get(cardList.size()-1).setMoneyAbility(1);
-		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る"));
-		cardList.get(cardList.size()-1).setMoneyAbility(1);
-		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする"));
-		cardList.get(cardList.size()-1).setMoneyAbility(1);
+		//バフ・デバフ
+		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす",3,-3));
+
+
+		//お金がもらえる
+		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる",4,0));
+		cardList.add(new Card("起死回生カード",16000,2,"持ち金のマイナスがそのままプラスになる",4,0));
+		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする",4,0));
+*/
+
+		//カードがもらえる
+		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5,0));
+		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5,0));
 
 
 		Card.sort();

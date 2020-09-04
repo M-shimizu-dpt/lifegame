@@ -1,6 +1,7 @@
 package lifegame.game;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JLabel;
 
@@ -13,13 +14,15 @@ public class Player {
 	private Coordinates nowMass;//現在地
 	private JLabel colt;//プレイヤーの駒
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
+	private int id;//識別番号
 
-	public Player(String name,int money) {
+	public Player(String name,int money,int id) {
 		this.money=0;
 		this.move=0;
 		this.buff=new Buff();
 		this.cards = new ArrayList<Card>();
 		this.propertys = new ArrayList<Property>();
+		this.id=id;
 		setName(name);
 		addMoney(money);
 		this.nowMass = new Coordinates();
@@ -35,6 +38,14 @@ public class Player {
 		}else {
 			return 0;
 		}
+	}
+
+	public boolean containsID(int id) {
+		return this.id==id;
+	}
+
+	public boolean containsID(Player player) {
+		return this.id==player.id;
 	}
 
 	public void addProfit() {
@@ -115,6 +126,19 @@ public class Player {
 
 	public Coordinates getNowMass() {
 		return this.nowMass;
+	}
+
+	public int getRandomEnemy() {
+		Random rand = new Random();
+		int enemy;
+		do {
+			enemy = rand.nextInt(4);
+		}while(enemy==this.id);
+		return enemy;
+	}
+
+	public int getID() {
+		return this.id;
 	}
 
 	public void setColt(JLabel colt) {
