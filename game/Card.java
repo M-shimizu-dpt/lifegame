@@ -268,6 +268,9 @@ public class Card {
 	public static void init(Window window) {
 		Card.window=window;
 		resetUsedCard();
+		resetUsedFixedCard();
+		resetUsedRandomCard();
+		resetUsedOthersCard();
 
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
