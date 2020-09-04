@@ -29,6 +29,8 @@
  *
  *最寄りのカードショップの探索機構を作成する。
  *
+ *japanクラスの改善
+ *
  *・CPUがすること
  *1)サイコロを回す
  *		→カードを使わない場合サイコロを回す
@@ -245,7 +247,7 @@ public class Window implements ActionListener{
 		trajectoryList.clear();
 		if(japan.prefectureContains(players.get(turn).getNowMass())){
 			StationSearchThread thread = new StationSearchThread(this);
-			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY()));
+			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
 			synchronized(StationSearchThread.lock3) {
 				thread.setMass(players.get(turn).getNowMass().getX(), players.get(turn).getNowMass().getY());
 			}
@@ -257,7 +259,7 @@ public class Window implements ActionListener{
 			for(Coordinates coor:list) {
 				//Threadを立ち上げる
 				StationSearchThread thread = new StationSearchThread(this);
-				thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY()));
+				thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
 				synchronized(StationSearchThread.lock3) {
 					thread.setMass(coor.getX(), coor.getY());
 				}
@@ -282,6 +284,7 @@ public class Window implements ActionListener{
 			}
 			if(flag) {
 				this.nearestStationList.add(nearestStation);
+				System.out.println("name add:"+japan.prefectureMapping.get(japan.prefectures.get(japan.getIndexOfPrefecture(nearestStation.getX(), nearestStation.getY())))+"  x:"+nearestStation.getX()+"   y:"+nearestStation.getY());
 			}
 		}
 	}
@@ -298,7 +301,7 @@ public class Window implements ActionListener{
 		for(Coordinates coor:list) {
 			//Threadを立ち上げる
 			MultiThread thread = new MultiThread(this);
-			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY()));
+			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
 			synchronized(MultiThread.lock3) {
 				thread.setMass(coor.getX(), coor.getY());
 			}
