@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Japan {
-	private ArrayList<Station> stations = new ArrayList<Station>();
+	private ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
 	private ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
 	private ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
 	private ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
@@ -622,7 +622,7 @@ public class Japan {
 				int x = from.getX()-to.getX();
 				int y = from.getY()-to.getY();
 				if(!((x>=-2 && x<=2) && (y>=-2 && y<=2)))continue;//処理数を減らす
-				if(stationContains(from.getX(),from.getY())) {
+				if(containsStation(from.getX(),from.getY())) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(3)) ||
 							(x==0 && (y==1 || y==2) && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(2)) ||
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(1)) ||
@@ -649,7 +649,7 @@ public class Japan {
 					}
 					railMapping.put(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates(),stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().getLinks());
 				}
-				if(blueContains(from.getX(),from.getY())) {
+				if(containsBlue(from.getX(),from.getY())) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(3)) ||
 							(x==0 && (y==1 || y==2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(2)) ||
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(1)) ||
@@ -676,7 +676,7 @@ public class Japan {
 					}
 					railMapping.put(blue.get(getIndexOfBlue(from.getX(),from.getY())),blue.get(getIndexOfBlue(from.getX(),from.getY())).getLinks());
 				}
-				if(redContains(from.getX(),from.getY())) {
+				if(containsRed(from.getX(),from.getY())) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(3)) ||
 							(x==0 && (y==1 || y==2) && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(2)) ||
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(1)) ||
@@ -703,7 +703,7 @@ public class Japan {
 					}
 					railMapping.put(red.get(getIndexOfRed(from.getX(),from.getY())),red.get(getIndexOfRed(from.getX(),from.getY())).getLinks());
 				}
-				if(yellowContains(from.getX(),from.getY())) {
+				if(containsYellow(from.getX(),from.getY())) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(3)) ||
 							(x==0 && (y==1 || y==2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(2)) ||
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(1)) ||
@@ -730,7 +730,7 @@ public class Japan {
 					}
 					railMapping.put(yellow.get(getIndexOfYellow(from.getX(),from.getY())),yellow.get(getIndexOfYellow(from.getX(),from.getY())).getLinks());
 				}
-				if(shopContains(from.getX(),from.getY())) {
+				if(containsShop(from.getX(),from.getY())) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(3)) ||
 							(x==0 && (y==1 || y==2) && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(2)) ||
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(1)) ||
@@ -761,47 +761,57 @@ public class Japan {
 		}
 	}
 
-
+	//ゴールの要素番号を取得
 	public int getGoalIndex() {
 		return goal;
 	}
 
+	//ゴールの座標を取得
 	public Coordinates getGoal() {
 		return getStationCoor(goal);
 	}
 
+	//ゴールの名前を取得
 	public String getGoalName() {
 		return getStationName(getStationCoor(goal));
 	}
 
+	//ゴールを一時的に保存
 	public void saveGoal() {
 		saveGoal = goal;
 	}
 
+	//保存したゴールの要素番号を取得
 	public int getSaveGoalIndex() {
 		return saveGoal;
 	}
 
+	//保存したゴールの座標を取得
 	public Coordinates getSaveGoal() {
 		return getStationCoor(saveGoal);
 	}
 
+	//駅名で指定した駅の独占状態のOn/Offを切り替える
 	public void monopoly(String name) {
 		getStation(name).changePropertysMono();
 	}
 
+	//物件情報で指定した駅の独占状態のOn/Offを切り替える
 	public void monopoly(Property property) {
 		getStation(property).changePropertysMono();
 	}
 
+	//駅の数を返す
 	public int stationSize() {
 		return stations.size();
 	}
 
+	//要素番号で指定した駅の座標を取得
 	public Coordinates getStationCoor(int index) {
 		return stations.get(index).getCoordinates();
 	}
 
+	//駅の座標一覧を取得
 	public ArrayList<Coordinates> getStationsCoor(){
 		ArrayList<Coordinates> result = new ArrayList<Coordinates>();
 		for(Station s:stations) {
@@ -810,46 +820,52 @@ public class Japan {
 		return result;
 	}
 
+	//青マスの座標一覧を取得
 	public ArrayList<Coordinates> getBlueCoor(){
 		return blue;
 	}
 
+	//要素番号で指定した青マスの座標を取得
 	public Coordinates getBlueCoor(int index) {
 		return blue.get(index);
 	}
 
+	//赤マスの座標一覧を取得
 	public ArrayList<Coordinates> getRedCoor(){
 		return red;
 	}
 
+	//要素番号で指定した赤マスの座標を取得
 	public Coordinates getRedCoor(int index) {
 		return red.get(index);
 	}
 
+	//黄マスの座標一覧を取得
 	public ArrayList<Coordinates> getYellowCoor(){
 		return yellow;
 	}
 
+	//要素番号で指定した黄マスの座標を取得
 	public Coordinates getYellowCoor(int index) {
 		return yellow.get(index);
 	}
 
+	//店マスの座標一覧を取得
 	public ArrayList<Coordinates> getshopCoor(){
 		return shop;
 	}
 
+	//要素番号で指定した店マスの座標を取得
 	public Coordinates getShopCoor(int index) {
 		return shop.get(index);
 	}
 
-	public void setMono() {
-
-	}
-
+	//駅の一覧を取得
 	public ArrayList<Station> getStations(){
 		return stations;
 	}
 
+	//駅の名前一覧を取得
 	public ArrayList<String> getStationNameList(){
 		ArrayList<String> list = new ArrayList<String>();
 		for(Station sta:stations) {
@@ -858,6 +874,7 @@ public class Japan {
 		return list;
 	}
 
+	//要素番号で指定した駅を取得
 	public Station getStation(int index) {
 		return stations.get(index);
 	}
@@ -872,6 +889,7 @@ public class Japan {
 		return null;
 	}
 
+	//駅名で指定した駅を取得
 	public Station getStation(String stationName) {
 		for(Station sta : stations) {
 			if(sta.getName().equals(stationName)) {
@@ -881,6 +899,7 @@ public class Japan {
 		return null;
 	}
 
+	//座標で指定した駅名を取得
 	public String getStationName(Coordinates coor) {
 		for(Station sta : stations) {
 			if(sta.getCoordinates().contains(coor)) {
@@ -890,6 +909,7 @@ public class Japan {
 		return null;
 	}
 
+	//全ての物件の数を取得
 	public int propertySize() {
 		int size=0;
 		for(Station sta:stations) {
@@ -898,6 +918,7 @@ public class Japan {
 		return size;
 	}
 
+	//全ての物件情報を取得
 	public ArrayList<Property> getPropertys(){
 		ArrayList<Property> list = new ArrayList<Property>();
 		for(Station sta:stations) {
@@ -906,6 +927,7 @@ public class Japan {
 		return list;
 	}
 
+	//駅名で指定した駅に属する物件一覧を取得
 	public ArrayList<Property> getStaInPropertys(String name){
 		for(Station sta : stations) {
 			if(sta.getName().equals(name)) {
@@ -915,6 +937,7 @@ public class Japan {
 		return null;
 	}
 
+	//駅名で指定した駅に属する物件の内、要素番号で指定した物件を取得
 	public Property getStaInProperty(String name,int index){
 		for(Station sta : stations) {
 			if(sta.getName().equals(name)) {
@@ -924,6 +947,7 @@ public class Japan {
 		return null;
 	}
 
+	//駅名で指定した駅の物件数を取得
 	public int getStaInPropertySize(String name){
 		for(Station sta : stations) {
 			if(sta.getName().equals(name)) {
@@ -933,8 +957,6 @@ public class Japan {
 		System.out.println("error");
 		return -1;
 	}
-
-
 
 	//全てのマス座標を取得
 	public ArrayList<Coordinates> getAllCoordinates(){
@@ -948,7 +970,7 @@ public class Japan {
 	}
 
 	//指定の座標にマスが存在するか
-	public synchronized Boolean contains(int x,int y) {
+	public synchronized boolean contains(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:getAllCoordinates()) {
 			if(coor.getX()==x && coor.getY()==y) {
@@ -959,7 +981,7 @@ public class Japan {
 	}
 
 	//指定の座標にマスが存在するか
-	public synchronized Boolean contains(Coordinates coordinates) {
+	public synchronized boolean contains(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:getAllCoordinates()) {
 			if(coor.contains(coordinates)) {
@@ -970,7 +992,7 @@ public class Japan {
 	}
 
 	//指定の座標に駅が存在するか
-	public Boolean stationContains(int x,int y) {
+	public boolean containsStation(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:getStationsCoor()) {
 			if(coor.getX()==x && coor.getY()==y) {
@@ -981,7 +1003,7 @@ public class Japan {
 	}
 
 	//指定の座標に駅が存在するか
-	public Boolean stationContains(Coordinates coordinates) {
+	public boolean containsStation(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:getStationsCoor()) {
 			if(coor.contains(coordinates)) {
@@ -991,8 +1013,8 @@ public class Japan {
 		return flag;
 	}
 
-	//指定のに青マスが存在するか
-	public Boolean blueContains(int x,int y) {
+	//指定の座標に青マスが存在するか
+	public boolean containsBlue(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:blue) {
 			if(coor.getX()==x && coor.getY()==y) {
@@ -1002,8 +1024,8 @@ public class Japan {
 		return flag;
 	}
 
-	//指定のに青マスが存在するか
-	public Boolean blueContains(Coordinates coordinates) {
+	//指定の座標に青マスが存在するか
+	public boolean containsBlue(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:blue) {
 			if(coor.contains(coordinates)) {
@@ -1014,7 +1036,7 @@ public class Japan {
 	}
 
 	//指定の座標に赤マスが存在するか
-	public Boolean redContains(int x,int y) {
+	public boolean containsRed(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:red) {
 			if(coor.getX()==x && coor.getY()==y) {
@@ -1025,7 +1047,7 @@ public class Japan {
 	}
 
 	//指定の座標に赤マスが存在するか
-	public Boolean redContains(Coordinates coordinates) {
+	public boolean containsRed(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:red) {
 			if(coor.contains(coordinates)) {
@@ -1036,7 +1058,7 @@ public class Japan {
 	}
 
 	//指定の座標に黄マスが存在するか
-	public Boolean yellowContains(int x,int y) {
+	public boolean containsYellow(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:yellow) {
 			if(coor.getX()==x && coor.getY()==y) {
@@ -1047,7 +1069,7 @@ public class Japan {
 	}
 
 	//指定の座標に黄マスが存在するか
-	public Boolean yellowContains(Coordinates coordinates) {
+	public boolean containsYellow(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:yellow) {
 			if(coor.contains(coordinates)) {
@@ -1058,7 +1080,7 @@ public class Japan {
 	}
 
 	//指定の座標に店マスが存在するか
-	public Boolean shopContains(int x,int y) {
+	public boolean containsShop(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:shop) {
 			if(coor.getX()==x && coor.getY()==y) {
@@ -1069,7 +1091,7 @@ public class Japan {
 	}
 
 	//指定の座標に店マスが存在するか
-	public Boolean shopContains(Coordinates coordinates) {
+	public boolean containsShop(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:shop) {
 			if(coor.contains(coordinates)) {
@@ -1079,10 +1101,10 @@ public class Japan {
 		return flag;
 	}
 
-	//ゴールマスを設定
+	//ゴールマスを初期化
 	public void initGoal() {
 		int x=0,y=0;
-		while(!(this.stationContains(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
+		while(!(this.containsStation(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1092,12 +1114,12 @@ public class Japan {
 			}
 		}
 		goal = getIndexOfStation(x,y);
-		//System.out.println("目的地："+stationMapping.get(stations.get(goal))+"x:"+x+"  y:"+y);
 	}
+
 	//ゴールマスを変更
 	public void changeGoal() {
 		int x=0,y=0;
-		while((!this.stationContains(x, y)) || goal==getIndexOfStation(x,y)) {
+		while((!this.containsStation(x, y)) || goal==getIndexOfStation(x,y)) {
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1107,8 +1129,8 @@ public class Japan {
 			}
 		}
 		goal = getIndexOfStation(x,y);
-		//System.out.println("目的地："+stationMapping.get(stations.get(goal))+"x:"+x+"  y:"+y);
 	}
+
 	//指定の座標のマスの配列番号を取得
 	public int getIndexOf(int x,int y) {
 		int result;
@@ -1144,6 +1166,7 @@ public class Japan {
 		}
 		return -1;
 	}
+
 	//指定の座標の赤マスの配列番号を取得
 	public int getIndexOfRed(int x,int y){
 		for(int list=0;list<this.red.size();list++) {
@@ -1153,6 +1176,7 @@ public class Japan {
 		}
 		return -1;
 	}
+
 	//指定の座標の黄マスの配列番号を取得
 	public int getIndexOfYellow(int x,int y){
 		for(int list=0;list<this.yellow.size();list++) {
@@ -1162,6 +1186,7 @@ public class Japan {
 		}
 		return -1;
 	}
+
 	//指定の座標の店マスの配列番号を取得
 	public int getIndexOfShop(int x,int y){
 		for(int list=0;list<this.shop.size();list++) {
@@ -1171,7 +1196,8 @@ public class Japan {
 		}
 		return -1;
 	}
-	//
+
+	//指定したTFをリストにして取得(処理を分ける方が良い)
 	private ArrayList<Boolean> getBoolList(Boolean top,Boolean bottom,Boolean left,Boolean right){
 		ArrayList<Boolean> rail = new ArrayList<Boolean>();
 		rail.add(left);
@@ -1180,7 +1206,8 @@ public class Japan {
 		rail.add(bottom);
 		return rail;
 	}
-	//指定の座標の移動可能方向を取得（変更すべき）
+
+	//指定した座標から移動可能な方角一覧を取得
 	public ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<stations.size();list++) {
 			if(stations.get(list).getCoordinates().contains(x/size,y/size)) {//駅の座標が来たら
@@ -1209,6 +1236,8 @@ public class Japan {
 		}
 		return null;
 	}
+
+	//指定した座標から移動可能な方角一覧を取得
 	public ArrayList<Boolean> getVector(Coordinates coor,int size){
 		int x=coor.getX();
 		int y=coor.getY();
@@ -1240,38 +1269,38 @@ public class Japan {
 		return null;
 	}
 
+	//指定した座標から移動可能な座標一覧を取得
 	public ArrayList<Coordinates> getMovePossibles(int x,int y) {
-		if(stationContains(x,y)) {
+		if(containsStation(x,y)) {
 			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
-		}else if(blueContains(x,y)) {
+		}else if(containsBlue(x,y)) {
 			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
-		}else if(redContains(x,y)) {
+		}else if(containsRed(x,y)) {
 			return railMapping.get(red.get(getIndexOfRed(x,y)));
-		}else if(yellowContains(x,y)) {
+		}else if(containsYellow(x,y)) {
 			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
-		}else if(shopContains(x,y)) {
+		}else if(containsShop(x,y)) {
 			return railMapping.get(shop.get(getIndexOfShop(x,y)));
 		}else {
-
 			return null;
 		}
 	}
 
+	//指定した座標から移動可能な座標一覧を取得
 	public ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
 		int x=coor.getX();
 		int y=coor.getY();
-		if(stationContains(x,y)) {
+		if(containsStation(x,y)) {
 			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
-		}else if(blueContains(x,y)) {
+		}else if(containsBlue(x,y)) {
 			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
-		}else if(redContains(x,y)) {
+		}else if(containsRed(x,y)) {
 			return railMapping.get(red.get(getIndexOfRed(x,y)));
-		}else if(yellowContains(x,y)) {
+		}else if(containsYellow(x,y)) {
 			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
-		}else if(shopContains(x,y)) {
+		}else if(containsShop(x,y)) {
 			return railMapping.get(shop.get(getIndexOfShop(x,y)));
 		}else {
-
 			return null;
 		}
 	}
@@ -1305,45 +1334,20 @@ class MultiThread implements Runnable{
 		boolean setMassFlag;
 		Coordinates next = new Coordinates();
 		Coordinates goal = new Coordinates(window.japan.getStationCoor(window.japan.getGoalIndex()));
-		while(true) {
+		while(count<=Window.count && savecount<=1000 && count<=35 && System.currentTimeMillis()-Window.time<200) {
 			next.setValue(0, 0);
 			setMassFlag=false;
 			end=true;
 			flag=false;
-			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
-				//System.out.println("not shorter");
-				break;
-			}
-			if(savecount>1000) {
-				//System.out.println("all killed");
-				break;
-			}
-			if(count>35) {
-				//System.out.println("count over");
-				break;
-			}
-			if(System.currentTimeMillis()-Window.time>=200) {
-				//System.out.println("time out");
-				break;
-			}
 
 			count++;
 			savecount++;
-			//なぜlistがnullになるのか…？？
-			//やっぱりベクトルが異常値を取ってしまう
-			// →1インスタンス内の複数のスレッドが同時にアクセスしようとした場合にロックが可能なので
-			//	 Thread型のインスタンスを1つに絞りたい（インスタンスを複数作成している為）
 			synchronized(MultiThread.lock1) {
 				list = window.japan.getMovePossibles(this.nowMass);
-			}
-			if(list==null) {
-				//System.out.println("list_null");
-				break;
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
 			if(goal.contains(nowMass)){
 				goal();
-				//System.out.println("正常終了goal  count:"+this.count+"   now.x:"+this.nowMass.x+"  now.y:"+this.nowMass.y);
 				break;
 			}
 			for(Coordinates coor:list) {
@@ -1393,7 +1397,6 @@ class MultiThread implements Runnable{
 			}
 			//行き先が無い場合終了
 			if(end) {
-				//System.out.println("正常終了end");
 				break;
 			}
 			Thread.yield();
@@ -1420,7 +1423,6 @@ class MultiThread implements Runnable{
 	}
 }
 
-//上のスレッドをimplements的なことをしてgoal()だけoverrideすべき？
 //最寄り駅を探索するためのスレッド
 class StationSearchThread implements Runnable{
 	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
@@ -1445,54 +1447,30 @@ class StationSearchThread implements Runnable{
 		boolean end;
 		boolean setMassFlag;
 		Coordinates next = new Coordinates();
-		while(true) {
+		while(count<=Window.count && savecount<=1000 && count<=15 && System.currentTimeMillis()-Window.time<200) {
 			next.setValue(0, 0);
 			setMassFlag=false;
 			end=true;
 			flag=false;
-			if(count>Window.count) {//現時点での最短よりも多く移動しているThreadは閉じる(最短のはずのthreadも閉じてる？)
-				//System.out.println("not shorter");
-				break;
-			}
-			if(savecount>1000) {
-				//System.out.println("all killed");
-				break;
-			}
-			if(count>15) {
-				//System.out.println("count over");
-				break;
-			}
-			if(System.currentTimeMillis()-Window.time>=200) {
-				//System.out.println("time out");
-				break;
-			}
-			if(window.japan.stationContains(this.nowMass.getX(),this.nowMass.getY())) {
-				//System.out.println("goal");
+
+			if(window.japan.containsStation(this.nowMass)) {
 				setResult();
 				break;
 			}
 
 			count++;
 			savecount++;
-			//なぜlistがnullになるのか…？？
-			//やっぱりベクトルが異常値を取ってしまう
-			// →1インスタンス内の複数のスレッドが同時にアクセスしようとした場合にロックが可能なので
-			//	 Thread型のインスタンスを1つに絞りたい（インスタンスを複数作成している為）
 			synchronized(StationSearchThread.lock1) {
 				list = window.japan.getMovePossibles(this.nowMass);
-			}
-			if(list==null) {
-				//System.out.println("list_null");
-				break;
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
 
 			for(Coordinates coor:list) {
 				boolean conti=false;
 				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
-					Coordinates coordinates = new Coordinates(coor.getX(),coor.getY());
+					Coordinates coordinates = new Coordinates(coor);
 					synchronized(MultiThread.lock4) {
-						if(!window.japan.contains(coordinates.getX(),coordinates.getY())) {
+						if(!window.japan.contains(coordinates)) {
 							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 						}
 					}
@@ -1505,9 +1483,9 @@ class StationSearchThread implements Runnable{
 					continue;
 				}
 				//2マス移動(競合の可能性)
-				Coordinates coordinates = new Coordinates(coor.getX(),coor.getY());
+				Coordinates coordinates = new Coordinates(coor);
 				synchronized(MultiThread.lock4) {
-					if(!window.japan.contains(coor.getX(),coor.getY())) {
+					if(!window.japan.contains(coor)) {
 						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 					}
 				}
@@ -1535,7 +1513,6 @@ class StationSearchThread implements Runnable{
 			}
 			//行き先が無い場合終了
 			if(end) {
-				//System.out.println("正常終了end");
 				break;
 			}
 			Thread.yield();
@@ -1550,7 +1527,6 @@ class StationSearchThread implements Runnable{
 		this.nowMass.setValue(coor);
 	}
 
-
 	private void threadCopy(StationSearchThread original) {
 		this.count=original.count;
 		this.moveTrajectory.addAll(original.moveTrajectory);
@@ -1564,4 +1540,118 @@ class StationSearchThread implements Runnable{
 
 }
 
+//最寄り駅を探索するためのスレッド
+class ShopSearchThread implements Runnable{
+	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
+	public static int savecount=0;
+	public static final Object lock1 = new Object();
+	public static final Object lock2 = new Object();
+	public static final Object lock3 = new Object();
+	public static final Object lock4 = new Object();
+	private int count=0;
+	private Coordinates nowMass=new Coordinates();
+	private Window window;
 
+	public ShopSearchThread(Window window) {
+		this.window=window;
+	}
+
+
+	public void run() {
+		ArrayList<Coordinates> list;
+
+		boolean flag;
+		boolean end;
+		boolean setMassFlag;
+		Coordinates next = new Coordinates();
+		while(count<=Window.count && savecount<=1000 && count<=15 && System.currentTimeMillis()-Window.time<200) {
+			next.setValue(0, 0);
+			setMassFlag=false;
+			end=true;
+			flag=false;
+			if(window.japan.containsShop(this.nowMass)) {
+				setResult();
+				break;
+			}
+
+			count++;
+			savecount++;
+			synchronized(ShopSearchThread.lock1) {
+				list = window.japan.getMovePossibles(this.nowMass);
+			}
+			moveTrajectory.add(new Coordinates(nowMass));
+
+			for(Coordinates coor:list) {
+				boolean conti=false;
+				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
+					Coordinates coordinates = new Coordinates(coor);
+					synchronized(MultiThread.lock4) {
+						if(!window.japan.contains(coordinates)) {
+							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
+						}
+					}
+					if(moveTrajectory.get(j).contains(coordinates)) {//同じ場合、1つ前のmoveTrajectoryを削除
+						conti=true;
+						break;
+					}
+				}
+				if(conti) {
+					continue;
+				}
+				//2マス移動(競合の可能性)
+				Coordinates coordinates = new Coordinates(coor);
+				synchronized(MultiThread.lock4) {
+					if(!window.japan.contains(coor)) {
+						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
+					}
+				}
+				if(flag) {
+					//Threadを立ち上げる
+					ShopSearchThread thread = new ShopSearchThread(window);
+					synchronized(ShopSearchThread.lock3) {
+						thread.threadCopy(this);
+						thread.setMass(coor);//移動
+					}
+					Thread t = new Thread(thread);
+					t.start();
+				}else {
+					next.setValue(coordinates);
+					setMassFlag=true;
+					flag=true;
+				}
+				end=false;
+
+			}
+			if(setMassFlag) {
+				synchronized(ShopSearchThread.lock3) {
+					this.setMass(next);//移動
+				}
+			}
+			//行き先が無い場合終了
+			if(end) {
+				break;
+			}
+			Thread.yield();
+		}
+	}
+
+	public void setMass(int x,int y) {
+		this.nowMass.setValue(x,y);
+	}
+
+	public void setMass(Coordinates coor) {
+		this.nowMass.setValue(coor);
+	}
+
+	private void threadCopy(ShopSearchThread original) {
+		this.count=original.count;
+		this.moveTrajectory.addAll(original.moveTrajectory);
+	}
+
+	private void setResult() {
+		synchronized(ShopSearchThread.lock2) {
+			window.setNearestShopResult(count, nowMass);
+		}
+	}
+
+}
