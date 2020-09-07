@@ -25,8 +25,6 @@
  *
  *確認ポップアップを作る
  *
- *最寄りのカードショップの探索機構を作成する。
- *
  *探索手法にA*アルゴリズムを導入する
  *
  *・CPUがすること
@@ -111,6 +109,7 @@ public class Window implements ActionListener{
 	public static long time;//マルチスレッド開始からの経過時間
 	private Map<Integer,ArrayList<ArrayList<Coordinates>>> trajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//移動の軌跡
 	public ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
+	public ArrayList<Coordinates> nearestShopList = new ArrayList<Coordinates>();//最寄り店のリスト(複数存在する場合、その中からランダムに選択)
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
 	public Window(int endYear){
@@ -243,23 +242,23 @@ public class Window implements ActionListener{
 		nearestStationList.clear();
 		Thread t = new Thread();
 		trajectoryList.clear();
-		if(japan.stationContains(players.get(turn).getNowMass())){
+		if(japan.containsStation(players.get(turn).getNowMass())){
 			StationSearchThread thread = new StationSearchThread(this);
 			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
 			synchronized(StationSearchThread.lock3) {
-				thread.setMass(players.get(turn).getNowMass().getX(), players.get(turn).getNowMass().getY());
+				thread.setMass(players.get(turn).getNowMass());
 			}
 			t = new Thread(thread);
 			t.start();
 		}else {
 			//探索すべき方角の数を数える
-			ArrayList<Coordinates> list = japan.getMovePossibles(players.get(turn).getNowMass().getX(),players.get(turn).getNowMass().getY());
+			ArrayList<Coordinates> list = japan.getMovePossibles(players.get(turn).getNowMass());
 			for(Coordinates coor:list) {
 				//Threadを立ち上げる
 				StationSearchThread thread = new StationSearchThread(this);
 				thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
 				synchronized(StationSearchThread.lock3) {
-					thread.setMass(coor.getX(), coor.getY());
+					thread.setMass(coor);
 				}
 				t = new Thread(thread);
 				t.start();
@@ -287,6 +286,58 @@ public class Window implements ActionListener{
 		}
 	}
 
+	//最寄り店を探索
+	public void searchNearestShop() {
+		Window.time = System.currentTimeMillis();
+		Window.count=100;
+		ShopSearchThread.savecount=0;
+		nearestShopList.clear();
+		Thread t = new Thread();
+		trajectoryList.clear();
+		if(japan.containsShop(players.get(turn).getNowMass())){
+			ShopSearchThread thread = new ShopSearchThread(this);
+			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
+			synchronized(ShopSearchThread.lock3) {
+				thread.setMass(players.get(turn).getNowMass());
+			}
+			t = new Thread(thread);
+			t.start();
+		}else {
+			//探索すべき方角の数を数える
+			ArrayList<Coordinates> list = japan.getMovePossibles(players.get(turn).getNowMass());
+			for(Coordinates coor:list) {
+				//Threadを立ち上げる
+				ShopSearchThread thread = new ShopSearchThread(this);
+				thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
+				synchronized(ShopSearchThread.lock3) {
+					thread.setMass(coor);
+				}
+				t = new Thread(thread);
+				t.start();
+			}
+		}
+
+		System.out.println("OK");
+	}
+
+	//最寄り店の探索結果を格納
+	public synchronized void setNearestShopResult(int count, Coordinates nearestShop) {
+		if(Window.count>=count) {
+			System.out.println("x:"+nearestShop.getX()+"   y:"+nearestShop.getY());
+			Window.count=count;
+			boolean flag=true;
+			for(Coordinates coor:nearestShopList) {
+				if(coor.contains(nearestShop)) {
+					flag=false;
+				}
+			}
+			if(flag) {
+				this.nearestShopList.add(nearestShop);
+				System.out.println("x:"+nearestShop.getX()+"   y:"+nearestShop.getY());
+			}
+		}
+	}
+
 	//目的地までの最短距離を計算し、最短ルートを取得
 	private void searchShortestRoute() {
 		Window.time = System.currentTimeMillis();
@@ -301,7 +352,7 @@ public class Window implements ActionListener{
 			MultiThread thread = new MultiThread(this);
 			thread.moveTrajectory.add(new Coordinates(players.get(turn).getNowMass()));
 			synchronized(MultiThread.lock3) {
-				thread.setMass(coor.getX(), coor.getY());
+				thread.setMass(coor);
 			}
 			t = new Thread(thread);
 			t.start();
@@ -922,19 +973,19 @@ public class Window implements ActionListener{
 	//駅以外のマスを作成
 	private JPanel createMass(int j,int i,int distance) {
 		JPanel mass = new JPanel();
-		if(japan.blueContains(j,i)) {
+		if(japan.containsBlue(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.BLUE);
 			mass.setName("青"+japan.getIndexOfBlue(j, i));
-		}else if(japan.redContains(j,i)) {
+		}else if(japan.containsRed(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.RED);
 			mass.setName("赤"+japan.getIndexOfRed(j, i));
-		}else if(japan.yellowContains(j,i)) {
+		}else if(japan.containsYellow(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.YELLOW);
 			mass.setName("黄"+japan.getIndexOfYellow(j, i));
-		}else if(japan.shopContains(j,i)) {
+		}else if(japan.containsShop(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.GRAY);
 			mass.setName("店"+japan.getIndexOfShop(j, i));
@@ -1366,7 +1417,7 @@ public class Window implements ActionListener{
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
 				if(!japan.contains(j, i))continue;
-				if(japan.stationContains(j,i)) {
+				if(japan.containsStation(j,i)) {
 					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.getStationName(japan.getStationCoor(japan.getIndexOfStation(j, i))));
 					pre.setBackground(Color.WHITE);
 					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -1418,7 +1469,7 @@ public class Window implements ActionListener{
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
 				if(!japan.contains(j, i))continue;
-				if(japan.stationContains(j,i)) {//駅の座標が来たら
+				if(japan.containsStation(j,i)) {//駅の座標が来たら
 					int list=japan.getIndexOfStation(j, i);
 					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,japan.getStationName(japan.getStationCoor(list)));
 					if(list==japan.getGoalIndex()) {
@@ -1461,7 +1512,7 @@ public class Window implements ActionListener{
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
 				if(!japan.contains(j, i))continue;
-				if(japan.stationContains(j,i)) {//駅の座標が来たら
+				if(japan.containsStation(j,i)) {//駅の座標が来たら
 					int list=japan.getIndexOfStation(j, i);
 					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,japan.getStationName(japan.getStationCoor(list)));
 					if(list==japan.getGoalIndex()) {
