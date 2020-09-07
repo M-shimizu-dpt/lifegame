@@ -130,7 +130,6 @@ public class Card {
 				coor = this.useRandomAbility();
 			}
 			window.moveMaps(turn,coor);
-			window.nearestStationList.clear();
 			try {
 				Thread.sleep(1000);
 			}catch(InterruptedException e) {

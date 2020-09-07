@@ -5,634 +5,419 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Japan {
-	public Map<Coordinates,String> prefectureMapping = new HashMap<Coordinates,String>();//座標、駅名
-	public ArrayList<Property> property = new ArrayList<Property>();//物件一覧
-	public Map<String,ArrayList<Property>> prefectureInfo = new HashMap<String,ArrayList<Property>>();//駅名、駅の物件
-	public ArrayList<String> prefectureNameList = new ArrayList<String>();//駅名一覧
-	public ArrayList<Coordinates> prefectures = new ArrayList<Coordinates>();//駅の座標一覧
-	public ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
-	public ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
-	public ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
-	public ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
-	public Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
-	public Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
-	public int goal;//目的地の要素番号
+	private ArrayList<Station> stations = new ArrayList<Station>();
+	private ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
+	private ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
+	private ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
+	private ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
+	private Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
+	private Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
+	private int goal;//目的地の要素番号
+	private int saveGoal;//ゴール保存用
 
 	//1マス10
 	public Japan() {
 		//近畿の駅
-		prefectures.add(new Coordinates(1,8));
-		prefectures.add(new Coordinates(2,7));
-		prefectures.add(new Coordinates(3,9));
-		prefectures.add(new Coordinates(3,10));
-		prefectures.add(new Coordinates(4,1));
-		prefectures.add(new Coordinates(4,4));
-		prefectures.add(new Coordinates(4,8));
-		prefectures.add(new Coordinates(4,9));
-		prefectures.add(new Coordinates(7,7));
-		prefectures.add(new Coordinates(5,2));
-		prefectures.add(new Coordinates(5,10));
-		prefectures.add(new Coordinates(5,12));
-		prefectures.add(new Coordinates(5,13));
-		prefectures.add(new Coordinates(5,14));
-		prefectures.add(new Coordinates(5,15));
-		prefectures.add(new Coordinates(5,16));
-		prefectures.add(new Coordinates(6,9));
-		prefectures.add(new Coordinates(6,10));
-		prefectures.add(new Coordinates(6,11));
-		prefectures.add(new Coordinates(7,1));
-		prefectures.add(new Coordinates(7,10));
-		prefectures.add(new Coordinates(8,10));
-		prefectures.add(new Coordinates(8,11));
-		prefectures.add(new Coordinates(9,6));
-		prefectures.add(new Coordinates(9,9));
-		prefectures.add(new Coordinates(9,13));
-		prefectures.add(new Coordinates(10,6));
-		prefectures.add(new Coordinates(10,12));
-		prefectures.add(new Coordinates(11,6));
-		prefectures.add(new Coordinates(11,11));
-		prefectures.add(new Coordinates(11,14));
-		prefectures.add(new Coordinates(12,5));
-		prefectures.add(new Coordinates(12,10));
-		prefectures.add(new Coordinates(13,2));
-		prefectures.add(new Coordinates(13,4));
-		prefectures.add(new Coordinates(13,5));
-		prefectures.add(new Coordinates(14,9));
-		prefectures.add(new Coordinates(14,11));
-		prefectures.add(new Coordinates(14,12));
-		prefectures.add(new Coordinates(14,13));
-		prefectures.add(new Coordinates(15,13));
-
-		prefectureNameList.add("赤穂");
-		prefectureNameList.add("姫路");
-		prefectureNameList.add("明石");
-		prefectureNameList.add("淡路島");
-		prefectureNameList.add("城崎");
-		prefectureNameList.add("福知山");
-		prefectureNameList.add("三田");
-		prefectureNameList.add("神戸");
-		prefectureNameList.add("吹田");
-		prefectureNameList.add("出石");
-		prefectureNameList.add("天保山");
-		prefectureNameList.add("堺");
-		prefectureNameList.add("岸和田");
-		prefectureNameList.add("和歌山");
-		prefectureNameList.add("御坊");
-		prefectureNameList.add("白浜");
-		prefectureNameList.add("大阪");
-		prefectureNameList.add("なんば");
-		prefectureNameList.add("天王寺");
-		prefectureNameList.add("舞鶴");
-		prefectureNameList.add("北浜");
-		prefectureNameList.add("京橋");
-		prefectureNameList.add("鶴橋");
-		prefectureNameList.add("嵐山");
-		prefectureNameList.add("門真");
-		prefectureNameList.add("五條");
-		prefectureNameList.add("京都");
-		prefectureNameList.add("橿原");
-		prefectureNameList.add("祇園");
-		prefectureNameList.add("奈良");
-		prefectureNameList.add("新宮");
-		prefectureNameList.add("大津");
-		prefectureNameList.add("伊賀");
-		prefectureNameList.add("長浜");
-		prefectureNameList.add("彦根");
-		prefectureNameList.add("近江八幡");
-		prefectureNameList.add("四日市");
-		prefectureNameList.add("津");
-		prefectureNameList.add("松阪");
-		prefectureNameList.add("伊勢");
-		prefectureNameList.add("鳥羽");
-
-		for(int i=0;i<prefectures.size();i++) {
-			prefectureMapping.put(prefectures.get(i),prefectureNameList.get(i));
-		}
+		stations.add(new Station("赤穂",new Coordinates(1,8)));
+		stations.add(new Station("姫路",new Coordinates(2,7)));
+		stations.add(new Station("明石",new Coordinates(3,9)));
+		stations.add(new Station("淡路島",new Coordinates(3,10)));
+		stations.add(new Station("城崎",new Coordinates(4,1)));
+		stations.add(new Station("福知山",new Coordinates(4,4)));
+		stations.add(new Station("三田",new Coordinates(4,8)));
+		stations.add(new Station("神戸",new Coordinates(4,9)));
+		stations.add(new Station("吹田",new Coordinates(7,7)));
+		stations.add(new Station("出石",new Coordinates(5,2)));
+		stations.add(new Station("天保山",new Coordinates(5,10)));
+		stations.add(new Station("堺",new Coordinates(5,12)));
+		stations.add(new Station("岸和田",new Coordinates(5,13)));
+		stations.add(new Station("和歌山",new Coordinates(5,14)));
+		stations.add(new Station("御坊",new Coordinates(5,15)));
+		stations.add(new Station("白浜",new Coordinates(5,16)));
+		stations.add(new Station("大阪",new Coordinates(6,9)));
+		stations.add(new Station("なんば",new Coordinates(6,10)));
+		stations.add(new Station("天王寺",new Coordinates(6,11)));
+		stations.add(new Station("舞鶴",new Coordinates(7,1)));
+		stations.add(new Station("北浜",new Coordinates(7,10)));
+		stations.add(new Station("京橋",new Coordinates(8,10)));
+		stations.add(new Station("鶴橋",new Coordinates(8,11)));
+		stations.add(new Station("嵐山",new Coordinates(9,6)));
+		stations.add(new Station("門真",new Coordinates(9,9)));
+		stations.add(new Station("五條",new Coordinates(9,13)));
+		stations.add(new Station("京都",new Coordinates(10,6)));
+		stations.add(new Station("橿原",new Coordinates(10,12)));
+		stations.add(new Station("祇園",new Coordinates(11,6)));
+		stations.add(new Station("奈良",new Coordinates(11,11)));
+		stations.add(new Station("新宮",new Coordinates(11,14)));
+		stations.add(new Station("大津",new Coordinates(12,5)));
+		stations.add(new Station("伊賀",new Coordinates(12,10)));
+		stations.add(new Station("長浜",new Coordinates(13,2)));
+		stations.add(new Station("彦根",new Coordinates(13,4)));
+		stations.add(new Station("近江八幡",new Coordinates(13,5)));
+		stations.add(new Station("四日市",new Coordinates(14,9)));
+		stations.add(new Station("津",new Coordinates(14,11)));
+		stations.add(new Station("松阪",new Coordinates(14,12)));
+		stations.add(new Station("伊勢",new Coordinates(14,13)));
+		stations.add(new Station("鳥羽",new Coordinates(15,13)));
 
 		//赤穂
-		property.add(new Property("塩饅頭屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("忠臣蔵グッズ屋", 1000, 1.0, 1.5, 2.0));
-		property.add(new Property("布海苔養殖場", 30000, 0.01, 0.02, 0.03));
-		property.add(new Property("製塩工場", 70000, 0.03, 0.04, 0.05));//3
-		property.add(new Property("製塩工場", 70000, 0.03, 0.04, 0.05));//3
-		property.add(new Property("製塩工場", 70000, 0.03, 0.04, 0.05));//3
+		stations.get(0).addProperty(new Property("塩饅頭屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(0).addProperty(new Property("忠臣蔵グッズ屋", 1000, 1.0, 1.5, 2.0));
+		stations.get(0).addProperty(new Property("布海苔養殖場", 30000, 0.01, 0.02, 0.03));
+		stations.get(0).addProperty(new Property("製塩工場", 70000, 0.03, 0.04, 0.05));//3
+		stations.get(0).addProperty(new Property("製塩工場", 70000, 0.03, 0.04, 0.05));//3
+		stations.get(0).addProperty(new Property("製塩工場", 70000, 0.03, 0.04, 0.05));//3
 		//姫路
-		property.add(new Property("手延べそうめん屋", 1000, 0.25, 0.3, 0.4));//2
-		property.add(new Property("手延べそうめん屋", 1000, 0.25, 0.3, 0.4));//2
-		property.add(new Property("焼きアナゴ屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("焼きアナゴ屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("革製品工場", 10000, 0.02, 0.03, 0.04));
-		property.add(new Property("石油工場", 800000, 0.01, 0.03, 0.05));
-		property.add(new Property("化学工場", 1000000, 0.01, 0.03, 0.05));
-		property.add(new Property("製鉄所", 1400000, 0.03, 0.04, 0.05));
+		stations.get(1).addProperty(new Property("手延べそうめん屋", 1000, 0.25, 0.3, 0.4));//2
+		stations.get(1).addProperty(new Property("手延べそうめん屋", 1000, 0.25, 0.3, 0.4));//2
+		stations.get(1).addProperty(new Property("焼きアナゴ屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(1).addProperty(new Property("焼きアナゴ屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(1).addProperty(new Property("革製品工場", 10000, 0.02, 0.03, 0.04));
+		stations.get(1).addProperty(new Property("石油工場", 800000, 0.01, 0.03, 0.05));
+		stations.get(1).addProperty(new Property("化学工場", 1000000, 0.01, 0.03, 0.05));
+		stations.get(1).addProperty(new Property("製鉄所", 1400000, 0.03, 0.04, 0.05));
 		//明石
-		property.add(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
-		property.add(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
-		property.add(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
-		property.add(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
-		property.add(new Property("海鮮市場", 60000, 0.02, 0.03, 0.04));
+		stations.get(2).addProperty(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
+		stations.get(2).addProperty(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
+		stations.get(2).addProperty(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
+		stations.get(2).addProperty(new Property("明石たこ焼き屋", 1000, 0.5, 0.6, 0.7));//4
+		stations.get(2).addProperty(new Property("海鮮市場", 60000, 0.02, 0.03, 0.04));
 		//淡路島
-		property.add(new Property("引き戻し屋", 500, 1.0, 2.0, 3.0));
-		property.add(new Property("玉ねぎ畑", 5000, 0.08, 0.12, 0.16));//2
-		property.add(new Property("玉ねぎ畑", 5000, 0.08, 0.12, 0.16));//2
-		property.add(new Property("お香工場", 10000, 0.02, 0.04, 0.06));
-		property.add(new Property("淡路瓦工場", 30000, 0.01, 0.02, 0.03));
+		stations.get(3).addProperty(new Property("引き戻し屋", 500, 1.0, 2.0, 3.0));
+		stations.get(3).addProperty(new Property("玉ねぎ畑", 5000, 0.08, 0.12, 0.16));//2
+		stations.get(3).addProperty(new Property("玉ねぎ畑", 5000, 0.08, 0.12, 0.16));//2
+		stations.get(3).addProperty(new Property("お香工場", 10000, 0.02, 0.04, 0.06));
+		stations.get(3).addProperty(new Property("淡路瓦工場", 30000, 0.01, 0.02, 0.03));
 		//城崎
-		property.add(new Property("湯上りジュース屋", 500, 0.5, 0.7, 0.8));
-		property.add(new Property("カニ寿司屋", 1000, 0.25, 0.3, 0.5));
-		property.add(new Property("麦わら細工工房", 3000, 0.25, 0.3, 0.5));
-		property.add(new Property("城崎温泉旅館", 100000, 0.02, 0.03, 0.05));
-		property.add(new Property("カニ割烹旅館", 200000, 0.05, 0.06, 0.07));
+		stations.get(4).addProperty(new Property("湯上りジュース屋", 500, 0.5, 0.7, 0.8));
+		stations.get(4).addProperty(new Property("カニ寿司屋", 1000, 0.25, 0.3, 0.5));
+		stations.get(4).addProperty(new Property("麦わら細工工房", 3000, 0.25, 0.3, 0.5));
+		stations.get(4).addProperty(new Property("城崎温泉旅館", 100000, 0.02, 0.03, 0.05));
+		stations.get(4).addProperty(new Property("カニ割烹旅館", 200000, 0.05, 0.06, 0.07));
 		//福知山
-		property.add(new Property("音頭せんべい屋", 1000, 0.5, 1.0, 1.5));
-		property.add(new Property("ブドウ園", 5000, 0.05, 0.06, 0.07));
-		property.add(new Property("タケノコ林", 8000, 0.05, 0.06, 0.07));
-		property.add(new Property("栗のテリーヌ屋", 20000, 0.1, 0.15 ,0.2));
-		property.add(new Property("痔の薬品工場", 500000, 0.1, 0.15, 0.2));
-		property.add(new Property("磁気テープ工場", 600000, 0.03, 0.04, 0.05));
-		property.add(new Property("ビタミン剤工場", 1000000, 0.07, 0.1, 0.13));
+		stations.get(5).addProperty(new Property("音頭せんべい屋", 1000, 0.5, 1.0, 1.5));
+		stations.get(5).addProperty(new Property("ブドウ園", 5000, 0.05, 0.06, 0.07));
+		stations.get(5).addProperty(new Property("タケノコ林", 8000, 0.05, 0.06, 0.07));
+		stations.get(5).addProperty(new Property("栗のテリーヌ屋", 20000, 0.1, 0.15 ,0.2));
+		stations.get(5).addProperty(new Property("痔の薬品工場", 500000, 0.1, 0.15, 0.2));
+		stations.get(5).addProperty(new Property("磁気テープ工場", 600000, 0.03, 0.04, 0.05));
+		stations.get(5).addProperty(new Property("ビタミン剤工場", 1000000, 0.07, 0.1, 0.13));
 		//三田
-		property.add(new Property("すき焼きパン屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("丹波栗屋", 10000, 0.02, 0.03, 0.04));//2
-		property.add(new Property("丹波栗屋", 10000, 0.02, 0.03, 0.04));//2
-		property.add(new Property("三田牛ステーキ屋", 30000, 0.03, 0.04, 0.05));
-		property.add(new Property("丹波松茸屋", 50000, 0.07, 0.08, 0.09));
+		stations.get(6).addProperty(new Property("すき焼きパン屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(6).addProperty(new Property("丹波栗屋", 10000, 0.02, 0.03, 0.04));//2
+		stations.get(6).addProperty(new Property("丹波栗屋", 10000, 0.02, 0.03, 0.04));//2
+		stations.get(6).addProperty(new Property("三田牛ステーキ屋", 30000, 0.03, 0.04, 0.05));
+		stations.get(6).addProperty(new Property("丹波松茸屋", 50000, 0.07, 0.08, 0.09));
 		//神戸
-		property.add(new Property("そばめし屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("そばめし屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("フランスパン屋", 10000, 0.03, 0.04, 0.05));//2
-		property.add(new Property("フランスパン屋", 10000, 0.03, 0.04, 0.05));//2
-		property.add(new Property("中華飯店", 100000, 0.02, 0.03, 0.05));
-		property.add(new Property("ステーキハウス", 150000, 0.03, 0.05, 0.07));
-		property.add(new Property("ハーバーパーク", 1300000, 0.02, 0.03, 0.04));
-		property.add(new Property("南京町中華街", 2000000, 0.02, 0.03, 0.04));
+		stations.get(7).addProperty(new Property("そばめし屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(7).addProperty(new Property("そばめし屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(7).addProperty(new Property("フランスパン屋", 10000, 0.03, 0.04, 0.05));//2
+		stations.get(7).addProperty(new Property("フランスパン屋", 10000, 0.03, 0.04, 0.05));//2
+		stations.get(7).addProperty(new Property("中華飯店", 100000, 0.02, 0.03, 0.05));
+		stations.get(7).addProperty(new Property("ステーキハウス", 150000, 0.03, 0.05, 0.07));
+		stations.get(7).addProperty(new Property("ハーバーパーク", 1300000, 0.02, 0.03, 0.04));
+		stations.get(7).addProperty(new Property("南京町中華街", 2000000, 0.02, 0.03, 0.04));
 		//吹田
-		property.add(new Property("くずきり工場", 20000, 0.03, 0.04, 0.05));
-		property.add(new Property("げりぴー工場", 50000, 0.02, 0.03, 0.04));
-		property.add(new Property("てっぺん化粧品工場", 60000, 0.02, 0.03, 0.04));
-		property.add(new Property("即席めん工場", 600000, 0.07, 0.08, 0.09));
-		property.add(new Property("ビール工場", 1000000, 0.04, 0.05, 0.06));
-		property.add(new Property("ぞうきん工場", 1200000, 0.02, 0.03, 0.04));
-		property.add(new Property("目薬メーカー", 1500000, 0.04, 0.05, 0.06));
+		stations.get(8).addProperty(new Property("くずきり工場", 20000, 0.03, 0.04, 0.05));
+		stations.get(8).addProperty(new Property("げりぴー工場", 50000, 0.02, 0.03, 0.04));
+		stations.get(8).addProperty(new Property("てっぺん化粧品工場", 60000, 0.02, 0.03, 0.04));
+		stations.get(8).addProperty(new Property("即席めん工場", 600000, 0.07, 0.08, 0.09));
+		stations.get(8).addProperty(new Property("ビール工場", 1000000, 0.04, 0.05, 0.06));
+		stations.get(8).addProperty(new Property("ぞうきん工場", 1200000, 0.02, 0.03, 0.04));
+		stations.get(8).addProperty(new Property("目薬メーカー", 1500000, 0.04, 0.05, 0.06));
 		//出石
-		property.add(new Property("皿そば屋", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("皿そば屋", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("皿そば屋", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("露店トマト店", 1000, 0.8, 1.0, 1.5));
-		property.add(new Property("出石白磁工房", 10000, 0.01, 0.02, 0.03));
+		stations.get(9).addProperty(new Property("皿そば屋", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(9).addProperty(new Property("皿そば屋", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(9).addProperty(new Property("皿そば屋", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(9).addProperty(new Property("露店トマト店", 1000, 0.8, 1.0, 1.5));
+		stations.get(9).addProperty(new Property("出石白磁工房", 10000, 0.01, 0.02, 0.03));
 		//天保山
-		property.add(new Property("ロックカフェ", 20000, 0.03, 0.04, 0.05));
-		property.add(new Property("大観覧車", 400000, 0.03, 0.04, 0.05));
-		property.add(new Property("アウトレットモール", 1000000, 0.04, 0.05, 0.06));
-		property.add(new Property("ジンベイザメ水族館", 6000000, 0.1, 0.2, 0.3));
-		property.add(new Property("映画ランドジャパン", 35000000, 0.01, 0.02, 0.03));
+		stations.get(10).addProperty(new Property("ロックカフェ", 20000, 0.03, 0.04, 0.05));
+		stations.get(10).addProperty(new Property("大観覧車", 400000, 0.03, 0.04, 0.05));
+		stations.get(10).addProperty(new Property("アウトレットモール", 1000000, 0.04, 0.05, 0.06));
+		stations.get(10).addProperty(new Property("ジンベイザメ水族館", 6000000, 0.1, 0.2, 0.3));
+		stations.get(10).addProperty(new Property("映画ランドジャパン", 35000000, 0.01, 0.02, 0.03));
 		//堺
-		property.add(new Property("かすうどん屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("かすうどん屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("くるみ餅屋", 1000, 1.0, 2.0, 3.0));
-		property.add(new Property("刃物工場", 20000, 0.03, 0.04, 0.05));
-		property.add(new Property("クラッカー菓子工場", 20000, 0.07, 0.08, 0.09));
-		property.add(new Property("回転寿司チェーン", 200000, 0.07, 0.08, 0.09));
-		property.add(new Property("引越センター", 370000, 0.07, 0.08, 0.09));
+		stations.get(11).addProperty(new Property("かすうどん屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(11).addProperty(new Property("かすうどん屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(11).addProperty(new Property("くるみ餅屋", 1000, 1.0, 2.0, 3.0));
+		stations.get(11).addProperty(new Property("刃物工場", 20000, 0.03, 0.04, 0.05));
+		stations.get(11).addProperty(new Property("クラッカー菓子工場", 20000, 0.07, 0.08, 0.09));
+		stations.get(11).addProperty(new Property("回転寿司チェーン", 200000, 0.07, 0.08, 0.09));
+		stations.get(11).addProperty(new Property("引越センター", 370000, 0.07, 0.08, 0.09));
 		//岸和田
-		property.add(new Property("だんじりグッズ屋", 1000, 1.0, 2.0, 3.0));
-		property.add(new Property("玉ねぎ畑", 3000, 0.05, 0.06, 0.07));
-		property.add(new Property("水ナス畑", 5000, 0.1, 0.11, 0.12));//2
-		property.add(new Property("水ナス畑", 5000, 0.1, 0.11, 0.12));//2
-		property.add(new Property("顕微鏡ガラス工場", 200000, 0.02, 0.03, 0.04));
+		stations.get(12).addProperty(new Property("だんじりグッズ屋", 1000, 1.0, 2.0, 3.0));
+		stations.get(12).addProperty(new Property("玉ねぎ畑", 3000, 0.05, 0.06, 0.07));
+		stations.get(12).addProperty(new Property("水ナス畑", 5000, 0.1, 0.11, 0.12));//2
+		stations.get(12).addProperty(new Property("水ナス畑", 5000, 0.1, 0.11, 0.12));//2
+		stations.get(12).addProperty(new Property("顕微鏡ガラス工場", 200000, 0.02, 0.03, 0.04));
 		//和歌山
-		property.add(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("富有柿園", 5000, 0.1, 0.15, 0.2));
-		property.add(new Property("ネーブル園", 8000, 0.05, 0.08, 0.1));
-		property.add(new Property("梅干し林", 10000, 0.05, 0.08, 0.1));//2
-		property.add(new Property("梅干し林", 10000, 0.05, 0.08, 0.1));//2
+		stations.get(13).addProperty(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
+		stations.get(13).addProperty(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
+		stations.get(13).addProperty(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
+		stations.get(13).addProperty(new Property("ミカン畑", 5000, 0.05, 0.08, 0.1));//4
+		stations.get(13).addProperty(new Property("富有柿園", 5000, 0.1, 0.15, 0.2));
+		stations.get(13).addProperty(new Property("ネーブル園", 8000, 0.05, 0.08, 0.1));
+		stations.get(13).addProperty(new Property("梅干し林", 10000, 0.05, 0.08, 0.1));//2
+		stations.get(13).addProperty(new Property("梅干し林", 10000, 0.05, 0.08, 0.1));//2
 		//御坊
-		property.add(new Property("ジャンボかまぼこ屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("ピーマン畑", 3000, 0.05, 0.06, 0.07));
-		property.add(new Property("ミカン畑", 5000, 0.08, 0.1, 0.12));//2
-		property.add(new Property("ミカン畑", 5000, 0.08, 0.1, 0.12));//2
-		property.add(new Property("梅林", 8000, 0.05, 0.06, 0.07));//2
-		property.add(new Property("梅林", 8000, 0.05, 0.06, 0.07));//2
-		property.add(new Property("麻雀牌工場", 100000, 0.1, 0.11, 0.12));
+		stations.get(14).addProperty(new Property("ジャンボかまぼこ屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(14).addProperty(new Property("ピーマン畑", 3000, 0.05, 0.06, 0.07));
+		stations.get(14).addProperty(new Property("ミカン畑", 5000, 0.08, 0.1, 0.12));//2
+		stations.get(14).addProperty(new Property("ミカン畑", 5000, 0.08, 0.1, 0.12));//2
+		stations.get(14).addProperty(new Property("梅林", 8000, 0.05, 0.06, 0.07));//2
+		stations.get(14).addProperty(new Property("梅林", 8000, 0.05, 0.06, 0.07));//2
+		stations.get(14).addProperty(new Property("麻雀牌工場", 100000, 0.1, 0.11, 0.12));
 		//白浜
-		property.add(new Property("レタス栽培", 3000, 0.05, 0.08, 0.1));
-		property.add(new Property("露天風呂", 30000, 0.01, 0.02, 0.03));
-		property.add(new Property("アニマルパーク", 80000, 0.01, 0.02, 0.03));
-		property.add(new Property("日本旅館", 100000, 0.01, 0.02, 0.03));//2
-		property.add(new Property("日本旅館", 100000, 0.01, 0.02, 0.03));//2
-		property.add(new Property("ホテル", 300000, 0.02, 0.03, 0.04));//2
-		property.add(new Property("ホテル", 300000, 0.02, 0.03, 0.04));//2
-		property.add(new Property("ゴルフ場", 500000, 0.01, 0.02, 0.03));
+		stations.get(15).addProperty(new Property("レタス栽培", 3000, 0.05, 0.08, 0.1));
+		stations.get(15).addProperty(new Property("露天風呂", 30000, 0.01, 0.02, 0.03));
+		stations.get(15).addProperty(new Property("アニマルパーク", 80000, 0.01, 0.02, 0.03));
+		stations.get(15).addProperty(new Property("日本旅館", 100000, 0.01, 0.02, 0.03));//2
+		stations.get(15).addProperty(new Property("日本旅館", 100000, 0.01, 0.02, 0.03));//2
+		stations.get(15).addProperty(new Property("ホテル", 300000, 0.02, 0.03, 0.04));//2
+		stations.get(15).addProperty(new Property("ホテル", 300000, 0.02, 0.03, 0.04));//2
+		stations.get(15).addProperty(new Property("ゴルフ場", 500000, 0.01, 0.02, 0.03));
 		//大阪
-		property.add(new Property("たこ焼き屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("たこ焼き屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("お好み焼き屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("ねぎ焼き屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("ねぎ焼き屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("きつねうどん屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("串カツ屋", 1000, 0.8, 1.0, 1.5));
-		property.add(new Property("はりはり鍋屋", 10000, 0.05, 0.06, 0.07));
-		property.add(new Property("お笑い劇場", 80000, 0.1, 0.2, 0.3));
-		property.add(new Property("製薬会社", 400000, 0.02, 0.03, 0.05));//2
-		property.add(new Property("製薬会社", 400000, 0.02, 0.03, 0.05));//2
-		property.add(new Property("プロ野球チーム", 770000, 0.04, 0.05, 0.06));
-		property.add(new Property("水族館", 1350000, 0.01, 0.02, 0.03));
-		property.add(new Property("テレビ局", 4440000, 0.05, 0.06, 0.1));
-		property.add(new Property("映画ランドジャパン", 5400000, 0.02, 0.03, 0.04));
+		stations.get(16).addProperty(new Property("たこ焼き屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(16).addProperty(new Property("たこ焼き屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(16).addProperty(new Property("お好み焼き屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(16).addProperty(new Property("ねぎ焼き屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(16).addProperty(new Property("ねぎ焼き屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(16).addProperty(new Property("きつねうどん屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(16).addProperty(new Property("串カツ屋", 1000, 0.8, 1.0, 1.5));
+		stations.get(16).addProperty(new Property("はりはり鍋屋", 10000, 0.05, 0.06, 0.07));
+		stations.get(16).addProperty(new Property("お笑い劇場", 80000, 0.1, 0.2, 0.3));
+		stations.get(16).addProperty(new Property("製薬会社", 400000, 0.02, 0.03, 0.05));//2
+		stations.get(16).addProperty(new Property("製薬会社", 400000, 0.02, 0.03, 0.05));//2
+		stations.get(16).addProperty(new Property("プロ野球チーム", 770000, 0.04, 0.05, 0.06));
+		stations.get(16).addProperty(new Property("水族館", 1350000, 0.01, 0.02, 0.03));
+		stations.get(16).addProperty(new Property("テレビ局", 4440000, 0.05, 0.06, 0.1));
+		stations.get(16).addProperty(new Property("映画ランドジャパン", 5400000, 0.02, 0.03, 0.04));
 		//なんば
-		property.add(new Property("たこ焼き屋", 1000, 1.0, 1.5, 2.0));
-		property.add(new Property("豚まん屋", 1000, 1.0, 1.5, 2.0));
-		property.add(new Property("お笑い劇場", 50000, 0.15, 0.2, 0.25));
-		property.add(new Property("黒門市場", 160000, 0.06, 0.07, 0.08));
-		property.add(new Property("お笑い興業", 500000, 0.1, 0.12, 0.14));
-		property.add(new Property("日本橋電気街", 1000000, 0.03, 0.04, 0.05));
-		property.add(new Property("老舗デパート", 5600000, 0.04, 0.05, 0.06));
+		stations.get(17).addProperty(new Property("たこ焼き屋", 1000, 1.0, 1.5, 2.0));
+		stations.get(17).addProperty(new Property("豚まん屋", 1000, 1.0, 1.5, 2.0));
+		stations.get(17).addProperty(new Property("お笑い劇場", 50000, 0.15, 0.2, 0.25));
+		stations.get(17).addProperty(new Property("黒門市場", 160000, 0.06, 0.07, 0.08));
+		stations.get(17).addProperty(new Property("お笑い興業", 500000, 0.1, 0.12, 0.14));
+		stations.get(17).addProperty(new Property("日本橋電気街", 1000000, 0.03, 0.04, 0.05));
+		stations.get(17).addProperty(new Property("老舗デパート", 5600000, 0.04, 0.05, 0.06));
 		//天王寺
-		property.add(new Property("将棋場", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("シチューうどん屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("串カツ屋", 1000, 0.8, 1.0, 1.2));
-		property.add(new Property("ヨーグルトケーキ屋", 1000, 1.0, 1.5, 2.0));
-		property.add(new Property("動物園", 400000, 0.01, 0.02, 0.03));
-		property.add(new Property("仰天閣タワー", 800000, 0.02, 0.03, 0.04));
-		property.add(new Property("あべのルルカス", 13000000, 0.02, 0.03, 0.04));
+		stations.get(18).addProperty(new Property("将棋場", 1000, 0.5, 0.6, 0.7));
+		stations.get(18).addProperty(new Property("シチューうどん屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(18).addProperty(new Property("串カツ屋", 1000, 0.8, 1.0, 1.2));
+		stations.get(18).addProperty(new Property("ヨーグルトケーキ屋", 1000, 1.0, 1.5, 2.0));
+		stations.get(18).addProperty(new Property("動物園", 400000, 0.01, 0.02, 0.03));
+		stations.get(18).addProperty(new Property("仰天閣タワー", 800000, 0.02, 0.03, 0.04));
+		stations.get(18).addProperty(new Property("あべのルルカス", 13000000, 0.02, 0.03, 0.04));
 		//舞鶴
-		property.add(new Property("肉じゃが屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("肉じゃが屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("軍港カレー", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("軍港カレー", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("軍港カレー", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("万願寺唐辛子畑", 3000, 0.05, 0.08, 0.1));
-		property.add(new Property("こっぺ蟹料理屋", 20000, 0.05, 0.06, 0.07));//2
-		property.add(new Property("こっぺ蟹料理屋", 20000, 0.05, 0.06, 0.07));//2
+		stations.get(19).addProperty(new Property("肉じゃが屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(19).addProperty(new Property("肉じゃが屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(19).addProperty(new Property("軍港カレー", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(19).addProperty(new Property("軍港カレー", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(19).addProperty(new Property("軍港カレー", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(19).addProperty(new Property("万願寺唐辛子畑", 3000, 0.05, 0.08, 0.1));
+		stations.get(19).addProperty(new Property("こっぺ蟹料理屋", 20000, 0.05, 0.06, 0.07));//2
+		stations.get(19).addProperty(new Property("こっぺ蟹料理屋", 20000, 0.05, 0.06, 0.07));//2
 		//北浜
-		property.add(new Property("あったらいいな製薬", 350000, 0.06, 0.08, 0.1));
-		property.add(new Property("アルバム制作会社", 660000, 0.04, 0.06, 0.08));
-		property.add(new Property("シノノギ製薬", 2000000, 0.04, 0.06, 0.08));
-		property.add(new Property("紡績工場", 2200000, 0.01, 0.02, 0.03));
-		property.add(new Property("繊維メーカー", 2400000, 0.01, 0.02, 0.03));
-		property.add(new Property("スタミナ製薬", 5000000, 0.02, 0.03, 0.4));
-		property.add(new Property("ビタミンA製薬", 15000000, 0.06, 0.08, 0.1));
+		stations.get(20).addProperty(new Property("あったらいいな製薬", 350000, 0.06, 0.08, 0.1));
+		stations.get(20).addProperty(new Property("アルバム制作会社", 660000, 0.04, 0.06, 0.08));
+		stations.get(20).addProperty(new Property("シノノギ製薬", 2000000, 0.04, 0.06, 0.08));
+		stations.get(20).addProperty(new Property("紡績工場", 2200000, 0.01, 0.02, 0.03));
+		stations.get(20).addProperty(new Property("繊維メーカー", 2400000, 0.01, 0.02, 0.03));
+		stations.get(20).addProperty(new Property("スタミナ製薬", 5000000, 0.02, 0.03, 0.4));
+		stations.get(20).addProperty(new Property("ビタミンA製薬", 15000000, 0.06, 0.08, 0.1));
 		//京橋
-		property.add(new Property("フランクフルト屋", 1000, 0.8, 1.0, 1.3));
-		property.add(new Property("つかみ寿司屋", 10000, 0.1, 0.2, 0.3));
-		property.add(new Property("お笑い劇場", 40000, 0.1, 0.2, 0.3));
-		property.add(new Property("テレビ局1", 100000, 0.07, 0.1, 0.13));
-		property.add(new Property("テレビ局2", 1000000, 0.1, 0.15, 0.2));
+		stations.get(21).addProperty(new Property("フランクフルト屋", 1000, 0.8, 1.0, 1.3));
+		stations.get(21).addProperty(new Property("つかみ寿司屋", 10000, 0.1, 0.2, 0.3));
+		stations.get(21).addProperty(new Property("お笑い劇場", 40000, 0.1, 0.2, 0.3));
+		stations.get(21).addProperty(new Property("テレビ局1", 100000, 0.07, 0.1, 0.13));
+		stations.get(21).addProperty(new Property("テレビ局2", 1000000, 0.1, 0.15, 0.2));
 		//鶴橋
-		property.add(new Property("チヂミ屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("トッポギ屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("韓国キムチ屋", 1000, 1.0, 1.5, 2.0));
-		property.add(new Property("韓国焼き肉屋", 3000, 0.8, 1.0, 1.2));//2
-		property.add(new Property("韓国焼き肉屋", 3000, 0.8, 1.0, 1.2));//2
+		stations.get(22).addProperty(new Property("チヂミ屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(22).addProperty(new Property("トッポギ屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(22).addProperty(new Property("韓国キムチ屋", 1000, 1.0, 1.5, 2.0));
+		stations.get(22).addProperty(new Property("韓国焼き肉屋", 3000, 0.8, 1.0, 1.2));//2
+		stations.get(22).addProperty(new Property("韓国焼き肉屋", 3000, 0.8, 1.0, 1.2));//2
 		//嵐山
-		property.add(new Property("湯豆腐料理屋", 10000, 0.03, 0.04, 0.05));//2
-		property.add(new Property("湯豆腐料理屋", 10000, 0.03, 0.04, 0.05));//2
-		property.add(new Property("高級料亭", 50000, 0.1, 0.2, 0.3));//2
-		property.add(new Property("高級料亭", 50000, 0.1, 0.2, 0.3));//2
-		property.add(new Property("料亭億兆", 600000, 0.07, 0.1, 0.12));
+		stations.get(23).addProperty(new Property("湯豆腐料理屋", 10000, 0.03, 0.04, 0.05));//2
+		stations.get(23).addProperty(new Property("湯豆腐料理屋", 10000, 0.03, 0.04, 0.05));//2
+		stations.get(23).addProperty(new Property("高級料亭", 50000, 0.1, 0.2, 0.3));//2
+		stations.get(23).addProperty(new Property("高級料亭", 50000, 0.1, 0.2, 0.3));//2
+		stations.get(23).addProperty(new Property("料亭億兆", 600000, 0.07, 0.1, 0.12));
 		//門真
-		property.add(new Property("クワイ園", 10000, 0.04, 0.08, 0.1));
-		property.add(new Property("自動車部品工場", 60000, 0.03, 0.05, 0.07));
-		property.add(new Property("経営の神様記念館", 240000, 0.1, 0.2, 0.3));
-		property.add(new Property("魔法瓶工場", 400000, 0.03, 0.04, 0.05));
-		property.add(new Property("ジェネリック薬品", 470000, 0.04, 0.05, 0.06));
-		property.add(new Property("電池充電器工場", 800000, 0.03, 0.04, 0.05));
-		property.add(new Property("ポニョソニック電機", 40000000, 0.1, 0.2, 0.3));
+		stations.get(24).addProperty(new Property("クワイ園", 10000, 0.04, 0.08, 0.1));
+		stations.get(24).addProperty(new Property("自動車部品工場", 60000, 0.03, 0.05, 0.07));
+		stations.get(24).addProperty(new Property("経営の神様記念館", 240000, 0.1, 0.2, 0.3));
+		stations.get(24).addProperty(new Property("魔法瓶工場", 400000, 0.03, 0.04, 0.05));
+		stations.get(24).addProperty(new Property("ジェネリック薬品", 470000, 0.04, 0.05, 0.06));
+		stations.get(24).addProperty(new Property("電池充電器工場", 800000, 0.03, 0.04, 0.05));
+		stations.get(24).addProperty(new Property("ポニョソニック電機", 40000000, 0.1, 0.2, 0.3));
 		//五條
-		property.add(new Property("柿の葉寿司屋", 1000, 0.8, 1.5, 2.0));//2
-		property.add(new Property("柿の葉寿司屋", 1000, 0.8, 1.5, 2.0));//2
-		property.add(new Property("富有柿園", 30000, 0.1, 0.2, 0.3));//2
-		property.add(new Property("富有柿園", 30000, 0.1, 0.2, 0.3));//2
-		property.add(new Property("柿ワイン工場", 50000, 0.04, 0.06, 0.08));
+		stations.get(25).addProperty(new Property("柿の葉寿司屋", 1000, 0.8, 1.5, 2.0));//2
+		stations.get(25).addProperty(new Property("柿の葉寿司屋", 1000, 0.8, 1.5, 2.0));//2
+		stations.get(25).addProperty(new Property("富有柿園", 30000, 0.1, 0.2, 0.3));//2
+		stations.get(25).addProperty(new Property("富有柿園", 30000, 0.1, 0.2, 0.3));//2
+		stations.get(25).addProperty(new Property("柿ワイン工場", 50000, 0.04, 0.06, 0.08));
 		//京都
-		property.add(new Property("油とり紙屋", 5000, 0.8, 1.0, 2.0));//2
-		property.add(new Property("油とり紙屋", 5000, 0.8, 1.0, 2.0));//2
-		property.add(new Property("麩まんじゅう屋", 10000, 0.05, 0.06, 0.07));
-		property.add(new Property("老舗コーヒー屋", 10000, 0.08, 0.09, 0.1));
-		property.add(new Property("あぶり餅屋", 10000, 0.1, 0.15, 0.2));
-		property.add(new Property("生八つ橋屋", 30000, 0.1, 0.15, 0.2));//2
-		property.add(new Property("生八つ橋屋", 30000, 0.1, 0.15, 0.2));//2
-		property.add(new Property("湯豆腐料理屋", 80000, 0.05, 0.1, 0.15));
-		property.add(new Property("錦上市場", 250000, 0.04, 0.08, 0.1));
-		property.add(new Property("料亭億兆", 1000000, 0.05, 0.08, 0.15));
+		stations.get(26).addProperty(new Property("油とり紙屋", 5000, 0.8, 1.0, 2.0));//2
+		stations.get(26).addProperty(new Property("油とり紙屋", 5000, 0.8, 1.0, 2.0));//2
+		stations.get(26).addProperty(new Property("麩まんじゅう屋", 10000, 0.05, 0.06, 0.07));
+		stations.get(26).addProperty(new Property("老舗コーヒー屋", 10000, 0.08, 0.09, 0.1));
+		stations.get(26).addProperty(new Property("あぶり餅屋", 10000, 0.1, 0.15, 0.2));
+		stations.get(26).addProperty(new Property("生八つ橋屋", 30000, 0.1, 0.15, 0.2));//2
+		stations.get(26).addProperty(new Property("生八つ橋屋", 30000, 0.1, 0.15, 0.2));//2
+		stations.get(26).addProperty(new Property("湯豆腐料理屋", 80000, 0.05, 0.1, 0.15));
+		stations.get(26).addProperty(new Property("錦上市場", 250000, 0.04, 0.08, 0.1));
+		stations.get(26).addProperty(new Property("料亭億兆", 1000000, 0.05, 0.08, 0.15));
 		//橿原
-		property.add(new Property("柿の葉寿司", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("石舞台グッズ屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("牛乳スープ鍋屋", 1000, 1.0, 1.5, 2.0));
-		property.add(new Property("富有柿園", 10000, 0.1, 0.2, 0.3));//2
-		property.add(new Property("富有柿園", 10000, 0.1, 0.2, 0.3));//2
+		stations.get(27).addProperty(new Property("柿の葉寿司", 1000, 0.5, 0.6, 0.7));
+		stations.get(27).addProperty(new Property("石舞台グッズ屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(27).addProperty(new Property("牛乳スープ鍋屋", 1000, 1.0, 1.5, 2.0));
+		stations.get(27).addProperty(new Property("富有柿園", 10000, 0.1, 0.2, 0.3));//2
+		stations.get(27).addProperty(new Property("富有柿園", 10000, 0.1, 0.2, 0.3));//2
 		//祇園
-		property.add(new Property("天然かき氷屋", 10000, 0.1, 0.2, 0.3));
-		property.add(new Property("帆布工場", 10000, 0.07, 0.1, 0.15));
-		property.add(new Property("葛きり屋", 20000, 0.1, 0.15, 0.2));
-		property.add(new Property("京の米料亭", 20000, 0.15, 0.2, 0.3));
-		property.add(new Property("生麩屋", 30000, 0.1, 0.2, 0.3));
-		property.add(new Property("鮨割烹", 30000, 0.15, 0.2, 0.3));
-		property.add(new Property("イタリアン料理店", 40000, 0.15, 0.2, 0.3));
+		stations.get(28).addProperty(new Property("天然かき氷屋", 10000, 0.1, 0.2, 0.3));
+		stations.get(28).addProperty(new Property("帆布工場", 10000, 0.07, 0.1, 0.15));
+		stations.get(28).addProperty(new Property("葛きり屋", 20000, 0.1, 0.15, 0.2));
+		stations.get(28).addProperty(new Property("京の米料亭", 20000, 0.15, 0.2, 0.3));
+		stations.get(28).addProperty(new Property("生麩屋", 30000, 0.1, 0.2, 0.3));
+		stations.get(28).addProperty(new Property("鮨割烹", 30000, 0.15, 0.2, 0.3));
+		stations.get(28).addProperty(new Property("イタリアン料理店", 40000, 0.15, 0.2, 0.3));
 		//奈良
-		property.add(new Property("鹿せんべい屋", 1000, 0.25, 0.3, 0.4));//2
-		property.add(new Property("鹿せんべい屋", 1000, 0.25, 0.3, 0.4));//2
-		property.add(new Property("柿の葉寿司屋", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("柿の葉寿司屋", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("柿の葉寿司屋", 1000, 0.5, 0.6, 0.7));//3
-		property.add(new Property("富有柿園", 8000, 0.1, 0.15, 0.2));//3
-		property.add(new Property("富有柿園", 8000, 0.1, 0.15, 0.2));//3
-		property.add(new Property("富有柿園", 8000, 0.1, 0.15, 0.2));//3
+		stations.get(29).addProperty(new Property("鹿せんべい屋", 1000, 0.25, 0.3, 0.4));//2
+		stations.get(29).addProperty(new Property("鹿せんべい屋", 1000, 0.25, 0.3, 0.4));//2
+		stations.get(29).addProperty(new Property("柿の葉寿司屋", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(29).addProperty(new Property("柿の葉寿司屋", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(29).addProperty(new Property("柿の葉寿司屋", 1000, 0.5, 0.6, 0.7));//3
+		stations.get(29).addProperty(new Property("富有柿園", 8000, 0.1, 0.15, 0.2));//3
+		stations.get(29).addProperty(new Property("富有柿園", 8000, 0.1, 0.15, 0.2));//3
+		stations.get(29).addProperty(new Property("富有柿園", 8000, 0.1, 0.15, 0.2));//3
 		//新宮
-		property.add(new Property("さんま寿司屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("さんま寿司屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("めはり寿司屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("めはり寿司屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
-		property.add(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
+		stations.get(30).addProperty(new Property("さんま寿司屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(30).addProperty(new Property("さんま寿司屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(30).addProperty(new Property("めはり寿司屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(30).addProperty(new Property("めはり寿司屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(30).addProperty(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
+		stations.get(30).addProperty(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
+		stations.get(30).addProperty(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
+		stations.get(30).addProperty(new Property("ヨシノスギ林", 10000, 0.05, 0.08, 0.1));//4
 		//大津
-		property.add(new Property("走り餅屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("しじみめし屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("しじみめし屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("和菓子屋", 10000, 0.02, 0.04, 0.06));
-		property.add(new Property("産業用センサー工場", 280000, 0.02, 0.04, 0.06));
-		property.add(new Property("バイオ研究所", 900000, 0.03, 0.04, 0.05));
-		property.add(new Property("液晶用ガラス工場", 3200000, 0.04, 0.05, 0.06));
+		stations.get(31).addProperty(new Property("走り餅屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(31).addProperty(new Property("しじみめし屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(31).addProperty(new Property("しじみめし屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(31).addProperty(new Property("和菓子屋", 10000, 0.02, 0.04, 0.06));
+		stations.get(31).addProperty(new Property("産業用センサー工場", 280000, 0.02, 0.04, 0.06));
+		stations.get(31).addProperty(new Property("バイオ研究所", 900000, 0.03, 0.04, 0.05));
+		stations.get(31).addProperty(new Property("液晶用ガラス工場", 3200000, 0.04, 0.05, 0.06));
 		//伊賀
-		property.add(new Property("手裏剣せんべい屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("堅焼きせんべい屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("松尾芭蕉グッズ屋", 3000, 0.1, 0.15, 0.2));
-		property.add(new Property("忍者屋敷", 20000, 0.03, 0.04, 0.05));
-		property.add(new Property("伊賀焼き物工房", 40000, 0.02, 0.04, 0.06));
-		property.add(new Property("伊賀牛屋", 60000, 0.03, 0.04, 0.05));//2
-		property.add(new Property("伊賀牛屋", 60000, 0.03, 0.04, 0.05));//2
+		stations.get(32).addProperty(new Property("手裏剣せんべい屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(32).addProperty(new Property("堅焼きせんべい屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(32).addProperty(new Property("松尾芭蕉グッズ屋", 3000, 0.1, 0.15, 0.2));
+		stations.get(32).addProperty(new Property("忍者屋敷", 20000, 0.03, 0.04, 0.05));
+		stations.get(32).addProperty(new Property("伊賀焼き物工房", 40000, 0.02, 0.04, 0.06));
+		stations.get(32).addProperty(new Property("伊賀牛屋", 60000, 0.03, 0.04, 0.05));//2
+		stations.get(32).addProperty(new Property("伊賀牛屋", 60000, 0.03, 0.04, 0.05));//2
 		//長浜
-		property.add(new Property("焼きサバそうめん屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("豊臣秀吉グッズ屋", 3000, 0.8, 1.0, 2.0));
-		property.add(new Property("オルゴール館", 30000, 0.02, 0.03, 0.04));
-		property.add(new Property("ガラス工房", 50000, 0.03, 0.04, 0.05));
-		property.add(new Property("フィギュア博物館", 80000, 0.05, 0.06, 0.07));
-		property.add(new Property("鉄道記念館", 510000, 0.02, 0.03, 0.04));
-		property.add(new Property("黒壁の街並み", 700000, 0.02, 0.03, 0.05));
+		stations.get(33).addProperty(new Property("焼きサバそうめん屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(33).addProperty(new Property("豊臣秀吉グッズ屋", 3000, 0.8, 1.0, 2.0));
+		stations.get(33).addProperty(new Property("オルゴール館", 30000, 0.02, 0.03, 0.04));
+		stations.get(33).addProperty(new Property("ガラス工房", 50000, 0.03, 0.04, 0.05));
+		stations.get(33).addProperty(new Property("フィギュア博物館", 80000, 0.05, 0.06, 0.07));
+		stations.get(33).addProperty(new Property("鉄道記念館", 510000, 0.02, 0.03, 0.04));
+		stations.get(33).addProperty(new Property("黒壁の街並み", 700000, 0.02, 0.03, 0.05));
 		//彦根
-		property.add(new Property("ひこっしーグッズ屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("和ローソク屋", 3000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("和ローソク屋", 3000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("赤かぶら漬け屋", 3000, 0.5, 0.6, 0.7));
-		property.add(new Property("塩すき焼き屋", 10000, 0.01, 0.02, 0.03));
+		stations.get(34).addProperty(new Property("ひこっしーグッズ屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(34).addProperty(new Property("和ローソク屋", 3000, 0.5, 0.6, 0.7));//2
+		stations.get(34).addProperty(new Property("和ローソク屋", 3000, 0.5, 0.6, 0.7));//2
+		stations.get(34).addProperty(new Property("赤かぶら漬け屋", 3000, 0.5, 0.6, 0.7));
+		stations.get(34).addProperty(new Property("塩すき焼き屋", 10000, 0.01, 0.02, 0.03));
 		//近江八幡
-		property.add(new Property("でっちようかん屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("でっちようかん屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("赤こんにゃく屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("赤こんにゃく屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("バウムクーヘン屋", 10000, 0.1, 0.15, 0.2));
-		property.add(new Property("近江牛屋", 70000, 0.05, 0.06, 0.07));//2
-		property.add(new Property("近江牛屋", 70000, 0.05, 0.06, 0.07));//2
-		property.add(new Property("製薬会社", 120000, 0.02, 0.03, 0.04));
+		stations.get(35).addProperty(new Property("でっちようかん屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(35).addProperty(new Property("でっちようかん屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(35).addProperty(new Property("赤こんにゃく屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(35).addProperty(new Property("赤こんにゃく屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(35).addProperty(new Property("バウムクーヘン屋", 10000, 0.1, 0.15, 0.2));
+		stations.get(35).addProperty(new Property("近江牛屋", 70000, 0.05, 0.06, 0.07));//2
+		stations.get(35).addProperty(new Property("近江牛屋", 70000, 0.05, 0.06, 0.07));//2
+		stations.get(35).addProperty(new Property("製薬会社", 120000, 0.02, 0.03, 0.04));
 		//四日市
-		property.add(new Property("とんてき屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("点火プラグ工場", 750000, 0.03, 0.04, 0.05));
-		property.add(new Property("食品素材工場", 770000, 0.03, 0.04, 0.05));
-		property.add(new Property("物流倉庫会社", 840000, 0.03, 0.04, 0.05));
-		property.add(new Property("板ガラス工場", 1000000, 0.03, 0.04, 0.05));
-		property.add(new Property("石油精製工場", 2000000, 0.02, 0.03, 0.04));//2
-		property.add(new Property("石油精製工場", 2000000, 0.02, 0.03, 0.04));//2
+		stations.get(36).addProperty(new Property("とんてき屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(36).addProperty(new Property("点火プラグ工場", 750000, 0.03, 0.04, 0.05));
+		stations.get(36).addProperty(new Property("食品素材工場", 770000, 0.03, 0.04, 0.05));
+		stations.get(36).addProperty(new Property("物流倉庫会社", 840000, 0.03, 0.04, 0.05));
+		stations.get(36).addProperty(new Property("板ガラス工場", 1000000, 0.03, 0.04, 0.05));
+		stations.get(36).addProperty(new Property("石油精製工場", 2000000, 0.02, 0.03, 0.04));//2
+		stations.get(36).addProperty(new Property("石油精製工場", 2000000, 0.02, 0.03, 0.04));//2
 		//津
-		property.add(new Property("福引せんべい屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("巨大餃子屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("うなぎ屋", 1000, 0.5, 0.6, 0.7));
-		property.add(new Property("天むす屋", 1000, 0.8, 1.0, 2.0));
-		property.add(new Property("ベビーラーメン工場", 180000, 0.02, 0.03, 0.04));
-		property.add(new Property("肉まんあんまん工場", 220000, 0.05, 0.06, 0.07));
-		property.add(new Property("造船所", 300000, 0.03, 0.04, 0.05));
+		stations.get(37).addProperty(new Property("福引せんべい屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(37).addProperty(new Property("巨大餃子屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(37).addProperty(new Property("うなぎ屋", 1000, 0.5, 0.6, 0.7));
+		stations.get(37).addProperty(new Property("天むす屋", 1000, 0.8, 1.0, 2.0));
+		stations.get(37).addProperty(new Property("ベビーラーメン工場", 180000, 0.02, 0.03, 0.04));
+		stations.get(37).addProperty(new Property("肉まんあんまん工場", 220000, 0.05, 0.06, 0.07));
+		stations.get(37).addProperty(new Property("造船所", 300000, 0.03, 0.04, 0.05));
 		//松阪
-		property.add(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
-		property.add(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
-		property.add(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
-		property.add(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
-		property.add(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
+		stations.get(38).addProperty(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
+		stations.get(38).addProperty(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
+		stations.get(38).addProperty(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
+		stations.get(38).addProperty(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
+		stations.get(38).addProperty(new Property("松阪牛屋", 80000, 0.03, 0.04, 0.05));//5
 		//伊勢
-		property.add(new Property("伊勢うどん屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("伊勢うどん屋", 1000, 0.5, 0.6, 0.7));//2
-		property.add(new Property("てこね寿司屋", 5000, 0.8, 1.0, 1.5));//2
-		property.add(new Property("てこね寿司屋", 5000, 0.8, 1.0, 1.5));//2
-		property.add(new Property("ふくふく餅屋", 10000, 0.04, 0.05, 0.06));
-		property.add(new Property("戦国パーク", 100000, 0.01, 0.02, 0.03));
-		property.add(new Property("おまいり横丁", 2000000, 0.02, 0.03, 0.04));
+		stations.get(39).addProperty(new Property("伊勢うどん屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(39).addProperty(new Property("伊勢うどん屋", 1000, 0.5, 0.6, 0.7));//2
+		stations.get(39).addProperty(new Property("てこね寿司屋", 5000, 0.8, 1.0, 1.5));//2
+		stations.get(39).addProperty(new Property("てこね寿司屋", 5000, 0.8, 1.0, 1.5));//2
+		stations.get(39).addProperty(new Property("ふくふく餅屋", 10000, 0.04, 0.05, 0.06));
+		stations.get(39).addProperty(new Property("戦国パーク", 100000, 0.01, 0.02, 0.03));
+		stations.get(39).addProperty(new Property("おまいり横丁", 2000000, 0.02, 0.03, 0.04));
 		//鳥羽
-		property.add(new Property("真珠養殖工場", 50000, 0.03, 0.05, 0.07));//2
-		property.add(new Property("真珠養殖工場", 50000, 0.03, 0.05, 0.07));//2
-		property.add(new Property("黒鯛漁", 70000, 0.04, 0.05, 0.6));
-		property.add(new Property("牡蠣養殖工場", 80000, 0.05, 0.06, 0.07));//2
-		property.add(new Property("牡蠣養殖工場", 80000, 0.05, 0.06, 0.07));//2
+		stations.get(40).addProperty(new Property("真珠養殖工場", 50000, 0.03, 0.05, 0.07));//2
+		stations.get(40).addProperty(new Property("真珠養殖工場", 50000, 0.03, 0.05, 0.07));//2
+		stations.get(40).addProperty(new Property("黒鯛漁", 70000, 0.04, 0.05, 0.6));
+		stations.get(40).addProperty(new Property("牡蠣養殖工場", 80000, 0.05, 0.06, 0.07));//2
+		stations.get(40).addProperty(new Property("牡蠣養殖工場", 80000, 0.05, 0.06, 0.07));//2
 
-		prefectureInfo.put("赤穂",new ArrayList<Property>());
-		for(int i=0;i<6;i++) {
-			prefectureInfo.get("赤穂").add(property.get(i));
-		}
-		prefectureInfo.put("姫路",new ArrayList<Property>());
-		for(int i=6;i<14;i++) {
-			prefectureInfo.get("姫路").add(property.get(i));
-		}
-		prefectureInfo.put("明石",new ArrayList<Property>());
-		for(int i=14;i<19;i++) {
-			prefectureInfo.get("明石").add(property.get(i));
-		}
-		prefectureInfo.put("淡路島",new ArrayList<Property>());
-		for(int i=19;i<24;i++) {
-			prefectureInfo.get("淡路島").add(property.get(i));
-		}
-		prefectureInfo.put("城崎",new ArrayList<Property>());
-		for(int i=24;i<29;i++) {
-			prefectureInfo.get("城崎").add(property.get(i));
-		}
-		prefectureInfo.put("福知山",new ArrayList<Property>());
-		for(int i=29;i<36;i++) {
-			prefectureInfo.get("福知山").add(property.get(i));
-		}
-		prefectureInfo.put("三田",new ArrayList<Property>());
-		for(int i=36;i<41;i++) {
-			prefectureInfo.get("三田").add(property.get(i));
-		}
-		prefectureInfo.put("神戸",new ArrayList<Property>());
-		for(int i=41;i<49;i++) {
-			prefectureInfo.get("神戸").add(property.get(i));
-		}
-		prefectureInfo.put("吹田",new ArrayList<Property>());
-		for(int i=49;i<56;i++) {
-			prefectureInfo.get("吹田").add(property.get(i));
-		}
-		prefectureInfo.put("出石",new ArrayList<Property>());
-		for(int i=56;i<61;i++) {
-			prefectureInfo.get("出石").add(property.get(i));
-		}
-		prefectureInfo.put("天保山",new ArrayList<Property>());
-		for(int i=61;i<66;i++) {
-			prefectureInfo.get("天保山").add(property.get(i));
-		}
-		prefectureInfo.put("堺",new ArrayList<Property>());
-		for(int i=66;i<73;i++) {
-			prefectureInfo.get("堺").add(property.get(i));
-		}
-		prefectureInfo.put("岸和田",new ArrayList<Property>());
-		for(int i=73;i<78;i++) {
-			prefectureInfo.get("岸和田").add(property.get(i));
-		}
-		prefectureInfo.put("和歌山",new ArrayList<Property>());
-		for(int i=78;i<86;i++) {
-			prefectureInfo.get("和歌山").add(property.get(i));
-		}
-		prefectureInfo.put("御坊",new ArrayList<Property>());
-		for(int i=86;i<93;i++) {
-			prefectureInfo.get("御坊").add(property.get(i));
-		}
-		prefectureInfo.put("白浜",new ArrayList<Property>());
-		for(int i=93;i<101;i++) {
-			prefectureInfo.get("白浜").add(property.get(i));
-		}
-		prefectureInfo.put("大阪",new ArrayList<Property>());
-		for(int i=101;i<116;i++) {
-			prefectureInfo.get("大阪").add(property.get(i));
-		}
-		prefectureInfo.put("なんば",new ArrayList<Property>());
-		for(int i=116;i<123;i++) {
-			prefectureInfo.get("なんば").add(property.get(i));
-		}
-		prefectureInfo.put("天王寺",new ArrayList<Property>());
-		for(int i=123;i<130;i++) {
-			prefectureInfo.get("天王寺").add(property.get(i));
-		}
-		prefectureInfo.put("舞鶴",new ArrayList<Property>());
-		for(int i=130;i<138;i++) {
-			prefectureInfo.get("舞鶴").add(property.get(i));
-		}
-		prefectureInfo.put("北浜",new ArrayList<Property>());
-		for(int i=138;i<145;i++) {
-			prefectureInfo.get("北浜").add(property.get(i));
-		}
-		prefectureInfo.put("京橋",new ArrayList<Property>());
-		for(int i=145;i<150;i++) {
-			prefectureInfo.get("京橋").add(property.get(i));
-		}
-		prefectureInfo.put("鶴橋",new ArrayList<Property>());
-		for(int i=150;i<155;i++) {
-			prefectureInfo.get("鶴橋").add(property.get(i));
-		}
-		prefectureInfo.put("嵐山",new ArrayList<Property>());
-		for(int i=155;i<160;i++) {
-			prefectureInfo.get("嵐山").add(property.get(i));
-		}
-		prefectureInfo.put("門真",new ArrayList<Property>());
-		for(int i=160;i<167;i++) {
-			prefectureInfo.get("門真").add(property.get(i));
-		}
-		prefectureInfo.put("五條",new ArrayList<Property>());
-		for(int i=167;i<172;i++) {
-			prefectureInfo.get("五條").add(property.get(i));
-		}
-		prefectureInfo.put("京都",new ArrayList<Property>());
-		for(int i=172;i<182;i++) {
-			prefectureInfo.get("京都").add(property.get(i));
-		}
-		prefectureInfo.put("橿原",new ArrayList<Property>());
-		for(int i=182;i<187;i++) {
-			prefectureInfo.get("橿原").add(property.get(i));
-		}
-		prefectureInfo.put("祇園",new ArrayList<Property>());
-		for(int i=187;i<194;i++) {
-			prefectureInfo.get("祇園").add(property.get(i));
-		}
-		prefectureInfo.put("奈良",new ArrayList<Property>());
-		for(int i=194;i<202;i++) {
-			prefectureInfo.get("奈良").add(property.get(i));
-		}
-		prefectureInfo.put("新宮",new ArrayList<Property>());
-		for(int i=202;i<210;i++) {
-			prefectureInfo.get("新宮").add(property.get(i));
-		}
-		prefectureInfo.put("大津",new ArrayList<Property>());
-		for(int i=210;i<217;i++) {
-			prefectureInfo.get("大津").add(property.get(i));
-		}
-		prefectureInfo.put("伊賀",new ArrayList<Property>());
-		for(int i=217;i<224;i++) {
-			prefectureInfo.get("伊賀").add(property.get(i));
-		}
-		prefectureInfo.put("長浜",new ArrayList<Property>());
-		for(int i=224;i<231;i++) {
-			prefectureInfo.get("長浜").add(property.get(i));
-		}
-		prefectureInfo.put("彦根",new ArrayList<Property>());
-		for(int i=231;i<236;i++) {
-			prefectureInfo.get("彦根").add(property.get(i));
-		}
-		prefectureInfo.put("近江八幡",new ArrayList<Property>());
-		for(int i=236;i<244;i++) {
-			prefectureInfo.get("近江八幡").add(property.get(i));
-		}
-		prefectureInfo.put("四日市",new ArrayList<Property>());
-		for(int i=244;i<251;i++) {
-			prefectureInfo.get("四日市").add(property.get(i));
-		}
-		prefectureInfo.put("津",new ArrayList<Property>());
-		for(int i=251;i<258;i++) {
-			prefectureInfo.get("津").add(property.get(i));
-		}
-		prefectureInfo.put("松阪",new ArrayList<Property>());
-		for(int i=258;i<263;i++) {
-			prefectureInfo.get("松阪").add(property.get(i));
-		}
-		prefectureInfo.put("伊勢",new ArrayList<Property>());
-		for(int i=263;i<270;i++) {
-			prefectureInfo.get("伊勢").add(property.get(i));
-		}
-		prefectureInfo.put("鳥羽",new ArrayList<Property>());
-		for(int i=270;i<275;i++) {
-			prefectureInfo.get("鳥羽").add(property.get(i));
-		}
-
-		railBoolMapping.put(prefectures.get(0),getBoolList(true,false,false,true));
-		railBoolMapping.put(prefectures.get(1),getBoolList(false,true,true,true));
-		railBoolMapping.put(prefectures.get(2),getBoolList(true,true,false,true));
-		railBoolMapping.put(prefectures.get(3),getBoolList(true,false,false,false));
-		railBoolMapping.put(prefectures.get(4),getBoolList(false,true,true,false));
-		railBoolMapping.put(prefectures.get(5),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(6),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(7),getBoolList(false,false,true,true));
-		railBoolMapping.put(prefectures.get(8),getBoolList(false,true,false,true));
-		railBoolMapping.put(prefectures.get(9),getBoolList(false,false,true,false));
-		railBoolMapping.put(prefectures.get(10),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(11),getBoolList(false,true,false,true));
-		railBoolMapping.put(prefectures.get(12),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(13),getBoolList(true,true,false,true));
-		railBoolMapping.put(prefectures.get(14),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(15),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(16),getBoolList(true,true,true,true));
-		railBoolMapping.put(prefectures.get(17),getBoolList(true,true,false,true));
-		railBoolMapping.put(prefectures.get(18),getBoolList(true,true,true,true));
-		railBoolMapping.put(prefectures.get(19),getBoolList(false,true,true,true));
-		railBoolMapping.put(prefectures.get(20),getBoolList(false,false,true,true));
-		railBoolMapping.put(prefectures.get(21),getBoolList(true,true,true,true));
-		railBoolMapping.put(prefectures.get(22),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(23),getBoolList(true,false,false,true));
-		railBoolMapping.put(prefectures.get(24),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(25),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(26),getBoolList(true,true,true,true));
-		railBoolMapping.put(prefectures.get(27),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(28),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(29),getBoolList(false,false,true,false));
-		railBoolMapping.put(prefectures.get(30),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(31),getBoolList(false,false,true,true));
-		railBoolMapping.put(prefectures.get(32),getBoolList(false,false,true,true));
-		railBoolMapping.put(prefectures.get(33),getBoolList(false,true,true,false));
-		railBoolMapping.put(prefectures.get(34),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(35),getBoolList(true,false,true,false));
-		railBoolMapping.put(prefectures.get(36),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(37),getBoolList(true,true,true,false));
-		railBoolMapping.put(prefectures.get(38),getBoolList(true,true,false,false));
-		railBoolMapping.put(prefectures.get(39),getBoolList(true,false,false,true));
-		railBoolMapping.put(prefectures.get(40),getBoolList(false,false,true,false));
-
+		railBoolMapping.put(stations.get(0).getCoordinates(),getBoolList(true,false,false,true));
+		railBoolMapping.put(stations.get(1).getCoordinates(),getBoolList(false,true,true,true));
+		railBoolMapping.put(stations.get(2).getCoordinates(),getBoolList(true,true,false,true));
+		railBoolMapping.put(stations.get(3).getCoordinates(),getBoolList(true,false,false,false));
+		railBoolMapping.put(stations.get(4).getCoordinates(),getBoolList(false,true,true,false));
+		railBoolMapping.put(stations.get(5).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(6).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(7).getCoordinates(),getBoolList(false,false,true,true));
+		railBoolMapping.put(stations.get(8).getCoordinates(),getBoolList(false,true,false,true));
+		railBoolMapping.put(stations.get(9).getCoordinates(),getBoolList(false,false,true,false));
+		railBoolMapping.put(stations.get(10).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(11).getCoordinates(),getBoolList(false,true,false,true));
+		railBoolMapping.put(stations.get(12).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(13).getCoordinates(),getBoolList(true,true,false,true));
+		railBoolMapping.put(stations.get(14).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(15).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(16).getCoordinates(),getBoolList(true,true,true,true));
+		railBoolMapping.put(stations.get(17).getCoordinates(),getBoolList(true,true,false,true));
+		railBoolMapping.put(stations.get(18).getCoordinates(),getBoolList(true,true,true,true));
+		railBoolMapping.put(stations.get(19).getCoordinates(),getBoolList(false,true,true,true));
+		railBoolMapping.put(stations.get(20).getCoordinates(),getBoolList(false,false,true,true));
+		railBoolMapping.put(stations.get(21).getCoordinates(),getBoolList(true,true,true,true));
+		railBoolMapping.put(stations.get(22).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(23).getCoordinates(),getBoolList(true,false,false,true));
+		railBoolMapping.put(stations.get(24).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(25).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(26).getCoordinates(),getBoolList(true,true,true,true));
+		railBoolMapping.put(stations.get(27).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(28).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(29).getCoordinates(),getBoolList(false,false,true,false));
+		railBoolMapping.put(stations.get(30).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(31).getCoordinates(),getBoolList(false,false,true,true));
+		railBoolMapping.put(stations.get(32).getCoordinates(),getBoolList(false,false,true,true));
+		railBoolMapping.put(stations.get(33).getCoordinates(),getBoolList(false,true,true,false));
+		railBoolMapping.put(stations.get(34).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(35).getCoordinates(),getBoolList(true,false,true,false));
+		railBoolMapping.put(stations.get(36).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(37).getCoordinates(),getBoolList(true,true,true,false));
+		railBoolMapping.put(stations.get(38).getCoordinates(),getBoolList(true,true,false,false));
+		railBoolMapping.put(stations.get(39).getCoordinates(),getBoolList(true,false,false,true));
+		railBoolMapping.put(stations.get(40).getCoordinates(),getBoolList(false,false,true,false));
 
 
 		//青マス
@@ -837,32 +622,32 @@ public class Japan {
 				int x = from.getX()-to.getX();
 				int y = from.getY()-to.getY();
 				if(!((x>=-2 && x<=2) && (y>=-2 && y<=2)))continue;//処理数を減らす
-				if(prefectureContains(from.getX(),from.getY())) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY()))).get(0))) {
+				if(stationContains(from.getX(),from.getY())) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(0))) {
 						if(x==2) {
 							if(!contains(from.getX()-1,from.getY())) {
-								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
+								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
 							}
 						}else if(x==-2) {
 							if(!contains(from.getX()+1,from.getY())) {
-								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
+								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
 							}
 						}else if(y==2) {
 							if(!contains(from.getX(),from.getY()-1)) {
-								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
+								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
 							}
 						}else if(y==-2) {
 							if(!contains(from.getX(),from.getY()+1)) {
-								prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
+								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
 							}
 						}else {
-							prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).addLinks(to);
+							stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
 						}
 					}
-					railMapping.put(prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())),prefectures.get(getIndexOfPrefecture(from.getX(),from.getY())).getLinks());
+					railMapping.put(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates(),stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().getLinks());
 				}
 				if(blueContains(from.getX(),from.getY())) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(3)) ||
@@ -976,18 +761,185 @@ public class Japan {
 		}
 	}
 
-	public ArrayList<Property> getProperty(String name){
-		return prefectureInfo.get(name);
+
+	public int getGoalIndex() {
+		return goal;
 	}
 
-	public void findPrefecture(Property property) {
+	public Coordinates getGoal() {
+		return getStationCoor(goal);
+	}
+
+	public String getGoalName() {
+		return getStationName(getStationCoor(goal));
+	}
+
+	public void saveGoal() {
+		saveGoal = goal;
+	}
+
+	public int getSaveGoalIndex() {
+		return saveGoal;
+	}
+
+	public Coordinates getSaveGoal() {
+		return getStationCoor(saveGoal);
+	}
+
+	public void monopoly(String name) {
+		getStation(name).changePropertysMono();
+	}
+
+	public void monopoly(Property property) {
+		getStation(property).changePropertysMono();
+	}
+
+	public int stationSize() {
+		return stations.size();
+	}
+
+	public Coordinates getStationCoor(int index) {
+		return stations.get(index).getCoordinates();
+	}
+
+	public ArrayList<Coordinates> getStationsCoor(){
+		ArrayList<Coordinates> result = new ArrayList<Coordinates>();
+		for(Station s:stations) {
+			result.add(s.getCoordinates());
+		}
+		return result;
+	}
+
+	public ArrayList<Coordinates> getBlueCoor(){
+		return blue;
+	}
+
+	public Coordinates getBlueCoor(int index) {
+		return blue.get(index);
+	}
+
+	public ArrayList<Coordinates> getRedCoor(){
+		return red;
+	}
+
+	public Coordinates getRedCoor(int index) {
+		return red.get(index);
+	}
+
+	public ArrayList<Coordinates> getYellowCoor(){
+		return yellow;
+	}
+
+	public Coordinates getYellowCoor(int index) {
+		return yellow.get(index);
+	}
+
+	public ArrayList<Coordinates> getshopCoor(){
+		return shop;
+	}
+
+	public Coordinates getShopCoor(int index) {
+		return shop.get(index);
+	}
+
+	public void setMono() {
 
 	}
+
+	public ArrayList<Station> getStations(){
+		return stations;
+	}
+
+	public ArrayList<String> getStationNameList(){
+		ArrayList<String> list = new ArrayList<String>();
+		for(Station sta:stations) {
+			list.add(sta.getName());
+		}
+		return list;
+	}
+
+	public Station getStation(int index) {
+		return stations.get(index);
+	}
+
+	//指定のpropertyを含むstationを取得
+	public Station getStation(Property property) {
+		for(Station sta : stations) {
+			if(sta.containsProperty(property)) {
+				return sta;
+			}
+		}
+		return null;
+	}
+
+	public Station getStation(String stationName) {
+		for(Station sta : stations) {
+			if(sta.getName().equals(stationName)) {
+				return sta;
+			}
+		}
+		return null;
+	}
+
+	public String getStationName(Coordinates coor) {
+		for(Station sta : stations) {
+			if(sta.getCoordinates().contains(coor)) {
+				return sta.getName();
+			}
+		}
+		return null;
+	}
+
+	public int propertySize() {
+		int size=0;
+		for(Station sta:stations) {
+			size+=sta.getPropertySize();
+		}
+		return size;
+	}
+
+	public ArrayList<Property> getPropertys(){
+		ArrayList<Property> list = new ArrayList<Property>();
+		for(Station sta:stations) {
+			list.addAll(sta.getPropertys());
+		}
+		return list;
+	}
+
+	public ArrayList<Property> getStaInPropertys(String name){
+		for(Station sta : stations) {
+			if(sta.getName().equals(name)) {
+				return sta.getPropertys();
+			}
+		}
+		return null;
+	}
+
+	public Property getStaInProperty(String name,int index){
+		for(Station sta : stations) {
+			if(sta.getName().equals(name)) {
+				return sta.getProperty(index);
+			}
+		}
+		return null;
+	}
+
+	public int getStaInPropertySize(String name){
+		for(Station sta : stations) {
+			if(sta.getName().equals(name)) {
+				return sta.getPropertySize();
+			}
+		}
+		System.out.println("error");
+		return -1;
+	}
+
+
 
 	//全てのマス座標を取得
 	public ArrayList<Coordinates> getAllCoordinates(){
 		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
-		list.addAll(prefectures);
+		list.addAll(getStationsCoor());
 		list.addAll(blue);
 		list.addAll(red);
 		list.addAll(yellow);
@@ -1018,9 +970,9 @@ public class Japan {
 	}
 
 	//指定の座標に駅が存在するか
-	public Boolean prefectureContains(int x,int y) {
+	public Boolean stationContains(int x,int y) {
 		Boolean flag=false;
-		for(Coordinates coor:prefectures) {
+		for(Coordinates coor:getStationsCoor()) {
 			if(coor.getX()==x && coor.getY()==y) {
 				flag=true;
 			}
@@ -1029,9 +981,9 @@ public class Japan {
 	}
 
 	//指定の座標に駅が存在するか
-	public Boolean prefectureContains(Coordinates coordinates) {
+	public Boolean stationContains(Coordinates coordinates) {
 		Boolean flag=false;
-		for(Coordinates coor:prefectures) {
+		for(Coordinates coor:getStationsCoor()) {
 			if(coor.contains(coordinates)) {
 				flag=true;
 			}
@@ -1130,7 +1082,7 @@ public class Japan {
 	//ゴールマスを設定
 	public void initGoal() {
 		int x=0,y=0;
-		while(!(this.prefectureContains(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
+		while(!(this.stationContains(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1139,13 +1091,13 @@ public class Japan {
 
 			}
 		}
-		goal = getIndexOfPrefecture(x,y);
-		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
+		goal = getIndexOfStation(x,y);
+		//System.out.println("目的地："+stationMapping.get(stations.get(goal))+"x:"+x+"  y:"+y);
 	}
 	//ゴールマスを変更
 	public void changeGoal() {
 		int x=0,y=0;
-		while((!this.prefectureContains(x, y)) || goal==getIndexOfPrefecture(x,y)) {
+		while((!this.stationContains(x, y)) || goal==getIndexOfStation(x,y)) {
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1154,13 +1106,13 @@ public class Japan {
 
 			}
 		}
-		goal = getIndexOfPrefecture(x,y);
-		//System.out.println("目的地："+prefectureMapping.get(prefectures.get(goal))+"x:"+x+"  y:"+y);
+		goal = getIndexOfStation(x,y);
+		//System.out.println("目的地："+stationMapping.get(stations.get(goal))+"x:"+x+"  y:"+y);
 	}
 	//指定の座標のマスの配列番号を取得
 	public int getIndexOf(int x,int y) {
 		int result;
-		result=getIndexOfPrefecture(x,y);
+		result=getIndexOfStation(x,y);
 		if(result!=-1)return result;
 		result=getIndexOfBlue(x,y);
 		if(result!=-1)return result;
@@ -1174,9 +1126,9 @@ public class Japan {
 	}
 
 	//指定の座標の駅の配列番号を取得
-	public int getIndexOfPrefecture(int x,int y){
-		for(int list=0;list<this.prefectures.size();list++) {
-			if(this.prefectures.get(list).getX() == x && this.prefectures.get(list).getY() == y) {//駅の座標が来たら
+	public int getIndexOfStation(int x,int y){
+		for(int list=0;list<this.stations.size();list++) {
+			if(this.stations.get(list).getCoordinates().contains(x,y)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1230,9 +1182,9 @@ public class Japan {
 	}
 	//指定の座標の移動可能方向を取得（変更すべき）
 	public ArrayList<Boolean> getVector(int x,int y,int size){
-		for(int list=0;list<prefectures.size();list++) {
-			if(prefectures.get(list).getX() == x/size && prefectures.get(list).getY() == y/size) {//駅の座標が来たら
-				return railBoolMapping.get(prefectures.get(list));
+		for(int list=0;list<stations.size();list++) {
+			if(stations.get(list).getCoordinates().contains(x/size,y/size)) {//駅の座標が来たら
+				return railBoolMapping.get(stations.get(list).getCoordinates());
 			}
 		}
 		for(int list=0;list<blue.size();list++) {
@@ -1257,9 +1209,40 @@ public class Japan {
 		}
 		return null;
 	}
+	public ArrayList<Boolean> getVector(Coordinates coor,int size){
+		int x=coor.getX();
+		int y=coor.getY();
+		for(int list=0;list<stations.size();list++) {
+			if(stations.get(list).getCoordinates().contains(x/size,y/size)) {//駅の座標が来たら
+				return railBoolMapping.get(stations.get(list).getCoordinates());
+			}
+		}
+		for(int list=0;list<blue.size();list++) {
+			if(blue.get(list).getX() == x/size && blue.get(list).getY() == y/size) {
+				return railBoolMapping.get(blue.get(list));
+			}
+		}
+		for(int list=0;list<red.size();list++) {
+			if(red.get(list).getX() == x/size && red.get(list).getY() == y/size) {
+				return railBoolMapping.get(red.get(list));
+			}
+		}
+		for(int list=0;list<yellow.size();list++) {
+			if(yellow.get(list).getX() == x/size && yellow.get(list).getY() == y/size) {
+				return railBoolMapping.get(yellow.get(list));
+			}
+		}
+		for(int list=0;list<shop.size();list++) {
+			if(shop.get(list).getX() == x/size && shop.get(list).getY() == y/size) {
+				return railBoolMapping.get(shop.get(list));
+			}
+		}
+		return null;
+	}
+
 	public ArrayList<Coordinates> getMovePossibles(int x,int y) {
-		if(prefectureContains(x,y)) {
-			return railMapping.get(prefectures.get(getIndexOfPrefecture(x,y)));
+		if(stationContains(x,y)) {
+			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
 		}else if(blueContains(x,y)) {
 			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
 		}else if(redContains(x,y)) {
@@ -1277,8 +1260,8 @@ public class Japan {
 	public ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
 		int x=coor.getX();
 		int y=coor.getY();
-		if(prefectureContains(x,y)) {
-			return railMapping.get(prefectures.get(getIndexOfPrefecture(x,y)));
+		if(stationContains(x,y)) {
+			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
 		}else if(blueContains(x,y)) {
 			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
 		}else if(redContains(x,y)) {
@@ -1321,7 +1304,7 @@ class MultiThread implements Runnable{
 		boolean end;
 		boolean setMassFlag;
 		Coordinates next = new Coordinates();
-		Coordinates goal = new Coordinates(window.japan.prefectures.get(window.japan.goal));
+		Coordinates goal = new Coordinates(window.japan.getStationCoor(window.japan.getGoalIndex()));
 		while(true) {
 			next.setValue(0, 0);
 			setMassFlag=false;
@@ -1483,7 +1466,7 @@ class StationSearchThread implements Runnable{
 				//System.out.println("time out");
 				break;
 			}
-			if(window.japan.prefectureContains(this.nowMass.getX(),this.nowMass.getY())) {
+			if(window.japan.stationContains(this.nowMass.getX(),this.nowMass.getY())) {
 				//System.out.println("goal");
 				setResult();
 				break;
