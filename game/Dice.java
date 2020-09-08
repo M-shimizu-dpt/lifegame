@@ -46,4 +46,9 @@ public class Dice {
 	public void clearNum() {
 		this.num=1;
 	}
+
+	public void clear() {
+		clearResult();
+		clearNum();
+	}
 }
