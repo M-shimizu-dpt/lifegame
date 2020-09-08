@@ -25,6 +25,7 @@
  *全てのスレッドをある程度探索させ続け、何マス進める状態になれば目的地に到着することが出来るのかを割り出し、
  *目的地に自動で移動できるようなボタンを用意する。
  *(探索機構をもう一つ用意し、移動中の最短距離の計算は今まで通りで、サイコロを回す前にこの探索をしておけば大丈夫)
+ *	→探索機構完成
  *
  *最寄り駅カードや星に願いをカードを使用した際にマスイベントを発生させるようにする。
  *
@@ -37,7 +38,9 @@
  *
  *探索手法にA*アルゴリズムを導入する
  *
+ *探索用スレッドをMultiThreadにまとめられるかも？
  *
+ *CPU操作の探索失敗時の処理を実装する必要がある
  */
 
 package lifegame.game;
@@ -239,6 +242,7 @@ public class Window implements ActionListener{
 		System.exit(0);
     }
 
+	//CPU操作
 	private void cpu() {
 		/*・CPUがすること
 		 *1)サイコロを回す
@@ -277,6 +281,7 @@ public class Window implements ActionListener{
 		 *	・購入した物件が分かるように表示
 		 *	・ターン終了
 		 */
+		//道中、ボンビーがいる場合の移動方法については要検討
 		boolean diceFlag=false;//サイコロを回すかどうか
 		if(player.getCardSize()>0) {//カードがある場合確率で使用する（今は効果関係なく1/2で使用）
 			//確率でカードを使用
@@ -289,47 +294,113 @@ public class Window implements ActionListener{
 		}else {//カードが無い場合サイコロを回す
 			diceFlag=true;
 		}
-		if(diceFlag) {//既に目的地を通り過ぎる場合を考える必要がある
+		if(diceFlag) {
 			diceShuffle();//サイコロを回す
-			ArrayList<Coordinates> list = nearestTrajectoryList.get(Window.count).get(0);
-			if(list!=null) {
-				for(Coordinates coor : list) {
-					if(coor.contains(list.get(0)))continue;
-					int x = player.getNowMass().getX()-coor.getX();
-					int y = player.getNowMass().getY()-coor.getY();
-					if(x==0) {
-						if(y<0) {//下
-							moveMaps(0,-130);
-						}else if(y>0) {//上
-							moveMaps(0,130);
-						}
-					}else if(y==0) {
-						if(x>0) {//左
-							moveMaps(130,0);
-						}else if(x<0) {//右
-							moveMaps(-130,0);
-						}
+			searchCanMoveMass();
+			Thread waitthread = new Thread(new WaitThread(4));
+			waitthread.start();
+			try {
+				waitthread.join();
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
+				cpuMoveMaps();
+			}else {//目的地を超えてしまう場合
+
+				//ゴールから最も近い移動可能マスを選出し、移動する
+				boolean flag=false;
+				MultiThread searchthread = new MultiThread(this);
+				searchthread.setMass(japan.getGoal());//探索開始位置をゴールに設定
+				for(Coordinates coor : canMoveTrajectoryList.keySet()) {
+					if(coor.contains(japan.getGoal())) {//目的地に行ける場合
+						cpuMoveMaps(canMoveTrajectoryList.get(coor).get(0));
+						flag=true;
+						break;
 					}
+					searchthread.addGoal(coor);
+				}
+				if(!flag) {
+					Thread t = new Thread(searchthread);
+					t.start();
+					Thread w = new Thread(new WaitThread(2));
+					w.start();
 					try {
-						Thread.sleep(300);
+						w.join();
 					}catch(InterruptedException e) {
 						e.printStackTrace();
 					}
-					if(player.getMove()<=0)break;
-				}
-				if(player.getMove()>0) {//目的地を通り過ぎようとしていたら
-
+					//ゴールから最短にある移動可能マスを格納
+					cpuMoveMaps(nearestTrajectoryList.get(Window.count).get(0));
 				}
 			}
 		}
-
 	}
+
+	//cpuの移動操作
+	private void cpuMoveMaps() {
+		if(nearestTrajectoryList.get(Window.count).size()>0) {
+			ArrayList<Coordinates> list = nearestTrajectoryList.get(Window.count).get(0);
+			for(Coordinates coor : list) {
+				if(coor.contains(list.get(0)))continue;
+				int x = player.getNowMass().getX()-coor.getX();
+				int y = player.getNowMass().getY()-coor.getY();
+				if(x==0) {
+					if(y<0) {//下
+						moveMaps(0,-130);
+					}else if(y>0) {//上
+						moveMaps(0,130);
+					}
+				}else if(y==0) {
+					if(x>0) {//左
+						moveMaps(130,0);
+					}else if(x<0) {//右
+						moveMaps(-130,0);
+					}
+				}
+				try {
+					Thread.sleep(300);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+				if(player.getMove()<=0)break;
+			}
+		}
+	}
+
+	//cpuの移動操作
+	private void cpuMoveMaps(ArrayList<Coordinates> list) {
+		for(Coordinates coor : list) {
+			if(coor.contains(list.get(0)))continue;
+			int x = player.getNowMass().getX()-coor.getX();
+			int y = player.getNowMass().getY()-coor.getY();
+			if(x==0) {
+				if(y<0) {//下
+					moveMaps(0,-130);
+				}else if(y>0) {//上
+					moveMaps(0,130);
+				}
+			}else if(y==0) {
+				if(x>0) {//左
+					moveMaps(130,0);
+				}else if(x<0) {//右
+					moveMaps(-130,0);
+				}
+			}
+			try {
+				Thread.sleep(300);
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+			if(player.getMove()<=0)break;
+		}
+	}
+
 	//行くことが出来るマスを探索
 	public void searchCanMoveMass() {
 		Window.time = System.currentTimeMillis();
 		canMoveMassList.clear();
 		Thread t = new Thread();
-		nearestTrajectoryList.clear();
 		ArrayList<Coordinates> list = japan.getMovePossibles(player.getNowMass());
 		for(Coordinates coor:list) {
 			//Threadを立ち上げる
@@ -341,7 +412,13 @@ public class Window implements ActionListener{
 			t = new Thread(thread);
 			t.start();
 		}
-
+		Thread thread = new Thread(new WaitThread(4));
+		thread.start();
+		try {
+			thread.join();
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
 		System.out.println("OK");
 	}
 
@@ -471,6 +548,7 @@ public class Window implements ActionListener{
 		for(Coordinates coor:list) {
 			//Threadを立ち上げる
 			MultiThread thread = new MultiThread(this);
+			thread.addGoal(japan.getGoal());
 			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
 			synchronized(MultiThread.lock3) {
 				thread.setMass(coor);
@@ -1286,16 +1364,6 @@ public class Window implements ActionListener{
 		Card.resetUsedCard();
 		Card.resetUsedFixedCard();
 		closeDice();
-
-		//debug
-		searchCanMoveMass();
-		Thread thread = new Thread(new WaitThread(4));
-		thread.start();
-		try {
-			thread.join();
-		}catch(InterruptedException e){
-			e.printStackTrace();
-		}
 	}
 
 	//所持カード一覧を表示

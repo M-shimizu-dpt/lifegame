@@ -1332,6 +1332,7 @@ public class Japan {
 
 }
 
+//現在の位置から指定した目的地までの最短距離と軌跡を取得
 class MultiThread implements Runnable{
 	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
 	public static int savecount=0;
@@ -1342,9 +1343,14 @@ class MultiThread implements Runnable{
 	private int count=0;
 	private Coordinates nowMass=new Coordinates();
 	private Window window;
+	private ArrayList<Coordinates> goals = new ArrayList<Coordinates>();
 
 	public MultiThread(Window window) {
 		this.window=window;
+	}
+
+	public void addGoal(Coordinates coor) {
+		goals.add(coor);
 	}
 
 	public void run() {
@@ -1356,7 +1362,6 @@ class MultiThread implements Runnable{
 		boolean end;
 		boolean setMassFlag;
 		Coordinates next = new Coordinates();
-		Coordinates goal = new Coordinates(window.japan.getStationCoor(window.japan.getGoalIndex()));
 		while(count<=Window.count && savecount<=1000 && count<=35 && System.currentTimeMillis()-Window.time<400) {
 			next.setValue(0, 0);
 			setMassFlag=false;
@@ -1369,9 +1374,11 @@ class MultiThread implements Runnable{
 				list = window.japan.getMovePossibles(this.nowMass);
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
-			if(goal.contains(nowMass)){
-				goal();
-				break;
+			for(Coordinates goal:goals) {
+				if(goal.contains(nowMass)){
+					goal();
+					break;
+				}
 			}
 			for(Coordinates coor:list) {
 				boolean conti=false;
