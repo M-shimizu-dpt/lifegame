@@ -1335,11 +1335,11 @@ public class Japan {
 //現在の位置から指定した目的地までの最短距離と軌跡を取得
 class MultiThread implements Runnable{
 	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
-	public static int savecount=0;
 	public static final Object lock1 = new Object();
 	public static final Object lock2 = new Object();
 	public static final Object lock3 = new Object();
 	public static final Object lock4 = new Object();
+	public static int searchTime = 500;
 	private int count=0;
 	private Coordinates nowMass=new Coordinates();
 	private Window window;
@@ -1349,7 +1349,16 @@ class MultiThread implements Runnable{
 		this.window=window;
 	}
 
-	public void addGoal(Coordinates coor) {
+	public MultiThread(Window window,int searchTime) {
+		this.window=window;
+		MultiThread.searchTime=searchTime;
+	}
+
+	public static void initSearchTime() {
+		MultiThread.searchTime=500;
+	}
+
+	public synchronized void addGoal(Coordinates coor) {
 		goals.add(coor);
 	}
 
@@ -1362,14 +1371,13 @@ class MultiThread implements Runnable{
 		boolean end;
 		boolean setMassFlag;
 		Coordinates next = new Coordinates();
-		while(count<=Window.count && savecount<=1000 && count<=35 && System.currentTimeMillis()-Window.time<400) {
+		while(count<=Window.count && count<=35 && System.currentTimeMillis()-Window.time<searchTime) {
 			next.setValue(0, 0);
 			setMassFlag=false;
 			end=true;
 			flag=false;
 
 			count++;
-			savecount++;
 			synchronized(MultiThread.lock1) {
 				list = window.japan.getMovePossibles(this.nowMass);
 			}
@@ -1444,6 +1452,7 @@ class MultiThread implements Runnable{
 	private void threadCopy(MultiThread original) {
 		this.count=original.count;
 		this.moveTrajectory.addAll(original.moveTrajectory);
+		this.goals.addAll(original.goals);
 	}
 
 	private void goal() {

@@ -41,6 +41,9 @@
  *探索用スレッドをMultiThreadにまとめられるかも？
  *
  *CPU操作の探索失敗時の処理を実装する必要がある
+ *
+ *最短距離の探索が失敗するようになった
+ *		→ゴールから移動可能マスへの最短距離を探索するためにMultiThreadを使いまわしている為、終了フラグが悪さをしている可能性がある。
  */
 
 package lifegame.game;
@@ -54,6 +57,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -256,14 +261,16 @@ public class Window implements ActionListener{
 		 *		→目的地まで遠い時は移動系を買うとか？
 		 *6)駅で物件を買う
 		 *		→安い物件から順番に買う
-		 *7)行動手順
+		 *7)黄マスでカードを捨てる
+		 *		→安いカードから順に売る
+		 *8)行動手順
 		 *
 		 *	①ノーマル(まずはこれを実装)
 		 *	ターン開始
 		 *	↓
 		 *	サイコロを回す//OK
 		 *	↓
-		 *	ゴールに向かって最短距離を進む
+		 *	ゴールに向かって最短距離を進む//OK
 		 *	↓
 		 *	止まったマスのイベントを行う	→		店に止まる
 		 *	↓駅に止まる							↓
@@ -271,7 +278,7 @@ public class Window implements ActionListener{
 		 *	↓										↓
 		 *	ターン終了			←					店を出る
 		 *
-		 *8)表示方法
+		 *9)表示方法
 		 *
 		 *	①ノーマル(まずはこれを実装)
 		 *	・ターン開始
@@ -287,16 +294,27 @@ public class Window implements ActionListener{
 			//確率でカードを使用
 			int rand = new Random().nextInt(player.getCardSize()*2);
 			if(rand >= player.getCardSize()) {
-				player.getCard(rand);//このカードを使う
-			}else {
 				diceFlag=true;
+			}else {
+				player.getCard(rand).useAbility(this,dice,players,turn);
+				if(Card.usedRandomCard || Card.usedOthersCard) {
+					Card.resetUsedCard();
+					Card.resetUsedFixedCard();
+					Card.resetUsedRandomCard();
+					Card.resetUsedOthersCard();
+					ableMenu();
+					if(playFrame.isVisible()) {
+						turnEndFlag=true;
+					}
+				}else {
+					diceFlag=true;
+				}
 			}
 		}else {//カードが無い場合サイコロを回す
 			diceFlag=true;
 		}
 		if(diceFlag) {
 			diceShuffle();//サイコロを回す
-			searchCanMoveMass();
 			Thread waitthread = new Thread(new WaitThread(4));
 			waitthread.start();
 			try {
@@ -465,8 +483,6 @@ public class Window implements ActionListener{
 				t.start();
 			}
 		}
-
-		System.out.println("OK");
 	}
 
 	//最寄り駅の探索結果を格納
@@ -515,8 +531,6 @@ public class Window implements ActionListener{
 				t.start();
 			}
 		}
-
-		System.out.println("OK");
 	}
 
 	//最寄り店の探索結果を格納
@@ -541,7 +555,6 @@ public class Window implements ActionListener{
 	private void searchShortestRoute() {
 		Window.time = System.currentTimeMillis();
 		Window.count=100;
-		MultiThread.savecount=0;
 		Thread t = new Thread();
 		nearestTrajectoryList.clear();
 		ArrayList<Coordinates> list = japan.getMovePossibles(player.getNowMass());
@@ -568,6 +581,12 @@ public class Window implements ActionListener{
 			}
 			this.nearestTrajectoryList.get(count).add(trajectory);
 		}
+	}
+
+	private void setCloseCPU(int id) {
+		Timer timer = new Timer(false);
+		TimerTask task = new CPUTimerTask(this,id);
+		timer.schedule(task, 1000);
 	}
 
 	//マスに到着した時のマスのイベント処理
@@ -706,6 +725,11 @@ public class Window implements ActionListener{
 		if(player.getCards().size()==0) {
 			sellButton.setEnabled(false);
 		}
+		if(!player.isPlayer()) {
+			closeButton.setEnabled(false);
+			buyButton.setEnabled(false);
+			sellButton.setEnabled(false);
+		}
 
 		Random rand = new Random();
 		boolean get=false;
@@ -736,10 +760,12 @@ public class Window implements ActionListener{
 
 		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 		shopFrontFrame.setVisible(true);
+
+		setCloseCPU(1);
 	}
 
 	//店用フレームを閉じる
-	private void closeShop() {
+	public void closeShop() {
 		Random rand = new Random();
 		shopFrontFrame.setVisible(false);
 		shopFrontFrame.removeAll();
@@ -848,6 +874,9 @@ public class Window implements ActionListener{
 		JLabel text3=new JLabel();
 		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
 		closeButton.setActionCommand("randomイベントを閉じる");
+		if(!player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		random.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		double randomNum = rand.nextDouble();
 		if(randomNum < 0.1) {
@@ -942,9 +971,13 @@ public class Window implements ActionListener{
 		random.add(text3);
 
 		randomFrame.setVisible(true);
+
+		if(!player.isPlayer()) {
+			setCloseCPU(0);
+		}
 	}
 
-	private void closeRandomEvent() {
+	public void closeRandomEvent() {
 		randomFrame.setVisible(false);
 		randomFrame.removeAll();
 		playFrame.setVisible(true);
@@ -1351,6 +1384,7 @@ public class Window implements ActionListener{
 	//サイコロ操作
 	private void diceShuffle() {
 		player.setMove(dice.shuffle(player));
+		searchCanMoveMass();
 		if(player.getMove()==0) {
 			massEvent();
 		}else {
@@ -1793,6 +1827,10 @@ public class Window implements ActionListener{
 		goal.add(label);
 		goalFrame.setVisible(true);
 
+		if(!player.isPlayer()) {
+			setCloseCPU(3);
+		}
+
 		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 
 		japan.changeGoal();
@@ -1801,7 +1839,7 @@ public class Window implements ActionListener{
 	}
 
 	//ゴール画面を閉じる
-	private void closeGoal() {
+	public void closeGoal() {
 		goalFrame.setVisible(false);
 		printPropertys(japan.getStationName(japan.getSaveGoal()));
 	}
@@ -1920,10 +1958,14 @@ public class Window implements ActionListener{
 		}
 		propertys.add(closeButton);
 		propertyFrame.setVisible(true);
+
+		if(!player.isPlayer()) {
+			setCloseCPU(2);
+		}
 	}
 
 	//駅の物件情報を閉じる
-	private void closePropertys() {
+	public void closePropertys() {
 		Random rand = new Random();
 		propertyFrame.setVisible(false);
 		propertyFrame.removeAll();
@@ -2188,12 +2230,13 @@ class WaitThread implements Runnable{
 			}
 			break;
 		case 2:
-			while(MultiThread.savecount<=1000 && System.currentTimeMillis()-Window.time <= 400) {
+			while(System.currentTimeMillis()-Window.time <= MultiThread.searchTime) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
+				MultiThread.initSearchTime();
 			}
 			break;
 		case 3:
@@ -2222,5 +2265,36 @@ class WaitThread implements Runnable{
 }
 
 
+//id=0→randomイベントを閉じる,id=1→店フレームを閉じる,id=2→物件購入を閉じる,id=3→ゴール画面を閉じる
+class CPUTimerTask extends TimerTask{
+	private Window window;
+	private int id;
+	public CPUTimerTask(Window window,int id) {
+		this.id=id;
+		this.window=window;
+	}
+	@Override
+	public void run() {
+		switch(id) {
+		case 0:
+			window.closeRandomEvent();
+			break;
+		case 1:
+			window.closeShop();
+			break;
+		case 2:
+			window.closePropertys();
+			break;
+		case 3:
+			window.closeGoal();
+			break;
+		default:
+			break;
+		}
+	}
 
+	public int getID() {
+		return this.id;
+	}
+}
 
