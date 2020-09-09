@@ -271,8 +271,12 @@ public class Card {
 		return movedMass;
 	}
 
-	public static void sort(){
-        Collections.sort(Card.cardList,new Comp());
+	public static void raritySort(ArrayList<Card> cards){
+        Collections.sort(cards,new RarityComp());
+    }
+
+	public static void priceSort(ArrayList<Card> cards){
+        Collections.sort(cards,new PriceComp());
     }
 
 	public static void init(Window window) {
@@ -325,14 +329,19 @@ public class Card {
 		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5,0));
 		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5,0));
 
-		Card.sort();
+		Card.raritySort(Card.cardList);
 
 	}
 }
 
-class Comp implements Comparator<Card>{
+class RarityComp implements Comparator<Card>{
 	public int compare(Card card1, Card card2) {
 		return card1.getRarity() < card2.getRarity() ? -1 : 1;
 	}
+}
 
+class PriceComp implements Comparator<Card>{
+	public int compare(Card card1, Card card2) {
+		return card1.getBuyPrice() < card2.getBuyPrice() ? -1 : 1;
+	}
 }

@@ -1397,7 +1397,7 @@ class MultiThread implements Runnable{
 							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 						}
 					}
-					if(moveTrajectory.get(j).contains(coordinates)) {//同じ場合、1つ前のmoveTrajectoryを削除
+					if(moveTrajectory.get(j).contains(coordinates)) {//来た道の場合
 						conti=true;
 						break;
 					}
@@ -1462,6 +1462,140 @@ class MultiThread implements Runnable{
 	}
 }
 
+//現在の位置から指定した目的地までの最短距離と軌跡を取得
+class NearestSearchThread implements Runnable{
+	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
+	public static final Object lock1 = new Object();
+	public static final Object lock2 = new Object();
+	public static final Object lock3 = new Object();
+	public static final Object lock4 = new Object();
+	public static int searchTime = 500;
+	public static int nearestCount = 100;
+	private int count=0;
+	private Coordinates nowMass=new Coordinates();
+	private Window window;
+	private ArrayList<Coordinates> goals = new ArrayList<Coordinates>();
+
+	public NearestSearchThread(Window window) {
+		this.window=window;
+	}
+
+	public NearestSearchThread(Window window,int searchTime) {
+		this.window=window;
+		NearestSearchThread.searchTime=searchTime;
+	}
+
+	public static void initSearchTime() {
+		NearestSearchThread.searchTime=500;
+	}
+
+	public synchronized void addGoal(Coordinates coor) {
+		goals.add(coor);
+	}
+
+	public void run() {
+		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
+		//内容をコピーした上で自分とは別方向に移動させる。
+		ArrayList<Coordinates> list;
+
+		boolean flag;
+		boolean end;
+		boolean setMassFlag;
+		Coordinates next = new Coordinates();
+		while(count<=NearestSearchThread.nearestCount && count<=35 && System.currentTimeMillis()-Window.time<searchTime) {
+			next.setValue(0, 0);
+			setMassFlag=false;
+			end=true;
+			flag=false;
+
+			count++;
+			synchronized(NearestSearchThread.lock1) {
+				list = window.japan.getMovePossibles(this.nowMass);
+			}
+			moveTrajectory.add(new Coordinates(nowMass));
+			for(Coordinates goal:goals) {
+				if(goal.contains(nowMass)){
+					goal();
+					break;
+				}
+			}
+			for(Coordinates coor:list) {
+				boolean conti=false;
+				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
+					Coordinates coordinates = new Coordinates(coor);
+					synchronized(NearestSearchThread.lock4) {
+						if(!window.japan.contains(coordinates.getX(),coordinates.getY())) {
+							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
+						}
+					}
+					if(moveTrajectory.get(j).contains(coordinates)) {//来た道の場合
+						conti=true;
+						break;
+					}
+				}
+				if(conti) {
+					continue;
+				}
+				//2マス移動(競合の可能性)
+				Coordinates coordinates = new Coordinates(coor);
+				synchronized(NearestSearchThread.lock4) {
+					if(!window.japan.contains(coor.getX(),coor.getY())) {
+						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
+					}
+				}
+				if(flag) {
+					//Threadを立ち上げる
+					NearestSearchThread thread = new NearestSearchThread(window);
+					synchronized(NearestSearchThread.lock3) {
+						thread.threadCopy(this);
+						thread.setMass(coordinates);//移動
+					}
+					Thread t = new Thread(thread);
+					t.start();
+				}else {
+					next.setValue(coordinates);
+					setMassFlag=true;
+					flag=true;
+				}
+				end=false;
+			}
+			if(setMassFlag) {
+				synchronized(NearestSearchThread.lock3) {
+					this.setMass(next);//移動
+				}
+			}
+			//行き先が無い場合終了
+			if(end) {
+				break;
+			}
+			Thread.yield();
+		}
+	}
+
+	public void setMass(int x,int y) {
+		this.nowMass.setValue(x,y);
+	}
+
+	public void setMass(Coordinates coor) {
+		this.nowMass.setValue(coor);
+	}
+
+	private void threadCopy(NearestSearchThread original) {
+		this.count=original.count;
+		this.moveTrajectory.addAll(original.moveTrajectory);
+		this.goals.addAll(original.goals);
+	}
+
+	private void goal() {
+		synchronized(NearestSearchThread.lock2) {
+			if(NearestSearchThread.nearestCount>=count) {
+				NearestSearchThread.nearestCount=count;
+			}
+		}
+	}
+}
+
+
 //最寄り駅を探索するためのスレッド
 class StationSearchThread implements Runnable{
 	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
@@ -1508,12 +1642,12 @@ class StationSearchThread implements Runnable{
 				boolean conti=false;
 				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
 					Coordinates coordinates = new Coordinates(coor);
-					synchronized(MultiThread.lock4) {
+					synchronized(StationSearchThread.lock4) {
 						if(!window.japan.contains(coordinates)) {
 							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 						}
 					}
-					if(moveTrajectory.get(j).contains(coordinates)) {//同じ場合、1つ前のmoveTrajectoryを削除
+					if(moveTrajectory.get(j).contains(coordinates)) {//来た道の場合
 						conti=true;
 						break;
 					}
@@ -1523,7 +1657,7 @@ class StationSearchThread implements Runnable{
 				}
 				//2マス移動(競合の可能性)
 				Coordinates coordinates = new Coordinates(coor);
-				synchronized(MultiThread.lock4) {
+				synchronized(StationSearchThread.lock4) {
 					if(!window.japan.contains(coor)) {
 						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 					}
@@ -1624,12 +1758,12 @@ class ShopSearchThread implements Runnable{
 				boolean conti=false;
 				for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
 					Coordinates coordinates = new Coordinates(coor);
-					synchronized(MultiThread.lock4) {
+					synchronized(ShopSearchThread.lock4) {
 						if(!window.japan.contains(coordinates)) {
 							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 						}
 					}
-					if(moveTrajectory.get(j).contains(coordinates)) {//同じ場合、1つ前のmoveTrajectoryを削除
+					if(moveTrajectory.get(j).contains(coordinates)) {//来た道の場合
 						conti=true;
 						break;
 					}
@@ -1639,7 +1773,7 @@ class ShopSearchThread implements Runnable{
 				}
 				//2マス移動(競合の可能性)
 				Coordinates coordinates = new Coordinates(coor);
-				synchronized(MultiThread.lock4) {
+				synchronized(ShopSearchThread.lock4) {
 					if(!window.japan.contains(coor)) {
 						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 					}
@@ -1710,6 +1844,7 @@ class MassSearchThread implements Runnable{
 		this.window=window;
 		this.count = count;
 	}
+
 	public MassSearchThread(Window window) {
 		this.window=window;
 	}
@@ -1739,19 +1874,19 @@ class MassSearchThread implements Runnable{
 			for(Coordinates coor:list) {
 				//既に通った場所を省く
 				Coordinates c = new Coordinates(coor);
-				synchronized(MultiThread.lock4) {
+				synchronized(MassSearchThread.lock4) {
 					if(!window.japan.contains(c)) {
 						c.setValue(c.getX()*2, c.getY()*2);
 					}
 				}
 				if(moveTrajectory.size()>1) {
-					if(moveTrajectory.get(moveTrajectory.size()-2).contains(c)) {//同じ場合、1つ前のmoveTrajectoryを削除
+					if(moveTrajectory.get(moveTrajectory.size()-2).contains(c)) {//来た道の場合
 						continue;
 					}
 				}
 				//2マス移動(競合の可能性)
 				Coordinates coordinates = new Coordinates(coor);
-				synchronized(MultiThread.lock4) {
+				synchronized(MassSearchThread.lock4) {
 					if(!window.japan.contains(coor)) {
 						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 					}

@@ -3,6 +3,7 @@
  * CPUの実装
  * ボンビー処理
  * 決算処理(恐らく未完成)
+ * randomイベント part2
  *
  *設定でマップをrandomに変更できる
  *	→双方向連結に実装したマップであればスレッドを用いてマップをランダムに構築することが可能
@@ -42,8 +43,27 @@
  *
  *CPU操作の探索失敗時の処理を実装する必要がある
  *
- *最短距離の探索が失敗するようになった
- *		→ゴールから移動可能マスへの最短距離を探索するためにMultiThreadを使いまわしている為、終了フラグが悪さをしている可能性がある。
+ *CPU操作でたまに移動しなくなってしまい、ターン終了できなくなってしまう
+ *	→ループし同じ位置に返ってくるようなマス移動をする際にバグが起きている様子
+ */
+
+/*
+ * ・内部処理
+ * 指定したスパンでrandomイベントを発生させる
+ * ↓
+ * propertyに指定したスパン毎の部門属性を付与
+ * ownerがいるproeprty全てを取得するメソッドを用意
+ * その中から指定の部門を抽出
+ * 抽出したpropertyの臨時収入をownerに付与
+ *
+ * プレイヤーに継続臨時収入バフを付与する場合、Buffクラスを書き変える必要あり
+ *
+ * ・見た目
+ * 専用フレームを作る
+ * 必要な情報を記載
+ * 流れに合う箇所に記述する
+ *
+ * 完成！
  */
 
 package lifegame.game;
@@ -217,6 +237,7 @@ public class Window implements ActionListener{
     		japan.saveGoal();
     		returnMaps();//画面遷移が少し遅い
     		reload();
+    		Card.priceSort(player.getCards());
     		if(!player.isPlayer()) {//cpu操作
     			cpu();
     		}
@@ -272,11 +293,11 @@ public class Window implements ActionListener{
 		 *	↓
 		 *	ゴールに向かって最短距離を進む//OK
 		 *	↓
-		 *	止まったマスのイベントを行う	→		店に止まる
-		 *	↓駅に止まる							↓
-		 *	最も安い物件から順番に大人買い			何もしない
-		 *	↓										↓
-		 *	ターン終了			←					店を出る
+		 *	止まったマスのイベントを行う//OK	→			店に止まる//OK
+		 *	↓駅に止まる									↓
+		 *	最も安い物件から順番に大人買い//OK内部のみ		何もしない//OK
+		 *	↓												↓
+		 *	ターン終了			←							店を出る//OK
 		 *
 		 *9)表示方法
 		 *
@@ -303,9 +324,7 @@ public class Window implements ActionListener{
 					Card.resetUsedRandomCard();
 					Card.resetUsedOthersCard();
 					ableMenu();
-					if(playFrame.isVisible()) {
-						turnEndFlag=true;
-					}
+					turnEndFlag=true;
 				}else {
 					diceFlag=true;
 				}
@@ -322,13 +341,16 @@ public class Window implements ActionListener{
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
+
+
 			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuMoveMaps();
 			}else {//目的地を超えてしまう場合
 
 				//ゴールから最も近い移動可能マスを選出し、移動する
+				//Coordinates nearestcoor =
 				boolean flag=false;
-				MultiThread searchthread = new MultiThread(this);
+				NearestSearchThread searchthread = new NearestSearchThread(this);
 				searchthread.setMass(japan.getGoal());//探索開始位置をゴールに設定
 				for(Coordinates coor : canMoveTrajectoryList.keySet()) {
 					if(coor.contains(japan.getGoal())) {//目的地に行ける場合
@@ -339,6 +361,8 @@ public class Window implements ActionListener{
 					searchthread.addGoal(coor);
 				}
 				if(!flag) {
+					Window.time = System.currentTimeMillis();
+					Window.count=100;
 					Thread t = new Thread(searchthread);
 					t.start();
 					Thread w = new Thread(new WaitThread(2));
@@ -348,8 +372,30 @@ public class Window implements ActionListener{
 					}catch(InterruptedException e) {
 						e.printStackTrace();
 					}
+					//debug
+					System.out.println("開始");
+					for(ArrayList<ArrayList<Coordinates>> list1:nearestTrajectoryList.values()) {
+						int count=0;
+						System.out.println("開始1");
+						for(ArrayList<Coordinates> list : list1) {
+							count++;
+							for(Coordinates coor : list) {
+								System.out.println("coordinates x:"+coor.getX()+"   y:"+coor.getY());
+							}
+							System.out.println("count:"+count);
+						}
+						System.out.println("終了1");
+					}
+					System.out.println("終了");
+
+					//目的地から移動先候補群のどれかのうち最も近いマスに移動できるように最も近いマスまでの最短距離を求める
+					//その値を下のWindow.countに入れる
+
+					//移動可能マスの中で目的地から最も近いマスを探す
+					//そのマスの
+
 					//ゴールから最短にある移動可能マスを格納
-					cpuMoveMaps(nearestTrajectoryList.get(Window.count).get(0));
+					cpuMoveMaps(nearestTrajectoryList.get(Window.count).get(0));//nearestTrajectoryListが目的地から移動先候補の最短距離に更新されてしまっている
 				}
 			}
 		}
@@ -583,10 +629,14 @@ public class Window implements ActionListener{
 		}
 	}
 
-	private void setCloseCPU(int id) {
-		Timer timer = new Timer(false);
-		TimerTask task = new CPUTimerTask(this,id);
-		timer.schedule(task, 1000);
+
+	//指定のFrameを1秒後に閉じる
+	private void setCloseFrame(int id) {
+		if(!player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+			Timer timer = new Timer(false);
+			TimerTask task = new CPUTimerTask(this,id);
+			timer.schedule(task, 1000);
+		}
 	}
 
 	//マスに到着した時のマスのイベント処理
@@ -705,6 +755,22 @@ public class Window implements ActionListener{
 
 		playFrame.setVisible(false);
 		errorFrame.setVisible(true);
+
+		if(!player.isPlayer()) {
+			cardFullCPU();
+		}
+	}
+
+	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
+	public void cardFullCPU() {
+		do{
+			player.getCards().remove(player.getCard(0));
+			System.out.println("remove:"+player.getCard(0).getName());
+			Card.priceSort(player.getCards());
+		}while(player.getCardSize()>8);
+
+		errorFrame.setVisible(false);
+		playFrame.setVisible(true);
 	}
 
 	//店イベント
@@ -761,7 +827,7 @@ public class Window implements ActionListener{
 		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 		shopFrontFrame.setVisible(true);
 
-		setCloseCPU(1);
+		setCloseFrame(1);
 	}
 
 	//店用フレームを閉じる
@@ -972,9 +1038,7 @@ public class Window implements ActionListener{
 
 		randomFrame.setVisible(true);
 
-		if(!player.isPlayer()) {
-			setCloseCPU(0);
-		}
+		setCloseFrame(0);
 	}
 
 	public void closeRandomEvent() {
@@ -1461,12 +1525,23 @@ public class Window implements ActionListener{
 
         dubbingCardFrame.setVisible(true);
         playFrame.setVisible(false);
+
+        if(!player.isPlayer()) {
+	        player.addCard(player.getCard(0));//無いも考えず一番上のカードを複製
+	        setCloseFrame(4);
+        }
 	}
 
 	//カードの複製を行う画面を非表示
-	private void closeDubbing() {
+	public void closeDubbing() {
+		Random rand = new Random();
 		dubbingCardFrame.setVisible(false);
 		playFrame.setVisible(true);
+		if(rand.nextInt(100) < 3) {
+			randomEvent();
+		}else {
+			turnEndFlag=true;
+		}
 	}
 
 	//会社情報を表示
@@ -1827,9 +1902,7 @@ public class Window implements ActionListener{
 		goal.add(label);
 		goalFrame.setVisible(true);
 
-		if(!player.isPlayer()) {
-			setCloseCPU(3);
-		}
+		setCloseFrame(3);
 
 		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 
@@ -1960,8 +2033,9 @@ public class Window implements ActionListener{
 		propertyFrame.setVisible(true);
 
 		if(!player.isPlayer()) {
-			setCloseCPU(2);
+			buyPropertysCPU(name);
 		}
+		setCloseFrame(2);
 	}
 
 	//駅の物件情報を閉じる
@@ -1995,6 +2069,24 @@ public class Window implements ActionListener{
 		propertyFrame.setVisible(false);
 		propertyFrame.removeAll();
 		printPropertys(name);
+	}
+
+	//物件購入・増築処理
+	private void buyPropertysCPU(String name) {
+		for(int index = 0;index<japan.getStaInPropertySize(name);index++) {
+			if(japan.getStaInProperty(name,index).getAmount() > player.getMoney())break;
+			if(!japan.getStaInProperty(name,index).isOwner()) {
+				japan.getStaInProperty(name,index).buy(player,0);
+				if(japan.getStation(name).isMono()) {
+					japan.monopoly(name);
+				}
+			}else {
+				japan.getStaInProperty(name,index).buy(player);
+			}
+			alreadys.add(japan.getStaInProperty(name,index).getName()+index);
+
+			System.out.println(japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+		}
 	}
 
 	//物件売却処理
@@ -2048,7 +2140,7 @@ public class Window implements ActionListener{
   			players.get(i).setColt(createText(401,301,20,20,10,players.get(i).getName()));
   	  		players.get(i).getColt().setBackground(Color.BLACK);
   	  		players.get(i).getColt().setName(players.get(i).getName());
-  	  	playFrame.getLayeredPane().add(players.get(i).getColt(),JLayeredPane.DEFAULT_LAYER,0);
+  	  		playFrame.getLayeredPane().add(players.get(i).getColt(),JLayeredPane.DEFAULT_LAYER,0);
   		}
   		player=players.get(0);
   		initMenu();
@@ -2287,6 +2379,9 @@ class CPUTimerTask extends TimerTask{
 			break;
 		case 3:
 			window.closeGoal();
+			break;
+		case 4:
+			window.closeDubbing();
 			break;
 		default:
 			break;
