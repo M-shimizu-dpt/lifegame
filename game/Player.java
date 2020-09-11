@@ -1,6 +1,8 @@
 package lifegame.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import javax.swing.JLabel;
@@ -163,12 +165,24 @@ public class Player {
 		return this.propertys;
 	}
 
+	public Property getProperty(int index) {
+		return this.propertys.get(index);
+	}
+
 	public boolean isEffect() {
 		if(getBuff().effect != 0) {
 			return true;
 		}else {
 			return false;
 		}
+	}
+
+	public static void sortProperty(ArrayList<Property> propertys) {
+		Collections.sort(propertys, new Comparator<Property>() {
+			public int compare(Property property1, Property property2) {
+				return Integer.compare(property1.getAmount(), property2.getAmount());
+			}
+		});
 	}
 }
 

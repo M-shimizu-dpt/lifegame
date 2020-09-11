@@ -30,7 +30,6 @@ public class Card {
 	public static boolean usedFixedCard;
 	public static boolean usedRandomCard;
 	public static boolean usedOthersCard;
-	private static Window window;
 
 	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
 		this.name = name;
@@ -262,7 +261,7 @@ public class Card {
 		while(true) {
 			x=rand.nextInt(17);
 			y=rand.nextInt(17);
-			if(window.japan.contains(x, y)) {
+			if(Window.japan.contains(x, y)) {
 				break;
 			}
 		}
@@ -272,15 +271,22 @@ public class Card {
 	}
 
 	public static void raritySort(ArrayList<Card> cards){
-        Collections.sort(cards,new RarityComp());
+		Collections.sort(cards,new Comparator<Card>() {
+        	public int compare(Card card1, Card card2) {
+				return Integer.compare(card1.getRarity(), card2.getRarity());
+			}
+        });
     }
 
 	public static void priceSort(ArrayList<Card> cards){
-        Collections.sort(cards,new PriceComp());
+        Collections.sort(cards,new Comparator<Card>() {
+        	public int compare(Card card1, Card card2) {
+				return Integer.compare(card1.getBuyPrice(), card2.getBuyPrice());
+			}
+        });
     }
 
 	public static void init(Window window) {
-		Card.window=window;
 		resetUsedCard();
 		resetUsedFixedCard();
 		resetUsedRandomCard();
@@ -331,17 +337,5 @@ public class Card {
 
 		Card.raritySort(Card.cardList);
 
-	}
-}
-
-class RarityComp implements Comparator<Card>{
-	public int compare(Card card1, Card card2) {
-		return card1.getRarity() < card2.getRarity() ? -1 : 1;
-	}
-}
-
-class PriceComp implements Comparator<Card>{
-	public int compare(Card card1, Card card2) {
-		return card1.getBuyPrice() < card2.getBuyPrice() ? -1 : 1;
 	}
 }

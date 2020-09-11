@@ -45,9 +45,7 @@
  *
  *CPU操作でたまに移動しなくなってしまい、ターン終了できなくなってしまう
  *	→ループし同じ位置に返ってくるようなマス移動をする際にバグが起きている様子
- */
-
-/*
+ *
  * ・内部処理
  * 指定したスパンでrandomイベントを発生させる
  * ↓
@@ -63,7 +61,7 @@
  * 必要な情報を記載
  * 流れに合う箇所に記述する
  *
- * 完成！
+ *
  */
 
 package lifegame.game;
@@ -120,7 +118,7 @@ public class Window implements ActionListener{
 	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false;//ターンを交代するためのフラグ
 	private int turn=0;//現在のターン
 	private Dice dice = new Dice();//サイコロ処理
-	public Japan japan = new Japan();//物件やマス情報
+	public static Japan japan = new Japan();//物件やマス情報
 	private ArrayList<String> moveTrajectory = new ArrayList<String>();//プレイヤーの移動の軌跡
 	private ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
 	private ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
@@ -231,6 +229,7 @@ public class Window implements ActionListener{
     		if(year>endYear)break;
     		player=players.get(turn);
     		searchShortestRoute();
+    		System.out.println("2");
     		Thread search = new Thread(new WaitThread(2));
     		search.start();
     		search.join();
@@ -342,13 +341,13 @@ public class Window implements ActionListener{
 				e.printStackTrace();
 			}
 
+			//行くことが出来るマス取得
 
 			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuMoveMaps();
 			}else {//目的地を超えてしまう場合
-
+				System.out.println("目的地を超える");
 				//ゴールから最も近い移動可能マスを選出し、移動する
-				//Coordinates nearestcoor =
 				boolean flag=false;
 				NearestSearchThread searchthread = new NearestSearchThread(this);
 				searchthread.setMass(japan.getGoal());//探索開始位置をゴールに設定
@@ -374,7 +373,7 @@ public class Window implements ActionListener{
 					}
 					//debug
 					System.out.println("開始");
-					for(ArrayList<ArrayList<Coordinates>> list1:nearestTrajectoryList.values()) {
+					for(ArrayList<ArrayList<Coordinates>> list1:canMoveTrajectoryList.values()) {
 						int count=0;
 						System.out.println("開始1");
 						for(ArrayList<Coordinates> list : list1) {
@@ -395,9 +394,10 @@ public class Window implements ActionListener{
 					//そのマスの
 
 					//ゴールから最短にある移動可能マスを格納
-					cpuMoveMaps(nearestTrajectoryList.get(Window.count).get(0));//nearestTrajectoryListが目的地から移動先候補の最短距離に更新されてしまっている
+					cpuMoveMaps(canMoveTrajectoryList.get(nearestTrajectoryList.get(Window.count).get(0).get(nearestTrajectoryList.get(Window.count).get(0).size()-1)).get(0));//nearestTrajectoryListが目的地から移動先候補の最短距離に更新されてしまっている
 				}
 			}
+			System.out.println("player.move:"+player.getMove()+"       終わりました");
 		}
 	}
 
@@ -494,11 +494,13 @@ public class Window implements ActionListener{
 				flag=false;
 			}
 		}
-		canMoveMass = japan.getCoordinates(canMoveMass);//インスタンスの統一
-		if(flag) {
-			this.canMoveTrajectoryList.put(canMoveMass, new ArrayList<ArrayList<Coordinates>>());
+		if(trajectory.size()-1==player.getMove()) {
+			canMoveMass = japan.getCoordinates(canMoveMass);//インスタンスの統一
+			if(flag) {
+				this.canMoveTrajectoryList.put(canMoveMass, new ArrayList<ArrayList<Coordinates>>());
+			}
+			this.canMoveTrajectoryList.get(canMoveMass).add(trajectory);
 		}
-		this.canMoveTrajectoryList.get(canMoveMass).add(trajectory);
 	}
 
 	//最寄り駅を探索
@@ -599,23 +601,20 @@ public class Window implements ActionListener{
 
 	//目的地までの最短距離を計算し、最短ルートを取得
 	private void searchShortestRoute() {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
-		Thread t = new Thread();
 		nearestTrajectoryList.clear();
-		ArrayList<Coordinates> list = japan.getMovePossibles(player.getNowMass());
-		for(Coordinates coor:list) {
-			//Threadを立ち上げる
-			MultiThread thread = new MultiThread(this);
-			thread.addGoal(japan.getGoal());
-			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-			synchronized(MultiThread.lock3) {
-				thread.setMass(coor);
-			}
-			t = new Thread(thread);
-			t.start();
+		//Threadを立ち上げる
+		MultiThread thread = new MultiThread(this,player.getNowMass());
+		thread.addGoal(japan.getGoal());
+		thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
+		thread.setMass(player.getNowMass());
+		Thread t = new Thread(thread);
+		t.start();
+		try {
+			t.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
 		}
-
+		System.out.println("1");
 	}
 
 	//目的地までの最短距離と最短ルートを格納
@@ -626,6 +625,9 @@ public class Window implements ActionListener{
 				this.nearestTrajectoryList.put(count,new ArrayList<ArrayList<Coordinates>>());
 			}
 			this.nearestTrajectoryList.get(count).add(trajectory);
+			for(Coordinates coor:trajectory) {
+				System.out.println("x:"+coor.getX()+"   y:"+coor.getY());
+			}
 		}
 	}
 
@@ -1976,6 +1978,11 @@ public class Window implements ActionListener{
 		sellStationFrame.setSize(800, 35*player.getPropertys().size()+150);
 
 		sellStationFrame.setVisible(true);
+
+		if(!player.isPlayer()) {
+			Player.sortProperty(player.getPropertys());
+			sellPropertys(player.getProperty(0));
+		}
 	}
 
 	//駅の物件情報を表示
@@ -2322,7 +2329,7 @@ class WaitThread implements Runnable{
 			}
 			break;
 		case 2:
-			while(System.currentTimeMillis()-Window.time <= MultiThread.searchTime) {
+			while(System.currentTimeMillis()-Window.time <= MultiThread.searchTime && !MultiThread.endflag) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
