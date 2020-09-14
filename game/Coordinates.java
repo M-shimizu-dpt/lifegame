@@ -31,6 +31,10 @@ public class Coordinates {
 		cost = count+getVirtualCost();
 	}
 
+	public void resetCost() {
+		cost = 0;
+	}
+
 	private int getVirtualCost() {
 		return getDistance(this,Window.japan.getGoal());
 	}
@@ -41,9 +45,10 @@ public class Coordinates {
 	}
 	//最適探索範囲を取得
 	public int getMaxCost(Coordinates start,Coordinates goal){
-		return getDistance(this,start) + getDistance(this,goal)+5;
+		return getDistance(this,start) + getDistance(this,goal);
 	}
-	//2点間の距離
+	//4方向連結の場合マンハッタン距離がパーフェクトヒューリスティックとなる。
+	//2点間の距離(マンハッタン距離)
 	public int getDistance(Coordinates coor1,Coordinates coor2){
 		return Math.abs(coor1.getX()-coor2.getX())+Math.abs(coor1.getY()-coor2.getY());
 	}
@@ -75,7 +80,7 @@ public class Coordinates {
 
 	//自分の方が大きいときtrue
 	public boolean containsCost(Coordinates coor) {
-		return getCost()>coor.getCost();
+		return getCost()>=coor.getCost();
 	}
 
 	public boolean contains(Coordinates coor) {

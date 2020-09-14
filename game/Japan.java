@@ -763,6 +763,13 @@ public class Japan {
 		}
 	}
 
+	//全てのマスのコストをリセットする
+	public void resetCost() {
+		for(int i=0;i<getAllCoordinates().size();i++) {
+			getAllCoordinates().get(i).resetCost();
+		}
+	}
+
 	//ゴールの要素番号を取得
 	public int getGoalIndex() {
 		return goal;
@@ -968,6 +975,16 @@ public class Japan {
 		list.addAll(red);
 		list.addAll(yellow);
 		list.addAll(shop);
+		Collections.sort(list,new Comparator<Coordinates>() {
+        	public int compare(Coordinates cost1,Coordinates cost2) {
+				return Integer.compare(cost1.getY(), cost2.getY());
+			}
+        });
+		Collections.sort(list,new Comparator<Coordinates>() {
+        	public int compare(Coordinates cost1,Coordinates cost2) {
+				return Integer.compare(cost1.getX(), cost2.getX());
+			}
+        });
 		return list;
 	}
 
@@ -1367,7 +1384,6 @@ class MultiThread implements Runnable{
 	public static final Object lock1 = new Object();
 	public static final Object lock2 = new Object();
 	public static final Object lock3 = new Object();
-	public static boolean endflag;
 	public static int searchTime = 1000;
 	private Coordinates start = new Coordinates();
 	private ArrayList<Coordinates> openlist = new ArrayList<Coordinates>();
@@ -1388,10 +1404,10 @@ class MultiThread implements Runnable{
 	public MultiThread(Window window,Coordinates start) {
 		this.window=window;
 		this.start.setValue(start);
-		MultiThread.endflag=false;
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
 	}
+
 	public static void initSearchTime() {
 		MultiThread.searchTime=500;
 	}
@@ -1404,15 +1420,15 @@ class MultiThread implements Runnable{
 		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
 		//内容をコピーした上で自分とは別方向に移動させる。
 		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
-		moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
+		moveTrajectory.add(nowMass);//移動履歴を追加
 		while(true) {
-			System.out.println("Window.count:"+Window.count+"   count:"+count+"   endflag:"+endflag+"   time:"+(System.currentTimeMillis()-Window.time));
-		//while(count<=Window.count && count<=35 && System.currentTimeMillis()-Window.time<searchTime && !MultiThread.endflag) {
-			if(count>Window.count) {
+
+			//System.out.println("Window.count:"+Window.count+"   count:"+count+"   time:"+(System.currentTimeMillis()-Window.time));
+			if(count>Window.count) {//現在見つかっている最短経路よりも大きいcountをもつスレッドを閉じる
 				System.out.println("allcount over");
 				break;
 			}
-			if(count > 35) {
+			if(count > 50) {
 				System.out.println("count over");
 				break;
 			}
@@ -1420,15 +1436,20 @@ class MultiThread implements Runnable{
 				System.out.println("timeout");
 				break;
 			}
-
-			if(MultiThread.endflag) {
-				System.out.println("endflag");
-				break;
+			boolean goalflag = false;
+			for(Coordinates goal:goals) {//目的地にいるかどうか
+				if(goal.contains(nowMass)){
+					goal();
+					goalflag=true;
+					break;
+				}
 			}
-			synchronized(MultiThread.lock1) {
+			if(goalflag) break;
+			//synchronized(MultiThread.lock1) {
 				for(Coordinates possibles : Window.japan.getMovePossibles(this.nowMass)) {//移動可能マスを取得
 					boolean conti=false;
 					Coordinates coordinates = new Coordinates(possibles);
+					//int cpj=-1;
 					for(int j=0;j<moveTrajectory.size()-1;j++) {//既に通った場所を省く
 						synchronized(MultiThread.lock3) {
 							if(!Window.japan.contains(coordinates)) {
@@ -1437,53 +1458,75 @@ class MultiThread implements Runnable{
 						}
 						if(moveTrajectory.get(j).contains(coordinates)) {//来た道の場合
 							conti=true;
+							//cpj=j;
 							break;
 						}
 					}
 					if(conti) {
+						/*
+						for(Coordinates coor : moveTrajectory) {
+							System.out.println("trajectory   x:"+coor.getX()+"   y:"+coor.getY());
+						}
+						System.out.println("trajctory x:"+moveTrajectory.get(cpj).getX()+"   y:"+moveTrajectory.get(cpj).getY()+"   nowmass x:"+nowMass.getX()+"   y:"+nowMass.getY()+"   will x:"+coordinates.getX()+"   y:"+coordinates.getY());
+						*/
 						continue;
 					}
+					possibles.open(count);
 					if(possibles.getCost() < possibles.getMaxCost(start,Window.japan.getGoal())) {
 						list.add(possibles);
+					}else {
+						System.out.println("max over");
 					}
+					possibles.resetCost();
 				}
+			//}
+			if(list.size()<=0) {
+				System.out.println("null");
+				break;
 			}
+			/*
 			for(Coordinates coor : list) {
 				System.out.println("list   x:"+coor.getX()+"   y:"+coor.getY());
 			}
 			for(Coordinates coor : moveTrajectory) {
 				System.out.println("trajectory   x:"+coor.getX()+"   y:"+coor.getY());
 			}
-			for(Coordinates goal:goals) {//目的地にいるかどうか
-				if(goal.contains(nowMass)){
-					goal();
-					break;
-				}
-			}
+			*/
+
 			//open処理
 			ArrayList<Integer> costs = new ArrayList<Integer>();//移動可能マスのコスト一覧
 			for(Coordinates coor:list) {//open処理
+				boolean flag=false;
+				for(Coordinates open : openlist) if(coor.contains(open)) flag=true;
+				if(flag) continue;
 				Window.japan.getCoordinates(coor).open(count);//探索予定のマスをopenにする。(コストを計算し保持する。)
 				costs.add(Window.japan.getCoordinates(coor).getCost());//openの結果をコスト一覧に追加
 			}
+			/*
 			for(Coordinates open : openlist) {
 				for(Coordinates coor:list) {
 					System.out.println("open cost:"+open.getCost()+"   now cost:"+coor.getCost());
 				}
 			}
+			*/
+			/*
 			//行き先のスコアたちそれぞれがopenlistのどれよりも大きい場合
 			boolean search = false;
 			for(Coordinates opens:openlist) {
 				for(Coordinates coor:list) {
-					if(!opens.containsCost(coor)) search = true;
+					System.out.println("old  x:"+opens.getX()+"   y:"+opens.getY()+"   cost:"+opens.getCost()+"   new  x:"+coor.getX()+"   y:"+coor.getY()+"   cost:"+coor.getCost());
+					if(!opens.containsCost(coor)) {
+						search = true;
+						break;
+					}
 				}
+				if(search) break;
 			}
-			if(openlist.size()<=0) search = true;
-			if(!search) {
+			if(search) {
 				System.out.println("cost over");
 				break;//コストが上回っている為、探索先を変更する
 			}
-			//
+			*/
 			for(Coordinates coor:list) {
 				this.openlist.add(Window.japan.getCoordinates(coor));//openlistに移動予定マスを追加
 			}
@@ -1506,28 +1549,31 @@ class MultiThread implements Runnable{
 						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 					}
 				}
+
 				//Threadを立ち上げ、移動する
 				MultiThread thread = new MultiThread(window);
+				thread.setStart(start);
 				thread.threadCopy(this);
 				thread.setMass(coordinates);//移動
+
 				Thread t = new Thread(thread);
 				t.start();
-				System.out.println("create thread");
+				//System.out.println("create thread");
 				try {
 					t.join();
 				}catch(InterruptedException e){
 					e.printStackTrace();
 				}
 			}
-			//行き先が無い場合終了
-			if(list.size()<=0) {
-				break;
-			}
-			count++;
+
 
 			Thread.yield();
 		}
 		openlist.clear();
+	}
+
+	public void setStart(Coordinates start) {
+		this.start.setValue(start);
 	}
 
 	public void setMass(int x,int y) {
@@ -1542,7 +1588,7 @@ class MultiThread implements Runnable{
 		return openlist;
 	}
 
-	private void threadCopy(MultiThread original) {
+	public void threadCopy(MultiThread original) {
 		this.count=original.count+1;
 		this.moveTrajectory.addAll(original.moveTrajectory);
 		this.goals.addAll(original.goals);
@@ -1550,10 +1596,9 @@ class MultiThread implements Runnable{
 	}
 
 	private void goal() {
-		synchronized(MultiThread.lock2) {
+		//synchronized(MultiThread.lock2) {
 			window.setSearchResult(count,moveTrajectory);
-			//MultiThread.endflag=true;
-		}
+		//}
 	}
 }
 
