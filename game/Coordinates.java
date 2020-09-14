@@ -31,23 +31,19 @@ public class Coordinates {
 		cost = count+getVirtualCost();
 	}
 
-	public void resetCost() {
+	public void close() {
 		cost = 0;
 	}
 
 	private int getVirtualCost() {
 		return getDistance(this,Window.japan.getGoal());
 	}
-
-	//現在の地点でのコストを取得
-	public int getCost(Coordinates now,Coordinates goal){
-		return getDistance(now,goal);
-	}
 	//最適探索範囲を取得
 	public int getMaxCost(Coordinates start,Coordinates goal){
-		return getDistance(this,start) + getDistance(this,goal);
+		int Tolerances = 6;
+		return getDistance(this,start) + getDistance(this,goal) + Tolerances;
 	}
-	//4方向連結の場合マンハッタン距離がパーフェクトヒューリスティックとなる。
+	//4方向連結のため、マンハッタン距離(perfect heuristic)を採用
 	//2点間の距離(マンハッタン距離)
 	public int getDistance(Coordinates coor1,Coordinates coor2){
 		return Math.abs(coor1.getX()-coor2.getX())+Math.abs(coor1.getY()-coor2.getY());

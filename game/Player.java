@@ -30,7 +30,7 @@ public class Player {
 		setName(name);
 		addMoney(money);
 		this.nowMass = new Coordinates();
-		this.nowMass.setValue(6, 9);
+		this.nowMass.setValue(6, 9);//大阪
 		clearMove();
 	}
 

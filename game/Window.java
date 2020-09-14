@@ -229,7 +229,6 @@ public class Window implements ActionListener{
     		if(year>endYear)break;
     		player=players.get(turn);
     		searchShortestRoute();
-    		System.out.println("2");
     		Thread search = new Thread(new WaitThread(2));
     		search.start();
     		search.join();
@@ -602,21 +601,22 @@ public class Window implements ActionListener{
 	//目的地までの最短距離を計算し、最短ルートを取得
 	private void searchShortestRoute() {
 		nearestTrajectoryList.clear();
-		japan.resetCost();
+		japan.allClose();
 		//Threadを立ち上げる
 		MultiThread thread = new MultiThread(this,player.getNowMass());
-		thread.addGoal(japan.getGoal());
-		//thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
 		thread.setMass(player.getNowMass());
 		japan.getCoordinates(player.getNowMass()).open(0);
 		Thread t = new Thread(thread);
+		t.setPriority(Thread.MAX_PRIORITY);
 		t.start();
+
+		Thread wt = new Thread(new WaitThread(2));
+		wt.start();
 		try {
-			t.join();
+			wt.join();
 		}catch(InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("1");
 	}
 
 	//目的地までの最短距離と最短ルートを格納
@@ -627,9 +627,6 @@ public class Window implements ActionListener{
 				this.nearestTrajectoryList.put(count,new ArrayList<ArrayList<Coordinates>>());
 			}
 			this.nearestTrajectoryList.get(count).add(trajectory);
-			for(Coordinates coor:trajectory) {
-				System.out.println("count:"+count+"   x:"+coor.getX()+"   y:"+coor.getY());
-			}
 		}
 	}
 
