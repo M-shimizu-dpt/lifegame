@@ -30,7 +30,6 @@ public class Card {
 	public static boolean usedFixedCard;
 	public static boolean usedRandomCard;
 	public static boolean usedOthersCard;
-	private static Window window;
 
 	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
 		this.name = name;
@@ -262,7 +261,7 @@ public class Card {
 		while(true) {
 			x=rand.nextInt(17);
 			y=rand.nextInt(17);
-			if(window.japan.contains(x, y)) {
+			if(Window.japan.contains(x, y)) {
 				break;
 			}
 		}
@@ -271,12 +270,23 @@ public class Card {
 		return movedMass;
 	}
 
-	public static void sort(){
-        Collections.sort(Card.cardList,new Comp());
+	public static void raritySort(ArrayList<Card> cards){
+		Collections.sort(cards,new Comparator<Card>() {
+        	public int compare(Card card1, Card card2) {
+				return Integer.compare(card1.getRarity(), card2.getRarity());
+			}
+        });
+    }
+
+	public static void priceSort(ArrayList<Card> cards){
+        Collections.sort(cards,new Comparator<Card>() {
+        	public int compare(Card card1, Card card2) {
+				return Integer.compare(card1.getBuyPrice(), card2.getBuyPrice());
+			}
+        });
     }
 
 	public static void init(Window window) {
-		Card.window=window;
 		resetUsedCard();
 		resetUsedFixedCard();
 		resetUsedRandomCard();
@@ -325,14 +335,7 @@ public class Card {
 		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5,0));
 		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5,0));
 
-		Card.sort();
+		Card.raritySort(Card.cardList);
 
 	}
-}
-
-class Comp implements Comparator<Card>{
-	public int compare(Card card1, Card card2) {
-		return card1.getRarity() < card2.getRarity() ? -1 : 1;
-	}
-
 }

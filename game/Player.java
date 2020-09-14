@@ -1,6 +1,8 @@
 package lifegame.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import javax.swing.JLabel;
@@ -15,19 +17,25 @@ public class Player {
 	private JLabel colt;//プレイヤーの駒
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
 	private int id;//識別番号
+	private boolean cpuflag;
 
-	public Player(String name,int money,int id) {
+	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
 		this.move=0;
 		this.buff=new Buff();
 		this.cards = new ArrayList<Card>();
 		this.propertys = new ArrayList<Property>();
 		this.id=id;
+		this.cpuflag=cpuflag;
 		setName(name);
 		addMoney(money);
 		this.nowMass = new Coordinates();
-		this.nowMass.setValue(6, 9);
+		this.nowMass.setValue(6, 9);//大阪
 		clearMove();
+	}
+
+	public int getCardSize() {
+		return cards.size();
 	}
 
 	public int containsMoney(int money) {
@@ -38,6 +46,10 @@ public class Player {
 		}else {
 			return 0;
 		}
+	}
+
+	public boolean isPlayer() {
+		return cpuflag;
 	}
 
 	public boolean containsID(int id) {
@@ -153,12 +165,24 @@ public class Player {
 		return this.propertys;
 	}
 
+	public Property getProperty(int index) {
+		return this.propertys.get(index);
+	}
+
 	public boolean isEffect() {
 		if(getBuff().effect != 0) {
 			return true;
 		}else {
 			return false;
 		}
+	}
+
+	public static void sortProperty(ArrayList<Property> propertys) {
+		Collections.sort(propertys, new Comparator<Property>() {
+			public int compare(Property property1, Property property2) {
+				return Integer.compare(property1.getAmount(), property2.getAmount());
+			}
+		});
 	}
 }
 
