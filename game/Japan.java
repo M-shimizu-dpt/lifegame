@@ -1352,7 +1352,7 @@ public class Japan {
 }
 
 //現在の位置から指定した目的地までの最短距離と軌跡を取得
-class MultiThread implements Runnable{
+class SearchThread extends Thread{
 	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
 	public static final Object lock1 = new Object();
 	public static final Object lock2 = new Object();
@@ -1362,52 +1362,67 @@ class MultiThread implements Runnable{
 	private Coordinates start = new Coordinates();
 	private int count=0;
 	private Coordinates nowMass=new Coordinates();
-	private Window window;
+	private Window window;//ゴールの為だけにある為、staticにすべき？(ゴール処理ではすでに同期処理している為staticでも問題無さそう)
+	public static ArrayList<Coordinates> openlist = new ArrayList<Coordinates>();
 
-	public MultiThread(Window window) {
+	public SearchThread(Window window) {
 		this.window=window;
 	}
 
-	public MultiThread(Window window,Coordinates start) {
+	public SearchThread(Window window,Coordinates start) {
 		this.window=window;
 		this.start.setValue(start);
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
-		MultiThread.initSearchTime();
+		SearchThread.initSearchTime();
+		SearchThread.openlist.clear();
 	}
 
-	public MultiThread(Window window,Coordinates start,int searchTime) {
+	public SearchThread(Window window,Coordinates start,int searchTime) {
 		this.window=window;
 		this.start.setValue(start);
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
-		MultiThread.searchTime=searchTime;
+		SearchThread.searchTime=searchTime;
+		SearchThread.openlist.clear();
 	}
 
 	public static void initSearchTime() {
-		MultiThread.searchTime=400;
+		SearchThread.searchTime=500;
 	}
 
 	public void run() {
 		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
 		//内容をコピーした上で自分とは別方向に移動させる。
 		while(count<=Window.count && count <= 40 && System.currentTimeMillis()-Window.time<=searchTime) {
+			if(openlist.size()>10) {
+				synchronized(SearchThread.lock2) {
+					if(openlist.get(SearchThread.openlist.size()/4).containsCost(Window.japan.getCoordinates(nowMass))) {
+						setPriority(Thread.MAX_PRIORITY);
+					}else if(nowMass.containsCost(Window.japan.getCoordinates(openlist.get(SearchThread.openlist.size()*3/4)))){
+						setPriority(Thread.MIN_PRIORITY);
+					}
+				}
+			}else {
+				setPriority(NORM_PRIORITY);
+			}
+			Thread.yield();
 			ArrayList<Coordinates> list = new ArrayList<Coordinates>();
 			moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
-			if(Window.japan.getGoal().contains(nowMass)){
+			if(nowMass.contains(Window.japan.getGoal())){
 				goal();
 				break;
 			}
 			count++;
 			ArrayList<Coordinates> can = new ArrayList<Coordinates>();
-			synchronized(MultiThread.lock1) {
+			synchronized(SearchThread.lock1) {
 				can.addAll(Window.japan.getMovePossibles(this.nowMass));
 			}
 			for(Coordinates possibles : can) {//移動可能マスを取得
 				boolean conti=false;
 				Coordinates coordinates = new Coordinates(possibles);
 				for(Coordinates trajectory : moveTrajectory) {//既に通った場所を省く
-					synchronized(MultiThread.lock3) {
+					synchronized(SearchThread.lock3) {
 						if(!Window.japan.contains(coordinates)) {
 							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 						}
@@ -1426,38 +1441,29 @@ class MultiThread implements Runnable{
 				}
 				possibles.close();
 			}
-			if(list.size()>3) {
-				System.out.println();
-				for(Coordinates coor : list) {
-					System.out.println("size over   x:"+coor.getX()+"   y:"+coor.getY());
-				}
-			}
-
 			//open処理
-			ArrayList<Integer> costs = new ArrayList<Integer>();//移動可能マスのコスト一覧
-			synchronized(MultiThread.lock2) {
+			synchronized(SearchThread.lock2) {
 				for(Coordinates coor:list) {//open処理
 					Window.japan.getCoordinates(coor).open(count);//探索予定のマスをopenにする。(コストを計算し保持する。)
-					costs.add(Window.japan.getCoordinates(coor).getCost());//openの結果をコスト一覧に追加
+					SearchThread.openlist.add(Window.japan.getCoordinates(coor));
 				}
+				//コストの小さい順にソート
+				Collections.sort(SearchThread.openlist,new Comparator<Coordinates>() {
+		        	public int compare(Coordinates coor1,Coordinates coor2) {
+						return Integer.compare(coor1.getCost(), coor2.getCost());
+					}
+		        });
 			}
-			//コストの小さい順にソート
 			Collections.sort(list,new Comparator<Coordinates>() {
 	        	public int compare(Coordinates coor1,Coordinates coor2) {
 					return Integer.compare(coor1.getCost(), coor2.getCost());
 				}
 	        });
-			Collections.sort(costs,new Comparator<Integer>() {
-	        	public int compare(Integer cost1,Integer cost2) {
-					return Integer.compare(cost1, cost2);
-				}
-	        });
-
 			boolean me=true;
 			for(int i=0;i<list.size();i++) {//移動処理
 				//2マス移動
 				Coordinates coordinates = new Coordinates(list.get(i));
-				synchronized(MultiThread.lock3) {
+				synchronized(SearchThread.lock3) {
 					if(!Window.japan.contains(coordinates)) {
 						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
 					}
@@ -1467,21 +1473,13 @@ class MultiThread implements Runnable{
 					me=false;
 				}else {
 					//Threadを立ち上げ、移動する
-					MultiThread thread = new MultiThread(window);
+					SearchThread thread = new SearchThread(window);
 					thread.setStart(start);
 					thread.threadCopy(this);
 					thread.setMass(coordinates);//移動
-
-					Thread t = new Thread(thread);
-					if(i!=list.size()-1) {
-						t.setPriority(Thread.NORM_PRIORITY);
-					}else {
-						t.setPriority(Thread.MIN_PRIORITY);
-					}
-					t.start();
+					thread.start();
 				}
 			}
-			Thread.yield();
 		}
 	}
 
@@ -1497,19 +1495,19 @@ class MultiThread implements Runnable{
 		this.nowMass.setValue(coor);
 	}
 
-	public void threadCopy(MultiThread original) {
+	public void threadCopy(SearchThread original) {
 		this.count=original.count;
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
 	private void goal() {
-		synchronized(MultiThread.lock4) {
+		synchronized(SearchThread.lock4) {
 			window.setSearchResult(count,moveTrajectory);
 		}
 	}
 }
 
-//目的地から現在の位置までの最短距離と軌跡を取得
+//目的地から最短の指定位置を探索
 class NearestSearchThread implements Runnable{
 	public ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
 	public static final Object lock1 = new Object();
@@ -1636,9 +1634,7 @@ class NearestSearchThread implements Runnable{
 
 	private void goal() {
 		synchronized(NearestSearchThread.lock2) {
-			if(NearestSearchThread.nearestCount>=count) {
-				NearestSearchThread.nearestCount=count;
-			}
+			window.setNearestMass(nowMass,count);
 		}
 	}
 }
