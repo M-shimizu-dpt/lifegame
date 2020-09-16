@@ -291,7 +291,7 @@ public class Card {
 		resetUsedFixedCard();
 		resetUsedRandomCard();
 		resetUsedOthersCard();
-
+/*
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
 		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));
@@ -318,9 +318,10 @@ public class Card {
 		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る",2,0));
 		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る",2,0));
 		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る",2,0));
+		*/
 		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る",2,0));
 		cardList.add(new Card("星に願いをカード",40000,2,"最寄りのカードショップに移動することが出来る",2,0));
-
+/*
 		//バフ・デバフ
 		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす",3,-3));
 
@@ -334,7 +335,7 @@ public class Card {
 		//カードがもらえる
 		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5,0));
 		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5,0));
-
+*/
 		Card.raritySort(Card.cardList);
 
 	}

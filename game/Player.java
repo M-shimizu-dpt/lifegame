@@ -38,6 +38,14 @@ public class Player {
 		return cards.size();
 	}
 
+	public int getAnotherPlayer() {
+		int rand;
+		do {
+			rand = new Random().nextInt(4);
+		}while(rand != this.id);
+		return rand;
+	}
+
 	public int containsMoney(int money) {
 		if(this.money>money) {
 			return 1;

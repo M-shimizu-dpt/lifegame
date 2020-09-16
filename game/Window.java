@@ -37,15 +37,6 @@
  *
  *確認ポップアップを作る
  *
- *探索手法にA*アルゴリズムを導入する
- *
- *探索用スレッドをSearchThreadにまとめられるかも？
- *
- *CPU操作の探索失敗時の処理を実装する必要がある
- *
- *CPU操作でたまに移動しなくなってしまい、ターン終了できなくなってしまう
- *	→ループし同じ位置に返ってくるようなマス移動をする際にバグが起きている様子
- *
  * ・内部処理
  * 指定したスパンでrandomイベントを発生させる
  * ↓
@@ -62,6 +53,16 @@
  * 流れに合う箇所に記述する
  *
  * CPUのマップ移動の際、ボンビーがいる場合の移動方法について
+ *
+ * CPUを賢くする
+ *
+ * ゲームの結果を表示する
+ *
+ * 月表示よりも先に決算処理が入るようにする
+ *
+ * 月表示で1月が13月になっている問題
+ *
+ * 探索機構の最適化(そのマスから探索開始させる)
  *
  *
  */
@@ -125,7 +126,7 @@ public class Window implements ActionListener{
 	private ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
 	private ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
 	private Map<String,ArrayList<Integer>> moneyTrajectory = new HashMap<String,ArrayList<Integer>>();//プレイヤーのお金の増減の軌跡
-	private int year=0;//今の年
+	private int year=1;//今の年
 	private int month=4;//今の月
 	private int maxProfit=100;//最高収益(グラフ作成用)
 	private int minProfit=0;//最低収益(グラフ作成用)
@@ -213,76 +214,78 @@ public class Window implements ActionListener{
 
   	//プレイ中の動作
 	private void play(int endYear, int playerCount) throws InterruptedException{
-    	Boolean flag=true;
+    	Boolean first=true;
     	playFrame.getLayeredPane().add(new JLabel());
     	moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
     	moveLabel.setName("moves");
     	playFrame.setBackground(Color.ORANGE);
     	closeMoveButton();
     	while(true) {
-    		if(flag)printMonthFrame(month);
-    		if(month==4 && turn==0) {
-    			if(!flag) {
-    				closing();
-    			}
-    			flag=false;
-				year++;
-			}
+    		if(first) {
+    			printMonthFrame(month);
+    		}else {
+	    		if(turn==3) {
+	    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
+	    			for(int i=0;i<4;i++) {
+	    				moneyList.add(players.get(i).getMoney());
+	    			}
+	    			moneyTrajectory.put(year+"年"+month+"月", moneyList);//この月のプレイヤーの所持金を保存
+	    			month++;
+	    			if(month==4 && turn==0) {
+		    			closing();
+		    			year++;
+					}
+	    			printMonthFrame(month);
+	    			if(month==12) {
+	    				month=1;
+	    			}
+	    			turn=0;
+	    		}else {
+	    			turn++;
+	    		}
+    		}
+    		first=false;
     		if(year>endYear)break;
-    		player=players.get(turn);
-    		searchShortestRoute();
-    		Thread search = new Thread(new WaitThread(2));
+
+    		player=players.get(turn);//このターンのプレイヤーを選定
+    		player.addCard(Card.cardList.get(0));//debug
+    		player.addCard(Card.cardList.get(1));//debug
+    		searchShortestRoute();//目的地までの最短経路を探索
+    		WaitThread search = new WaitThread(2);
     		search.start();
     		search.join();
     		japan.saveGoal();
     		returnMaps();//画面遷移が少し遅い
-    		reload();
-    		Card.priceSort(player.getCards());
+    		reload();//画面上部に表示している情報を更新
+    		Card.priceSort(player.getCards());//プレイヤーが持つカードを価格順にソート
     		if(!player.isPlayer()) {//cpu操作
     			cpu();
     		}
-    		Thread turnEnd = new Thread(new WaitThread(0));
+    		WaitThread turnEnd = new WaitThread(0);//ターン終了まで待機
     		turnEnd.start();
     		turnEnd.join();
     		Thread.sleep(1000);
     		turnEndFlag=false;
-    		alreadys.clear();
+    		alreadys.clear();//このターンに購入した物件リストを初期化
     		printMenu();
-    		if(turn==3) {
-    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
-    			for(int i=0;i<4;i++) {
-    				moneyList.add(players.get(i).getMoney());
-    			}
-    			moneyTrajectory.put(year+"年"+month+"月", moneyList);
-    			month++;
-    			printMonthFrame(month);
-    			if(month==13) {
-    				month=1;
-    			}
-    			turn=0;
-    		}else {
-    			turn++;
-    		}
+
     	}
     	System.out.println("終わり");
-		System.exit(0);
     }
 
 	//CPU操作
-	private void cpu() {
+	private void cpu() throws InterruptedException{
 		try {
 			Thread.sleep(500);
 		}catch(InterruptedException e) {
 			e.printStackTrace();
 		}
 
-		boolean diceFlag=false;//サイコロを回すかどうか
+		boolean diceFlag=true;//サイコロを回すかどうか
 		if(player.getCardSize()>0) {//カードがある場合確率で使用する（今は効果関係なく1/2で使用）
 			//確率でカードを使用
 			int rand = new Random().nextInt(player.getCardSize()*2);
-			if(rand >= player.getCardSize()) {
-				diceFlag=true;
-			}else {
+			if(rand < player.getCardSize()) {
 				player.getCard(rand).useAbility(this,dice,players,turn);
 				if(Card.usedRandomCard || Card.usedOthersCard) {
 					Card.resetUsedCard();
@@ -290,29 +293,21 @@ public class Window implements ActionListener{
 					Card.resetUsedRandomCard();
 					Card.resetUsedOthersCard();
 					ableMenu();
+					diceFlag=false;
 					turnEndFlag=true;
-				}else {
-					diceFlag=true;
 				}
 			}
-		}else {//カードが無い場合サイコロを回す
-			diceFlag=true;
 		}
 		if(diceFlag) {
 			diceShuffle();//サイコロを回す
-			Thread waitthread = new Thread(new WaitThread(4));
+			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
 			waitthread.start();
-			try {
-				waitthread.join();
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
+			waitthread.join();
 
 			//行くことが出来るマス取得
 			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuMoveMaps();
 			}else {//目的地を超えてしまう場合
-				System.out.println("目的地を超える");
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
 				NearestSearchThread searchthread = new NearestSearchThread(this);
@@ -330,29 +325,10 @@ public class Window implements ActionListener{
 					Window.count=100;
 					NearestSearchThread.nearestCount=100;
 					nearestMassToGoalList.clear();
-					Thread t = new Thread(searchthread);
-					t.start();
-					Thread w = new Thread(new WaitThread(2));
+					searchthread.start();
+					WaitThread w = new WaitThread(2);
 					w.start();
-					try {
-						w.join();
-					}catch(InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					//移動可能マスの中で目的地から最も近いマスを探す
-					//そのマスの
-
-					for(Coordinates coor: canMoveTrajectoryList.keySet()) {
-						System.out.println("行くことが出来るマス   x:"+coor.getX()+"   y"+coor.getY());
-					}
-					int i=0;
-					for(ArrayList<Coordinates> list:canMoveTrajectoryList.get(nearestMassToGoalList.get(0))){
-						i++;
-						for(Coordinates coor : list) {
-							System.out.println("目的地:"+nearestMassToGoalList.get(0)+"   経路"+i+":"+coor.getX()+","+coor.getY());
-						}
-					}
+					w.join();
 
 					//ゴールから最短にある移動可能マスを格納
 					cpuMoveMaps(canMoveTrajectoryList.get(nearestMassToGoalList.get(0)).get(0));//nearestTrajectoryListが目的地から移動先候補の最短距離に更新されてしまっている
@@ -458,7 +434,7 @@ public class Window implements ActionListener{
 			t = new Thread(thread);
 			t.start();
 		}
-		Thread thread = new Thread(new WaitThread(4));
+		WaitThread thread = new WaitThread(4);
 		thread.start();
 		try {
 			thread.join();
@@ -487,32 +463,11 @@ public class Window implements ActionListener{
 
 	//最寄り駅を探索
 	public void searchNearestStation() {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
-		StationSearchThread.savecount=0;
 		nearestStationList.clear();
-		Thread t = new Thread();
-		if(japan.containsStation(player.getNowMass())){
 			StationSearchThread thread = new StationSearchThread(this);
 			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-			synchronized(StationSearchThread.lock3) {
-				thread.setMass(player.getNowMass());
-			}
-			t = new Thread(thread);
-			t.start();
-		}else {
-			ArrayList<Coordinates> list = japan.getMovePossibles(player.getNowMass());
-			for(Coordinates coor:list) {
-				//Threadを立ち上げる
-				StationSearchThread thread = new StationSearchThread(this);
-				thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-				synchronized(StationSearchThread.lock3) {
-					thread.setMass(coor);
-				}
-				t = new Thread(thread);
-				t.start();
-			}
-		}
+			thread.setMass(player.getNowMass());
+			thread.start();
 	}
 
 	//最寄り駅の探索結果を格納
@@ -595,7 +550,7 @@ public class Window implements ActionListener{
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 
-			Thread wt = new Thread(new WaitThread(2));
+			WaitThread wt = new WaitThread(2);
 			wt.start();
 			try {
 				wt.join();
@@ -1073,49 +1028,124 @@ public class Window implements ActionListener{
 		playFrame.setVisible(true);
 	}
 
-	//決算処理
+	/*
+	 * 決算
+	 */
+
 	private void closing() {
 		JFrame closingFrame = new JFrame("決算");
 		JLayeredPane closing = closingFrame.getLayeredPane();
 		closingFrame.setSize(800, 600);
 		closingFrame.setLocationRelativeTo(null);
-		closing.add(createText(10,10,300,200,100,"決算"));
+		closingFrame.add(createText(10,10,300,200,100,"決算"));
 		closingFrame.setVisible(true);
 		try {
 			Thread.sleep(3000);
 		}catch(InterruptedException e) {
 
 		}
+
 		closingFrame.setVisible(false);
 		closing.removeAll();
 		closingFrame.setLayout(null);
+
 		addProfit();
 		aggregateProfit();
+		revenue();
 
-		//ここから収益
+	}
+
+	/*
+	 * 収益表示
+	 */
+	private void revenue() {
+		JFrame revenueFrame = new JFrame("収益");
+		JLayeredPane revenue = revenueFrame.getLayeredPane();
+		revenueFrame.setSize(800, 600);
+		revenueFrame.setLocationRelativeTo(null);
+		revenueFrame.setVisible(true);
+
 		JLabel profitLabel = createText(10,10,370,40,15,"今までの収益の推移");
 		profitLabel.setBackground(Color.BLUE);
-		closing.add(profitLabel);
+		revenue.add(profitLabel);
 		//グラフ作成(左半分)
-		for(int i=0;i<allProfitList.size();i++) {
+		for(float i=0;i<allProfitList.size();i++) {
 			for(int j=0;j<4;j++) {
-				//各プレイヤーの収益の値をグラフに出力
 				JPanel graph = new JPanel();
-				graph.setBounds(400*((i+1)/allProfitList.size()),600-(500*allProfitList.get(i)[j]/(maxProfit-minProfit)),5,5);
+				int x=(int)(300*((i+1)/allProfitList.size()));									//x座標を算出
+				int y=(int)(500-(400*allProfitList.get((int)i)[j]/(maxProfit-minProfit)));	//y座標を算出
+				graph.setBounds(x,y,5,5);														//（x,y）をプロット
 				graph.setBackground(Color.YELLOW);
-				closing.add(graph);
-				System.out.println("x:" + String.valueOf(400*((i+1)/allProfitList.size())) + "   y:" + String.valueOf(600-(500*allProfitList.get(i)[j]/(maxProfit-minProfit))));
+				revenue.add(graph);
+				System.out.println("x:" + String.valueOf(x) + "\ty:" + String.valueOf(y));
 				if(i==allProfitList.size()-1) {//ぬるぽ回避
 					continue;
 				}
-				//次の年の自分の収益までの線を引く
-				for(int y=600-(500*allProfitList.get(i)[j]/(maxProfit-minProfit));y<600-(500*allProfitList.get(i+1)[j]/(maxProfit-minProfit));y+=4) {
-					for(int x=400*((i+1)/allProfitList.size());x<400*((i+2)/allProfitList.size());x+=4) {
+				//グラフ線分
+				/*
+				 * (x1,y1):線分の始点
+				 * (x2,y2):線分の終点
+				 * a:x座標の増加分　b:y座標の増加分
+				 * c:aを2倍し絶対値を取った値
+				 * d:bを2倍し絶対値を取った値
+				 * dx,dy:増減を格納用
+				 * fraction:
+				 *
+				 */
+				int x1=(int)x;
+				int y1=(int)y;
+				int x2=(int)(300*((i+2)/allProfitList.size()));									//翌年のx座標を算出
+				int y2=(int)(500-(400*allProfitList.get((int)i+1)[j]/(maxProfit-minProfit)));		//翌年のy座標を算出
+
+				//System.out.println("x1:"+x+"\ty1:"+y1+"\tx2:"+x2+"\ty2:"+y2);
+
+				int a = x2 - x1;
+				int b = y2 - y1;
+				int dx,dy,fraction;
+
+				if(a < 0) {
+					dx = -1;
+				}else {
+					dx = 1;
+				}
+				if(b < 0) {
+					dy = -1;
+				}else {
+					dy = 1;
+				}
+
+				int c = Math.abs(a * 2);
+				int d = Math.abs(b * 2);
+
+				if(c > d) {
+					fraction = d - c/2;
+					while(x1 != x2) {
+						if(fraction >= 0) {
+							y1 += dy;
+							fraction -= c;
+						}
+						x1 += dx;
+						fraction += d;
 						JPanel line = new JPanel();
-						line.setBackground(Color.YELLOW);
-						line.setLocation(x, y);
-						line.setSize(2,2);
-						closing.add(line,JLayeredPane.DEFAULT_LAYER,-1);
+						line.setBackground(Color.blue);
+						line.setLocation(x1,y1);
+						line.setSize(1,1);
+						revenue.add(line,JLayeredPane.DEFAULT_LAYER,-1);
+					}
+				}else {
+					fraction = c - d/2;
+					while(y1 != y2) {
+						if(fraction >= 0) {
+							x1 += dx;
+							fraction -= d;
+						}
+						y1 += dy;
+						fraction += c;
+						JPanel line = new JPanel();
+						line.setBackground(Color.blue);
+						line.setLocation(x1,y1);
+						line.setSize(1,1);
+						revenue.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 					}
 				}
 			}
@@ -1124,23 +1154,21 @@ public class Window implements ActionListener{
 		//グラフの具体的な数値(右半部)
 		JLabel profitThisYearLabel = createText(400,10,370,40,15,"今年の収益");
 		profitThisYearLabel.setBackground(Color.BLUE);
-		closing.add(profitThisYearLabel);
-
+		revenue.add(profitThisYearLabel);
 		for(int i=0;i<4;i++) {
 			JLabel playerNameLabel = createText(400,110+(100*i),100,40,10,players.get(i).getName());
-			playerNameLabel.setBackground(Color.BLUE);
-			closing.add(playerNameLabel,JLayeredPane.DEFAULT_LAYER,0);
-			JLabel playerProfitLabel = createText(400,110+(100*i),100,40,10,String.valueOf(allProfitList.get(allProfitList.size()-1)[i]));
-			playerProfitLabel.setBackground(Color.BLUE);
-			closing.add(playerProfitLabel,JLayeredPane.DEFAULT_LAYER,0);
+			playerNameLabel.setBackground(Color.white);
+			revenue.add(playerNameLabel,JLayeredPane.DEFAULT_LAYER,0);
+			JLabel playerProfitLabel = createText(500,110+(100*i),100,40,10,String.valueOf(allProfitList.get(allProfitList.size()-1)[i]));
+			playerProfitLabel.setBackground(Color.white);
+			revenue.add(playerProfitLabel,JLayeredPane.DEFAULT_LAYER,0);
 		}
 
 		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
 		closeButton.setActionCommand("決算画面を閉じる");
-		closing.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-
-		closingFrame.setVisible(true);
-		Thread thread = new Thread(new WaitThread(3));
+		revenue.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		revenueFrame.setVisible(true);
+		WaitThread thread = new WaitThread(3);
 		thread.start();
 		try {
 			thread.join();
@@ -1148,36 +1176,104 @@ public class Window implements ActionListener{
 			e.printStackTrace();
 		}
 		closingEndFlag=false;
-		closingFrame.setVisible(false);
-		closing.removeAll();
-		//ここまで収益
+		revenueFrame.setVisible(false);
+		revenue.removeAll();
 
-		//ここから総資産
+		aggregateAssets();
+		Assets();
+	}
+	/*
+	 * 総資産表示
+	 */
+	private void Assets() {
+		JFrame AssetsFrame = new JFrame("総資産");
+		JLayeredPane Assets = AssetsFrame.getLayeredPane();
+		AssetsFrame.setSize(800, 600);
+		AssetsFrame.setLocationRelativeTo(null);
+		AssetsFrame.setVisible(true);
+
+		System.out.println("x="+allProfitList.size());
 		JLabel assetsLabel = createText(10,10,370,40,15,"今までの総資産の推移");
 		assetsLabel.setBackground(Color.BLUE);
-		closing.add(assetsLabel);
-		aggregateAssets();
+		Assets.add(assetsLabel);
 
-		//グラフ作成(左半分)
-		for(int i=0;i<allAssetsList.size();i++) {
+		for(float i=0;i<allAssetsList.size();i++) {
 			for(int j=0;j<4;j++) {
-				//各プレイヤーの総資産の値をグラフに出力
 				JPanel graph = new JPanel();
-				graph.setBounds(400*((i+1)/allAssetsList.size()),600-(500*allAssetsList.get(i)[j]/(maxAssets-minAssets)),5,5);
+				int x = (int)(300*((i+1)/allAssetsList.size()));
+				int y = (int)(500-(400*allAssetsList.get((int)i)[j]/(maxAssets-minAssets)));
+				graph.setBounds(x,y,5,5);
 				graph.setBackground(Color.YELLOW);
-				closing.add(graph);
-				System.out.println("x:" + String.valueOf(400*((i+1)/allAssetsList.size())) + "   y:" + String.valueOf(600-(500*allAssetsList.get(i)[j]/(maxAssets-minAssets))));
+				Assets.add(graph);
+				System.out.println("x:"+x+"\ty:"+y);
 				if(i==allAssetsList.size()-1) {//ぬるぽ回避
 					continue;
 				}
-				//次の年の自分の総資産までの線を引く
-				for(int y=600-(500*allAssetsList.get(i)[j]/(maxAssets-minAssets));y<600-(500*allAssetsList.get(i+1)[j]/(maxAssets-minAssets));y+=4) {
-					for(int x=400*((i+1)/allAssetsList.size());x<400*((i+2)/allAssetsList.size());x+=4) {
+				//グラフ線分
+				/*
+				 * (x1,y1):線分の始点
+				 * (x2,y2):線分の終点
+				 * a:x座標の増加分　b:y座標の増加分
+				 * c:aを2倍し絶対値を取った値
+				 * d:bを2倍し絶対値を取った値
+				 * dx,dy:増減を格納用
+				 * fraction:
+				 *
+				 */
+				int x1=(int)x;
+				int y1=(int)y;
+				int x2=(int)(300*((i+2)/allAssetsList.size()));									//翌年のx座標
+				int y2=(int)(500-(400*allAssetsList.get((int)i+1)[j]/(maxAssets-minAssets)));		//翌年のy座標
+
+				//System.out.println("x1:"+x+"\ty1:"+y1+"\tx2:"+x2+"\ty2:"+y2);
+
+				int a = x2 - x1;
+				int b = y2 - y1;
+				int dx,dy,fraction;
+					if(a<0) {
+					dx = -1;
+				}else {
+					dx = 1;
+				}
+				if(b<0) {
+					dy = -1;
+				}else {
+					dy = 1;
+				}
+
+
+				int c=Math.abs(a*2);
+				int d=Math.abs(b*2);
+
+				if(c > d) {
+					fraction = d - c/2;
+					while(x1 != x2) {
+						if(fraction >= 0) {
+							y1 += dy;
+							fraction -= c;
+						}
+						x1 += dx;
+						fraction += d;
 						JPanel line = new JPanel();
-						line.setBackground(Color.YELLOW);
-						line.setLocation(x, y);
-						line.setSize(2,2);
-						closing.add(line,JLayeredPane.DEFAULT_LAYER,-1);
+						line.setBackground(Color.blue);
+						line.setLocation(x1,y1);
+						line.setSize(1,1);
+						Assets.add(line,JLayeredPane.DEFAULT_LAYER,-1);
+					}
+				}else {
+					fraction = c - d/2;
+					while(y1 != y2) {
+						if(fraction >= 0) {
+							x1 += dx;
+							fraction -= d;
+						}
+						y1 += dy;
+						fraction += c;
+						JPanel line = new JPanel();
+						line.setBackground(Color.blue);
+						line.setLocation(x1,y1);
+						line.setSize(1,1);
+						Assets.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 					}
 				}
 			}
@@ -1186,20 +1282,20 @@ public class Window implements ActionListener{
 		//グラフの具体的な数値(右半部)
 		JLabel assetsThisYearLabel = createText(400,10,370,40,15,"今年の総資産");
 		assetsThisYearLabel.setBackground(Color.BLUE);
-		closing.add(assetsThisYearLabel);
-
+		Assets.add(assetsThisYearLabel);
 		for(int i=0;i<4;i++) {
 			JLabel playerNameLabel = createText(400,110+(100*i),100,40,10,players.get(i).getName());
-			playerNameLabel.setBackground(Color.BLUE);
-			closing.add(playerNameLabel,JLayeredPane.DEFAULT_LAYER,0);
-			JLabel playerAssetsLabel = createText(400,110+(100*i),100,40,10,String.valueOf(allAssetsList.get(allAssetsList.size()-1)[i]));
-			playerAssetsLabel.setBackground(Color.BLUE);
-			closing.add(playerAssetsLabel,JLayeredPane.DEFAULT_LAYER,0);
+			playerNameLabel.setBackground(Color.white);
+			Assets.add(playerNameLabel,JLayeredPane.DEFAULT_LAYER,0);
+			JLabel playerAssetsLabel = createText(500,110+(100*i),100,40,10,String.valueOf(allAssetsList.get(allAssetsList.size()-1)[i]));
+			playerAssetsLabel.setBackground(Color.white);
+			Assets.add(playerAssetsLabel,JLayeredPane.DEFAULT_LAYER,0);
 		}
-
-		closing.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-
-		closingFrame.setVisible(true);
+		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
+		closeButton.setActionCommand("決算画面を閉じる");
+		Assets.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		AssetsFrame.setVisible(true);
+		WaitThread thread = new WaitThread(3);
 		thread.start();
 		try {
 			thread.join();
@@ -1207,9 +1303,9 @@ public class Window implements ActionListener{
 			e.printStackTrace();
 		}
 		closingEndFlag=false;
-		closingFrame.setVisible(false);
+		AssetsFrame.setVisible(false);
+		Assets.removeAll();
 		//ここまで総資産
-
 	}
 
 	//収益を加算
@@ -2203,7 +2299,7 @@ public class Window implements ActionListener{
 				moveMaps(0,-130);
 			}
 			searchShortestRoute();
-			Thread thread = new Thread(new WaitThread(2));
+			WaitThread thread = new WaitThread(2);
 			thread.start();
 			try {
 				thread.join();
@@ -2280,8 +2376,8 @@ public class Window implements ActionListener{
 	}
 }
 
-//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→探索待ち,id=3→決算待ち
-class WaitThread implements Runnable{
+//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち
+class WaitThread extends Thread{
 	private int id;
 	private int money;
 	private int size;
