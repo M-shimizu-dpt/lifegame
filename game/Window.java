@@ -64,7 +64,7 @@
  *
  * 探索機構の最適化(そのマスから探索開始させる)
  *
- *
+ * CPUがrandom移動系カードを使用したあと、reload()されていない？
  */
 
 package lifegame.game;
@@ -248,8 +248,6 @@ public class Window implements ActionListener{
     		if(year>endYear)break;
 
     		player=players.get(turn);//このターンのプレイヤーを選定
-    		player.addCard(Card.cardList.get(0));//debug
-    		player.addCard(Card.cardList.get(1));//debug
     		searchShortestRoute();//目的地までの最短経路を探索
     		WaitThread search = new WaitThread(2);
     		search.start();
@@ -261,14 +259,13 @@ public class Window implements ActionListener{
     		if(!player.isPlayer()) {//cpu操作
     			cpu();
     		}
+    		printMenu();
     		WaitThread turnEnd = new WaitThread(0);//ターン終了まで待機
     		turnEnd.start();
     		turnEnd.join();
     		Thread.sleep(1000);
     		turnEndFlag=false;
     		alreadys.clear();//このターンに購入した物件リストを初期化
-    		printMenu();
-
     	}
     	System.out.println("終わり");
     }
@@ -321,9 +318,6 @@ public class Window implements ActionListener{
 					searchthread.addGoal(coor);
 				}
 				if(!flag) {
-					Window.time = System.currentTimeMillis();
-					Window.count=100;
-					NearestSearchThread.nearestCount=100;
 					nearestMassToGoalList.clear();
 					searchthread.start();
 					WaitThread w = new WaitThread(2);
@@ -337,9 +331,6 @@ public class Window implements ActionListener{
 			System.out.println("player.move:"+player.getMove()+"       終わりました");
 			if(player.getMove()>0) {
 				System.out.println("異常終了");
-				for(Coordinates coor:canMoveTrajectoryList.get(nearestMassToGoalList.get(0)).get(0)) {
-					System.out.println("目的地:"+nearestMassToGoalList.get(0)+"   経路:"+coor.getX()+","+coor.getY());
-				}
 			}
 		}
 	}
@@ -420,22 +411,13 @@ public class Window implements ActionListener{
 
 	//行くことが出来るマスを探索
 	public void searchCanMoveMass() {
-		Window.time = System.currentTimeMillis();
+
 		canMoveTrajectoryList.clear();
-		Thread t = new Thread();
-		ArrayList<Coordinates> list = japan.getMovePossibles(player.getNowMass());
-		for(Coordinates coor:list) {
-			//Threadを立ち上げる
-			MassSearchThread thread = new MassSearchThread(this,player.getMove());
-			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-			synchronized(MassSearchThread.lock3) {
-				thread.setMass(coor);
-			}
-			t = new Thread(thread);
-			t.start();
-		}
-		WaitThread thread = new WaitThread(4);
+		MassSearchThread thread = new MassSearchThread(this,player.getMove());
+		thread.setMass(this.player.getNowMass());
 		thread.start();
+		WaitThread waitthread = new WaitThread(4);
+		waitthread.start();
 		try {
 			thread.join();
 		}catch(InterruptedException e){
@@ -464,19 +446,18 @@ public class Window implements ActionListener{
 	//最寄り駅を探索
 	public void searchNearestStation() {
 		nearestStationList.clear();
-			StationSearchThread thread = new StationSearchThread(this);
-			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-			thread.setMass(player.getNowMass());
-			thread.start();
+		StationSearchThread thread = new StationSearchThread(this);
+		thread.setMass(player.getNowMass());
+		thread.start();
 	}
 
 	//最寄り駅の探索結果を格納
 	public synchronized void setNearestStationResult(int count, Coordinates nearestStation) {
 		if(Window.count>=count) {
-			System.out.println("name:"+japan.getStationName(nearestStation)+"  x:"+nearestStation.getX()+"   y:"+nearestStation.getY());
+			if(Window.count>count) this.nearestStationList.clear();//最寄り駅の更新があった場合
 			Window.count=count;
 			boolean flag=true;
-			for(Coordinates coor:nearestStationList) {
+			for(Coordinates coor:nearestStationList) {//既に探索済みの駅か
 				if(coor.contains(nearestStation)) {
 					flag=false;
 				}
@@ -490,38 +471,16 @@ public class Window implements ActionListener{
 
 	//最寄り店を探索
 	public void searchNearestShop() {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
-		ShopSearchThread.savecount=0;
 		nearestShopList.clear();
-		Thread t = new Thread();
-		if(japan.containsShop(player.getNowMass())){
-			ShopSearchThread thread = new ShopSearchThread(this);
-			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-			synchronized(ShopSearchThread.lock3) {
-				thread.setMass(player.getNowMass());
-			}
-			t = new Thread(thread);
-			t.start();
-		}else {
-			ArrayList<Coordinates> list = japan.getMovePossibles(player.getNowMass());
-			for(Coordinates coor:list) {
-				//Threadを立ち上げる
-				ShopSearchThread thread = new ShopSearchThread(this);
-				thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-				synchronized(ShopSearchThread.lock3) {
-					thread.setMass(coor);
-				}
-				t = new Thread(thread);
-				t.start();
-			}
-		}
+		ShopSearchThread thread = new ShopSearchThread(this);
+		thread.setMass(player.getNowMass());
+		thread.start();
 	}
 
 	//最寄り店の探索結果を格納
 	public synchronized void setNearestShopResult(int count, Coordinates nearestShop) {
 		if(Window.count>=count) {
-			System.out.println("x:"+nearestShop.getX()+"   y:"+nearestShop.getY());
+			if(Window.count>count)this.nearestShopList.clear();
 			Window.count=count;
 			boolean flag=true;
 			for(Coordinates coor:nearestShopList) {
@@ -1469,6 +1428,15 @@ public class Window implements ActionListener{
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 		if(player.getMove() <= 0) {
 			closeMoveButton();
+		}else {
+			searchShortestRoute();
+			WaitThread thread = new WaitThread(2);
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -2298,16 +2266,8 @@ public class Window implements ActionListener{
 			}else if(cmd.equals("下")) {
 				moveMaps(0,-130);
 			}
-			searchShortestRoute();
-			WaitThread thread = new WaitThread(2);
-			thread.start();
-			try {
-				thread.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			reload();
 			printMoveButton();
+			reload();
 		}else if(cmd.equals("→") || cmd.equals("←") || cmd.equals("↑") || cmd.equals("↓")) {
 			moveMaps(cmd);
 		}
@@ -2381,18 +2341,19 @@ class WaitThread extends Thread{
 	private int id;
 	private int money;
 	private int size;
+
 	public WaitThread(int id) {
 		this.id=id;
-
-
-
 	}
+
 	public WaitThread(int id,int money,int size) {
 		this.id=id;
 		this.money=money;
 		this.size=size;
 	}
 
+
+	@Override
 	public void run() {
 		switch(id) {
 		case 0:
