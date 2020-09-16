@@ -464,19 +464,19 @@ public class Window implements ActionListener{
 	//最寄り駅を探索
 	public void searchNearestStation() {
 		nearestStationList.clear();
-			StationSearchThread thread = new StationSearchThread(this);
-			thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
-			thread.setMass(player.getNowMass());
-			thread.start();
+		StationSearchThread thread = new StationSearchThread(this);
+		thread.moveTrajectory.add(new Coordinates(player.getNowMass()));
+		thread.setMass(player.getNowMass());
+		thread.start();
 	}
 
 	//最寄り駅の探索結果を格納
 	public synchronized void setNearestStationResult(int count, Coordinates nearestStation) {
 		if(Window.count>=count) {
-			System.out.println("name:"+japan.getStationName(nearestStation)+"  x:"+nearestStation.getX()+"   y:"+nearestStation.getY());
+			if(Window.count>count) this.nearestStationList.clear();//最寄り駅の更新があった場合
 			Window.count=count;
 			boolean flag=true;
-			for(Coordinates coor:nearestStationList) {
+			for(Coordinates coor:nearestStationList) {//既に探索済みの駅か
 				if(coor.contains(nearestStation)) {
 					flag=false;
 				}

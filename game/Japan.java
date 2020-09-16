@@ -1686,15 +1686,12 @@ class StationSearchThread extends NearestSearchThread{
 	public void run() {
 		ArrayList<Coordinates> list;//現在地の近傍マス
 
-		boolean flag;
-		boolean end;
-		boolean setMassFlag;
-		Coordinates next = new Coordinates();
+		boolean first;//分岐検知用フラグ
+		Coordinates next = new Coordinates();//次の移動マス格納用
 		while(count<=Window.count && count<=10 && System.currentTimeMillis()-Window.time<StationSearchThread.searchTime) {
+			//初期化
 			next.setValue(0, 0);
-			setMassFlag=false;
-			end=true;
-			flag=false;
+			first=true;
 
 			//終了
 			if(Window.japan.containsStation(this.nowMass)) {
@@ -1713,13 +1710,7 @@ class StationSearchThread extends NearestSearchThread{
 			for(Coordinates coor:list) {
 				boolean conti=false;
 				for(Coordinates trajectory:super.moveTrajectory) {//既に通った場所を省く
-					Coordinates coordinates = new Coordinates(coor);
-					synchronized(StationSearchThread.lock4) {
-						if(!Window.japan.contains(coordinates)) {
-							coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
-						}
-					}
-					if(trajectory.contains(coordinates)) {//来た道の場合
+					if(trajectory.contains(coor)) {//来た道の場合
 						conti=true;
 						break;
 					}
@@ -1727,35 +1718,22 @@ class StationSearchThread extends NearestSearchThread{
 				if(conti) {
 					continue;
 				}
-				//2マス移動(競合の可能性)
-				Coordinates coordinates = new Coordinates(coor);
-				synchronized(StationSearchThread.lock4) {
-					if(!Window.japan.contains(coor)) {
-						coordinates.setValue(coordinates.getX()*2, coordinates.getY()*2);
-					}
-				}
-				if(flag) {
-					//Threadを立ち上げる
+				if(first) {
+					next.setValue(coor);
+					first=false;
+				}else {
 					StationSearchThread thread = new StationSearchThread(this);
 					synchronized(StationSearchThread.lock3) {
 						thread.setMass(coor);//移動
 					}
 					thread.start();
-				}else {
-					next.setValue(coordinates);
-					setMassFlag=true;
-					flag=true;
 				}
-				end=false;
-
 			}
-			if(setMassFlag) {
+			if(list.size()>0) {
 				synchronized(StationSearchThread.lock3) {
 					super.setMass(next);//移動
 				}
-			}
-			//行き先が無い場合終了
-			if(end) {
+			}else {
 				break;
 			}
 			Thread.yield();
@@ -1786,7 +1764,6 @@ class ShopSearchThread implements Runnable{
 	public ShopSearchThread(Window window) {
 		this.window=window;
 	}
-
 
 	public void run() {
 		ArrayList<Coordinates> list;
