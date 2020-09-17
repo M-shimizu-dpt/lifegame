@@ -142,6 +142,7 @@ public class Window implements ActionListener{
 	private ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
+
 	public Window(int endYear,int playerCount){
 		int w = 800, h = 600;
 		playFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//アプリ終了
@@ -201,6 +202,7 @@ public class Window implements ActionListener{
 		mainInfo.setVisible(true);
 	}
 
+
 	private void initMenu() {
 		if(player.isEffect()){
 			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+player.getName()+"　持ち金："+player.getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.getGoalName()+"までの最短距離:"+Window.count+"マス　効果発動中("+player.getBuff().effect+")");
@@ -235,10 +237,10 @@ public class Window implements ActionListener{
 		    			closing();
 		    			year++;
 					}
-	    			printMonthFrame(month);
-	    			if(month==12) {
+	    			if(month==13) {
 	    				month=1;
 	    			}
+	    			printMonthFrame(month);
 	    			turn=0;
 	    		}else {
 	    			turn++;
@@ -269,6 +271,7 @@ public class Window implements ActionListener{
     	}
     	System.out.println("終わり");
     }
+
 
 	//CPU操作
 	private void cpu() throws InterruptedException{
@@ -301,12 +304,13 @@ public class Window implements ActionListener{
 			waitthread.start();
 			waitthread.join();
 
-			//行くことが出来るマス取得
+
 			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuMoveMaps();
 			}else {//目的地を超えてしまう場合
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
+				//行くことが出来るマス取得
 				NearestSearchThread searchthread = new NearestSearchThread(this);
 				searchthread.setMass(japan.getGoal());//探索開始位置をゴールに設定
 				for(Coordinates coor : canMoveTrajectoryList.keySet()) {
@@ -325,7 +329,7 @@ public class Window implements ActionListener{
 					w.join();
 
 					//ゴールから最短にある移動可能マスを格納
-					cpuMoveMaps(canMoveTrajectoryList.get(nearestMassToGoalList.get(0)).get(0));//nearestTrajectoryListが目的地から移動先候補の最短距離に更新されてしまっている
+					cpuMoveMaps(canMoveTrajectoryList.get(nearestMassToGoalList.get(0)).get(0));
 				}
 			}
 			System.out.println("player.move:"+player.getMove()+"       終わりました");
@@ -336,6 +340,7 @@ public class Window implements ActionListener{
 	}
 
 	//cpuの移動操作(目的地までの最短経路で移動)
+
 	private void cpuMoveMaps() {
 		if(nearestTrajectoryList.get(Window.count).size()>0) {
 			ArrayList<Coordinates> list = nearestTrajectoryList.get(Window.count).get(0);
@@ -367,6 +372,7 @@ public class Window implements ActionListener{
 	}
 
 	//cpuの移動操作(指定された経路で移動)
+
 	private void cpuMoveMaps(ArrayList<Coordinates> list) {
 		for(Coordinates coor : list) {
 			//if(coor.contains(list.get(0)))continue;
@@ -395,23 +401,18 @@ public class Window implements ActionListener{
 	}
 
 	//行くことが出来るマスの内、目的地に最も近いマスを探索
-	public void searchNearestMass() {
 
-	}
 
 	public synchronized void setNearestMass(Coordinates nearest,int count) {
 		if(NearestSearchThread.nearestCount>=count) {
+			if(NearestSearchThread.nearestCount>count) nearestMassToGoalList.clear();
 			NearestSearchThread.nearestCount=count;
-			if(NearestSearchThread.nearestCount>count) {
-				nearestMassToGoalList.clear();
-			}
 			nearestMassToGoalList.add(japan.getCoordinates(nearest));
 		}
 	}
 
 	//行くことが出来るマスを探索
 	public void searchCanMoveMass() {
-
 		canMoveTrajectoryList.clear();
 		MassSearchThread thread = new MassSearchThread(this,player.getMove());
 		thread.setMass(this.player.getNowMass());
@@ -423,10 +424,9 @@ public class Window implements ActionListener{
 		}catch(InterruptedException e){
 			e.printStackTrace();
 		}
-		System.out.println("OK");
 	}
+		//行くことが出来るマスの探索結果を格納
 
-	//行くことが出来るマスの探索結果を格納
 	public synchronized void setCanMoveMassResult(Coordinates canMoveMass, ArrayList<Coordinates> trajectory) {
 		boolean flag = true;
 		for(Coordinates coor : canMoveTrajectoryList.keySet()) {
@@ -434,6 +434,7 @@ public class Window implements ActionListener{
 				flag=false;
 			}
 		}
+
 		if(trajectory.size()-1==player.getMove()) {
 			canMoveMass = japan.getCoordinates(canMoveMass);//インスタンスの統一
 			if(flag) {
@@ -443,6 +444,7 @@ public class Window implements ActionListener{
 		}
 	}
 
+
 	//最寄り駅を探索
 	public void searchNearestStation() {
 		nearestStationList.clear();
@@ -450,6 +452,7 @@ public class Window implements ActionListener{
 		thread.setMass(player.getNowMass());
 		thread.start();
 	}
+
 
 	//最寄り駅の探索結果を格納
 	public synchronized void setNearestStationResult(int count, Coordinates nearestStation) {
@@ -464,10 +467,11 @@ public class Window implements ActionListener{
 			}
 			if(flag) {
 				this.nearestStationList.add(nearestStation);
-				System.out.println("name add:"+japan.getStationName(nearestStation)+"  x:"+nearestStation.getX()+"   y:"+nearestStation.getY());
+				//System.out.println("name add:"+japan.getStationName(nearestStation)+"  x:"+nearestStation.getX()+"   y:"+nearestStation.getY());
 			}
 		}
 	}
+
 
 	//最寄り店を探索
 	public void searchNearestShop() {
@@ -476,6 +480,7 @@ public class Window implements ActionListener{
 		thread.setMass(player.getNowMass());
 		thread.start();
 	}
+
 
 	//最寄り店の探索結果を格納
 	public synchronized void setNearestShopResult(int count, Coordinates nearestShop) {
@@ -490,10 +495,11 @@ public class Window implements ActionListener{
 			}
 			if(flag) {
 				this.nearestShopList.add(nearestShop);
-				System.out.println("x:"+nearestShop.getX()+"   y:"+nearestShop.getY());
+				//System.out.println("x:"+nearestShop.getX()+"   y:"+nearestShop.getY());
 			}
 		}
 	}
+
 
 	//目的地までの最短距離を計算し、最短ルートを取得
 	private void searchShortestRoute() {
@@ -522,6 +528,7 @@ public class Window implements ActionListener{
 		if(Window.count==500) System.out.println("探索失敗");
 	}
 
+
 	//目的地までの最短距離と最短ルートを格納
 	public synchronized void setSearchResult(int count, ArrayList<Coordinates> trajectory) {
 		trajectory.remove(0);
@@ -534,6 +541,7 @@ public class Window implements ActionListener{
 		}
 	}
 
+
 	//指定のFrameを1秒後に閉じる
 	private void setCloseFrame(int id) {
 		if(!player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
@@ -542,6 +550,7 @@ public class Window implements ActionListener{
 			timer.schedule(task, 1000);
 		}
 	}
+
 
 	//マスに到着した時のマスのイベント処理
 	private void massEvent() {
@@ -567,6 +576,7 @@ public class Window implements ActionListener{
 		ableMenu();
 	}
 
+
 	//青マスイベント
 	private void blueEvent() {
 		Random rand = new Random();
@@ -584,6 +594,8 @@ public class Window implements ActionListener{
 			turnEndFlag=true;
 		}
 	}
+
+
 
 	//赤マスイベント
 	private void redEvent() {
@@ -606,6 +618,9 @@ public class Window implements ActionListener{
 			}
 		}
 	}
+
+
+
 
 	//黄マスイベント
 	private void yellowEvent() {
@@ -639,6 +654,7 @@ public class Window implements ActionListener{
 		}
 	}
 
+
 	//所持カードが最大を超えた場合、捨てるカードを選択
 	public void cardFull() {
 		errorFrame.setSize(400,500);
@@ -665,6 +681,7 @@ public class Window implements ActionListener{
 		}
 	}
 
+
 	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
 	public void cardFullCPU() {
 		do{
@@ -676,6 +693,7 @@ public class Window implements ActionListener{
 		errorFrame.setVisible(false);
 		playFrame.setVisible(true);
 	}
+
 
 	//店イベント
 	private void shopEvent() {
@@ -1036,7 +1054,7 @@ public class Window implements ActionListener{
 				graph.setBounds(x,y,5,5);														//（x,y）をプロット
 				graph.setBackground(Color.YELLOW);
 				revenue.add(graph);
-				System.out.println("x:" + String.valueOf(x) + "\ty:" + String.valueOf(y));
+				//System.out.println("x:" + String.valueOf(x) + "\ty:" + String.valueOf(y));
 				if(i==allProfitList.size()-1) {//ぬるぽ回避
 					continue;
 				}
@@ -1151,7 +1169,7 @@ public class Window implements ActionListener{
 		AssetsFrame.setLocationRelativeTo(null);
 		AssetsFrame.setVisible(true);
 
-		System.out.println("x="+allProfitList.size());
+		//System.out.println("x="+allProfitList.size());
 		JLabel assetsLabel = createText(10,10,370,40,15,"今までの総資産の推移");
 		assetsLabel.setBackground(Color.BLUE);
 		Assets.add(assetsLabel);
@@ -1164,7 +1182,7 @@ public class Window implements ActionListener{
 				graph.setBounds(x,y,5,5);
 				graph.setBackground(Color.YELLOW);
 				Assets.add(graph);
-				System.out.println("x:"+x+"\ty:"+y);
+				//System.out.println("x:"+x+"\ty:"+y);
 				if(i==allAssetsList.size()-1) {//ぬるぽ回避
 					continue;
 				}
@@ -2395,7 +2413,7 @@ class WaitThread extends Thread{
 			Window.closingEndFlag=false;
 			break;
 		case 4:
-			while(System.currentTimeMillis()-Window.time <= 400) {
+			while(System.currentTimeMillis()-Window.time <= 500) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
