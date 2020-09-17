@@ -49,7 +49,6 @@ public class SearchThreadModel extends Thread{
 //現在の位置から指定した目的地までの最短距離と軌跡を取得
 class SearchThread extends SearchThreadModel{
 	private Coordinates start = new Coordinates();
-	public static ArrayList<Coordinates> openlist = new ArrayList<Coordinates>();
 
 	//start
 	public SearchThread(Window window,Coordinates start) {
@@ -58,7 +57,6 @@ class SearchThread extends SearchThreadModel{
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
 		SearchThread.initSearchTime();
-		SearchThread.openlist.clear();
 	}
 
 	//start
@@ -68,7 +66,6 @@ class SearchThread extends SearchThreadModel{
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
 		SearchThread.initSearchTime(searchTime);
-		SearchThread.openlist.clear();
 	}
 
 	//continue
@@ -76,21 +73,20 @@ class SearchThread extends SearchThreadModel{
 		threadCopy(original);
 	}
 
+	//CoordinatesのgetMaxCost()の中身(最適探索範囲の+5の内+3なら優先度NORM、+1以内なら優先度MAXのようにする)
 	@Override
 	public void run() {
 		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
 		//内容をコピーした上で自分とは別方向に移動させる。
 		while(count<=Window.count && count <= 40 && System.currentTimeMillis()-Window.time<=searchTime) {
-			if(openlist.size()>10) {
-				synchronized(SearchThread.lock2) {
-					if(openlist.get(SearchThread.openlist.size()/4).containsCost(Window.japan.getCoordinates(nowMass))) {
-						setPriority(Thread.MAX_PRIORITY);
-					}else if(nowMass.containsCost(Window.japan.getCoordinates(openlist.get(SearchThread.openlist.size()*3/4)))){
-						setPriority(Thread.MIN_PRIORITY);
-					}
+			synchronized(SearchThread.lock2) {
+				if(Window.japan.getCoordinates(nowMass).isMinRange(getStart(),Window.japan.getGoal())) {
+					setPriority(Thread.MIN_PRIORITY);
+				}else if(Window.japan.getCoordinates(nowMass).isNormRange(getStart(),Window.japan.getGoal())){
+					setPriority(Thread.NORM_PRIORITY);
+				}else if(Window.japan.getCoordinates(nowMass).isMaxRange(getStart(), Window.japan.getGoal())){
+					setPriority(Thread.MAX_PRIORITY);
 				}
-			}else {
-				setPriority(NORM_PRIORITY);
 			}
 			Thread.yield();
 			ArrayList<Coordinates> list = new ArrayList<Coordinates>();
@@ -123,19 +119,8 @@ class SearchThread extends SearchThreadModel{
 			}
 			//open処理
 			synchronized(SearchThread.lock2) {
-				boolean added=false;
 				for(Coordinates coor:list) {//open処理
 					Window.japan.getCoordinates(coor).open(count);//探索予定のマスをopenにする。(コストを計算し保持する。)
-					SearchThread.openlist.add(Window.japan.getCoordinates(coor));
-					added=true;
-				}
-				if(added) {
-					//コストの小さい順にソート
-					Collections.sort(SearchThread.openlist,new Comparator<Coordinates>() {
-			        	public int compare(Coordinates coor1,Coordinates coor2) {
-							return Integer.compare(coor1.getCost(), coor2.getCost());
-						}
-			        });
 				}
 			}
 			Collections.sort(list,new Comparator<Coordinates>() {
@@ -160,6 +145,10 @@ class SearchThread extends SearchThreadModel{
 
 	private void setStart(Coordinates start) {
 		this.start.setValue(start);
+	}
+
+	private Coordinates getStart() {
+		return this.start;
 	}
 
 	private void threadCopy(SearchThread original) {

@@ -43,6 +43,21 @@ public class Coordinates {
 		int Tolerances = 6;
 		return getDistance(this,start) + getDistance(this,goal) + Tolerances;
 	}
+	//優先度設定のための探索範囲を取得
+	public boolean isMinRange(Coordinates start,Coordinates goal){
+		int Tolerances = 2;
+		return getMaxCost(start,goal) - getCost() <=  Tolerances;
+	}
+	//優先度設定のための探索範囲を取得
+	public boolean isNormRange(Coordinates start,Coordinates goal){
+		int Tolerances = 4;
+		return getMaxCost(start,goal) - getCost() <=  Tolerances;
+	}
+	//優先度設定のための探索範囲を取得
+	public boolean isMaxRange(Coordinates start,Coordinates goal){
+		int Tolerances = 5;
+		return getMaxCost(start,goal) - getCost() <=  Tolerances;
+	}
 	//4方向連結のため、マンハッタン距離(perfect heuristic)を採用
 	//2点間の距離(マンハッタン距離)
 	public int getDistance(Coordinates coor1,Coordinates coor2){
