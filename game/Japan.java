@@ -535,7 +535,7 @@ public class Japan {
 		railBoolMapping.put(red.get(23),getBoolList(false,false,true,true));
 		railBoolMapping.put(red.get(24),getBoolList(false,true,false,true));
 		railBoolMapping.put(red.get(25),getBoolList(true,false,true,false));
-		railBoolMapping.put(red.get(26),getBoolList(true,true,false,false));
+		railBoolMapping.put(red.get(26),getBoolList(true,true,false,true));
 		railBoolMapping.put(red.get(27),getBoolList(true,true,false,false));
 		railBoolMapping.put(red.get(28),getBoolList(true,true,false,false));
 		railBoolMapping.put(red.get(29),getBoolList(true,false,true,true));
@@ -900,6 +900,7 @@ public class Japan {
 
 	//駅名で指定した駅を取得
 	public Station getStation(String stationName) {
+		System.out.println(stationName);
 		for(Station sta : stations) {
 			if(sta.getName().equals(stationName)) {
 				return sta;
