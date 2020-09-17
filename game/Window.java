@@ -1428,18 +1428,10 @@ public class Window implements ActionListener{
 				}
 			}
 		}
-		if(vector.get(0)) {
-			playLeft.setVisible(true);
-		}
-		if(vector.get(1)) {
-			playRight.setVisible(true);
-		}
-		if(vector.get(2)) {
-			playTop.setVisible(true);
-		}
-		if(vector.get(3)) {
-			playBottom.setVisible(true);
-		}
+		playLeft.setVisible(vector.get(0));
+		playRight.setVisible(vector.get(1));
+		playTop.setVisible(vector.get(2));
+		playBottom.setVisible(vector.get(3));
 		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
 		moveLabel.setVisible(true);
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
