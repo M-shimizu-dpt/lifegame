@@ -17,7 +17,7 @@ public class App  implements ActionListener{
         App app = new App();
     	app.run();
     }
-
+aaa
     private void run() {
     	JFrame initFrame = new JFrame("桃大郎電鉄");
     	initFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//アプリ終了
