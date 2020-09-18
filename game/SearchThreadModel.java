@@ -48,7 +48,11 @@ public class SearchThreadModel extends Thread{
 
 //現在の位置から指定した目的地までの最短距離と軌跡を取得
 class SearchThread extends SearchThreadModel{
-	private Coordinates start = new Coordinates();
+	protected Coordinates start = new Coordinates();
+
+	public SearchThread() {
+
+	}
 
 	//start
 	public SearchThread(Window window,Coordinates start) {
@@ -73,14 +77,13 @@ class SearchThread extends SearchThreadModel{
 		threadCopy(original);
 	}
 
-	//CoordinatesのgetMaxCost()の中身(最適探索範囲の+5の内+3なら優先度NORM、+1以内なら優先度MAXのようにする)
 	@Override
 	public void run() {
 		//来た方向以外に2方向以上に分岐している場合、新しくThreadを立ち上げて
 		//内容をコピーした上で自分とは別方向に移動させる。
 		while(count<=Window.count && count <= 40 && System.currentTimeMillis()-Window.time<=searchTime) {
 			synchronized(SearchThread.lock2) {
-				if(Window.japan.getCoordinates(nowMass).isMinRange(getStart(),Window.japan.getGoal())) {
+				if(Window.japan.getCoordinates(nowMass).isMinRange(getStart(),Window.japan.getGoal())) {//最適な範囲でごたついているThreadの優先度が高くなる可能性があるので、openlistを用意して今までのコストと比較し自分がどれくらいのレベルに居るのかを考慮すると本当に最適なpriorityを指定することが可能になるはず(処理が長くなり各threadが消費するリソースが膨大になる可能性を考慮すべし)
 					setPriority(Thread.MIN_PRIORITY);
 				}else if(Window.japan.getCoordinates(nowMass).isNormRange(getStart(),Window.japan.getGoal())){
 					setPriority(Thread.NORM_PRIORITY);
@@ -143,24 +146,68 @@ class SearchThread extends SearchThreadModel{
 		}
 	}
 
-	private void setStart(Coordinates start) {
+	protected void setStart(Coordinates start) {
 		this.start.setValue(start);
 	}
 
-	private Coordinates getStart() {
+	protected Coordinates getStart() {
 		return this.start;
 	}
 
-	private void threadCopy(SearchThread original) {
+	protected void threadCopy(SearchThread original) {
 		this.setWindow(original.window);
 		this.setCount(original.count);
 		this.setStart(original.start);
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
-	private void goal() {
+	protected void goal() {
 		synchronized(SearchThread.lock3) {
 			window.setSearchResult(count,moveTrajectory);
+		}
+	}
+}
+
+//現在の位置から指定した目的地までの最短距離を取得
+class OnlyDistanceSearchThread extends SearchThread{
+	private Player player;
+
+	//start
+	public OnlyDistanceSearchThread(Window window,Player player) {
+		this.setWindow(window);
+		this.start.setValue(player.getNowMass());
+		this.player=player;
+		Window.time = System.currentTimeMillis();
+		Window.count=500;
+		OnlyDistanceSearchThread.initSearchTime();
+	}
+
+	//start
+	public OnlyDistanceSearchThread(Window window,Player player,int searchTime) {
+		this.setWindow(window);
+		this.start.setValue(player.getNowMass());
+		this.player=player;
+		Window.time = System.currentTimeMillis();
+		Window.count=500;
+		OnlyDistanceSearchThread.initSearchTime(searchTime);
+	}
+
+	//continue
+	public OnlyDistanceSearchThread(OnlyDistanceSearchThread original) {
+		threadCopy(original);
+	}
+
+	protected void threadCopy(OnlyDistanceSearchThread original) {
+		this.setWindow(original.window);
+		this.setCount(original.count);
+		this.setStart(original.start);
+		this.player=original.player;
+		this.moveTrajectory.addAll(original.moveTrajectory);
+	}
+
+	protected void goal() {
+		synchronized(OnlyDistanceSearchThread.lock3) {
+			window.setSearchResult(player,count);
 		}
 	}
 }
