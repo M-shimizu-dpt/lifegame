@@ -43,7 +43,7 @@ public class Player {
 		clearMove();
 
 		this.whowith = new ArrayList<Integer>();
-		goaldistance = 0;
+		initGoalDistance();
 		bonby = false;//ボンビー識別
 		givebonby = 0;
 		getbonby = 0;
@@ -226,9 +226,18 @@ public class Player {
 		this.goaldistance = distance;
 	}
 
+	public boolean containsGoalDistance(int distance) {
+		return this.goaldistance>distance;
+	}
+
 	public int getGoalDistance() {//最短距離を取得
 		return this.goaldistance;
 	}
+
+	public void initGoalDistance() {
+		this.goaldistance=100;
+	}
+
 	public void addSameMossPlayer(int who) {//だれと一緒にいるか変更
 		this.whowith.add(who);
 	}

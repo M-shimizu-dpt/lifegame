@@ -59,7 +59,6 @@
  * ゲームの結果を表示する
  *
  * CPUがrandom移動系カードを使用したあと、reload()されていない？
-
  *
  *
  *
@@ -147,7 +146,6 @@ public class Window implements ActionListener{
 	public ArrayList<Coordinates> nearestShopList = new ArrayList<Coordinates>();//最寄り店のリスト(複数存在する場合、その中からランダムに選択)
 	private ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
-	private Map<Player,Integer> shortestList = new HashMap<Player,Integer>();//全てのプレイヤーの最短距離リスト
 
 	public Binbo poorgod = new Binbo();
 
@@ -599,7 +597,7 @@ public class Window implements ActionListener{
 			do{
 				japan.allClose();
 				//Threadを立ち上げる
-				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(this,selectedPlayer,SearchThread.searchTime+againtime);
+				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(this,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 				thread.setMass(selectedPlayer.getNowMass());
 				japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 				thread.setPriority(Thread.MAX_PRIORITY);
@@ -616,17 +614,6 @@ public class Window implements ActionListener{
 				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 			}while(Window.count==500 && againtime<1000);
 			if(Window.count==500) System.out.println("探索失敗");
-		}
-	}
-
-	//目的地までの最短距離を格納(Window.countを必要としない時に呼ばれる事が前提)
-	public synchronized void setSearchResult(Player player, int count) {
-		if(Window.count>=count) {
-			Window.count=count;
-			this.shortestList.put(player,count);
-		}
-		for(int i=0;i<4;i++) {
-			System.out.println("name:"+players.get(i).getName()+"   count:"+this.shortestList.get(players.get(i)));
 		}
 	}
 
@@ -2460,7 +2447,6 @@ public class Window implements ActionListener{
   	  		players.get(i).getColt().setBackground(Color.BLACK);
   	  		players.get(i).getColt().setName(players.get(i).getName());
   	  		playFrame.getLayeredPane().add(players.get(i).getColt(),JLayeredPane.DEFAULT_LAYER,0);
-  	  		shortestList.put(players.get(i), 500);
   		}
   		player=players.get(0);
   		playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
