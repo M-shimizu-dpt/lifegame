@@ -556,13 +556,13 @@ public class Window implements ActionListener{
 	private void massEvent() {
 		closeMoveButton();
 		String massName = playFrame.getLayeredPane().getComponentAt(400, 300).getName();
-		if(massName.substring(0, 1).equals("青")) {
+		if(massName.substring(0, 1).equals("B")) {
 			blueEvent();
-		}else if(massName.substring(0, 1).equals("赤")) {
+		}else if(massName.substring(0, 1).equals("R")) {
 			redEvent();
-		}else if(massName.substring(0, 1).equals("黄")) {
+		}else if(massName.substring(0, 1).equals("Y")) {
 			yellowEvent();
-		}else if(massName.substring(0, 1).equals("店")) {
+		}else if(massName.substring(0, 1).equals("S")) {
 			shopEvent();
 		}else{
 			if(japan.getGoalName().equals(massName)) {
@@ -618,7 +618,6 @@ public class Window implements ActionListener{
 			}
 		}
 	}
-
 
 
 
@@ -1335,19 +1334,19 @@ public class Window implements ActionListener{
 		if(japan.containsBlue(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.BLUE);
-			mass.setName("青"+japan.getIndexOfBlue(j, i));
+			mass.setName("B"+japan.getIndexOfBlue(j, i));
 		}else if(japan.containsRed(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.RED);
-			mass.setName("赤"+japan.getIndexOfRed(j, i));
+			mass.setName("R"+japan.getIndexOfRed(j, i));
 		}else if(japan.containsYellow(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.YELLOW);
-			mass.setName("黄"+japan.getIndexOfYellow(j, i));
+			mass.setName("Y"+japan.getIndexOfYellow(j, i));
 		}else if(japan.containsShop(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.GRAY);
-			mass.setName("店"+japan.getIndexOfShop(j, i));
+			mass.setName("S"+japan.getIndexOfShop(j, i));
 		}
 		return mass;
 	}
