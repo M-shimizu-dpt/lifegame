@@ -60,6 +60,7 @@
  *
  * CPUがrandom移動系カードを使用したあと、reload()されていない？
  *
+ * CPUが操作中にプレイヤーが操作できないようにし、一時停止ボタンなどを用意する。
  */
 
 package lifegame.game;
