@@ -35,6 +35,7 @@ public class Player {
 		this.id=id;
 		this.bonby = false;
 		this.cpuflag=cpuflag;
+		this.bonby = false;
 		setName(name);
 		addMoney(money);
 		this.nowMass = new Coordinates();
@@ -46,7 +47,6 @@ public class Player {
 		bonby = false;//ボンビー識別
 		givebonby = 0;
 		getbonby = 0;
-
 	}
 
 	public int getCardSize() {
@@ -208,53 +208,55 @@ public class Player {
 		});
 	}
 
-	public void setbonby(boolean bonbyTF) {//ボンビーついたら変更
+	public void setBonby(boolean bonbyTF) {//ボンビーついたら変更
 		this.bonby = bonbyTF;
 	}
 
-	public boolean getbonby() {//ボンビーついているか取得
+	public boolean isBonby() {//ボンビーついているか取得
 		return this.bonby;
 	}
-	public void setgoaldistance(int distance) {//最長距離をセット
+
+
+	public void setGoalDistance(int distance) {//最短距離をセット
 		this.goaldistance = distance;
 	}
 
-	public int getgoaldistance() {//最短距離を取得
+	public int getGoalDistance() {//最短距離を取得
 		return this.goaldistance;
 	}
-	public void setwith(int who) {//だれと一緒にいるか変更
+	public void addSameMossPlayer(int who) {//だれと一緒にいるか変更
 		this.whowith.add(who);
 	}
 
-	public ArrayList<Integer> getwith() {//だれと一緒にいるか取得
+	public ArrayList<Integer> getSameMossPlayers() {//だれと一緒にいるか取得
 		return this.whowith;
 	}
-	public void withplayerclear() {//だれと一緒にいるかクリア
+	public void sameMossPlayersClear() {//だれと一緒にいるかクリア
+
 		if(this.whowith!=null) {
 			this.whowith.clear();
 		}
 	}
-	public void setBgive(int id) {//ボンビーだれにあげたか変更
+
+	public void setBonbyAfter(int id) {//ボンビーだれにあげたか変更
 		this.givebonby = id;
 	}
 
-	public int getBgive() {//ボンビーだれにあげたか取得
+	public int getBonbyAfter() {//ボンビーだれにあげたか取得
 		return this.givebonby;
 	}
-	public void clearBgive() {//ボンビーだれにあげたか初期化
+	public void clearBonbyAfter() {//ボンビーだれにあげたか初期化
 		this.givebonby = -1;
 	}
-	public void setBget(int id) {//ボンビーだれからもらったかか変更
+	public void setBonbyBefore(int id) {//ボンビーだれからもらったかか変更
 		this.getbonby = id;
 	}
-	public int getBget() {//ボンビーだれからもらったか取得
+	public int getBonbyBefore() {//ボンビーだれからもらったか取得
 		return this.getbonby;
 	}
-	public void clearBget() {//ボンビーだれからもらったか初期化
+	public void clearBonbyBefore() {//ボンビーだれからもらったか初期化
 		this.getbonby = -1;
 	}
-
-
 }
 
 class Buff{
