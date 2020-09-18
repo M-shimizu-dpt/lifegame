@@ -918,6 +918,16 @@ public class Japan {
 		}
 		return null;
 	}
+	
+	//座標で指定した駅名を取得
+	public String getStationName(int x,int y) {
+		for(Station sta : stations) {
+			if(sta.getCoordinates().contains(x,y)) {
+				return sta.getName();
+			}
+		}
+		return null;
+	}
 
 	//全ての物件の数を取得
 	public int propertySize() {

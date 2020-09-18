@@ -87,15 +87,16 @@ import javax.swing.SwingConstants;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
-	private JButton playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
-	private JButton playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
-	private JButton playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
-	private JButton playBottom = createButton(380,510,50,40,10,"↓");//プレイマップでの移動ボタン
-	private JButton saikoro = createButton(650, 360, 90, 30,10, "サイコロ");//プレイマップでのサイコロボタン
-    private JButton cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
-    private JButton company = createButton(650, 440, 90, 30,10, "会社情報");//プレイマップでのプレイヤー情報一覧表示ボタン
-    private JButton minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
-    private JButton allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
+	private JButton playRight;//プレイマップでの移動ボタン
+	private JButton playLeft;//プレイマップでの移動ボタン
+	private JButton playTop;//プレイマップでの移動ボタン
+	private JButton playBottom;//プレイマップでの移動ボタン
+	private JButton saikoro;//プレイマップでのサイコロボタン
+    private JButton cardB;//プレイマップでのカード一覧表示ボタン
+    private JButton company;//プレイマップでのプレイヤー情報一覧表示ボタン
+    private JButton minimap;//プレイマップでの詳細マップ表示ボタン
+    private JButton allmap;//プレイマップでの全体マップ表示ボタン
+    private JButton waitButton;//CPU操作中にプレーヤーが一時停止するためのボタン
     private JLabel mainInfo;//プレイマップで上に表示されるプレイヤー情報を表示するラベル
     private JPanel back = new JPanel();//メニューボタンの背景
     private JLabel moveLabel;//後何マス移動できるか、目的地までの最短距離を表示するラベル
@@ -132,6 +133,7 @@ public class Window implements ActionListener{
 	private ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
 	public static int count;//目的のマスまでの最短距離
 	public static long time;//マルチスレッド開始からの経過時間
+	public static boolean stopFlag;//一時停止用フラグ
 	private Map<Integer,ArrayList<ArrayList<Coordinates>>> nearestTrajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//目的地までの移動の軌跡
 	private Map<Coordinates,ArrayList<ArrayList<Coordinates>>> canMoveTrajectoryList = new HashMap<Coordinates,ArrayList<ArrayList<Coordinates>>>();//行くことが出来るマスとそれまでの移動の軌跡
 	public ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
@@ -140,7 +142,7 @@ public class Window implements ActionListener{
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 	private Map<Player,Integer> shortestList = new HashMap<Player,Integer>();//全てのプレイヤーの最短距離リスト
 
-	public Binbo poorgod = new Binbo();//
+	public Binbo poorgod = new Binbo();
 
 	public Window(int endYear,int playerCount){
 		int w = 800, h = 600;
@@ -153,6 +155,9 @@ public class Window implements ActionListener{
         // 背景色追加
         playFrame.getContentPane().setBackground(Color.ORANGE);
 
+        playMap();
+    	init(playerCount);
+
         JLayeredPane button = playFrame.getLayeredPane();//ボタンが前に出ない
 
         back.setBackground(Color.CYAN);
@@ -164,9 +169,6 @@ public class Window implements ActionListener{
     	button.add(cardB,JLayeredPane.PALETTE_LAYER,0);
     	button.add(minimap,JLayeredPane.PALETTE_LAYER,0);
     	button.add(allmap,JLayeredPane.PALETTE_LAYER,0);
-
-    	playMap();
-    	init(playerCount);
 
     	// ウィンドウを表示
         playFrame.setVisible(true);
@@ -201,7 +203,6 @@ public class Window implements ActionListener{
 		mainInfo.setVisible(true);
 	}
 
-
 	private void initMenu() {
 		if(player.isEffect()){
 			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+player.getName()+"　持ち金："+player.getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.getGoalName()+"までの最短距離:"+Window.count+"マス　効果発動中("+player.getBuff().effect+")");
@@ -216,12 +217,12 @@ public class Window implements ActionListener{
   	//プレイ中の動作
 	private void play(int endYear, int playerCount) throws InterruptedException{
     	Boolean first=true;
-    	playFrame.getLayeredPane().add(new JLabel());
     	moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
     	moveLabel.setName("moves");
     	playFrame.setBackground(Color.ORANGE);
     	closeMoveButton();
-
+    	playFrame.getLayeredPane().add(waitButton,JLayeredPane.PALETTE_LAYER);
+    	stopFlag=false;
     	while(true) {
     		if(first) {
     			printMonthFrame(month);
@@ -250,6 +251,11 @@ public class Window implements ActionListener{
     		if(year>endYear)break;
     		player=players.get(turn);//このターンのプレイヤーを選定
 
+    		if(player.isPlayer()) {
+    			waitButton.setVisible(false);
+    		}else {
+    			waitButton.setVisible(true);
+    		}
     		searchShortestRoute();//目的地までの最短経路を探索
     		WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadで正しく更新されない可能性がある。
     		waitthred.start();
@@ -260,8 +266,9 @@ public class Window implements ActionListener{
     		Card.priceSort(player.getCards());//プレイヤーが持つカードを価格順にソート
     		if(!player.isPlayer()) {//cpu操作
     			cpu();
+    		}else {
+    			printMenu();
     		}
-			printMenu();
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
@@ -273,11 +280,15 @@ public class Window implements ActionListener{
     	System.out.println("終わり");
     }
 
-
 	//CPU操作
 	private void cpu() throws InterruptedException{
+		closeMoveButton();
 		Thread.sleep(500);
-
+		if(stopFlag) {
+			WaitThread wait = new WaitThread(7);
+			wait.start();
+			wait.join();
+		}
 		boolean diceFlag=true;//サイコロを回すかどうか
 		if(player.getCardSize()>0) {//カードがある場合確率で使用する（今は効果関係なく1/2で使用）
 			//確率でカードを使用
@@ -300,7 +311,6 @@ public class Window implements ActionListener{
 			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
 			waitthread.start();
 			waitthread.join();
-
 
 			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuMoveMaps();
@@ -334,14 +344,24 @@ public class Window implements ActionListener{
 				System.out.println("異常終了");
 			}
 		}
+		if(stopFlag) {
+			WaitThread wait = new WaitThread(7);
+			wait.start();
+			wait.join();
+		}
 	}
 
 	//cpuの移動操作(目的地までの最短経路で移動)
 
-	private void cpuMoveMaps() {
+	private void cpuMoveMaps() throws InterruptedException{
 		if(nearestTrajectoryList.get(Window.count).size()>0) {
 			ArrayList<Coordinates> list = nearestTrajectoryList.get(Window.count).get(0);
 			for(Coordinates coor : list) {
+				if(stopFlag) {
+					WaitThread wait = new WaitThread(7);
+					wait.start();
+					wait.join();
+				}
 				//if(coor.contains(list.get(0)))continue;
 				int x = player.getNowMass().getX()-coor.getX();
 				int y = player.getNowMass().getY()-coor.getY();
@@ -358,11 +378,7 @@ public class Window implements ActionListener{
 						moveMaps(-130,0);
 					}
 				}
-				try {
-					Thread.sleep(300);
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
+				Thread.sleep(300);
 				if(player.getMove()<=0)break;
 			}
 		}
@@ -370,9 +386,13 @@ public class Window implements ActionListener{
 
 	//cpuの移動操作(指定された経路で移動)
 
-	private void cpuMoveMaps(ArrayList<Coordinates> list) {
+	private void cpuMoveMaps(ArrayList<Coordinates> list) throws InterruptedException{
 		for(Coordinates coor : list) {
-			//if(coor.contains(list.get(0)))continue;
+			if(stopFlag) {
+				WaitThread wait = new WaitThread(7);
+				wait.start();
+				wait.join();
+			}
 			int x = player.getNowMass().getX()-coor.getX();
 			int y = player.getNowMass().getY()-coor.getY();
 			if(x==0) {
@@ -388,18 +408,12 @@ public class Window implements ActionListener{
 					moveMaps(-130,0);
 				}
 			}
-			try {
-				Thread.sleep(300);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
+			Thread.sleep(300);
 			if(player.getMove()<=0)break;
 		}
 	}
 
 	//行くことが出来るマスの内、目的地に最も近いマスを探索
-
-
 	public synchronized void setNearestMass(Coordinates nearest,int count) {
 		if(NearestSearchThread.nearestCount>=count) {
 			if(NearestSearchThread.nearestCount>count) nearestMassToGoalList.clear();
@@ -422,8 +436,8 @@ public class Window implements ActionListener{
 			e.printStackTrace();
 		}
 	}
-		//行くことが出来るマスの探索結果を格納
 
+	//行くことが出来るマスの探索結果を格納
 	public synchronized void setCanMoveMassResult(Coordinates canMoveMass, ArrayList<Coordinates> trajectory) {
 		boolean flag = true;
 		for(Coordinates coor : canMoveTrajectoryList.keySet()) {
@@ -441,7 +455,6 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	//最寄り駅を探索
 	public void searchNearestStation() {
 		nearestStationList.clear();
@@ -449,7 +462,6 @@ public class Window implements ActionListener{
 		thread.setMass(player.getNowMass());
 		thread.start();
 	}
-
 
 	//最寄り駅の探索結果を格納
 	public synchronized void setNearestStationResult(int count, Coordinates nearestStation) {
@@ -469,7 +481,6 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	//最寄り店を探索
 	public void searchNearestShop() {
 		nearestShopList.clear();
@@ -477,7 +488,6 @@ public class Window implements ActionListener{
 		thread.setMass(player.getNowMass());
 		thread.start();
 	}
-
 
 	//最寄り店の探索結果を格納
 	public synchronized void setNearestShopResult(int count, Coordinates nearestShop) {
@@ -496,7 +506,6 @@ public class Window implements ActionListener{
 			}
 		}
 	}
-
 
 	//目的地までの最短距離を計算し、最短ルートを取得
 	private void searchShortestRoute() {
@@ -611,11 +620,19 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	//マスに到着した時のマスのイベント処理
 	private void massEvent() {
 		closeMoveButton();
 		String massName = playFrame.getLayeredPane().getComponentAt(400, 300).getName();
+		if(stopFlag) {
+			WaitThread wait = new WaitThread(7);
+			wait.start();
+			try {
+				wait.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		if(massName.substring(0, 1).equals("B")) {
 			blueEvent();
 		}else if(massName.substring(0, 1).equals("R")) {
@@ -637,7 +654,6 @@ public class Window implements ActionListener{
 		ableMenu();
 	}
 
-
 	//青マスイベント
 	private void blueEvent() {
 		Random rand = new Random();
@@ -655,8 +671,6 @@ public class Window implements ActionListener{
 			turnEndFlag=true;
 		}
 	}
-
-
 
 	//赤マスイベント
 	private void redEvent() {
@@ -679,8 +693,6 @@ public class Window implements ActionListener{
 			}
 		}
 	}
-
-
 
 	//黄マスイベント
 	private void yellowEvent() {
@@ -713,7 +725,6 @@ public class Window implements ActionListener{
 			turnEndFlag=true;
 		}
 	}
-
 
 	//所持カードが最大を超えた場合、捨てるカードを選択
 	public void cardFull() {
@@ -1420,6 +1431,7 @@ public class Window implements ActionListener{
 		button.addActionListener(this);
 		button.setActionCommand(name);
 		button.setName(name);
+		if(!player.isPlayer())button.setEnabled(false);
 		return button;
 	}
 
@@ -1505,6 +1517,7 @@ public class Window implements ActionListener{
 				e.printStackTrace();
 			}
 		}
+
 		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
 		moveLabel.setVisible(true);
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
@@ -1791,7 +1804,7 @@ public class Window implements ActionListener{
 			name=play.getComponent(i).getName();
 			if(name==null) {
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
-			}else if(!(name.equals("右") || name.equals("左") || name.equals("下") || name.equals("上") ||
+			}else if(!(name.equals("stop") || name.equals("start") || name.equals("右") || name.equals("左") || name.equals("下") || name.equals("上") ||
 					name.equals("サイコロ") || name.equals("会社情報") || name.equals("カード") ||
 					name.equals("詳細マップ") || name.equals("全体マップ") || name.equals("ボタン背景") ||
 					name.equals(mainInfo.getName()) || name.equals(moveLabel.getName()) || name.equals(player.getName()))) {//移動・閉じるボタン以外を動かす
@@ -1932,7 +1945,7 @@ public class Window implements ActionListener{
 			name=play.getComponent(i).getName();
 			if(name==null) {
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
-			}else if(!(name.equals("右") || name.equals("左") || name.equals("下") || name.equals("上") ||
+			}else if(!(name.equals("start") || name.equals("stop") || name.equals("右") || name.equals("左") || name.equals("下") || name.equals("上") ||
 					name.equals("サイコロ") || name.equals("会社情報") || name.equals("カード") ||
 					name.equals("詳細マップ") || name.equals("全体マップ") || name.equals("ボタン背景") ||
 					name.equals(mainInfo.getName()) || name.equals(moveLabel.getName()))) {//移動・閉じるボタン以外を動かす
@@ -1949,7 +1962,7 @@ public class Window implements ActionListener{
 			for(int j=1;j<=17;j++) {
 				if(!japan.contains(j, i))continue;
 				if(japan.containsStation(j,i)) {
-					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.getStationName(japan.getStationCoor(japan.getIndexOfStation(j, i))));
+					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.getStationName(j, i));
 					pre.setBackground(Color.WHITE);
 					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
 				}else {
@@ -2384,11 +2397,6 @@ public class Window implements ActionListener{
 
 	//初期化
   	private void init(int playerCount) {
-  		initMaps();
-  		createMoveButton();
-  		japan.initGoal();
-  		dice.init();
-  		setGoalColor();
   		Card.init(this);
   		for(int i=0;i<4;i++) {
   			if(playerCount>i) {//プレイヤー
@@ -2403,6 +2411,22 @@ public class Window implements ActionListener{
   	  		shortestList.put(players.get(i), 500);
   		}
   		player=players.get(0);
+  		playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
+  		playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
+  		playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
+  		playBottom = createButton(380,510,50,40,10,"↓");//プレイマップでの移動ボタン
+  		saikoro = createButton(650, 360, 90, 30,10, "サイコロ");//プレイマップでのサイコロボタン
+  	    cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
+  	    company = createButton(650, 440, 90, 30,10, "会社情報");//プレイマップでのプレイヤー情報一覧表示ボタン
+  	    minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
+  	    allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
+  	    waitButton = createButton(10,520,60,30,10,"stop");
+  		initMaps();
+  		createMoveButton();
+  		japan.initGoal();
+  		dice.init();
+  		setGoalColor();
+
   		initMenu();
   	}
 
@@ -2410,7 +2434,15 @@ public class Window implements ActionListener{
  	public void actionPerformed(ActionEvent act){
 		String cmd = act.getActionCommand();
 		System.out.println(cmd);
-		if(cmd.equals("サイコロ")) {
+		if(cmd.equals("start")) {
+			waitButton.setText("stop");
+			waitButton.setActionCommand("stop");
+			stopFlag=false;
+		}else if(cmd.equals("stop")) {
+			waitButton.setText("start");
+			waitButton.setActionCommand("start");
+			stopFlag=true;
+		}else if(cmd.equals("サイコロ")) {
 			enableMenu();
 			printDice();
 		}else if(cmd.equals("カード")) {
@@ -2536,7 +2568,7 @@ public class Window implements ActionListener{
 	}
 }
 
-//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち,id=6→全てのプレイヤーの最短距離探索待ち
+//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち,id=6→全てのプレイヤーの最短距離探索待ち,id=7→一時停止
 class WaitThread extends Thread{
 	private int id;
 	private int money;
@@ -2593,8 +2625,8 @@ class WaitThread extends Thread{
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
-				SearchThread.initSearchTime();
 			}
+			SearchThread.initSearchTime();
 			break;
 		case 3:
 			while(!Window.closingEndFlag) {
@@ -2631,7 +2663,16 @@ class WaitThread extends Thread{
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
-				SearchThread.initSearchTime();
+			}
+			SearchThread.initSearchTime();
+			break;
+		case 7:
+			while(Window.stopFlag) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			break;
 		default:
