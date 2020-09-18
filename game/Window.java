@@ -137,6 +137,7 @@ public class Window implements ActionListener{
 	public ArrayList<Coordinates> nearestShopList = new ArrayList<Coordinates>();//最寄り店のリスト(複数存在する場合、その中からランダムに選択)
 	private ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
+	private Map<Player,Integer> shortestList = new HashMap<Player,Integer>();//全てのプレイヤーの最短距離リスト
 
 	public Binbo poorgod = new Binbo();//
 
@@ -247,8 +248,9 @@ public class Window implements ActionListener{
     		first=false;
     		if(year>endYear)break;
     		player=players.get(turn);//このターンのプレイヤーを選定
+
     		searchShortestRoute();//目的地までの最短経路を探索
-    		WaitThread waitthred  = new WaitThread(2);
+    		WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadで正しく更新されない可能性がある。
     		waitthred.start();
     		waitthred.join();
     		japan.saveGoal();
@@ -522,7 +524,6 @@ public class Window implements ActionListener{
 		if(Window.count==500) System.out.println("探索失敗");
 	}
 
-
 	//目的地までの最短距離と最短ルートを格納
 	public synchronized void setSearchResult(int count, ArrayList<Coordinates> trajectory) {
 		trajectory.remove(0);
@@ -535,6 +536,70 @@ public class Window implements ActionListener{
 		}
 	}
 
+	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
+	private void searchShortestRouteSelectPlayer(Player selectedPlayer) {
+		//再探索は10回まで(1回で出てほしい…)
+		int againtime=0;
+		do{
+			japan.allClose();
+			//Threadを立ち上げる
+			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(this,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
+			thread.setMass(selectedPlayer.getNowMass());
+			japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
+			thread.setPriority(Thread.MAX_PRIORITY);
+			thread.start();
+
+			WaitThread wt = new WaitThread(2,againtime);
+			wt.start();
+			try {
+				wt.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+			againtime+=100;
+			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+		}while(Window.count==500 && againtime<1000);
+		if(Window.count==500) System.out.println("探索失敗");
+	}
+
+	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
+	private void searchShortestRouteAllPlayers() {
+		//再探索は10回まで(1回で出てほしい…)
+		for(Player selectedPlayer:players.values()) {
+			int againtime=0;
+			do{
+				japan.allClose();
+				//Threadを立ち上げる
+				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(this,selectedPlayer,SearchThread.searchTime+againtime);
+				thread.setMass(selectedPlayer.getNowMass());
+				japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
+				thread.setPriority(Thread.MAX_PRIORITY);
+				thread.start();
+
+				WaitThread wt = new WaitThread(2,againtime);
+				wt.start();
+				try {
+					wt.join();
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+				againtime+=100;
+				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+			}while(Window.count==500 && againtime<1000);
+			if(Window.count==500) System.out.println("探索失敗");
+		}
+	}
+
+	//目的地までの最短距離を格納(Window.countを必要としない時に呼ばれる事が前提)
+	public synchronized void setSearchResult(Player player, int count) {
+		if(Window.count>=count) {
+			Window.count=count;
+			this.shortestList.put(player,count);
+		}
+		for(int i=0;i<4;i++) {
+			System.out.println("name:"+players.get(i).getName()+"   count:"+this.shortestList.get(players.get(i)));
+		}
+	}
 
 	//指定のFrameを1秒後に閉じる
 	private void setCloseFrame(int id) {
@@ -2334,6 +2399,7 @@ public class Window implements ActionListener{
   	  		players.get(i).getColt().setBackground(Color.BLACK);
   	  		players.get(i).getColt().setName(players.get(i).getName());
   	  		playFrame.getLayeredPane().add(players.get(i).getColt(),JLayeredPane.DEFAULT_LAYER,0);
+  	  		shortestList.put(players.get(i), 500);
   		}
   		player=players.get(0);
   		initMenu();
@@ -2469,21 +2535,28 @@ public class Window implements ActionListener{
 	}
 }
 
-//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち
+//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち,id=6→全てのプレイヤーの最短距離探索待ち
 class WaitThread extends Thread{
 	private int id;
 	private int money;
 	private int size;
+	private int againtime;
 
 	public WaitThread() {}
 	public WaitThread(int id) {
 		this.id=id;
+		this.againtime=0;
+	}
+	public WaitThread(int id,int againtime) {
+		this.id=id;
+		this.againtime=againtime;
 	}
 
 	public WaitThread(int id,int money,int size) {
 		this.id=id;
 		this.money=money;
 		this.size=size;
+		this.againtime=0;
 	}
 
 	public void setId(int id) {
@@ -2513,7 +2586,7 @@ class WaitThread extends Thread{
 			}
 			break;
 		case 2:
-			while(System.currentTimeMillis()-Window.time <= SearchThread.searchTime) {
+			while(System.currentTimeMillis()-Window.time <= SearchThread.searchTime+againtime) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -2548,6 +2621,16 @@ class WaitThread extends Thread{
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
+			}
+			break;
+		case 6:
+			while(System.currentTimeMillis()-Window.time <= SearchThread.searchTime*4) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+				SearchThread.initSearchTime();
 			}
 			break;
 		default:
