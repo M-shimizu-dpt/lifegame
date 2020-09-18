@@ -58,13 +58,8 @@
  *
  * ゲームの結果を表示する
  *
- * 月表示よりも先に決算処理が入るようにする
- *
- * 月表示で1月が13月になっている問題
- *
- * 探索機構の最適化(そのマスから探索開始させる)
- *
  * CPUがrandom移動系カードを使用したあと、reload()されていない？
+ *
  */
 
 package lifegame.game;
@@ -1428,21 +1423,10 @@ public class Window implements ActionListener{
 				}
 			}
 		}
-		if(vector.get(0)) {
-			playLeft.setVisible(true);
-		}
-		if(vector.get(1)) {
-			playRight.setVisible(true);
-		}
-		if(vector.get(2)) {
-			playTop.setVisible(true);
-		}
-		if(vector.get(3)) {
-			playBottom.setVisible(true);
-		}
-		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
-		moveLabel.setVisible(true);
-		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
+		playLeft.setVisible(vector.get(0));
+		playRight.setVisible(vector.get(1));
+		playTop.setVisible(vector.get(2));
+		playBottom.setVisible(vector.get(3));
 		if(player.getMove() <= 0) {
 			closeMoveButton();
 		}else {
@@ -1455,6 +1439,9 @@ public class Window implements ActionListener{
 				e.printStackTrace();
 			}
 		}
+		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
+		moveLabel.setVisible(true);
+		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 	}
 
 	//メイン画面でのメニューボタンを表示
