@@ -56,7 +56,7 @@ class SearchThread extends SearchThreadModel{
 
 	//start
 	public SearchThread(Window window,Coordinates start) {
-		this.setWindow(window);
+		super.setWindow(window);
 		this.start.setValue(start);
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
@@ -65,7 +65,7 @@ class SearchThread extends SearchThreadModel{
 
 	//start
 	public SearchThread(Window window,Coordinates start,int searchTime) {
-		this.setWindow(window);
+		super.setWindow(window);
 		this.start.setValue(start);
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
@@ -84,16 +84,16 @@ class SearchThread extends SearchThreadModel{
 		while(count<=Window.count && count <= 40 && System.currentTimeMillis()-Window.time<=searchTime) {
 			synchronized(SearchThread.lock2) {
 				if(Window.japan.getCoordinates(nowMass).isMinRange(getStart(),Window.japan.getGoal())) {//最適な範囲でごたついているThreadの優先度が高くなる可能性があるので、openlistを用意して今までのコストと比較し自分がどれくらいのレベルに居るのかを考慮すると本当に最適なpriorityを指定することが可能になるはず(処理が長くなり各threadが消費するリソースが膨大になる可能性を考慮すべし)
-					setPriority(Thread.MIN_PRIORITY);
+					super.setPriority(Thread.MIN_PRIORITY);
 				}else if(Window.japan.getCoordinates(nowMass).isNormRange(getStart(),Window.japan.getGoal())){
-					setPriority(Thread.NORM_PRIORITY);
+					super.setPriority(Thread.NORM_PRIORITY);
 				}else if(Window.japan.getCoordinates(nowMass).isMaxRange(getStart(), Window.japan.getGoal())){
-					setPriority(Thread.MAX_PRIORITY);
+					super.setPriority(Thread.MAX_PRIORITY);
 				}
 			}
 			Thread.yield();
 			ArrayList<Coordinates> list = new ArrayList<Coordinates>();
-			moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
+			super.moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
 			if(nowMass.contains(Window.japan.getGoal())){
 				goal();
 				break;
@@ -101,11 +101,11 @@ class SearchThread extends SearchThreadModel{
 			count++;
 			ArrayList<Coordinates> can = new ArrayList<Coordinates>();
 			synchronized(SearchThread.lock1) {
-				can.addAll(Window.japan.getMovePossibles(this.nowMass));
+				can.addAll(Window.japan.getMovePossibles(super.nowMass));
 			}
 			for(Coordinates possibles : can) {//移動可能マスを取得
 				boolean conti=false;
-				for(Coordinates trajectory : moveTrajectory) {//既に通った場所を省く
+				for(Coordinates trajectory : super.moveTrajectory) {//既に通った場所を省く
 					if(trajectory.contains(possibles)) {//来た道の場合
 						conti=true;
 						break;
@@ -114,7 +114,7 @@ class SearchThread extends SearchThreadModel{
 				if(conti) {
 					continue;
 				}
-				possibles.open(count);
+				possibles.open(super.count);
 				if(possibles.getCost() <= possibles.getMaxCost(start,Window.japan.getGoal())) {
 					list.add(possibles);
 				}
@@ -123,7 +123,7 @@ class SearchThread extends SearchThreadModel{
 			//open処理
 			synchronized(SearchThread.lock2) {
 				for(Coordinates coor:list) {//open処理
-					Window.japan.getCoordinates(coor).open(count);//探索予定のマスをopenにする。(コストを計算し保持する。)
+					Window.japan.getCoordinates(coor).open(super.count);//探索予定のマスをopenにする。(コストを計算し保持する。)
 				}
 			}
 			Collections.sort(list,new Comparator<Coordinates>() {
@@ -155,15 +155,15 @@ class SearchThread extends SearchThreadModel{
 	}
 
 	protected void threadCopy(SearchThread original) {
-		this.setWindow(original.window);
-		this.setCount(original.count);
+		super.setWindow(original.window);
+		super.setCount(original.count);
 		this.setStart(original.start);
-		this.moveTrajectory.addAll(original.moveTrajectory);
+		super.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
 	protected void goal() {
 		synchronized(SearchThread.lock3) {
-			window.setSearchResult(count,moveTrajectory);
+			super.window.setSearchResult(super.count,super.moveTrajectory);
 		}
 	}
 }
@@ -174,9 +174,10 @@ class OnlyDistanceSearchThread extends SearchThread{
 
 	//start
 	public OnlyDistanceSearchThread(Window window,Player player) {
-		this.setWindow(window);
-		this.start.setValue(player.getNowMass());
+		super.setWindow(window);
+		super.start.setValue(player.getNowMass());
 		this.player=player;
+		player.initGoalDistance();
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
 		OnlyDistanceSearchThread.initSearchTime();
@@ -184,9 +185,10 @@ class OnlyDistanceSearchThread extends SearchThread{
 
 	//start
 	public OnlyDistanceSearchThread(Window window,Player player,int searchTime) {
-		this.setWindow(window);
-		this.start.setValue(player.getNowMass());
+		super.setWindow(window);
+		super.start.setValue(player.getNowMass());
 		this.player=player;
+		player.initGoalDistance();
 		Window.time = System.currentTimeMillis();
 		Window.count=500;
 		OnlyDistanceSearchThread.initSearchTime(searchTime);
@@ -198,16 +200,18 @@ class OnlyDistanceSearchThread extends SearchThread{
 	}
 
 	protected void threadCopy(OnlyDistanceSearchThread original) {
-		this.setWindow(original.window);
-		this.setCount(original.count);
-		this.setStart(original.start);
+		//this.setWindow(original.window);
+		super.setCount(original.count);
+		super.setStart(original.start);
 		this.player=original.player;
-		this.moveTrajectory.addAll(original.moveTrajectory);
+		super.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
 	protected void goal() {
 		synchronized(OnlyDistanceSearchThread.lock3) {
-			window.setSearchResult(player,count);
+			if(player.containsGoalDistance(super.count)) {
+				player.setGoalDistance(super.count);
+			}
 		}
 	}
 }
