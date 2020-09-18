@@ -65,6 +65,15 @@ public  class Binbo{
 	public void binboTurn() {
 		//スタブメソッド
 		System.out.println("ボンビーのターン");
+		System.out.println(this.catchplayer.getName());
+		System.out.println("ボンビーのターン終了");
+	}
+	public void sutabBinboFinishTurn() {
+		//スタブメソッド
+
+		//System.out.println("ボンビーのターン終了");
+
+		Window.BonbyTurnEndFlag = true;
 
 	}
 

@@ -60,9 +60,15 @@
  *
  * CPUがrandom移動系カードを使用したあと、reload()されていない？
  *
+ *
+ *
+ *ターン終了メソッド作ってもいいかも？？
  */
 
 package lifegame.game;
+
+
+
 
 import java.awt.Color;
 import java.awt.Container;
@@ -110,6 +116,7 @@ public class Window implements ActionListener{
 	private JFrame randomFrame;//randomイベント用フレーム
 	private JFrame shopFrontFrame;//カードshopイベント用フレーム
 	private JFrame shopFrame;//カードshop購買イベント用フレーム
+	private JFrame binboFrame;//貧乏神イベント用フレーム＊＊＊＊
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	private Player player;//操作中のプレイヤー
@@ -263,8 +270,16 @@ public class Window implements ActionListener{
 			turnEnd.start();
 			turnEnd.join();
     		bonbyplayer();
+    		WaitThread bonbyTurnEnd = new WaitThread(5);//ボンビーターン終了まで待機
+     		bonbyTurnEnd.start();
+     		try {
+    			bonbyTurnEnd.join();
+    		} catch (InterruptedException e) {
+    			e.printStackTrace();
+    		}
     		Thread.sleep(1000);
     		turnEndFlag=false;
+    		BonbyTurnEndFlag=false;
     		alreadys.clear();//このターンに購入した物件リストを初期化
     	}
     	System.out.println("終わり");
@@ -945,6 +960,7 @@ public class Window implements ActionListener{
 			text3 = createText(10,210,600,100,20,"登山費用として5000万円失った");
 			player.addMoney(-5000);
 		}
+
 		text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
 		random.add(text1);
 		text2.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -2027,6 +2043,9 @@ public class Window implements ActionListener{
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int whobonby = 0;
+
+		/////////////////////////////次回の実装ではりすとで、最短距離返ってくる
+
 		for(int i=0;i<players.size();i++) {
 			System.out.println(players.get(i).getGoalDistance());
 			if(players.get(i).getGoalDistance()<100) {//ゴール上にいると100以上になってしまうため
@@ -2037,6 +2056,7 @@ public class Window implements ActionListener{
 				}
 			}
 		}
+
 		whobonby = whobonbylist.get(rand.nextInt(1000)%whobonbylist.size());
 		if(poorgod.getBinboPlayer()!=null) {
 			poorgod.getBinboPlayer().setBonby(false);
@@ -2052,19 +2072,54 @@ public class Window implements ActionListener{
 		for(int i = 0;i<4;i++) {
 			System.out.println(players.get(i).isBonby());//bonbyフラグTEST用
 		}
-		BonbyTurnEndFlag = true;
-		if(player.isBonby()) {
+
+		if(player.isBonby()) {//＊＊＊＊
 			poorgod.binboTurn();
-		}
-		WaitThread bonbyTurnEnd = new WaitThread(5);//ターン終了まで待機
- 		bonbyTurnEnd.start();
- 		try {
-			bonbyTurnEnd.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			//Random rand = new Random();
+			playFrame.setVisible(false);
+			binboFrame = new JFrame();
+			JLayeredPane binbo = binboFrame.getLayeredPane();
+			binboFrame.setSize(800,600);
+			binboFrame.setLocationRelativeTo(null);
+			//ImageIcon icon =  new ImageIcon("./img/days_res.png");
+			//icon.createImageIcon("./img/days_res.png",");
+			JLabel text1=new JLabel();
+			JLabel text2=new JLabel();
+			//JLabel text3=new JLabel(icon);
+			JButton closeButton = createButton(580,500,180,50,10,"閉じる");
+			closeButton.setActionCommand("貧乏神イベントを閉じる");
+			if(!player.isPlayer()) {
+				closeButton.setEnabled(false);
+			}
+			binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+			binboFrame.setName("ボンビーのターン");
+
+			text1 = createText(10,10,600,100,20,"テストボンビー1");
+			text2 = createText(10,110,600,100,20,"テストボンビー２");
+			//text3 = createText(10,210,600,100,20,"テストボンビー3");
+
+			text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
+			binbo.add(text1);
+			text2.setHorizontalTextPosition(SwingConstants.LEFT);
+			binbo.add(text2);
+			//text3.setHorizontalTextPosition(SwingConstants.LEFT);
+			//binbo.add(text3);
+			//System.out.println(icon.getIconWidth());
+			//System.out.println(icon.getIconHeight());
+			binboFrame.setVisible(true);
+
+			setCloseFrame(5);
+		}else {
+			poorgod.sutabBinboFinishTurn();
 		}
 
- 		BonbyTurnEndFlag=false;
+	}
+
+	public void closeBinboEvent() {//＊＊＊＊
+		binboFrame.setVisible(false);
+		binboFrame.removeAll();
+		playFrame.setVisible(true);
+		poorgod.sutabBinboFinishTurn();
 	}
 
 	//ゴール画面を表示
@@ -2403,6 +2458,8 @@ public class Window implements ActionListener{
 			reload();
 		}else if(cmd.equals("→") || cmd.equals("←") || cmd.equals("↑") || cmd.equals("↓")) {
 			moveMaps(cmd);
+		}else if(cmd.equals("貧乏神イベントを閉じる")) {
+			closeBinboEvent();
 		}
 		for(Station sta:japan.getStations()) {
 			if(cmd.equals(sta.getName())) {
@@ -2582,6 +2639,9 @@ class CPUTimerTask extends TimerTask{
 			break;
 		case 4:
 			window.closeDubbing();
+			break;
+		case 5:
+			window.closeBinboEvent();
 			break;
 		default:
 			break;
