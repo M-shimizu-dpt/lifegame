@@ -58,10 +58,10 @@ public class App  implements ActionListener{
     		}
     	}
     	initFrame.setVisible(false);
-    	
+
     	assert(Integer.parseInt(textPlayers.getText())>=0 && Integer.parseInt(textPlayers.getText())<=3);
     	assert(Integer.parseInt(textYear.getText())>0 && Integer.parseInt(textYear.getText())<=100);
-    	
+
     	start(Integer.parseInt(textYear.getText()),Integer.parseInt(textPlayers.getText()));//将来的にはCPUを実装しその人数を入力できるようにする
     }
 
