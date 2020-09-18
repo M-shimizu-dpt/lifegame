@@ -59,8 +59,6 @@
  * ゲームの結果を表示する
  *
  * CPUがrandom移動系カードを使用したあと、reload()されていない？
- *
- * CPUが操作中にプレイヤーが操作できないようにし、一時停止ボタンなどを用意する。
  */
 
 package lifegame.game;
@@ -233,11 +231,11 @@ public class Window implements ActionListener{
 	    				moneyList.add(players.get(i).getMoney());
 	    			}
 	    			moneyTrajectory.put(year+"年"+month+"月", moneyList);//この月のプレイヤーの所持金を保存
-	    			month++;
-	    			if(month==4 && turn==0) {
+	    			if(month==3) {
 		    			closing();
 		    			year++;
 					}
+	    			month++;
 	    			if(month==13) {
 	    				month=1;
 	    			}
@@ -2421,6 +2419,7 @@ public class Window implements ActionListener{
   	    minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
   	    allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
   	    waitButton = createButton(10,520,60,30,10,"stop");
+  	    waitButton.setEnabled(true);
   		initMaps();
   		createMoveButton();
   		japan.initGoal();
