@@ -59,6 +59,7 @@
  * ゲームの結果を表示する
  *
  * CPUがrandom移動系カードを使用したあと、reload()されていない？
+ *
  */
 
 package lifegame.game;
