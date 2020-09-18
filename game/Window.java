@@ -1443,7 +1443,7 @@ public class Window implements ActionListener{
 		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
 		moveLabel.setVisible(true);
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
-		///////////////////////////////////////////////////////////////
+		///////////////////
 		if(player.getMove() < 0) {
 			closeMoveButton();
 		}else {
@@ -1451,8 +1451,7 @@ public class Window implements ActionListener{
 				closeMoveButton();
 			}
 			searchShortestRoute();
-			player.setGoalDistance(Window.count);
-			System.out.println("///////////////////////"+player.getGoalDistance());
+
 			WaitThread thread = new WaitThread(2);
 			thread.start();
 			try {
@@ -2080,7 +2079,6 @@ public class Window implements ActionListener{
  		try {
 			bonbyTurnEnd.join();
 		} catch (InterruptedException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 

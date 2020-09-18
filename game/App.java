@@ -17,7 +17,7 @@ public class App  implements ActionListener{
         App app = new App();
     	app.run();
     }
-aaa
+
     private void run() {
     	JFrame initFrame = new JFrame("桃大郎電鉄");
     	initFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//アプリ終了
@@ -58,10 +58,10 @@ aaa
     		}
     	}
     	initFrame.setVisible(false);
-    	
+
     	assert(Integer.parseInt(textPlayers.getText())>=0 && Integer.parseInt(textPlayers.getText())<=3);
     	assert(Integer.parseInt(textYear.getText())>0 && Integer.parseInt(textYear.getText())<=100);
-    	
+
     	start(Integer.parseInt(textYear.getText()),Integer.parseInt(textPlayers.getText()));//将来的にはCPUを実装しその人数を入力できるようにする
     }
 
