@@ -230,6 +230,10 @@ public class Window implements ActionListener{
     	closeMoveButton();
     	playFrame.getLayeredPane().add(waitButton,JLayeredPane.PALETTE_LAYER);
     	stopFlag=false;
+		//ボンビー初期設定
+		player.changeBonby();
+		poorgod.setBinboPlayer(player);
+
     	while(true) {
     		if(first) {
     			printMonthFrame(month);
@@ -1827,10 +1831,7 @@ public class Window implements ActionListener{
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
 			}
 		}
-		if(poorgod.getBmonth() == month && turn == 0) {
-			player.setBonby(true);
-			poorgod.setBinboPlayer(player);
-		}
+
 
 		//移動先が1つ前と同じか
 		if(moveTrajectory.size()>1) {
@@ -1863,8 +1864,7 @@ public class Window implements ActionListener{
 			//System.out.println("null?");
 			if(player.getSameMossPlayers()!=null) {
 				for (int whowith : player.getSameMossPlayers()) {
-					//System.out.println("nulじゃない進む");
-					if(onceflag==false) {//同じマスでのボンビー移動対策
+					if(onceflag==false) {//同じマスでの連続でボンビー移動対策
 						if(player.isBonby()|| players.get(whowith).isBonby()) {//自身がボンビーをもってる状態or相手がボンビーをもっていたら
 							if(player.isBonby()) {
 								player.setBonbyAfter(whowith);
@@ -1880,7 +1880,6 @@ public class Window implements ActionListener{
 			}
 		}else {////残り移動マスが増えるとき(戻るとき)
 			if(player.getSameMossPlayers()!=null) {
-				System.out.println("nulじゃない戻る");
 				for (int whowith : player.getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
 					if(player.getBonbyAfter() ==whowith||player.getBonbyBefore() ==whowith){//「誰に渡したか」or「誰からもらったか」がさっきまでいたマスに存在したかどうか
 						if(player.getBonbyAfter() ==whowith) {//ボンビーを渡した誰かとさっきまでいたマスのプレイヤーが一致した時
@@ -1894,30 +1893,31 @@ public class Window implements ActionListener{
 			}
 			sameplaceplayer();
 		}
+		for(int i = 0;i<4;i++) {
+			System.out.println(players.get(i).isBonby());
+		}
+		System.out.println("-------------------------------------");
 	}
 
 
 	private void changebonby(int who) {//ボンビー入れ替えメソッド
+		System.out.println("判定"+player.isBonby());
 		if(player.isBonby()) {
-			player.setBonby(false);
-			players.get(who).setBonby(true);
+			player.changeBonby();
+			players.get(who).changeBonby();
 			poorgod.setBinboPlayer(players.get(who));
 		}else {
-			player.setBonby(true);
-			players.get(who).setBonby(false);
+			player.changeBonby();
+			players.get(who).changeBonby();
 			poorgod.setBinboPlayer(player);
 		}
 	}
+
 	private void sameplaceplayer() {//動いている人が進んだマスにだれがいるかを保持するリスト
-		for(int i = 0;i<4;i++) {
-			System.out.println(players.get(i).isBonby()+ "        :"+players.get(i).getGoalDistance());
-		}
-		System.out.println("-------------------------------------");
 		player.sameMossPlayersClear();
 		int i = turn;
 		while(true) {
 			i++;
-			//System.out.println(i);
 			if(i==players.size()) {
 				i=0;
 			}
@@ -1926,7 +1926,6 @@ public class Window implements ActionListener{
 			}
 			if(player.getNowMass().contains(players.get(i).getNowMass())){
 				player.addSameMossPlayer(i);
-				//System.out.println("保持できた。");
 			}
 		}
 	}
@@ -2122,28 +2121,27 @@ public class Window implements ActionListener{
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int whobonby = 0;
-
-		/////////////////////////////次回の実装ではりすとで、最短距離返ってくる
-
+		searchShortestRouteAllPlayers();
+		/////////
 		for(int i=0;i<players.size();i++) {
-			System.out.println(players.get(i).getGoalDistance());
-			if(players.get(i).getGoalDistance()<100) {//ゴール上にいると100以上になってしまうため
-				if((maxdistance <players.get(i).getGoalDistance())&&(whobonbylist !=null)) whobonbylist.clear();
-					if(maxdistance<=players.get(i).getGoalDistance()) {
-						maxdistance = players.get(i).getGoalDistance();
-						whobonbylist.add(i);
-				}
+			System.out.println(shortestList.get(players.get(i)));
+			if((maxdistance <shortestList.get(players.get(i)))&&(whobonbylist !=null)) whobonbylist.clear();
+				if(maxdistance<=shortestList.get(players.get(i))) {
+					maxdistance = shortestList.get(players.get(i));
+					whobonbylist.add(i);
 			}
 		}
 
 		whobonby = whobonbylist.get(rand.nextInt(1000)%whobonbylist.size());
 		if(poorgod.getBinboPlayer()!=null) {
-			poorgod.getBinboPlayer().setBonby(false);
-			System.out.println(poorgod.getBinboPlayer());
+			for(int i = 0;i<4;i++) {
+				if(players.get(i).isBonby()) {
+					players.get(i).changeBonby();
+				}
+			}
 		}
-		System.out.println(poorgod.getBinboPlayer());
-		System.out.println("------------------------------------------------------------");
-		players.get(whobonby).setBonby(true);
+		players.get(whobonby).changeBonby();
+		poorgod.setBinboPlayer(players.get(whobonby));
 	}
 
 	private void bonbyplayer() {
@@ -2154,7 +2152,6 @@ public class Window implements ActionListener{
 
 		if(player.isBonby()) {//＊＊＊＊
 			poorgod.binboTurn();
-			//Random rand = new Random();
 			playFrame.setVisible(false);
 			binboFrame = new JFrame();
 			JLayeredPane binbo = binboFrame.getLayeredPane();
@@ -2177,7 +2174,7 @@ public class Window implements ActionListener{
 			text2 = createText(10,110,600,100,20,"テストボンビー２");
 			//text3 = createText(10,210,600,100,20,"テストボンビー3");
 
-			text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
+			text1.setHorizontalTextPosition(SwingConstants.LEFT);
 			binbo.add(text1);
 			text2.setHorizontalTextPosition(SwingConstants.LEFT);
 			binbo.add(text2);

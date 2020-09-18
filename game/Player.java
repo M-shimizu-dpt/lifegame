@@ -208,8 +208,13 @@ public class Player {
 		});
 	}
 
-	public void setBonby(boolean bonbyTF) {//ボンビーついたら変更
-		this.bonby = bonbyTF;
+	public void changeBonby() {//ボンビーついたら変更
+		System.out.println("判定"+this.isBonby());
+		if(this.isBonby()) {
+			this.bonby = false;
+		}else {
+			this.bonby = true;
+		}
 	}
 
 	public boolean isBonby() {//ボンビーついているか取得
