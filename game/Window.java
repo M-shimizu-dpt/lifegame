@@ -119,6 +119,7 @@ public class Window implements ActionListener{
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	private Player player;//操作中のプレイヤー
 	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false;//ターンを交代するためのフラグ
+	public static Boolean BonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private int turn=0;//現在のターン
 	private Dice dice = new Dice();//サイコロ処理
 	public static Japan japan = new Japan();//物件やマス情報
@@ -142,6 +143,7 @@ public class Window implements ActionListener{
 	private ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
+	public PoorGod poorgod = new PoorGod();//
 
 	public Window(int endYear,int playerCount){
 		int w = 800, h = 600;
@@ -222,6 +224,7 @@ public class Window implements ActionListener{
     	moveLabel.setName("moves");
     	playFrame.setBackground(Color.ORANGE);
     	closeMoveButton();
+
     	while(true) {
     		if(first) {
     			printMonthFrame(month);
@@ -248,12 +251,11 @@ public class Window implements ActionListener{
     		}
     		first=false;
     		if(year>endYear)break;
-
     		player=players.get(turn);//このターンのプレイヤーを選定
     		searchShortestRoute();//目的地までの最短経路を探索
-    		WaitThread search = new WaitThread(2);
-    		search.start();
-    		search.join();
+    		WaitThread waitthred  = new WaitThread(2);
+    		waitthred.start();
+    		waitthred.join();
     		japan.saveGoal();
     		returnMaps();//画面遷移が少し遅い
     		reload();//画面上部に表示している情報を更新
@@ -261,10 +263,11 @@ public class Window implements ActionListener{
     		if(!player.isPlayer()) {//cpu操作
     			cpu();
     		}
-    		printMenu();
-    		WaitThread turnEnd = new WaitThread(0);//ターン終了まで待機
-    		turnEnd.start();
-    		turnEnd.join();
+			printMenu();
+			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
+			turnEnd.start();
+			turnEnd.join();
+    		bonbyplayer();
     		Thread.sleep(1000);
     		turnEndFlag=false;
     		alreadys.clear();//このターンに購入した物件リストを初期化
@@ -275,11 +278,7 @@ public class Window implements ActionListener{
 
 	//CPU操作
 	private void cpu() throws InterruptedException{
-		try {
-			Thread.sleep(500);
-		}catch(InterruptedException e) {
-			e.printStackTrace();
-		}
+		Thread.sleep(500);
 
 		boolean diceFlag=true;//サイコロを回すかどうか
 		if(player.getCardSize()>0) {//カードがある場合確率で使用する（今は効果関係なく1/2で使用）
@@ -324,9 +323,9 @@ public class Window implements ActionListener{
 				if(!flag) {
 					nearestMassToGoalList.clear();
 					searchthread.start();
-					WaitThread w = new WaitThread(2);
-					w.start();
-					w.join();
+					WaitThread wt = new WaitThread(2);
+					wt.start();
+					wt.join();
 
 					//ゴールから最短にある移動可能マスを格納
 					cpuMoveMaps(canMoveTrajectoryList.get(nearestMassToGoalList.get(0)).get(0));
@@ -556,6 +555,7 @@ public class Window implements ActionListener{
 	private void massEvent() {
 		closeMoveButton();
 		String massName = playFrame.getLayeredPane().getComponentAt(400, 300).getName();
+
 		if(massName.substring(0, 1).equals("青")) {
 			blueEvent();
 		}else if(massName.substring(0, 1).equals("赤")) {
@@ -567,6 +567,7 @@ public class Window implements ActionListener{
 		}else{
 			if(japan.getGoalName().equals(massName)) {
 				//ゴール処理
+				bonbycatch();
 				goal();
 			}else {
 				printPropertys(massName);
@@ -1444,10 +1445,16 @@ public class Window implements ActionListener{
 		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
 		moveLabel.setVisible(true);
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
-		if(player.getMove() <= 0) {
+		///////////////////////////////////////////////////////////////
+		if(player.getMove() < 0) {
 			closeMoveButton();
 		}else {
+			if(player.getMove()==0) {
+				closeMoveButton();
+			}
 			searchShortestRoute();
+			player.setGoalDistance(Window.count);
+			System.out.println("///////////////////////"+player.getGoalDistance());
 			WaitThread thread = new WaitThread(2);
 			thread.start();
 			try {
@@ -1746,19 +1753,26 @@ public class Window implements ActionListener{
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
 			}
 		}
+		if(poorgod.getBmonth() == month && turn == 0) {
+			player.setBonby(true);
+			poorgod.setBplayer(player);
+		}
 
 		//移動先が1つ前と同じか
 		if(moveTrajectory.size()>1) {
 			if(play.getComponentAt(400, 300).getName().equals(moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
 				moveTrajectory.remove(moveTrajectory.size()-1);
 				player.setMove(player.getMove()+1);
+				passingbonby(false);
 			}else {//違う場合、移動した先の座標をmoveTrajectoryに格納
 				moveTrajectory.add(play.getComponentAt(400, 300).getName());
 				player.setMove(player.getMove()-1);
+				passingbonby(true);
 			}
 		}else {
 			moveTrajectory.add(play.getComponentAt(400, 300).getName());
 			player.setMove(player.getMove()-1);
+			passingbonby(true);
 		}
 		if(player.getMove()<=0) {
 			moveTrajectory.clear();
@@ -1768,6 +1782,81 @@ public class Window implements ActionListener{
 			}
 		}
 	}
+	private void passingbonby(boolean tf) {//ながくなったため、分けた(ボンビー擦り付けメソッド)
+		if(tf == true) {//残り移動マスが減るとき(進むとき)
+			boolean onceflag = false;//同じマスに複数人存在している際に一度だけしか交換しないように
+			sameplaceplayer();
+			//System.out.println("null?");
+			if(player.getSameMossPlayers()!=null) {
+				for (int whowith : player.getSameMossPlayers()) {
+					//System.out.println("nulじゃない進む");
+					if(onceflag==false) {//同じマスでのボンビー移動対策
+						if(player.isBonby()|| players.get(whowith).isBonby()) {//自身がボンビーをもってる状態or相手がボンビーをもっていたら
+							if(player.isBonby()) {
+								player.setBonbyAfter(whowith);
+							}else {
+								player.setBonbyBefore(whowith);
+							}
+							changebonby(whowith);
+							onceflag = true;
+						}
+					}
+				}
+				onceflag = false;
+			}
+		}else {////残り移動マスが増えるとき(戻るとき)
+			if(player.getSameMossPlayers()!=null) {
+				System.out.println("nulじゃない戻る");
+				for (int whowith : player.getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
+					if(player.getBonbyAfter() ==whowith||player.getBonbyBefore() ==whowith){//「誰に渡したか」or「誰からもらったか」がさっきまでいたマスに存在したかどうか
+						if(player.getBonbyAfter() ==whowith) {//ボンビーを渡した誰かとさっきまでいたマスのプレイヤーが一致した時
+							player.clearBonbyAfter();
+						}else {//ボンビーをもらった誰かとさっきまでいたマスのプレイヤーが一致した時
+							player.clearBonbyBefore();
+						}
+						changebonby(whowith);
+					}
+				}
+			}
+			sameplaceplayer();
+		}
+	}
+
+
+	private void changebonby(int who) {//ボンビー入れ替えメソッド
+		if(player.isBonby()) {
+			player.setBonby(false);
+			players.get(who).setBonby(true);
+			poorgod.setBplayer(players.get(who));
+		}else {
+			player.setBonby(true);
+			players.get(who).setBonby(false);
+			poorgod.setBplayer(player);
+		}
+	}
+	private void sameplaceplayer() {//動いている人が進んだマスにだれがいるかを保持するリスト
+		for(int i = 0;i<4;i++) {
+			System.out.println(players.get(i).isBonby()+ "        :"+players.get(i).getGoalDistance());
+		}
+		System.out.println("-------------------------------------");
+		player.sameMossPlayersClear();
+		int i = turn;
+		while(true) {
+			i++;
+			//System.out.println(i);
+			if(i==players.size()) {
+				i=0;
+			}
+			if(i==turn) {
+				break;
+			}
+			if(player.getNowMass().contains(players.get(i).getNowMass())){
+				player.addSameMossPlayer(i);
+				//System.out.println("保持できた。");
+			}
+		}
+	}
+
 
 	//プレイマップの画面遷移処理
 	public void moveMaps(int player,Coordinates to) {
@@ -1952,6 +2041,52 @@ public class Window implements ActionListener{
 			}
 			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 		}
+	}
+
+	private void bonbycatch() {//だれにbonbyが付くか判定メソッド//ゴール時
+		ArrayList<Integer> whobonbylist = new ArrayList<Integer>();
+		Random rand = new Random();
+		int maxdistance = 0;//最長距離比較
+		int whobonby = 0;
+		for(int i=0;i<players.size();i++) {
+			System.out.println(players.get(i).getGoalDistance());
+			if(players.get(i).getGoalDistance()<100) {//ゴール上にいると100以上になってしまうため
+				if((maxdistance <players.get(i).getGoalDistance())&&(whobonbylist !=null)) whobonbylist.clear();
+					if(maxdistance<=players.get(i).getGoalDistance()) {
+						maxdistance = players.get(i).getGoalDistance();
+						whobonbylist.add(i);
+				}
+			}
+		}
+		whobonby = whobonbylist.get(rand.nextInt(1000)%whobonbylist.size());
+		if(poorgod.getBplayer()!=null) {
+			poorgod.getBplayer().setBonby(false);
+			System.out.println(poorgod.getBplayer());
+		}
+		System.out.println(poorgod.getBplayer());
+		System.out.println("------------------------------------------------------------");
+		players.get(whobonby).setBonby(true);
+	}
+
+	private void bonbyplayer() {
+		//moveTrajectoryと全プレイヤーの位置が重なるごとにどっちかがbonbyフラグがONなら交代
+		for(int i = 0;i<4;i++) {
+			System.out.println(players.get(i).isBonby());//bonbyフラグTEST用
+		}
+		BonbyTurnEndFlag = true;
+		if(player.isBonby()) {
+			poorgod.bonbyturn();
+		}
+		WaitThread bonbyTurnEnd = new WaitThread(5);//ターン終了まで待機
+ 		bonbyTurnEnd.start();
+ 		try {
+			bonbyTurnEnd.join();
+		} catch (InterruptedException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
+ 		BonbyTurnEndFlag=false;
 	}
 
 	//ゴール画面を表示
@@ -2360,6 +2495,7 @@ class WaitThread extends Thread{
 	private int money;
 	private int size;
 
+	public WaitThread() {}
 	public WaitThread(int id) {
 		this.id=id;
 	}
@@ -2368,6 +2504,10 @@ class WaitThread extends Thread{
 		this.id=id;
 		this.money=money;
 		this.size=size;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 
@@ -2418,6 +2558,15 @@ class WaitThread extends Thread{
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 
+				}
+			}
+			break;
+		case 5:
+			while(!Window.BonbyTurnEndFlag) {//ボンビーターン中の処理が終わるとループを抜ける
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 			break;

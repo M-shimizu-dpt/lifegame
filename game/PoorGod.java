@@ -71,6 +71,7 @@ public  class PoorGod{
 	public void setBplayer(Player players) {
 		this.catchplayer = players;
 	}
+
 	public Player getBplayer() {
 		return this.catchplayer;
 	}

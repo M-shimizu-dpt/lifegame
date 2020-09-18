@@ -19,6 +19,13 @@ public class Player {
 	private int id;//識別番号
 	private boolean cpuflag;
 
+	private int goaldistance;
+	private boolean bonby;//ボンビー識別
+	private ArrayList<Integer> whowith;
+	private int givebonby;
+	private int getbonby;
+	//private int givebonby;
+
 	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
 		this.move=0;
@@ -27,11 +34,18 @@ public class Player {
 		this.propertys = new ArrayList<Property>();
 		this.id=id;
 		this.cpuflag=cpuflag;
+		this.bonby = false;
 		setName(name);
 		addMoney(money);
 		this.nowMass = new Coordinates();
 		this.nowMass.setValue(6, 9);//大阪
 		clearMove();
+
+		this.whowith = new ArrayList<Integer>();
+		goaldistance = 0;
+		bonby = false;//ボンビー識別
+		givebonby = 0;
+		getbonby = 0;
 	}
 
 	public int getCardSize() {
@@ -191,6 +205,53 @@ public class Player {
 				return Integer.compare(property1.getAmount(), property2.getAmount());
 			}
 		});
+	}
+	public void setBonby(boolean bonbyTF) {//ボンビーついたら変更
+		this.bonby = bonbyTF;
+	}
+
+	public boolean isBonby() {//ボンビーついているか取得
+		return this.bonby;
+	}
+
+
+	public void setGoalDistance(int distance) {//最短距離をセット
+		this.goaldistance = distance;
+	}
+
+	public int getGoalDistance() {//最短距離を取得
+		return this.goaldistance;
+	}
+	public void addSameMossPlayer(int who) {//だれと一緒にいるか変更
+		this.whowith.add(who);
+	}
+
+	public ArrayList<Integer> getSameMossPlayers() {//だれと一緒にいるか取得
+		return this.whowith;
+	}
+	public void sameMossPlayersClear() {//だれと一緒にいるかクリア
+		if(this.whowith!=null) {
+			this.whowith.clear();
+		}
+	}
+	public void setBonbyAfter(int id) {//ボンビーだれにあげたか変更
+		this.givebonby = id;
+	}
+
+	public int getBonbyAfter() {//ボンビーだれにあげたか取得
+		return this.givebonby;
+	}
+	public void clearBonbyAfter() {//ボンビーだれにあげたか初期化
+		this.givebonby = -1;
+	}
+	public void setBonbyBefore(int id) {//ボンビーだれからもらったかか変更
+		this.getbonby = id;
+	}
+	public int getBonbyBefore() {//ボンビーだれからもらったか取得
+		return this.getbonby;
+	}
+	public void clearBonbyBefore() {//ボンビーだれからもらったか初期化
+		this.getbonby = -1;
 	}
 }
 
