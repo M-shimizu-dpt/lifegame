@@ -143,7 +143,7 @@ public class Window implements ActionListener{
 	private ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
-	public PoorGod poorgod = new PoorGod();//
+	public Binbo poorgod = new Binbo();//
 
 	public Window(int endYear,int playerCount){
 		int w = 800, h = 600;
@@ -1443,15 +1443,10 @@ public class Window implements ActionListener{
 		moveLabel.setText("残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
 		moveLabel.setVisible(true);
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
-		///////////////////
-		if(player.getMove() < 0) {
+		if(player.getMove() <= 0) {
 			closeMoveButton();
 		}else {
-			if(player.getMove()==0) {
-				closeMoveButton();
-			}
 			searchShortestRoute();
-
 			WaitThread thread = new WaitThread(2);
 			thread.start();
 			try {
@@ -1752,7 +1747,7 @@ public class Window implements ActionListener{
 		}
 		if(poorgod.getBmonth() == month && turn == 0) {
 			player.setBonby(true);
-			poorgod.setBplayer(player);
+			poorgod.setBinboPlayer(player);
 		}
 
 		//移動先が1つ前と同じか
@@ -1824,11 +1819,11 @@ public class Window implements ActionListener{
 		if(player.isBonby()) {
 			player.setBonby(false);
 			players.get(who).setBonby(true);
-			poorgod.setBplayer(players.get(who));
+			poorgod.setBinboPlayer(players.get(who));
 		}else {
 			player.setBonby(true);
 			players.get(who).setBonby(false);
-			poorgod.setBplayer(player);
+			poorgod.setBinboPlayer(player);
 		}
 	}
 	private void sameplaceplayer() {//動いている人が進んだマスにだれがいるかを保持するリスト
@@ -2056,11 +2051,11 @@ public class Window implements ActionListener{
 			}
 		}
 		whobonby = whobonbylist.get(rand.nextInt(1000)%whobonbylist.size());
-		if(poorgod.getBplayer()!=null) {
-			poorgod.getBplayer().setBonby(false);
-			System.out.println(poorgod.getBplayer());
+		if(poorgod.getBinboPlayer()!=null) {
+			poorgod.getBinboPlayer().setBonby(false);
+			System.out.println(poorgod.getBinboPlayer());
 		}
-		System.out.println(poorgod.getBplayer());
+		System.out.println(poorgod.getBinboPlayer());
 		System.out.println("------------------------------------------------------------");
 		players.get(whobonby).setBonby(true);
 	}
@@ -2072,7 +2067,7 @@ public class Window implements ActionListener{
 		}
 		BonbyTurnEndFlag = true;
 		if(player.isBonby()) {
-			poorgod.bonbyturn();
+			poorgod.binboTurn();
 		}
 		WaitThread bonbyTurnEnd = new WaitThread(5);//ターン終了まで待機
  		bonbyTurnEnd.start();
@@ -2087,6 +2082,8 @@ public class Window implements ActionListener{
 
 	//ゴール画面を表示
 	private void goal() {
+		//player.setGoalDistance(Window.count);
+
 		JLayeredPane goal = goalFrame.getLayeredPane();
 		int goalMoney;
 		Random rand = new Random();

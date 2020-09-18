@@ -49,7 +49,7 @@
 
 package lifegame.game;
 
-public  class PoorGod{
+public  class Binbo{
 	/*
 	 * フィールド
 	 */
@@ -62,17 +62,17 @@ public  class PoorGod{
 	/*
 	 * メソッド
 	 */
-	public void bonbyturn() {
+	public void binboTurn() {
 		//スタブメソッド
 		System.out.println("ボンビーのターン");
 
 	}
 
-	public void setBplayer(Player players) {
+	public void setBinboPlayer(Player players) {
 		this.catchplayer = players;
 	}
 
-	public Player getBplayer() {
+	public Player getBinboPlayer() {
 		return this.catchplayer;
 	}
 
