@@ -119,7 +119,7 @@ public class Window implements ActionListener{
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	private Player player;//操作中のプレイヤー
-	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false;//ターンを交代するためのフラグ
+	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false,random2EndFlag=false;//ターンを交代するためのフラグ
 	public static Boolean BonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private int turn=0;//現在のターン
 	private Dice dice = new Dice();//サイコロ処理
@@ -1066,6 +1066,111 @@ public class Window implements ActionListener{
 		monthFrame.setVisible(false);
 		playFrame.setVisible(true);
 	}
+	
+	/*
+	 * ランダムイベント
+	 * ①臨時収入
+	 * playerが所有する物件の中から1件選び臨時収入が入る
+	 * 
+	 * propertyに指定したスパン毎の部門属性を付与
+	 * ownerがいるproeprty全てを取得するメソッドを用意
+	 * その中から指定の部門を抽出
+	 * 抽出したpropertyの臨時収入をownerに付与
+	 *
+	 * ・見た目
+	 * 専用フレームを作る
+	 * 必要な情報を記載
+	 * 流れに合う箇所に記述する
+	 * 
+	 */
+	private void random2Event(int month,int yaer) {
+
+		int rndnum;
+		rndnum = new Random().nextInt(16);
+		System.out.println("year:"+year+"\tmonth:"+month+"\trndnum:"+rndnum);
+		//rndnum=9;
+		if(rndnum==9) {
+    		JFrame RandomEvent2 = new JFrame("トピックス");
+    		JLayeredPane Random2 = RandomEvent2.getLayeredPane();
+    		RandomEvent2.setSize(800, 600);
+    		RandomEvent2.setLocationRelativeTo(null);
+    		RandomEvent2.setVisible(true);
+    		
+    		JLabel text1=new JLabel();
+    		JLabel text2=new JLabel();
+    		JLabel text3=new JLabel();
+    		JLabel text4=new JLabel();
+    		
+    		text1 = createText(10,10,600,100,20,"トピックスです");
+        	text2 = createText(10,110,600,100,20,"全国の放送局で特集が放送されました！");
+    		text3 = createText(10,210,600,100,20,"テレビの影響はすごく収入が出ています。");
+    		System.out.println("所持金");
+    		for(int i=0;i<4;i++) {
+    			System.out.println(players.get(i).getName()+":"+players.get(i).getMoney());
+    		}
+    		
+    		//物件の情報を取得
+    		for(Property property : japan.getPropertys()) {
+    			//オーナーの有無の判断
+    			if(property.isOwner()) {
+    				//物件の分類が1:食品かどうか判断
+    				if(property.getGroup()==1) {
+    					//物件の選出
+    					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
+    					System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
+    					//臨時収入を追加
+    					
+    					int s;
+    		    		s=(year/rndnum)*5000;
+    		    		
+    					if(property.getOwner() == players.get(0).getName()) {
+    						players.get(0).addMoney(s);
+    					}else if(property.getOwner() == players.get(1).getName()) {
+    						players.get(1).addMoney(s);
+    					}else if(property.getOwner() == players.get(2).getName()) {
+    						players.get(2).addMoney(s);
+    					}else if(property.getOwner() == players.get(3).getName()) {
+    						players.get(3).addMoney(s);
+    					}else {
+    						break;
+    					}
+    					
+    					break;
+    				}
+    			}
+        	}
+    		System.out.println("所持金");
+    		for(int i=0;i<4;i++) {
+    			System.out.println(players.get(i).getName()+":"+players.get(i).getMoney());
+    		}
+    		
+    		text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
+    		Random2.add(text1);
+    		text2.setHorizontalTextPosition(SwingConstants.LEFT);
+    		Random2.add(text2);
+    		text3.setHorizontalTextPosition(SwingConstants.LEFT);
+    		Random2.add(text3);
+    		text4.setHorizontalTextPosition(SwingConstants.LEFT);
+    		Random2.add(text4);
+    		
+    		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
+    		closeButton.setActionCommand("臨時収入画面を閉じる");
+    		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+    		
+    		Thread thread = new Thread(new WaitThread(5));
+    		thread.start();
+    		try {
+    			thread.join();
+    		}catch(InterruptedException e) {
+    			e.printStackTrace();
+    		}
+    		random2EndFlag=false;
+    		RandomEvent2.setVisible(false);
+    		Random2.removeAll();
+		}
+				
+	}
+
 
 	/*
 	 * 決算
@@ -1345,6 +1450,8 @@ public class Window implements ActionListener{
 		AssetsFrame.setVisible(false);
 		Assets.removeAll();
 		//ここまで総資産
+		
+		random2Event(month,year);
 	}
 
 	//収益を加算
@@ -2644,6 +2751,8 @@ public class Window implements ActionListener{
 			closeGoal();
 		}else if(cmd.equals("randomイベントを閉じる")) {
 			closeRandomEvent();
+		}else if(cmd.equals("臨時収入画面を閉じる")) {
+			random2EndFlag=true;
 		}else if(cmd.equals("店を出る")) {
 			closeShop();
 		}else if(cmd.equals("カード購入を終える") || cmd.equals("カード売却を終える")) {
@@ -2838,6 +2947,16 @@ class WaitThread extends Thread{
 					e.printStackTrace();
 				}
 			}
+			break;
+		case 8:
+			while(!Window.random2EndFlag) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					
+				}
+			}
+			Window.random2EndFlag=false;
 			break;
 		default:
 			break;

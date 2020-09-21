@@ -8,14 +8,16 @@ public class Property {
 	private String name;//名前
 	private String owner;//管理者
 	private int amount;//購入金額
+	private int group;//物件分類（1：食品、2：農林、3：観光、4：水産、5：工業、6：商業）
 	private Map<Boolean,ArrayList<Double>> rate = new HashMap<Boolean,ArrayList<Double>>();//利益率(3段階)
 	private int level;//利益率の段階
 	private boolean monoflag;
 
-	public Property(String name,int amount,double rate1, double rate2,double rate3) {
+	public Property(String name,int amount,int group,double rate1, double rate2,double rate3) {
 		this.name=name;
 		this.amount=amount;
 		this.owner = "";
+		this.group=group;
 		ArrayList<Double> falseRate = new ArrayList<Double>();
 		falseRate.add(rate1);
 		falseRate.add(rate2);
@@ -54,6 +56,10 @@ public class Property {
 		return this.amount;
 	}
 
+	public int getGroup() {
+		return this.group;
+	}
+	
 	public int getLevel() {
 		return this.level;
 	}
