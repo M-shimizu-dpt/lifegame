@@ -70,11 +70,15 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -111,6 +115,7 @@ public class Window implements ActionListener{
 	private JFrame randomFrame;//randomイベント用フレーム
 	private JFrame shopFrontFrame;//カードshopイベント用フレーム
 	private JFrame shopFrame;//カードshop購買イベント用フレーム
+	private JFrame confirmationFrame;//ポップアップ用フレーム
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	private Player player;//操作中のプレイヤー
@@ -267,7 +272,7 @@ public class Window implements ActionListener{
     		}else {
     			printMenu();
     		}
-			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
+    		WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
     		bonbyplayer();
@@ -383,7 +388,6 @@ public class Window implements ActionListener{
 	}
 
 	//cpuの移動操作(指定された経路で移動)
-
 	private void cpuMoveMaps(ArrayList<Coordinates> list) throws InterruptedException{
 		for(Coordinates coor : list) {
 			if(stopFlag) {
@@ -1432,6 +1436,177 @@ public class Window implements ActionListener{
 		return text;
 	}
 
+	private void createPopUp(String title,String article) {
+		playFrame.setVisible(false);
+		confirmationFrame = new JFrame(title);
+		confirmationFrame.setSize(800,400);
+		confirmationFrame.setLocationRelativeTo(null);
+		JLayeredPane confirmation = confirmationFrame.getLayeredPane();
+		List<String> articles = new ArrayList<String>();
+
+		if(article.length()>35) {
+			List<String> list = new ArrayList<String>();
+			if(article.contains("\n")) {//改行文字毎に改行
+				list.addAll(Arrays.asList(article.split("\n")));
+			}else {
+				list.add(article);
+			}
+			System.out.println(list.size());
+			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
+				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
+				while (m.find()) {
+					articles.add(m.group());
+				}
+			}
+		}
+		if(articles.size()>13) System.out.println("はみ出ています");
+		String artresult="<html><body>";
+		for(String art : articles) {
+			artresult = artresult + art + "<br />";
+		}
+		artresult=artresult+"</body></html>";
+		JLabel art = createText(0,0,800,400,20,artresult);
+		art.setHorizontalAlignment(SwingConstants.LEFT);
+		art.setVerticalAlignment(SwingConstants.TOP);
+		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
+		JButton closeButton =createButton(700,300,70,50,10,"閉じる");
+		closeButton.setActionCommand("ポップアップを閉じる");
+		confirmation.add(closeButton,JLayeredPane.PALETTE_LAYER);
+		confirmationFrame.setVisible(true);
+	}
+
+	private void createPopUp(String title,String article,int time) {
+		playFrame.setVisible(false);
+		confirmationFrame = new JFrame(title);
+		confirmationFrame.setSize(800,400);
+		confirmationFrame.setLocationRelativeTo(null);
+		JLayeredPane confirmation = confirmationFrame.getLayeredPane();
+		List<String> articles = new ArrayList<String>();
+
+		if(article.length()>35) {
+			List<String> list = new ArrayList<String>();
+			if(article.contains("\n")) {//改行文字毎に改行
+				list.addAll(Arrays.asList(article.split("\n")));
+			}else {
+				list.add(article);
+			}
+			System.out.println(list.size());
+			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
+				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
+				while (m.find()) {
+					articles.add(m.group());
+				}
+			}
+		}
+		if(articles.size()>13) System.out.println("はみ出ています");
+		String artresult="<html><body>";
+		for(String art : articles) {
+			artresult = artresult + art + "<br />";
+		}
+		artresult=artresult+"</body></html>";
+		JLabel art = createText(0,0,800,400,20,artresult);
+		art.setHorizontalAlignment(SwingConstants.LEFT);
+		art.setVerticalAlignment(SwingConstants.TOP);
+		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
+		confirmationFrame.setVisible(true);
+
+		try {
+			Thread.sleep(time);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		confirmationFrame.setVisible(false);
+		playFrame.setVisible(true);
+	}
+
+	private void createPopUpOnPlay(String title,String article) {
+		confirmationFrame = new JFrame(title);
+		confirmationFrame.setSize(800,400);
+		confirmationFrame.setLocationRelativeTo(null);
+		JLayeredPane confirmation = confirmationFrame.getLayeredPane();
+		List<String> articles = new ArrayList<String>();
+
+		if(article.length()>35) {
+			List<String> list = new ArrayList<String>();
+			if(article.contains("\n")) {//改行文字毎に改行
+				list.addAll(Arrays.asList(article.split("\n")));
+			}else {
+				list.add(article);
+			}
+			System.out.println(list.size());
+			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
+				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
+				while (m.find()) {
+					articles.add(m.group());
+				}
+			}
+		}
+		if(articles.size()>13) System.out.println("はみ出ています");
+		String artresult="<html><body>";
+		for(String art : articles) {
+			artresult = artresult + art + "<br />";
+		}
+		artresult=artresult+"</body></html>";
+		JLabel art = createText(0,0,800,400,20,artresult);
+		art.setHorizontalAlignment(SwingConstants.LEFT);
+		art.setVerticalAlignment(SwingConstants.TOP);
+		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
+		JButton closeButton =createButton(700,300,70,50,10,"閉じる");
+		closeButton.setActionCommand("ポップアップを閉じる");
+		confirmation.add(closeButton,JLayeredPane.PALETTE_LAYER);
+		confirmationFrame.setVisible(true);
+	}
+
+	private void createPopUpOnPlay(String title,String article,int time) {
+		confirmationFrame = new JFrame(title);
+		confirmationFrame.setSize(800,400);
+		confirmationFrame.setLocationRelativeTo(null);
+		JLayeredPane confirmation = confirmationFrame.getLayeredPane();
+		List<String> articles = new ArrayList<String>();
+
+		if(article.length()>35) {
+			List<String> list = new ArrayList<String>();
+			if(article.contains("\n")) {//改行文字毎に改行
+				list.addAll(Arrays.asList(article.split("\n")));
+			}else {
+				list.add(article);
+			}
+			System.out.println(list.size());
+			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
+				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
+				while (m.find()) {
+					articles.add(m.group());
+				}
+			}
+		}
+		if(articles.size()>13) System.out.println("はみ出ています");
+		String artresult="<html><body>";
+		for(String art : articles) {
+			artresult = artresult + art + "<br />";
+		}
+		artresult=artresult+"</body></html>";
+		JLabel art = createText(0,0,800,400,20,artresult);
+		art.setHorizontalAlignment(SwingConstants.LEFT);
+		art.setVerticalAlignment(SwingConstants.TOP);
+		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
+		confirmationFrame.setVisible(true);
+
+		try {
+			Thread.sleep(time);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		confirmationFrame.setVisible(false);
+	}
+
+	private void closePopUp() {
+		confirmationFrame.setVisible(false);
+		confirmationFrame.removeAll();
+		playFrame.setVisible(true);
+	}
+
 	//メイン画面での移動ボタンを作成
 	private void createMoveButton() {
 		JLayeredPane moveButton = playFrame.getLayeredPane();
@@ -2461,6 +2636,8 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("所持カード一覧を閉じる")) {
 			ableMenu();
 			closeCard();
+		}else if(cmd.equals("ポップアップを閉じる")) {
+			closePopUp();
 		}else if(cmd.equals("決算画面を閉じる")) {
 			closingEndFlag=true;
 		}else if(cmd.equals("ゴール画面を閉じる")) {
