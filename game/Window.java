@@ -713,7 +713,7 @@ public class Window implements ActionListener{
 		player.addCard(Card.cardList.get(index));
 		if(player.getCards().size()>8) {
 			cardFull();
-			WaitThread wait = new WaitThread(8);
+			WaitThread wait = new WaitThread(9);
 			wait.start();
 			try {
 				wait.join();
@@ -2858,7 +2858,7 @@ class WaitThread extends Thread{
 				}
 			}
 			break;
-		case 8:
+		case 9:
 			while(!Window.throwFlag) {
 				try {
 					Thread.sleep(100);
