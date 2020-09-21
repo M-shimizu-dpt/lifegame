@@ -145,6 +145,7 @@ public class Card {
 				e.printStackTrace();
 			}
 			players.get(turn).getNowMass().setValue(coor);
+			
 		}else if(this.id==5) {
 			if(name.equals("福袋カード")) {
 				int count=0;
@@ -206,6 +207,7 @@ public class Card {
 		}else if(id==3 || id==4) {
 			useAbility(players,turn);
 		}
+		if(!players.get(turn).isPlayer()) System.out.println("Use Card!  "+name+"   user:"+players.get(turn).getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊
 		if(name.split("周遊").length==2) {
