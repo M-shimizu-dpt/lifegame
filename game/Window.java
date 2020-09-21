@@ -58,7 +58,7 @@
  *
  * ゲームの結果を表示する
  *
- * CPUがrandom移動系カードを使用したあと、reload()されていない？
+ * CPUがrandom移動系カードを使用したあと、reloadInfo()されていない？
  *
  */
 
@@ -119,7 +119,7 @@ public class Window implements ActionListener{
 
 	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	private Player player;//操作中のプレイヤー
-	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false,random2EndFlag=false;//ターンを交代するためのフラグ
+	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false,throwFlag=false,random2EndFlag=false;//ターンを交代するためのフラグ
 	public static Boolean BonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private int turn=0;//現在のターン
 	private Dice dice = new Dice();//サイコロ処理
@@ -184,7 +184,7 @@ public class Window implements ActionListener{
 	}
 
 	//メイン画面の上に書いてあるプレイヤーの情報を更新
-	public void reload() {
+	public void reloadInfo() {
 		mainInfo.setVisible(false);
 		if(player.isEffect()){
 			if(player.getMoney()<10000) {
@@ -260,12 +260,12 @@ public class Window implements ActionListener{
     			waitButton.setVisible(true);
     		}
     		searchShortestRoute();//目的地までの最短経路を探索
-    		WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadで正しく更新されない可能性がある。
+    		WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
     		waitthred.start();
     		waitthred.join();
     		japan.saveGoal();
-    		returnMaps();//画面遷移が少し遅い
-    		reload();//画面上部に表示している情報を更新
+    		moveMaps();//画面遷移が少し遅い
+    		reloadInfo();//画面上部に表示している情報を更新
     		Card.priceSort(player.getCards());//プレイヤーが持つカードを価格順にソート
     		if(!player.isPlayer()) {//cpu操作
     			cpu();
@@ -297,7 +297,12 @@ public class Window implements ActionListener{
 			//確率でカードを使用
 			int rand = new Random().nextInt(player.getCardSize()*2);
 			if(rand < player.getCardSize()) {
+				boolean movedflag = player.getCard(rand).getID()==2;
 				player.getCard(rand).useAbility(this,dice,players,turn);
+				if(movedflag) {
+					moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
+					Thread.sleep(2000);
+				}
 				if(Card.usedRandomCard || Card.usedOthersCard) {
 					Card.resetUsedCard();
 					Card.resetUsedFixedCard();
@@ -316,7 +321,7 @@ public class Window implements ActionListener{
 			waitthread.join();
 
 			if(Window.count>=player.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
-				cpuMoveMaps();
+				cpuaddTrajectory();
 			}else {//目的地を超えてしまう場合
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
@@ -355,8 +360,7 @@ public class Window implements ActionListener{
 	}
 
 	//cpuの移動操作(目的地までの最短経路で移動)
-
-	private void cpuMoveMaps() throws InterruptedException{
+	private void cpuaddTrajectory() throws InterruptedException{
 		if(nearestTrajectoryList.get(Window.count).size()>0) {
 			ArrayList<Coordinates> list = nearestTrajectoryList.get(Window.count).get(0);
 			for(Coordinates coor : list) {
@@ -635,7 +639,8 @@ public class Window implements ActionListener{
 		}else{
 			if(japan.getGoalName().equals(massName)) {
 				//ゴール処理
-				bonbycatch();
+				//debug
+				//bonbycatch();
 				goal();
 			}else {
 				printPropertys(massName);
@@ -694,7 +699,7 @@ public class Window implements ActionListener{
 			get=false;
 			index = rand.nextInt(Card.cardList.size());
 			int i=0;
-			System.out.println("candidate card, name:"+Card.cardList.get(index).getName()+"  rarity"+Card.cardList.get(index).getRarity());
+			//System.out.println("candidate card, name:"+Card.cardList.get(index).getName()+"  rarity"+Card.cardList.get(index).getRarity());
 			do {
 				if(rand.nextInt(100)<30) {
 					get=true;
@@ -708,6 +713,13 @@ public class Window implements ActionListener{
 		player.addCard(Card.cardList.get(index));
 		if(player.getCards().size()>8) {
 			cardFull();
+			WaitThread wait = new WaitThread(9);
+			wait.start();
+			try {
+				wait.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		System.out.println("Card Get! name:"+Card.cardList.get(index).getName()+"  rarity"+Card.cardList.get(index).getRarity());
 		if(rand.nextInt(100) < 3) {
@@ -751,7 +763,7 @@ public class Window implements ActionListener{
 			System.out.println("remove:"+player.getCard(0).getName());
 			Card.priceSort(player.getCards());
 		}while(player.getCardSize()>8);
-
+		Window.throwFlag=true;
 		errorFrame.setVisible(false);
 		playFrame.setVisible(true);
 	}
@@ -1067,12 +1079,12 @@ public class Window implements ActionListener{
 		playFrame.setVisible(true);
 		random2Event(month,year);
 	}
-	
+
 	/*
 	 * ランダムイベント
 	 * ①臨時収入
 	 * playerが所有する物件の中から1件選び臨時収入が入る
-	 * 
+	 *
 	 * propertyに指定したスパン毎の部門属性を付与
 	 * ownerがいるproeprty全てを取得するメソッドを用意
 	 * その中から指定の部門を抽出
@@ -1082,26 +1094,26 @@ public class Window implements ActionListener{
 	 * 専用フレームを作る
 	 * 必要な情報を記載
 	 * 流れに合う箇所に記述する
-	 * 
+	 *
 	 */
 	private void random2Event(int month,int year) {
 
 		int rndnum;
 		rndnum = new Random().nextInt(16);
 		System.out.println("year:"+year+"\tmonth:"+month+"\trndnum:"+rndnum);
-		
+
 		if(month==rndnum) {
     		JFrame RandomEvent2 = new JFrame("トピックス");
     		JLayeredPane Random2 = RandomEvent2.getLayeredPane();
     		RandomEvent2.setSize(800, 600);
     		RandomEvent2.setLocationRelativeTo(null);
     		RandomEvent2.setVisible(true);
-    		
+
     		JLabel text1=new JLabel();
     		JLabel text2=new JLabel();
     		JLabel text3=new JLabel();
     		JLabel text4=new JLabel();
-    		
+
     		text1 = createText(10,10,600,100,20,"トピックスです");
         	text2 = createText(10,110,600,100,20,"全国の放送局で特集が放送されました！");
     		text3 = createText(10,210,600,100,20,"テレビの影響はすごく,大きな収入が出ています。");
@@ -1109,7 +1121,7 @@ public class Window implements ActionListener{
     		for(int i=0;i<4;i++) {
     			System.out.println(players.get(i).getName()+":"+players.get(i).getMoney());
     		}
-    		
+
     		//物件の情報を取得
     		for(Property property : japan.getPropertys()) {
     			//オーナーの有無の判断
@@ -1120,10 +1132,10 @@ public class Window implements ActionListener{
     					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
     					System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
     					//臨時収入を追加
-    					
+
     					int s;
     		    		s=(int)(double)(rndnum*3.14*500);
-    		    		
+
     					if(property.getOwner() == players.get(0).getName()) {
     						players.get(0).addMoney(s);
     					}else if(property.getOwner() == players.get(1).getName()) {
@@ -1135,7 +1147,7 @@ public class Window implements ActionListener{
     					}else {
     						break;
     					}
-    					
+
     					break;
     				}
     			}
@@ -1144,7 +1156,7 @@ public class Window implements ActionListener{
     		for(int i=0;i<4;i++) {
     			System.out.println(players.get(i).getName()+":"+players.get(i).getMoney());
     		}
-    		
+
     		text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
     		Random2.add(text1);
     		text2.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -1153,11 +1165,11 @@ public class Window implements ActionListener{
     		Random2.add(text3);
     		text4.setHorizontalTextPosition(SwingConstants.LEFT);
     		Random2.add(text4);
-    		
+
     		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
     		closeButton.setActionCommand("臨時収入画面を閉じる");
     		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-    		
+
     		Thread thread = new Thread(new WaitThread(5));
     		thread.start();
     		try {
@@ -1169,7 +1181,7 @@ public class Window implements ActionListener{
     		RandomEvent2.setVisible(false);
     		Random2.removeAll();
 		}
-				
+
 	}
 
 
@@ -1451,7 +1463,7 @@ public class Window implements ActionListener{
 		AssetsFrame.setVisible(false);
 		Assets.removeAll();
 		//ここまで総資産
-		
+
 	}
 
 	//収益を加算
@@ -1543,10 +1555,10 @@ public class Window implements ActionListener{
 		return text;
 	}
 
-	private void createPopUp(String title,String article) {
+	public void createPopUp(String title,String article) {
 		playFrame.setVisible(false);
 		confirmationFrame = new JFrame(title);
-		confirmationFrame.setSize(800,400);
+		confirmationFrame.setSize(800,600);
 		confirmationFrame.setLocationRelativeTo(null);
 		JLayeredPane confirmation = confirmationFrame.getLayeredPane();
 		List<String> articles = new ArrayList<String>();
@@ -1558,7 +1570,6 @@ public class Window implements ActionListener{
 			}else {
 				list.add(article);
 			}
-			System.out.println(list.size());
 			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
 				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
 				while (m.find()) {
@@ -1572,7 +1583,7 @@ public class Window implements ActionListener{
 			artresult = artresult + art + "<br />";
 		}
 		artresult=artresult+"</body></html>";
-		JLabel art = createText(0,0,800,400,20,artresult);
+		JLabel art = createText(0,0,800,600,20,artresult);
 		art.setHorizontalAlignment(SwingConstants.LEFT);
 		art.setVerticalAlignment(SwingConstants.TOP);
 		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
@@ -1582,10 +1593,10 @@ public class Window implements ActionListener{
 		confirmationFrame.setVisible(true);
 	}
 
-	private void createPopUp(String title,String article,int time) {
+	public void createPopUp(String title,String article,int time) {
 		playFrame.setVisible(false);
 		confirmationFrame = new JFrame(title);
-		confirmationFrame.setSize(800,400);
+		confirmationFrame.setSize(800,600);
 		confirmationFrame.setLocationRelativeTo(null);
 		JLayeredPane confirmation = confirmationFrame.getLayeredPane();
 		List<String> articles = new ArrayList<String>();
@@ -1597,7 +1608,6 @@ public class Window implements ActionListener{
 			}else {
 				list.add(article);
 			}
-			System.out.println(list.size());
 			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
 				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
 				while (m.find()) {
@@ -1611,7 +1621,7 @@ public class Window implements ActionListener{
 			artresult = artresult + art + "<br />";
 		}
 		artresult=artresult+"</body></html>";
-		JLabel art = createText(0,0,800,400,20,artresult);
+		JLabel art = createText(0,0,800,600,20,artresult);
 		art.setHorizontalAlignment(SwingConstants.LEFT);
 		art.setVerticalAlignment(SwingConstants.TOP);
 		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
@@ -1627,7 +1637,7 @@ public class Window implements ActionListener{
 		playFrame.setVisible(true);
 	}
 
-	private void createPopUpOnPlay(String title,String article) {
+	public void createPopUpOnPlay(String title,String article) {
 		confirmationFrame = new JFrame(title);
 		confirmationFrame.setSize(800,400);
 		confirmationFrame.setLocationRelativeTo(null);
@@ -1641,7 +1651,6 @@ public class Window implements ActionListener{
 			}else {
 				list.add(article);
 			}
-			System.out.println(list.size());
 			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
 				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
 				while (m.find()) {
@@ -1665,7 +1674,7 @@ public class Window implements ActionListener{
 		confirmationFrame.setVisible(true);
 	}
 
-	private void createPopUpOnPlay(String title,String article,int time) {
+	public void createPopUpOnPlay(String title,String article,int time) {
 		confirmationFrame = new JFrame(title);
 		confirmationFrame.setSize(800,400);
 		confirmationFrame.setLocationRelativeTo(null);
@@ -1679,7 +1688,6 @@ public class Window implements ActionListener{
 			}else {
 				list.add(article);
 			}
-			System.out.println(list.size());
 			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
 				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
 				while (m.find()) {
@@ -1858,7 +1866,7 @@ public class Window implements ActionListener{
 		if(player.getMove()==0) {
 			massEvent();
 		}else {
-			moveMaps();
+			addTrajectory();
 			if(player.isPlayer()) {
 				printMoveButton();
 			}
@@ -2133,7 +2141,7 @@ public class Window implements ActionListener{
 			}
 		}else {////残り移動マスが増えるとき(戻るとき)
 			if(player.getSameMossPlayers()!=null) {
-				System.out.println("nulじゃない戻る");
+				//System.out.println("nulじゃない戻る");
 				for (int whowith : player.getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
 					if(player.getBonbyAfter() ==whowith||player.getBonbyBefore() ==whowith){//「誰に渡したか」or「誰からもらったか」がさっきまでいたマスに存在したかどうか
 						if(player.getBonbyAfter() ==whowith) {//ボンビーを渡した誰かとさっきまでいたマスのプレイヤーが一致した時
@@ -2163,9 +2171,9 @@ public class Window implements ActionListener{
 	}
 	private void sameplaceplayer() {//動いている人が進んだマスにだれがいるかを保持するリスト
 		for(int i = 0;i<4;i++) {
-			System.out.println(players.get(i).isBonby()+ "        :"+players.get(i).getGoalDistance());
+			//System.out.println(players.get(i).isBonby()+ "        :"+players.get(i).getGoalDistance());
 		}
-		System.out.println("-------------------------------------");
+		//System.out.println("-------------------------------------");
 		player.sameMossPlayersClear();
 		int i = turn;
 		while(true) {
@@ -2199,12 +2207,12 @@ public class Window implements ActionListener{
 	}
 
 	//移動履歴を保持
-	private void moveMaps() {
+	private void addTrajectory() {
 		moveTrajectory.add(playFrame.getLayeredPane().getComponentAt(400, 300).getName());
 	}
 
 	//次のプレイヤーをプレイ画面の真ん中に位置させる
-	private void returnMaps() {
+	private void moveMaps() {
 		JLayeredPane play = playFrame.getLayeredPane();
 		int x = 401 - player.getColt().getX();
 		int y = 301 - player.getColt().getY();
@@ -2214,8 +2222,8 @@ public class Window implements ActionListener{
 			name=play.getComponent(i).getName();
 			if(name==null) {
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
-			}else if(!(name.equals("start") || name.equals("stop") || name.equals("右") || name.equals("左") || name.equals("下") || name.equals("上") ||
-					name.equals("サイコロ") || name.equals("会社情報") || name.equals("カード") ||
+			}else if(!(name.equals("start") || name.equals("stop") || name.equals("右") || name.equals("左") || name.equals("下") ||
+					name.equals("上") ||name.equals("サイコロ") || name.equals("会社情報") || name.equals("カード") ||
 					name.equals("詳細マップ") || name.equals("全体マップ") || name.equals("ボタン背景") ||
 					name.equals(mainInfo.getName()) || name.equals(moveLabel.getName()))) {//移動・閉じるボタン以外を動かす
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
@@ -2376,29 +2384,31 @@ public class Window implements ActionListener{
 		int maxdistance = 0;//最長距離比較
 		int whobonby = 0;
 		for(int i=0;i<players.size();i++) {
-			System.out.println(players.get(i).getGoalDistance());
+			//System.out.println(players.get(i).getGoalDistance());
 			if(players.get(i).getGoalDistance()<100) {//ゴール上にいると100以上になってしまうため
 				if((maxdistance <players.get(i).getGoalDistance())&&(whobonbylist !=null)) whobonbylist.clear();
-					if(maxdistance<=players.get(i).getGoalDistance()) {
-						maxdistance = players.get(i).getGoalDistance();
-						whobonbylist.add(i);
+				if(maxdistance<=players.get(i).getGoalDistance()) {
+					maxdistance = players.get(i).getGoalDistance();
+					whobonbylist.add(i);
 				}
+			}else {
+				//System.out.println("");
 			}
 		}
 		whobonby = whobonbylist.get(rand.nextInt(1000)%whobonbylist.size());
 		if(poorgod.getBinboPlayer()!=null) {
 			poorgod.getBinboPlayer().setBonby(false);
-			System.out.println(poorgod.getBinboPlayer());
+			//System.out.println(poorgod.getBinboPlayer());
 		}
-		System.out.println(poorgod.getBinboPlayer());
-		System.out.println("------------------------------------------------------------");
+		//System.out.println(poorgod.getBinboPlayer());
+		//System.out.println("------------------------------------------------------------");
 		players.get(whobonby).setBonby(true);
 	}
 
 	private void bonbyplayer() {
 		//moveTrajectoryと全プレイヤーの位置が重なるごとにどっちかがbonbyフラグがONなら交代
 		for(int i = 0;i<4;i++) {
-			System.out.println(players.get(i).isBonby());//bonbyフラグTEST用
+			//System.out.println(players.get(i).isBonby());//bonbyフラグTEST用
 		}
 		BonbyTurnEndFlag = true;
 		if(player.isBonby()) {
@@ -2702,7 +2712,7 @@ public class Window implements ActionListener{
 	//ボタンを押した時の操作
  	public void actionPerformed(ActionEvent act){
 		String cmd = act.getActionCommand();
-		System.out.println(cmd);
+		//System.out.println(cmd);
 		if(cmd.equals("start")) {
 			waitButton.setText("stop");
 			waitButton.setActionCommand("stop");
@@ -2772,7 +2782,7 @@ public class Window implements ActionListener{
 				moveMaps(0,-130);
 			}
 			printMoveButton();
-			reload();
+			reloadInfo();
 		}else if(cmd.equals("→") || cmd.equals("←") || cmd.equals("↑") || cmd.equals("↓")) {
 			moveMaps(cmd);
 		}
@@ -2785,11 +2795,20 @@ public class Window implements ActionListener{
 		for(int i=0;i<Card.cardList.size();i++) {
 			if(cmd.equals(Card.cardList.get(i).getName())) {//カードを使う
 				Card.cardList.get(i).useAbility(this,dice,players,turn);
+				if(Card.cardList.get(i).getID()==2){
+					moveMaps();
+					try {
+						Thread.sleep(2000);
+					}catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 				ableMenu();
 				closeCard();
 				break;
 			}else if(cmd.equals(Card.cardList.get(i).getName()+"t")) {//カードを捨てる
 				player.getCards().remove(Card.cardList.get(i));
+				Window.throwFlag=true;
 				errorFrame.setVisible(false);
 				playFrame.setVisible(true);
 				break;
@@ -2841,7 +2860,7 @@ public class Window implements ActionListener{
 	}
 }
 
-//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち,id=6→全てのプレイヤーの最短距離探索待ち,id=7→一時停止
+//id=0→ターンエンド待ち,id=1→借金返済待ち,id=2→最短経路探索待ち,id=3→決算待ち,id=4→移動可能マス探索待ち,id=6→全てのプレイヤーの最短距離探索待ち,id=7→一時停止,id=8→カードを捨てる待ち
 class WaitThread extends Thread{
 	private int id;
 	private int money;
@@ -2953,10 +2972,20 @@ class WaitThread extends Thread{
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
-					
+
 				}
 			}
 			Window.random2EndFlag=false;
+			break;
+		case 9:
+			while(!Window.throwFlag) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			Window.throwFlag=false;
 			break;
 		default:
 			break;
