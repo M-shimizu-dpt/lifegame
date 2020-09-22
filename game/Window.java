@@ -1,71 +1,3 @@
-/*
- * <todo>
- * CPUの実装
- * ボンビー処理
- * 決算処理(恐らく未完成)
- * randomイベント part2
- *
- *設定でマップをrandomに変更できる
- *	→双方向連結に実装したマップであればスレッドを用いてマップをランダムに構築することが可能
- *	→ランダムに駅を選定、選んだ駅の結合する方向の数をランダムに決め、その方向に繋げる駅をrandomに選定！を繰り返す
- *
- *メインウィンドウ以外の×ボタンを消す（消せたら）
- *
- *ぶっとびカードを使った後少し画面を停止したい。(どこに移動したか分かるようにしたい)
- *
- *web開発を行いたいと思っている人がいるのであれば、このゲームをweb上で動かせるような環境構築を行う
- *
- *現在、randomイベントはマスにとまった後に発生するものだが、"どこかの飲食店の売り上げが上がったのでお金がもらえる"等の
- *イベントがターンの初めに起きるrandomイベントを追加したい
- *
- *フォルダ構成を改善する
- *
- *グローバル変数を減らす
- *
- *目的地までの最短距離のみを格納する為に、最短距離以上の回数探索したthreadを閉じるのではなく、
- *全てのスレッドをある程度探索させ続け、何マス進める状態になれば目的地に到着することが出来るのかを割り出し、
- *目的地に自動で移動できるようなボタンを用意する。
- *(探索機構をもう一つ用意し、移動中の最短距離の計算は今まで通りで、サイコロを回す前にこの探索をしておけば大丈夫)
- *	→探索機構完成
- *
- *最寄り駅カードや星に願いをカードを使用した際にマスイベントを発生させるようにする。
- *
- *ランダムカードやその他のカードのように使用したかどうかを分けているが、
- *カードを使用した後にマスイベントを発生させるか、randomイベントを発生させるかのように分ける。
- *
- *カードが最大所持数を超えた場合ターン終了の関係で正しいプレイヤーのカードが表示されないかもしれない
- *
- *確認ポップアップを作る
- *
- * ・内部処理
- * 指定したスパンでrandomイベントを発生させる
- * ↓
- * propertyに指定したスパン毎の部門属性を付与
- * ownerがいるproeprty全てを取得するメソッドを用意
- * その中から指定の部門を抽出
- * 抽出したpropertyの臨時収入をownerに付与
- *
- * プレイヤーに継続臨時収入バフを付与する場合、Buffクラスを書き変える必要あり
- *
- * ・見た目
- * 専用フレームを作る
- * 必要な情報を記載
- * 流れに合う箇所に記述する
- *
- * CPUのマップ移動の際、ボンビーがいる場合の移動方法について
- *
- * CPUを賢くする
- *
- * ゲームの結果を表示する
- *
- * CPUがrandom移動系カードを使用したあと、reloadInfo()されていない？
- *
- * CPUがrandomイベント2のポップアップを自動で閉じれるようにする。
- *
- * 所有者がいない時にrandomイベントで物件破壊またはrandomイベント2の臨時収益が発生しているバグを取る
- *
- */
-
 package lifegame.game;
 
 import java.awt.Color;
@@ -90,7 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
@@ -143,7 +74,6 @@ public class Window implements ActionListener{
 	public static long time;//マルチスレッド開始からの経過時間
 	public static boolean stopFlag;//一時停止用フラグ
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
-
 	public Binbo poorgod = new Binbo();
 
 	public Window(int endYear,int playerCount){
@@ -271,6 +201,10 @@ public class Window implements ActionListener{
     		}else {
     			printMenu();
     		}
+
+    		//debug
+    		createPopUp("タイトル","本文aaaaaaaaaaaa");
+
     		WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
@@ -451,7 +385,6 @@ public class Window implements ActionListener{
 			shopEvent();
 		}else{
 			if(japan.getGoalName().equals(massName)) {
-				//ゴール処理
 				//debug
 				//bonbycatch();
 				goal();
@@ -459,7 +392,6 @@ public class Window implements ActionListener{
 				printPropertys(massName);
 			}
 		}
-
 		ableMenu();
 	}
 
@@ -568,7 +500,6 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
 	public void cardFullCPU() {
 		do{
@@ -580,7 +511,6 @@ public class Window implements ActionListener{
 		errorFrame.setVisible(false);
 		playFrame.setVisible(true);
 	}
-
 
 	//店イベント
 	private void shopEvent() {
@@ -605,7 +535,6 @@ public class Window implements ActionListener{
 			buyButton.setEnabled(false);
 			sellButton.setEnabled(false);
 		}
-
 		Random rand = new Random();
 		boolean get=false;
 		int index=0;
@@ -632,10 +561,8 @@ public class Window implements ActionListener{
 			}while(!get);
 			canBuyCardlist.add(Card.cardList.get(index));
 		}
-
 		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 		shopFrontFrame.setVisible(true);
-
 		setCloseFrame(1);
 	}
 
@@ -684,7 +611,6 @@ public class Window implements ActionListener{
 			JLabel cardFull = createText(450,5,130,40,10,"カードがいっぱいです");
 			shopBuy.add(cardFull);
 		}
-
 		shopFrame.setVisible(true);
 	}
 
@@ -844,9 +770,7 @@ public class Window implements ActionListener{
 		random.add(text2);
 		text3.setHorizontalAlignment(SwingConstants.LEFT);
 		random.add(text3);
-
 		randomFrame.setVisible(true);
-
 		setCloseFrame(0);
 	}
 
@@ -1006,11 +930,9 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	/*
 	 * 決算
 	 */
-
 	private void closing() {
 		JFrame closingFrame = new JFrame("決算");
 		JLayeredPane closing = closingFrame.getLayeredPane();
@@ -1161,6 +1083,7 @@ public class Window implements ActionListener{
 		aggregateAssets();
 		Assets();
 	}
+
 	/*
 	 * 総資産表示
 	 */
@@ -1219,7 +1142,6 @@ public class Window implements ActionListener{
 				}else {
 					dy = 1;
 				}
-
 
 				int c=Math.abs(a*2);
 				int d=Math.abs(b*2);
@@ -1285,7 +1207,6 @@ public class Window implements ActionListener{
 		AssetsFrame.setVisible(false);
 		Assets.removeAll();
 		//ここまで総資産
-
 	}
 
 	//収益を加算
@@ -1398,6 +1319,8 @@ public class Window implements ActionListener{
 					articles.add(m.group());
 				}
 			}
+		}else {
+			articles.add(article);
 		}
 		if(articles.size()>13) System.out.println("はみ出ています");
 		String artresult="<html><body>";
@@ -1409,7 +1332,7 @@ public class Window implements ActionListener{
 		art.setHorizontalAlignment(SwingConstants.LEFT);
 		art.setVerticalAlignment(SwingConstants.TOP);
 		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
-		JButton closeButton =createButton(700,300,70,50,10,"閉じる");
+		JButton closeButton =createButton(700,500,70,50,10,"閉じる");
 		closeButton.setActionCommand("ポップアップを閉じる");
 		confirmation.add(closeButton,JLayeredPane.PALETTE_LAYER);
 		confirmationFrame.setVisible(true);
@@ -1436,6 +1359,8 @@ public class Window implements ActionListener{
 					articles.add(m.group());
 				}
 			}
+		}else {
+			articles.add(article);
 		}
 		if(articles.size()>13) System.out.println("はみ出ています");
 		String artresult="<html><body>";
@@ -1479,6 +1404,8 @@ public class Window implements ActionListener{
 					articles.add(m.group());
 				}
 			}
+		}else {
+			articles.add(article);
 		}
 		if(articles.size()>13) System.out.println("はみ出ています");
 		String artresult="<html><body>";
@@ -1516,6 +1443,8 @@ public class Window implements ActionListener{
 					articles.add(m.group());
 				}
 			}
+		}else {
+			articles.add(article);
 		}
 		if(articles.size()>13) System.out.println("はみ出ています");
 		String artresult="<html><body>";
