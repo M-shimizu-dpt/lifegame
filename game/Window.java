@@ -60,6 +60,10 @@
  *
  * CPUがrandom移動系カードを使用したあと、reloadInfo()されていない？
  *
+ * CPUがrandomイベント2のポップアップを自動で閉じれるようにする。
+ *
+ * 所有者がいない時にrandomイベントで物件破壊またはrandomイベント2の臨時収益が発生しているバグを取る
+ *
  */
 
 package lifegame.game;
@@ -981,7 +985,7 @@ public class Window implements ActionListener{
 					player.addCard(Card.cardList.get(i));
 				}
 			}
-		}else if(randomNum < 0.7) {
+		}else if(randomNum < 0.7 && japan.isOwners()) {
 			randomFrame.setName("鋼鉄の人");
 			text1 = createText(10,10,600,100,20,"全身赤い装甲に身を包んだアメリカの空飛ぶ天才発明家が現れた！");
 			text2 = createText(10,110,600,100,20,"Destroying properties at random！Don't hold a grudge.");
@@ -1025,11 +1029,11 @@ public class Window implements ActionListener{
 			text3 = createText(10,210,600,100,20,"登山費用として5000万円失った");
 			player.addMoney(-5000);
 		}
-		text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
+		text1.setHorizontalAlignment(SwingConstants.LEFT);
 		random.add(text1);
-		text2.setHorizontalTextPosition(SwingConstants.LEFT);
+		text2.setHorizontalAlignment(SwingConstants.LEFT);
 		random.add(text2);
-		text3.setHorizontalTextPosition(SwingConstants.LEFT);
+		text3.setHorizontalAlignment(SwingConstants.LEFT);
 		random.add(text3);
 
 		randomFrame.setVisible(true);
@@ -1077,7 +1081,10 @@ public class Window implements ActionListener{
 		}
 		monthFrame.setVisible(false);
 		playFrame.setVisible(true);
-		random2Event(month,year);
+
+		if(japan.isOwners()) {
+			random2Event(month,year);
+		}
 	}
 
 	/*
@@ -1147,7 +1154,6 @@ public class Window implements ActionListener{
     					}else {
     						break;
     					}
-
     					break;
     				}
     			}
@@ -1170,18 +1176,25 @@ public class Window implements ActionListener{
     		closeButton.setActionCommand("臨時収入画面を閉じる");
     		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 
-    		Thread thread = new Thread(new WaitThread(5));
-    		thread.start();
-    		try {
-    			thread.join();
-    		}catch(InterruptedException e) {
-    			e.printStackTrace();
+    		if(player.isPlayer()) {
+	    		Thread thread = new Thread(new WaitThread(8));
+	    		thread.start();
+	    		try {
+	    			thread.join();
+	    		}catch(InterruptedException e) {
+	    			e.printStackTrace();
+	    		}
+    		}else {
+    			try {
+    				Thread.sleep(3000);
+    			}catch(InterruptedException e) {
+    				e.printStackTrace();
+    			}
     		}
-    		random2EndFlag=false;
+
     		RandomEvent2.setVisible(false);
     		Random2.removeAll();
 		}
-
 	}
 
 
@@ -2756,13 +2769,13 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("ポップアップを閉じる")) {
 			closePopUp();
 		}else if(cmd.equals("決算画面を閉じる")) {
-			closingEndFlag=true;
+			closingEndFlag=true;//closeメソッドを用意した方がCPUでの操作がしやすくなる
 		}else if(cmd.equals("ゴール画面を閉じる")) {
 			closeGoal();
 		}else if(cmd.equals("randomイベントを閉じる")) {
 			closeRandomEvent();
 		}else if(cmd.equals("臨時収入画面を閉じる")) {
-			random2EndFlag=true;
+			random2EndFlag=true;//closeメソッドを用意した方がCPUでの操作がしやすくなる
 		}else if(cmd.equals("店を出る")) {
 			closeShop();
 		}else if(cmd.equals("カード購入を終える") || cmd.equals("カード売却を終える")) {
