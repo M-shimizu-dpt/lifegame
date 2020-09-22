@@ -163,7 +163,7 @@ class SearchThread extends SearchThreadModel{
 
 	protected void goal() {
 		synchronized(SearchThread.lock3) {
-			super.window.setSearchResult(super.count,super.moveTrajectory);
+			Searcher.setSearchResult(super.count,super.moveTrajectory);
 		}
 	}
 }
@@ -300,7 +300,7 @@ class NearestSearchThread extends SearchThreadModel{
 
 	private void goal() {
 		synchronized(NearestSearchThread.lock2) {
-			window.setNearestMass(nowMass,count);
+			Searcher.setNearestMass(nowMass,count);
 		}
 	}
 
@@ -400,7 +400,7 @@ class StationSearchThread extends SearchThreadModel{
 
 	private void goal() {
 		synchronized(StationSearchThread.lock2) {
-			this.window.setNearestStationResult(this.count, this.nowMass);
+			Searcher.setNearestStationResult(this.count, this.nowMass);
 		}
 	}
 
@@ -487,7 +487,7 @@ class ShopSearchThread extends SearchThreadModel{
 
 	private void goal() {
 		synchronized(ShopSearchThread.lock2) {
-			window.setNearestShopResult(count, nowMass);
+			Searcher.setNearestShopResult(count, nowMass);
 		}
 	}
 
@@ -562,7 +562,7 @@ class MassSearchThread extends SearchThreadModel{
 
 	private void goal() {
 		synchronized(MassSearchThread.lock2) {
-			window.setCanMoveMassResult(nowMass, moveTrajectory);
+			Searcher.setCanMoveMassResult(nowMass, moveTrajectory);
 		}
 	}
 
