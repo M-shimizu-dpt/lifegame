@@ -142,11 +142,6 @@ public class Window implements ActionListener{
 	public static int count;//目的のマスまでの最短距離
 	public static long time;//マルチスレッド開始からの経過時間
 	public static boolean stopFlag;//一時停止用フラグ
-	private Map<Integer,ArrayList<ArrayList<Coordinates>>> nearestTrajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//目的地までの移動の軌跡
-	private Map<Coordinates,ArrayList<ArrayList<Coordinates>>> canMoveTrajectoryList = new HashMap<Coordinates,ArrayList<ArrayList<Coordinates>>>();//行くことが出来るマスとそれまでの移動の軌跡
-	public ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
-	public ArrayList<Coordinates> nearestShopList = new ArrayList<Coordinates>();//最寄り店のリスト(複数存在する場合、その中からランダムに選択)
-	private ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
 	public Binbo poorgod = new Binbo();
@@ -263,7 +258,7 @@ public class Window implements ActionListener{
     		}else {
     			waitButton.setVisible(true);
     		}
-    		searchShortestRoute();//目的地までの最短経路を探索
+    		Searcher.searchShortestRoute(this,player);//目的地までの最短経路を探索
     		WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
     		waitthred.start();
     		waitthred.join();
@@ -332,23 +327,23 @@ public class Window implements ActionListener{
 				//行くことが出来るマス取得
 				NearestSearchThread searchthread = new NearestSearchThread(this);
 				searchthread.setMass(japan.getGoal());//探索開始位置をゴールに設定
-				for(Coordinates coor : canMoveTrajectoryList.keySet()) {
+				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
 					if(coor.contains(japan.getGoal())) {//目的地に行ける場合
-						cpuMoveMaps(canMoveTrajectoryList.get(coor).get(0));
+						cpuMoveMaps(Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;
 					}
 					searchthread.addGoal(coor);
 				}
 				if(!flag) {
-					nearestMassToGoalList.clear();
+					Searcher.nearestMassToGoalList.clear();
 					searchthread.start();
 					WaitThread wt = new WaitThread(2);
 					wt.start();
 					wt.join();
 
 					//ゴールから最短にある移動可能マスを格納
-					cpuMoveMaps(canMoveTrajectoryList.get(nearestMassToGoalList.get(0)).get(0));
+					cpuMoveMaps(Searcher.canMoveTrajectoryList.get(Searcher.nearestMassToGoalList.get(0)).get(0));
 				}
 			}
 			System.out.println("player.move:"+player.getMove()+"       終わりました");
@@ -365,8 +360,8 @@ public class Window implements ActionListener{
 
 	//cpuの移動操作(目的地までの最短経路で移動)
 	private void cpuaddTrajectory() throws InterruptedException{
-		if(nearestTrajectoryList.get(Window.count).size()>0) {
-			ArrayList<Coordinates> list = nearestTrajectoryList.get(Window.count).get(0);
+		if(Searcher.nearestTrajectoryList.get(Window.count).size()>0) {
+			ArrayList<Coordinates> list = Searcher.nearestTrajectoryList.get(Window.count).get(0);
 			for(Coordinates coor : list) {
 				if(stopFlag) {
 					WaitThread wait = new WaitThread(7);
@@ -423,192 +418,6 @@ public class Window implements ActionListener{
 		}
 	}
 
-	//行くことが出来るマスの内、目的地に最も近いマスを探索
-	public synchronized void setNearestMass(Coordinates nearest,int count) {
-		if(NearestSearchThread.nearestCount>=count) {
-			if(NearestSearchThread.nearestCount>count) nearestMassToGoalList.clear();
-			NearestSearchThread.nearestCount=count;
-			nearestMassToGoalList.add(japan.getCoordinates(nearest));
-		}
-	}
-
-	//行くことが出来るマスを探索
-	public void searchCanMoveMass() {
-		canMoveTrajectoryList.clear();
-		MassSearchThread thread = new MassSearchThread(this,player.getMove());
-		thread.setMass(this.player.getNowMass());
-		thread.start();
-		WaitThread waitthread = new WaitThread(4);
-		waitthread.start();
-		try {
-			thread.join();
-		}catch(InterruptedException e){
-			e.printStackTrace();
-		}
-	}
-
-	//行くことが出来るマスの探索結果を格納
-	public synchronized void setCanMoveMassResult(Coordinates canMoveMass, ArrayList<Coordinates> trajectory) {
-		boolean flag = true;
-		for(Coordinates coor : canMoveTrajectoryList.keySet()) {
-			if(coor.contains(canMoveMass)) {
-				flag=false;
-			}
-		}
-
-		if(trajectory.size()-1==player.getMove()) {
-			canMoveMass = japan.getCoordinates(canMoveMass);//インスタンスの統一
-			if(flag) {
-				this.canMoveTrajectoryList.put(japan.getCoordinates(canMoveMass), new ArrayList<ArrayList<Coordinates>>());
-			}
-			this.canMoveTrajectoryList.get(japan.getCoordinates(canMoveMass)).add(trajectory);
-		}
-	}
-
-	//最寄り駅を探索
-	public void searchNearestStation() {
-		nearestStationList.clear();
-		StationSearchThread thread = new StationSearchThread(this);
-		thread.setMass(player.getNowMass());
-		thread.start();
-	}
-
-	//最寄り駅の探索結果を格納
-	public synchronized void setNearestStationResult(int count, Coordinates nearestStation) {
-		if(Window.count>=count) {
-			if(Window.count>count) this.nearestStationList.clear();//最寄り駅の更新があった場合
-			Window.count=count;
-			boolean flag=true;
-			for(Coordinates coor:nearestStationList) {//既に探索済みの駅か
-				if(coor.contains(nearestStation)) {
-					flag=false;
-				}
-			}
-			if(flag) {
-				this.nearestStationList.add(nearestStation);
-				//System.out.println("name add:"+japan.getStationName(nearestStation)+"  x:"+nearestStation.getX()+"   y:"+nearestStation.getY());
-			}
-		}
-	}
-
-	//最寄り店を探索
-	public void searchNearestShop() {
-		nearestShopList.clear();
-		ShopSearchThread thread = new ShopSearchThread(this);
-		thread.setMass(player.getNowMass());
-		thread.start();
-	}
-
-	//最寄り店の探索結果を格納
-	public synchronized void setNearestShopResult(int count, Coordinates nearestShop) {
-		if(Window.count>=count) {
-			if(Window.count>count)this.nearestShopList.clear();
-			Window.count=count;
-			boolean flag=true;
-			for(Coordinates coor:nearestShopList) {
-				if(coor.contains(nearestShop)) {
-					flag=false;
-				}
-			}
-			if(flag) {
-				this.nearestShopList.add(nearestShop);
-				//System.out.println("x:"+nearestShop.getX()+"   y:"+nearestShop.getY());
-			}
-		}
-	}
-
-	//目的地までの最短距離を計算し、最短ルートを取得
-	private void searchShortestRoute() {
-		//再探索は10回まで(1回で出てほしい…)
-		int againtime=0;
-		do{
-			nearestTrajectoryList.clear();
-			japan.allClose();
-			//Threadを立ち上げる
-			SearchThread thread = new SearchThread(this,player.getNowMass(),SearchThread.searchTime+againtime);
-			thread.setMass(player.getNowMass());
-			japan.getCoordinates(player.getNowMass()).open(0);
-			thread.setPriority(Thread.MAX_PRIORITY);
-			thread.start();
-
-			WaitThread wt = new WaitThread(2);
-			wt.start();
-			try {
-				wt.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			againtime+=100;
-			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-		}while(Window.count==500 && againtime<1000);
-		if(Window.count==500) System.out.println("探索失敗");
-	}
-
-	//目的地までの最短距離と最短ルートを格納
-	public synchronized void setSearchResult(int count, ArrayList<Coordinates> trajectory) {
-		trajectory.remove(0);
-		if(Window.count>=count) {
-			Window.count=count;
-			if(!this.nearestTrajectoryList.containsKey(count)) {
-				this.nearestTrajectoryList.put(count,new ArrayList<ArrayList<Coordinates>>());
-			}
-			this.nearestTrajectoryList.get(count).add(trajectory);
-		}
-	}
-
-	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	private void searchShortestRouteSelectPlayer(Player selectedPlayer) {
-		//再探索は10回まで(1回で出てほしい…)
-		int againtime=0;
-		do{
-			japan.allClose();
-			//Threadを立ち上げる
-			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(this,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
-			thread.setMass(selectedPlayer.getNowMass());
-			japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
-			thread.setPriority(Thread.MAX_PRIORITY);
-			thread.start();
-
-			WaitThread wt = new WaitThread(2,againtime);
-			wt.start();
-			try {
-				wt.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			againtime+=100;
-			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-		}while(Window.count==500 && againtime<1000);
-		if(Window.count==500) System.out.println("探索失敗");
-	}
-
-	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	private void searchShortestRouteAllPlayers() {
-		//再探索は10回まで(1回で出てほしい…)
-		for(Player selectedPlayer:players.values()) {
-			int againtime=0;
-			do{
-				japan.allClose();
-				//Threadを立ち上げる
-				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(this,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
-				thread.setMass(selectedPlayer.getNowMass());
-				japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
-				thread.setPriority(Thread.MAX_PRIORITY);
-				thread.start();
-
-				WaitThread wt = new WaitThread(2,againtime);
-				wt.start();
-				try {
-					wt.join();
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-				againtime+=100;
-				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-			}while(Window.count==500 && againtime<1000);
-			if(Window.count==500) System.out.println("探索失敗");
-		}
-	}
 
 	//指定のFrameを1秒後に閉じる
 	private void setCloseFrame(int id) {
@@ -1774,8 +1583,8 @@ public class Window implements ActionListener{
 		ArrayList<Boolean> vector = new ArrayList<Boolean>();
 		vector = japan.getVector(player.getNowMass(),1);
 		closeMoveButton();
-		if(nearestTrajectoryList.containsKey(Window.count)) {
-			for(ArrayList<Coordinates> list:nearestTrajectoryList.get(Window.count)) {
+		if(Searcher.nearestTrajectoryList.containsKey(Window.count)) {
+			for(ArrayList<Coordinates> list:Searcher.nearestTrajectoryList.get(Window.count)) {
 				for(Coordinates coor:list) {
 					for(int i=0;i<4;i++) {
 						if(coor.contains(player.getNowMass().getX()-1,player.getNowMass().getY())) {
@@ -1798,7 +1607,7 @@ public class Window implements ActionListener{
 		if(player.getMove() <= 0) {
 			closeMoveButton();
 		}else {
-			searchShortestRoute();
+			Searcher.searchShortestRoute(this,player);
 			WaitThread thread = new WaitThread(2);
 			thread.start();
 			try {
@@ -1875,7 +1684,7 @@ public class Window implements ActionListener{
 	//サイコロ操作
 	private void diceShuffle() {
 		player.setMove(dice.shuffle(player));
-		searchCanMoveMass();
+		Searcher.searchCanMoveMass(this,player);
 		if(player.getMove()==0) {
 			massEvent();
 		}else {

@@ -116,7 +116,7 @@ public class Card {
 			}else if(name.equals("ピッタリカード")){
 				coor.setValue(players.get(rand.nextInt(4)).getNowMass());
 			}else if(name.equals("最寄り駅カード")){
-				window.searchNearestStation();
+				Searcher.searchNearestStation(window,players.get(turn));
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -124,9 +124,9 @@ public class Card {
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
-				coor.setValue(window.nearestStationList.get(rand.nextInt(window.nearestStationList.size())));
+				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
 			}else if(name.equals("星に願いをカード")){
-				window.searchNearestShop();
+				Searcher.searchNearestShop(window,players.get(turn));
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -134,7 +134,7 @@ public class Card {
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
-				coor.setValue(window.nearestShopList.get(rand.nextInt(window.nearestShopList.size())));
+				coor.setValue(Searcher.nearestShopList.get(rand.nextInt(Searcher.nearestShopList.size())));
 			}else {
 				coor = this.useRandomAbility();
 			}
