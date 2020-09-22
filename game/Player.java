@@ -1,3 +1,8 @@
+/*
+ * プレイヤー(CPU含む)の情報を管理するクラス
+ * プレイヤーが行う処理を記述
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;

@@ -1,3 +1,8 @@
+/*
+ * 画面表示に関する処理を管理するクラス
+ * 画面表示をする際にこのクラスのメソッドを使用
+ */
+
 package lifegame.game;
 
 import java.awt.Color;
@@ -201,9 +206,6 @@ public class Window implements ActionListener{
     		}else {
     			printMenu();
     		}
-
-    		//debug
-    		createPopUp("タイトル","本文aaaaaaaaaaaa");
 
     		WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
@@ -1868,6 +1870,7 @@ public class Window implements ActionListener{
 			}
 		}
 	}
+
 	private void passingbonby(boolean tf) {//ながくなったため、分けた(ボンビー擦り付けメソッド)
 		if(tf == true) {//残り移動マスが減るとき(進むとき)
 			boolean onceflag = false;//同じマスに複数人存在している際に一度だけしか交換しないように
@@ -1908,7 +1911,6 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	private void changebonby(int who) {//ボンビー入れ替えメソッド
 		if(player.isBonby()) {
 			player.setBonby(false);
@@ -1920,6 +1922,7 @@ public class Window implements ActionListener{
 			poorgod.setBinboPlayer(player);
 		}
 	}
+
 	private void sameplaceplayer() {//動いている人が進んだマスにだれがいるかを保持するリスト
 		for(int i = 0;i<4;i++) {
 			//System.out.println(players.get(i).isBonby()+ "        :"+players.get(i).getGoalDistance());
@@ -1942,7 +1945,6 @@ public class Window implements ActionListener{
 			}
 		}
 	}
-
 
 	//プレイマップの画面遷移処理
 	public void moveMaps(int player,Coordinates to) {
@@ -2001,7 +2003,6 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	//詳細マップを表示
 	private void miniMap() {
 		JLayeredPane maps = mapFrame.getLayeredPane();
@@ -2056,7 +2057,6 @@ public class Window implements ActionListener{
 		}
 		mapFrame.setVisible(true);
 	}
-
 
 	//全体マップを表示
 	private void allMap() {

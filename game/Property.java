@@ -1,3 +1,8 @@
+/*
+ * 物件情報を管理するクラス
+ * 物件情報を取得したり、利益計算などを記述
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;
@@ -59,7 +64,7 @@ public class Property {
 	public int getGroup() {
 		return this.group;
 	}
-	
+
 	public int getLevel() {
 		return this.level;
 	}
