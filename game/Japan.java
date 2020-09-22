@@ -918,7 +918,7 @@ public class Japan {
 		}
 		return null;
 	}
-	
+
 	//座標で指定した駅名を取得
 	public String getStationName(int x,int y) {
 		for(Station sta : stations) {
@@ -945,6 +945,14 @@ public class Japan {
 			list.addAll(sta.getPropertys());
 		}
 		return list;
+	}
+
+	//所有者のいる物件があるか判定
+	public boolean isOwners() {
+		for(Property property:getPropertys()) {
+			if(property.isOwner()) return true;
+		}
+		return false;
 	}
 
 	//駅名で指定した駅に属する物件一覧を取得
