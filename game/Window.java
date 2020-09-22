@@ -156,7 +156,7 @@ public class Window implements ActionListener{
         playFrame.setLayout(null);
 
         // 背景色追加
-        playFrame.getContentPane().setBackground(Color.ORANGE);
+        playFrame.getContentPane().setBackground(Color.lightGray);
 
         playMap();
     	init(playerCount);
@@ -222,7 +222,7 @@ public class Window implements ActionListener{
     	Boolean first=true;
     	moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
     	moveLabel.setName("moves");
-    	playFrame.setBackground(Color.ORANGE);
+    	playFrame.setBackground(Color.lightGray);
     	closeMoveButton();
     	playFrame.getLayeredPane().add(waitButton,JLayeredPane.PALETTE_LAYER);
     	stopFlag=false;
@@ -1071,7 +1071,7 @@ public class Window implements ActionListener{
 		}
 		monthFrame.setVisible(true);
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(500);
 		}catch(InterruptedException e) {
 
 		}
@@ -1099,7 +1099,7 @@ public class Window implements ActionListener{
 	private void random2Event(int month,int year) {
 
 		int rndnum;
-		rndnum = new Random().nextInt(16);
+		rndnum = new Random().nextInt(11)+1;
 		System.out.println("year:"+year+"\tmonth:"+month+"\trndnum:"+rndnum);
 
 		if(month==rndnum) {
@@ -1134,7 +1134,7 @@ public class Window implements ActionListener{
     					//臨時収入を追加
 
     					int s;
-    		    		s=(int)(double)(rndnum*3.14*500);
+    		    		s=(int)(year/rndnum*5000);
 
     					if(property.getOwner() == players.get(0).getName()) {
     						players.get(0).addMoney(s);
@@ -1197,7 +1197,7 @@ public class Window implements ActionListener{
 		closingFrame.add(createText(10,10,300,200,100,"決算"));
 		closingFrame.setVisible(true);
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(500);
 		}catch(InterruptedException e) {
 
 		}
