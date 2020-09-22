@@ -19,6 +19,10 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
 
+import lifegame.game.map.Coordinates;
+import lifegame.game.player.Player;
+import lifegame.game.search.Searcher;
+
 public class Card {
 	private String name;//名前
 	private String cardText;//能力説明

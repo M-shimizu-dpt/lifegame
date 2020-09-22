@@ -3,9 +3,11 @@
  * マスの座標に関する処理を記述
  */
 
-package lifegame.game;
+package lifegame.game.map;
 
 import java.util.ArrayList;
+
+import lifegame.game.Window;
 
 public class Coordinates {
 	private int x;

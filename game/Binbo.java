@@ -6,6 +6,8 @@
 
 package lifegame.game;
 
+import lifegame.game.player.Player;
+
 public  class Binbo{
 	private Player catchplayer;
 	//private int playerId;

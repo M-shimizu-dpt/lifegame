@@ -3,11 +3,16 @@
  * 探索する必要のある処理を記述
  */
 
-package lifegame.game;
+package lifegame.game.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import lifegame.game.WaitThread;
+import lifegame.game.Window;
+import lifegame.game.map.Coordinates;
+import lifegame.game.player.Player;
 
 public class Searcher{
 	public static Map<Integer,ArrayList<ArrayList<Coordinates>>> nearestTrajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//目的地までの移動の軌跡

@@ -3,13 +3,15 @@
  * マップ情報を取得したり、stationやcoordinates等を用いてマップを構築する処理を記述
  */
 
-package lifegame.game;
+package lifegame.game.map;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+
+import lifegame.game.player.Player;
 
 public class Japan {
 	private ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
@@ -21,6 +23,7 @@ public class Japan {
 	private Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
 	private int goal;//目的地の要素番号
 	private int saveGoal;//ゴール保存用
+	public ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
 
 	//1マス10
 	public Japan() {
@@ -765,6 +768,25 @@ public class Japan {
 					railMapping.put(shop.get(getIndexOfShop(from.getX(),from.getY())),shop.get(getIndexOfShop(from.getX(),from.getY())).getLinks());
 				}
 			}
+		}
+	}
+
+	public void buyPropertys(String name, int index,Player player) {
+		if(!this.getStaInProperty(name,index).isOwner()) {
+			this.getStaInProperty(name,index).buy(player,0);
+			if(this.getStation(name).isMono()) {
+				this.monopoly(name);
+			}
+		}else {
+			this.getStaInProperty(name,index).buy(player);
+		}
+		alreadys.add(this.getStaInProperty(name,index).getName()+index);
+	}
+
+	public void sellPropertys(Property property,Player player) {
+		property.sell(player);
+		if(this.getStation(property).isMono()) {
+			this.monopoly(property);
 		}
 	}
 

@@ -7,6 +7,8 @@ package lifegame.game;
 
 import java.util.Random;
 
+import lifegame.game.player.Player;
+
 public class Dice {
 	private int result;
 	private int num;
@@ -21,7 +23,7 @@ public class Dice {
 		for(int i=0;i<this.num;i++) {//サイコロの数だけサイコロを回わす；
 			if(Card.usedFixedCard)break;//初めからresultが入力されていれば
 			Random rand = new Random();
-			this.result += rand.nextInt(6)+1+player.getBuff().effect;
+			this.result += rand.nextInt(6)+1+player.getEffect();
 			if(this.result<=0) {
 				this.result=1;
 			}
