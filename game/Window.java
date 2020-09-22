@@ -1106,7 +1106,7 @@ public class Window implements ActionListener{
 	private void random2Event(int month,int year) {
 
 		int rndnum;
-		rndnum = new Random().nextInt(16);
+		rndnum = new Random().nextInt(11)+1;
 		System.out.println("year:"+year+"\tmonth:"+month+"\trndnum:"+rndnum);
 
 		if(month==rndnum) {
@@ -1141,7 +1141,7 @@ public class Window implements ActionListener{
     					//臨時収入を追加
 
     					int s;
-    		    		s=(int)(double)(rndnum*3.14*500);
+    		    		s=(int)(year/rndnum*5000);
 
     					if(property.getOwner() == players.get(0).getName()) {
     						players.get(0).addMoney(s);
