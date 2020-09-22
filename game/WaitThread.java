@@ -10,7 +10,8 @@
  */
 package lifegame.game;
 
-import lifegame.game.player.Player;
+import lifegame.game.map.print.Window;
+import lifegame.game.object.Player;
 import lifegame.game.search.SearchThread;
 
 public class WaitThread extends Thread{

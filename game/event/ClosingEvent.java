@@ -2,8 +2,8 @@ package lifegame.game.event;
 
 import java.util.Map;
 
-import lifegame.game.map.Property;
-import lifegame.game.player.Player;
+import lifegame.game.map.information.Property;
+import lifegame.game.object.Player;
 
 public abstract class ClosingEvent {
 

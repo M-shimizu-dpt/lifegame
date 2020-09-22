@@ -3,7 +3,7 @@
  * マップ情報を取得したり、stationやcoordinates等を用いてマップを構築する処理を記述
  */
 
-package lifegame.game.map;
+package lifegame.game.map.information;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import lifegame.game.player.Player;
+import lifegame.game.object.Player;
 
 public class Japan {
 	private ArrayList<Station> stations = new ArrayList<Station>();//駅一覧

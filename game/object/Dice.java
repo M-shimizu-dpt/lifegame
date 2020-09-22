@@ -3,11 +3,9 @@
  * サイコロに関する処理を記述
  */
 
-package lifegame.game;
+package lifegame.game.object;
 
 import java.util.Random;
-
-import lifegame.game.player.Player;
 
 public class Dice {
 	private int result;

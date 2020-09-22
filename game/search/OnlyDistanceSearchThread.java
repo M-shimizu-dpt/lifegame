@@ -1,7 +1,7 @@
 package lifegame.game.search;
 
-import lifegame.game.Window;
-import lifegame.game.player.Player;
+import lifegame.game.map.print.Window;
+import lifegame.game.object.Player;
 
 
 public class OnlyDistanceSearchThread extends SearchThread{

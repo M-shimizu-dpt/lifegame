@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
+import lifegame.game.map.print.Window;
+
 public class App  implements ActionListener{
 	private Boolean flag = false;
 

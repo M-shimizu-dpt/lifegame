@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import lifegame.game.Window;
-import lifegame.game.map.Coordinates;
+import lifegame.game.map.information.Coordinates;
+import lifegame.game.map.print.Window;
 import lifegame.game.search.model.SearchThreadModel;
 
 public class SearchThread extends SearchThreadModel{

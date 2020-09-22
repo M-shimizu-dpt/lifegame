@@ -1,6 +1,6 @@
 package lifegame.game;
 
-public class Buff{
+public class Buff{//インターフェースっぽい？
 	private int effect;
 	private int period;
 	public Buff() {
@@ -34,5 +34,4 @@ public class Buff{
 	public int getPeriod() {
 		return this.period;
 	}
-
 }

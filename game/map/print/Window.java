@@ -3,7 +3,7 @@
  * 画面表示をする際にこのクラスのメソッドを使用
  */
 
-package lifegame.game;
+package lifegame.game.map.print;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -28,12 +28,16 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import lifegame.game.WaitThread;
 import lifegame.game.event.ClosingEvent;
-import lifegame.game.map.Coordinates;
-import lifegame.game.map.Japan;
-import lifegame.game.map.Property;
-import lifegame.game.map.Station;
-import lifegame.game.player.Player;
+import lifegame.game.map.information.Coordinates;
+import lifegame.game.map.information.Japan;
+import lifegame.game.map.information.Property;
+import lifegame.game.map.information.Station;
+import lifegame.game.object.Binbo;
+import lifegame.game.object.Card;
+import lifegame.game.object.Dice;
+import lifegame.game.object.Player;
 import lifegame.game.search.Searcher;
 
 public class Window implements ActionListener{

@@ -3,7 +3,7 @@
  * プレイヤーが行う処理を記述
  */
 
-package lifegame.game.player;
+package lifegame.game.object;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,12 +14,10 @@ import java.util.Random;
 import javax.swing.JLabel;
 
 import lifegame.game.Buff;
-import lifegame.game.Card;
-import lifegame.game.Dice;
 import lifegame.game.WaitThread;
-import lifegame.game.Window;
-import lifegame.game.map.Coordinates;
-import lifegame.game.map.Property;
+import lifegame.game.map.information.Coordinates;
+import lifegame.game.map.information.Property;
+import lifegame.game.map.print.Window;
 import lifegame.game.search.NearestSearchThread;
 import lifegame.game.search.Searcher;
 
