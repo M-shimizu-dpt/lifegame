@@ -1,3 +1,8 @@
+/*
+ * Searcherクラスで使われる探索用Threadのクラス
+ * 探索する際の処理を記述
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;
@@ -44,6 +49,7 @@ public class SearchThreadModel extends Thread{
 		this.count = count;
 	}
 
+	protected void goal() {}
 }
 
 //現在の位置から指定した目的地までの最短距離と軌跡を取得
@@ -161,6 +167,7 @@ class SearchThread extends SearchThreadModel{
 		super.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
+	@Override
 	protected void goal() {
 		synchronized(SearchThread.lock3) {
 			Searcher.setSearchResult(super.count,super.moveTrajectory);
@@ -207,6 +214,7 @@ class OnlyDistanceSearchThread extends SearchThread{
 		super.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
+	@Override
 	protected void goal() {
 		synchronized(OnlyDistanceSearchThread.lock3) {
 			if(player.containsGoalDistance(super.count)) {
@@ -298,7 +306,8 @@ class NearestSearchThread extends SearchThreadModel{
 		}
 	}
 
-	private void goal() {
+	@Override
+	protected void goal() {
 		synchronized(NearestSearchThread.lock2) {
 			Searcher.setNearestMass(nowMass,count);
 		}
@@ -398,7 +407,8 @@ class StationSearchThread extends SearchThreadModel{
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
-	private void goal() {
+	@Override
+	protected void goal() {
 		synchronized(StationSearchThread.lock2) {
 			Searcher.setNearestStationResult(this.count, this.nowMass);
 		}
@@ -485,7 +495,8 @@ class ShopSearchThread extends SearchThreadModel{
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
-	private void goal() {
+	@Override
+	protected void goal() {
 		synchronized(ShopSearchThread.lock2) {
 			Searcher.setNearestShopResult(count, nowMass);
 		}
@@ -560,7 +571,8 @@ class MassSearchThread extends SearchThreadModel{
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}
 
-	private void goal() {
+	@Override
+	protected void goal() {
 		synchronized(MassSearchThread.lock2) {
 			Searcher.setCanMoveMassResult(nowMass, moveTrajectory);
 		}

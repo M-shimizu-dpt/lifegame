@@ -1,3 +1,8 @@
+/*
+ * アプリの基本操作を行うクラス
+ * 基本的な処理は全てこのクラスに実装
+ */
+
 package lifegame.game;
 
 import java.awt.Font;

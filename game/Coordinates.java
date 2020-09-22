@@ -1,3 +1,8 @@
+/*
+ * 座標を管理するクラス
+ * マスの座標に関する処理を記述
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;

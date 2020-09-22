@@ -1,3 +1,8 @@
+/*
+ * サイコロの状態を管理するクラス
+ * サイコロに関する処理を記述
+ */
+
 package lifegame.game;
 
 import java.util.Random;

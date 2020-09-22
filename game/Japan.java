@@ -1,3 +1,8 @@
+/*
+ * マップの情報を管理するクラス
+ * マップ情報を取得したり、stationやcoordinates等を用いてマップを構築する処理を記述
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;

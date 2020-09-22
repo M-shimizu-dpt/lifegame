@@ -1,3 +1,8 @@
+/*
+ * 探索機構に関する処理を実装するクラス
+ * 探索する必要のある処理を記述
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;

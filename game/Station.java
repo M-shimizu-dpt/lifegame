@@ -1,3 +1,8 @@
+/*
+ * 駅に関する情報を管理するクラス
+ * 駅の座標や駅に属する物件などを取得・変更することが出来る。
+ */
+
 package lifegame.game;
 
 import java.util.ArrayList;
