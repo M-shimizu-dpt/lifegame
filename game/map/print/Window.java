@@ -36,7 +36,6 @@ import lifegame.game.map.information.Property;
 import lifegame.game.map.information.Station;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
-import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.search.Searcher;
 
@@ -69,12 +68,11 @@ public class Window implements ActionListener{
 	private JFrame shopFrame;//カードshop購買イベント用フレーム
 	private JFrame confirmationFrame;//ポップアップ用フレーム
 
-	private Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
-	private Player player;//操作中のプレイヤー
+
 	public static Boolean turnEndFlag=false,closingEndFlag=false,shoppingEndFlag=false,throwFlag=false,random2EndFlag=false;//ターンを交代するためのフラグ
 	public static Boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
-	private int turn=0;//現在のターン
-	private Dice dice = new Dice();//サイコロ処理
+
+
 	public static Japan japan = new Japan();//物件やマス情報
 	private ArrayList<String> moveTrajectory = new ArrayList<String>();//プレイヤーの移動の軌跡
 	private Map<String,ArrayList<Integer>> moneyTrajectory = new HashMap<String,ArrayList<Integer>>();//プレイヤーのお金の増減の軌跡
@@ -88,7 +86,45 @@ public class Window implements ActionListener{
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 	public Binbo poorgod = new Binbo();
 
+	public Window() {
+
+	}
+
 	public Window(int endYear,int playerCount){
+
+
+        initPlayFrame();
+    	initMaps();
+  		createMoveButton();
+  		japan.initGoal();
+  		dice.init();
+  		setGoalColor();
+
+  		initMenu(player);
+
+        JLayeredPane menu = playFrame.getLayeredPane();//ボタンが前に出ない
+
+        back.setBackground(Color.CYAN);
+        back.setBounds(640,350,110,210);
+        back.setName("ボタン背景");
+        menu.add(back,JLayeredPane.PALETTE_LAYER,-1);
+        menu.add(company,JLayeredPane.PALETTE_LAYER,0);
+        menu.add(saikoro,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(cardB,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(minimap,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(allmap,JLayeredPane.PALETTE_LAYER,0);
+
+    	// ウィンドウを表示
+        playFrame.setVisible(true);
+
+        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
+      	moveLabel.setName("moves");
+      	playFrame.setBackground(Color.ORANGE);
+      	closeMoveButton();
+      	addPlayFrame(waitButton);
+	}
+
+	public void initPlayFrame() {
 		int w = 800, h = 600;
 		playFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//アプリ終了
         // ウィンドウのサイズ・初期位置
@@ -99,29 +135,32 @@ public class Window implements ActionListener{
         // 背景色追加
         playFrame.getContentPane().setBackground(Color.ORANGE);
 
-        playMap();
-    	init(playerCount);
-
-        JLayeredPane button = playFrame.getLayeredPane();//ボタンが前に出ない
-
-        back.setBackground(Color.CYAN);
-        back.setBounds(640,350,110,210);
-        back.setName("ボタン背景");
-        button.add(back,JLayeredPane.PALETTE_LAYER,-1);
-        button.add(company,JLayeredPane.PALETTE_LAYER,0);
-        button.add(saikoro,JLayeredPane.PALETTE_LAYER,0);
-    	button.add(cardB,JLayeredPane.PALETTE_LAYER,0);
-    	button.add(minimap,JLayeredPane.PALETTE_LAYER,0);
-    	button.add(allmap,JLayeredPane.PALETTE_LAYER,0);
-
-    	// ウィンドウを表示
-        playFrame.setVisible(true);
-
-        try {
-        	play(endYear,playerCount);
-        }catch(InterruptedException e) {
-        	e.printStackTrace();
-        }
+        JLayeredPane play = playFrame.getLayeredPane();
+		int distance=130;
+		for(int i=1;i<=17;i++) {
+			for(int j=1;j<=17;j++) {
+				if(!japan.contains(j, i))continue;
+				if(japan.containsStation(j,i)) {
+					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.getStationName(j, i));
+					pre.setBackground(Color.WHITE);
+					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
+				}else {
+					play.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
+				}
+				drawLine(playFrame.getLayeredPane(),j,i,distance,20);
+			}
+		}
+		playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
+  		playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
+  		playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
+  		playBottom = createButton(380,510,50,40,10,"↓");//プレイマップでの移動ボタン
+  		saikoro = createButton(650, 360, 90, 30,10, "サイコロ");//プレイマップでのサイコロボタン
+  	    cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
+  	    company = createButton(650, 440, 90, 30,10, "会社情報");//プレイマップでのプレイヤー情報一覧表示ボタン
+  	    minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
+  	    allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
+  	    waitButton = createButton(10,520,60,30,10,"stop");
+  	    waitButton.setEnabled(true);
 	}
 
 	//メイン画面の上に書いてあるプレイヤーの情報を更新
@@ -147,30 +186,24 @@ public class Window implements ActionListener{
 		mainInfo.setVisible(true);
 	}
 
-	private void initMenu() {
-		if(player.isEffect()){
-			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+player.getName()+"　持ち金："+player.getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.getGoalName()+"までの最短距離:"+Window.count+"マス　効果発動中("+player.getEffect()+")");
-		}else {
-			mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+player.getName()+"　持ち金："+player.getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.getGoalName()+"までの最短距離:"+Window.count+"マス");
-		}
+	private void initMenu(Player player) {
+		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+player.getName()+"　持ち金："+player.getMoney()+"万円　"+year+"年目　"+month+"月　"+japan.getGoalName()+"までの最短距離:"+Window.count+"マス");
 		mainInfo.setBackground(Color.BLUE);
 		mainInfo.setName(player.getName()+player.getMoney());
 		playFrame.getLayeredPane().add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
 	}
 
-  	//プレイ中の動作
-	private void play(int endYear, int playerCount) throws InterruptedException{
-    	Boolean first=true;
-    	moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+player.getMove()+"　"+japan.getGoalName()+"までの最短距離:"+Window.count);
-    	moveLabel.setName("moves");
-    	playFrame.setBackground(Color.ORANGE);
-    	closeMoveButton();
-    	playFrame.getLayeredPane().add(waitButton,JLayeredPane.PALETTE_LAYER);
-    	Player.setStopFlag(false);
-    	while(true) {
-    		if(first) {
-    			printMonthFrame(month);
-    		}else {
+	public void addPlayFrame(JLabel label) {
+		playFrame.getLayeredPane().add(label,JLayeredPane.DEFAULT_LAYER,0);
+	}
+	public void addPlayFrame(JButton button) {
+		playFrame.getLayeredPane().add(button,JLayeredPane.PALETTE_LAYER,0);
+	}
+
+  	public boolean monthUpdate(boolean first, int endYear) {
+  		if(first) {
+  			printMonthFrame(month);
+  		}else {
 	    		if(turn==3) {
 	    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
 	    			for(int i=0;i<4;i++) {
@@ -190,40 +223,22 @@ public class Window implements ActionListener{
 	    		}else {
 	    			turn++;
 	    		}
-    		}
-    		first=false;
-    		if(year>endYear)break;
-    		player=players.get(turn);//このターンのプレイヤーを選定
+  		}
+  		first=false;
+  		if(year>endYear) {
+  			return true;
+  		}else {
+  			return false;
+  		}
+  	}
 
-    		if(player.isPlayer()) {
-    			waitButton.setVisible(false);
-    		}else {
-    			waitButton.setVisible(true);
-    		}
-    		Searcher.searchShortestRoute(this,player);//目的地までの最短経路を探索
-    		WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
-    		waitthred.start();
-    		waitthred.join();
-    		japan.saveGoal();
-    		moveMaps();//画面遷移が少し遅い
-    		reloadInfo();//画面上部に表示している情報を更新
-    		Card.priceSort(player.getCards());//プレイヤーが持つカードを価格順にソート
-    		if(!player.isPlayer()) {//cpu操作
-    			player.cpu(this,players,dice,turn);
-    		}else {
-    			printMenu();
-    		}
-
-    		WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
-			turnEnd.start();
-			turnEnd.join();
-    		bonbyplayer();
-    		Thread.sleep(1000);
-    		turnEndFlag=false;
-    		japan.alreadys.clear();//このターンに購入した物件リストを初期化
-    	}
-    	System.out.println("終わり");
-    }
+  	public void waitButtonUpdate(Player player) {
+  		if(player.isPlayer()) {
+  			waitButton.setVisible(false);
+  		}else {
+  			waitButton.setVisible(true);
+  		}
+  	}
 
 	//指定のFrameを1秒後に閉じる
 	private void setCloseFrame(int id) {
@@ -1106,7 +1121,7 @@ public class Window implements ActionListener{
 	}
 
 	//textを作成
-	private JLabel createText(int x,int y,int w,int h,int size,String name) {
+	public JLabel createText(int x,int y,int w,int h,int size,String name) {
 		JLabel text = new JLabel(name,SwingConstants.CENTER);
 		text.setOpaque(true);
 		text.setBounds(x, y, w, h);
@@ -1369,7 +1384,7 @@ public class Window implements ActionListener{
 	}
 
 	//メイン画面でのメニューボタンを表示
-	private void printMenu() {
+	public void printMenu() {
 		saikoro.setVisible(true);
 		company.setVisible(true);
 		cardB.setVisible(true);
@@ -1799,24 +1814,7 @@ public class Window implements ActionListener{
 		}
 	}
 
-	//プレイマップを表示
-	private void playMap() {
-		JLayeredPane play = playFrame.getLayeredPane();
-		int distance=130;
-		for(int i=1;i<=17;i++) {
-			for(int j=1;j<=17;j++) {
-				if(!japan.contains(j, i))continue;
-				if(japan.containsStation(j,i)) {
-					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,japan.getStationName(j, i));
-					pre.setBackground(Color.WHITE);
-					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
-				}else {
-					play.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
-				}
-				drawLine(playFrame.getLayeredPane(),j,i,distance,20);
-			}
-		}
-	}
+
 
 	//詳細マップを表示
 	private void miniMap() {
@@ -1971,7 +1969,7 @@ public class Window implements ActionListener{
 		players.get(whobonby).setBonby(true);
 	}
 
-	private void bonbyplayer() {
+	public void bonbyplayer(Player player) {
 		//moveTrajectoryと全プレイヤーの位置が重なるごとにどっちかがbonbyフラグがONなら交代
 		for(int i = 0;i<4;i++) {
 			//System.out.println(players.get(i).isBonby());//bonbyフラグTEST用
@@ -2210,41 +2208,6 @@ public class Window implements ActionListener{
 			}
 		}
 	}
-
-	//初期化
-  	private void init(int playerCount) {
-  		Card.init(this);
-  		for(int i=0;i<4;i++) {
-  			if(playerCount>i) {//プレイヤー
-	  			players.put(i,new Player("player"+(i+1),1000,i,true));
-	  		}else {//CPU
-  				players.put(i,new Player("CPU"+(i+1-playerCount),1000,i,false));
-  			}
-  			players.get(i).setColt(createText(401,301,20,20,10,players.get(i).getName()));
-  	  		players.get(i).getColt().setBackground(Color.BLACK);
-  	  		players.get(i).getColt().setName(players.get(i).getName());
-  	  		playFrame.getLayeredPane().add(players.get(i).getColt(),JLayeredPane.DEFAULT_LAYER,0);
-  		}
-  		player=players.get(0);
-  		playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
-  		playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
-  		playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
-  		playBottom = createButton(380,510,50,40,10,"↓");//プレイマップでの移動ボタン
-  		saikoro = createButton(650, 360, 90, 30,10, "サイコロ");//プレイマップでのサイコロボタン
-  	    cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
-  	    company = createButton(650, 440, 90, 30,10, "会社情報");//プレイマップでのプレイヤー情報一覧表示ボタン
-  	    minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
-  	    allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
-  	    waitButton = createButton(10,520,60,30,10,"stop");
-  	    waitButton.setEnabled(true);
-  		initMaps();
-  		createMoveButton();
-  		japan.initGoal();
-  		dice.init();
-  		setGoalColor();
-
-  		initMenu();
-  	}
 
 	//ボタンを押した時の操作
  	public void actionPerformed(ActionEvent act){

@@ -20,7 +20,6 @@ public class WaitThread extends Thread{
 	private int size;
 	private int againtime;
 
-	public WaitThread() {}
 	public WaitThread(int id) {
 		this.id=id;
 		this.againtime=0;
