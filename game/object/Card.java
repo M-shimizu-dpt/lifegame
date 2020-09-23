@@ -1,4 +1,7 @@
 /*
+ * カードの管理をするクラス
+ * カード一覧や各処理などを記述
+ *
  * id:能力カテゴリ
  * 0:サイコロ数を増やす
  * 1:固定値進む
@@ -8,13 +11,18 @@
  * 5:カード授受
  */
 
-package lifegame.game;
+package lifegame.game.object;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
+
+import lifegame.game.WaitThread;
+import lifegame.game.map.information.Coordinates;
+import lifegame.game.map.print.Window;
+import lifegame.game.search.Searcher;
 
 public class Card {
 	private String name;//名前
@@ -116,7 +124,7 @@ public class Card {
 			}else if(name.equals("ピッタリカード")){
 				coor.setValue(players.get(rand.nextInt(4)).getNowMass());
 			}else if(name.equals("最寄り駅カード")){
-				window.searchNearestStation();
+				Searcher.searchNearestStation(window,players.get(turn));
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -124,9 +132,9 @@ public class Card {
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
-				coor.setValue(window.nearestStationList.get(rand.nextInt(window.nearestStationList.size())));
+				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
 			}else if(name.equals("星に願いをカード")){
-				window.searchNearestShop();
+				Searcher.searchNearestShop(window,players.get(turn));
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -134,17 +142,13 @@ public class Card {
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
-				coor.setValue(window.nearestShopList.get(rand.nextInt(window.nearestShopList.size())));
+				coor.setValue(Searcher.nearestShopList.get(rand.nextInt(Searcher.nearestShopList.size())));
 			}else {
 				coor = this.useRandomAbility();
 			}
 			window.moveMaps(turn,coor);
-			try {
-				Thread.sleep(1000);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
 			players.get(turn).getNowMass().setValue(coor);
+
 		}else if(this.id==5) {
 			if(name.equals("福袋カード")) {
 				int count=0;
@@ -206,6 +210,7 @@ public class Card {
 		}else if(id==3 || id==4) {
 			useAbility(players,turn);
 		}
+		if(!players.get(turn).isPlayer()) System.out.println("Use Card!  "+name+"   user:"+players.get(turn).getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊
 		if(name.split("周遊").length==2) {
@@ -291,6 +296,7 @@ public class Card {
 		resetUsedFixedCard();
 		resetUsedRandomCard();
 		resetUsedOthersCard();
+
 
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));

@@ -1,4 +1,9 @@
-package lifegame.game;
+/*
+ * サイコロの状態を管理するクラス
+ * サイコロに関する処理を記述
+ */
+
+package lifegame.game.object;
 
 import java.util.Random;
 
@@ -16,7 +21,7 @@ public class Dice {
 		for(int i=0;i<this.num;i++) {//サイコロの数だけサイコロを回わす；
 			if(Card.usedFixedCard)break;//初めからresultが入力されていれば
 			Random rand = new Random();
-			this.result += rand.nextInt(6)+1+player.getBuff().effect;
+			this.result += rand.nextInt(6)+1+player.getEffect();
 			if(this.result<=0) {
 				this.result=1;
 			}

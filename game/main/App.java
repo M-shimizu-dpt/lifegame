@@ -1,4 +1,9 @@
-package lifegame.game;
+/*
+ * アプリの基本操作を行うクラス
+ * 基本的な処理は全てこのクラスに実装
+ */
+
+package lifegame.game.main;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -9,6 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
+
+import lifegame.game.map.print.Window;
 
 public class App  implements ActionListener{
 	private Boolean flag = false;
