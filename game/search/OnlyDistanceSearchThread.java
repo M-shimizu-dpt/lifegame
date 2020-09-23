@@ -13,8 +13,8 @@ public class OnlyDistanceSearchThread extends SearchThread{
 		super.start.setValue(player.getNowMass());
 		this.player=player;
 		player.initGoalDistance();
-		Window.time = System.currentTimeMillis();
-		Window.count=500;
+		Searcher.time = System.currentTimeMillis();
+		Searcher.count=500;
 		OnlyDistanceSearchThread.initSearchTime();
 	}
 
@@ -24,8 +24,8 @@ public class OnlyDistanceSearchThread extends SearchThread{
 		super.start.setValue(player.getNowMass());
 		this.player=player;
 		player.initGoalDistance();
-		Window.time = System.currentTimeMillis();
-		Window.count=500;
+		Searcher.time = System.currentTimeMillis();
+		Searcher.count=500;
 		OnlyDistanceSearchThread.initSearchTime(searchTime);
 	}
 

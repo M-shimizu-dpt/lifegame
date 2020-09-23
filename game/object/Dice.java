@@ -7,52 +7,46 @@ package lifegame.game.object;
 
 import java.util.Random;
 
-public class Dice {
-	private int result;
-	private int num;
+public abstract class Dice {
+	private static int result=0;
+	private static int num=1;
 
-	public Dice(){
-		//サイコロの準備
-		this.result=0;
-		this.num=1;
-	}
-
-	public int shuffle(Player player) {
-		for(int i=0;i<this.num;i++) {//サイコロの数だけサイコロを回わす；
+	public static int shuffle(Player player) {
+		for(int i=0;i<Dice.num;i++) {//サイコロの数だけサイコロを回わす；
 			if(Card.usedFixedCard)break;//初めからresultが入力されていれば
 			Random rand = new Random();
-			this.result += rand.nextInt(6)+1+player.getEffect();
-			if(this.result<=0) {
-				this.result=1;
+			Dice.result += rand.nextInt(6)+1+player.getEffect();
+			if(Dice.result<=0) {
+				Dice.result=1;
 			}
 			player.getBuff().elapsed();
 		}
-		System.out.println("result:"+this.result+"  num:"+this.num);
-		return this.result;
+		System.out.println("result:"+Dice.result+"  num:"+Dice.num);
+		return Dice.result;
 	}
 
-	public void init() {
+	public static void init() {
 		clearResult();
 		clearNum();
 	}
 
-	public void setResult(int result) {
-		this.result=result;
+	public static void setResult(int result) {
+		Dice.result=result;
 	}
 
-	public void clearResult() {
-		this.result=0;
+	public static void clearResult() {
+		Dice.result=0;
 	}
 
-	public void setNum(int num) {
-		this.num=num;
+	public static void setNum(int num) {
+		Dice.num=num;
 	}
 
-	public void clearNum() {
-		this.num=1;
+	public static void clearNum() {
+		Dice.num=1;
 	}
 
-	public void clear() {
+	public static void clear() {
 		clearResult();
 		clearNum();
 	}

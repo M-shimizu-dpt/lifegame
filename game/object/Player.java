@@ -5,15 +5,18 @@
 
 package lifegame.game.object;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JLabel;
 
 import lifegame.game.WaitThread;
+import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;
 import lifegame.game.map.print.Window;
@@ -21,6 +24,9 @@ import lifegame.game.search.NearestSearchThread;
 import lifegame.game.search.Searcher;
 
 public class Player {
+	public static Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
+	public static Player player;//操作中のプレイヤー
+
 	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
 	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
 
@@ -71,6 +77,32 @@ public class Player {
 		//givebonby = 0;
 		//getbonby = 0;
 		//this.whowith = new ArrayList<Integer>();
+	}
+
+	public static void initPlayers(Window window,int playerCount) {
+		for(int i=0;i<4;i++) {
+  			if(playerCount>i) {//プレイヤー
+	  			Player.players.put(i,new Player("player"+(i+1),1000,i,true));
+	  		}else {//CPU
+  				Player.players.put(i,new Player("CPU"+(i+1-playerCount),1000,i,false));
+  			}
+  			Player.players.get(i).setColt(window.createText(401,301,20,20,10,Player.players.get(i).getName()));
+  	  		Player.players.get(i).getColt().setBackground(Color.BLACK);
+  	  		Player.players.get(i).getColt().setName(Player.players.get(i).getName());
+  	  		window.addPlayFrame(Player.players.get(i).getColt());
+  		}
+	}
+
+	public static void initNowPlayer() {
+		Player.player=Player.players.get(0);
+	}
+
+	public static void setNowPlayer() {
+		Player.player=Player.players.get(App.turn);
+	}
+
+	public static Player getPlayer(int index) {
+		return Player.players.get(index);
 	}
 
 	public int getCardSize() {
@@ -308,7 +340,7 @@ public class Player {
 	}
 
 	//CPU操作
-	public void cpu(Window window,Map<Integer, Player> players,Dice dice,int turn) throws InterruptedException{
+	public void cpu(Window window,int turn) throws InterruptedException{
 		window.closeMoveButton();
 		Thread.sleep(500);
 		if(Player.isStop()) {
@@ -322,7 +354,7 @@ public class Player {
 			int rand = new Random().nextInt(this.getCardSize()*2);
 			if(rand < this.getCardSize()) {
 				boolean movedflag = this.getCard(rand).getID()==2;
-				this.getCard(rand).useAbility(window,dice,players,turn);
+				this.getCard(rand).useAbilitys(window);
 				if(movedflag) {
 					window.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
@@ -344,16 +376,16 @@ public class Player {
 			waitthread.start();
 			waitthread.join();
 
-			if(Window.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
+			if(Searcher.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuaddTrajectory(window);
 			}else {//目的地を超えてしまう場合
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
 				//行くことが出来るマス取得
 				NearestSearchThread searchthread = new NearestSearchThread(window);
-				searchthread.setMass(Window.japan.getGoal());//探索開始位置をゴールに設定
+				searchthread.setMass(App.japan.getGoal());//探索開始位置をゴールに設定
 				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
-					if(coor.contains(Window.japan.getGoal())) {//目的地に行ける場合
+					if(coor.contains(App.japan.getGoal())) {//目的地に行ける場合
 						cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;
@@ -385,8 +417,8 @@ public class Player {
 
 	//cpuの移動操作(目的地までの最短経路で移動)
 	public void cpuaddTrajectory(Window window) throws InterruptedException{
-		if(Searcher.nearestTrajectoryList.get(Window.count).size()>0) {
-			ArrayList<Coordinates> list = Searcher.nearestTrajectoryList.get(Window.count).get(0);
+		if(Searcher.nearestTrajectoryList.get(Searcher.count).size()>0) {
+			ArrayList<Coordinates> list = Searcher.nearestTrajectoryList.get(Searcher.count).get(0);
 			for(Coordinates coor : list) {
 				if(Player.isStop()) {
 					WaitThread wait = new WaitThread(7);
@@ -455,19 +487,19 @@ public class Player {
 
 	//物件購入・増築処理
 	public void buyPropertysCPU(String name) {
-		for(int index = 0;index<Window.japan.getStaInPropertySize(name);index++) {
-			if(Window.japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
-			if(!Window.japan.getStaInProperty(name,index).isOwner()) {
-				Window.japan.getStaInProperty(name,index).buy(this,0);
-				if(Window.japan.getStation(name).isMono()) {
-					Window.japan.monopoly(name);
+		for(int index = 0;index<App.japan.getStaInPropertySize(name);index++) {
+			if(App.japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
+			if(!App.japan.getStaInProperty(name,index).isOwner()) {
+				App.japan.getStaInProperty(name,index).buy(this,0);
+				if(App.japan.getStation(name).isMono()) {
+					App.japan.monopoly(name);
 				}
 			}else {
-				Window.japan.getStaInProperty(name,index).buy(this);
+				App.japan.getStaInProperty(name,index).buy(this);
 			}
-			Window.japan.alreadys.add(Window.japan.getStaInProperty(name,index).getName()+index);
+			App.japan.alreadys.add(App.japan.getStaInProperty(name,index).getName()+index);
 
-			System.out.println(Window.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+			System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		}
 	}
 	public void sellPropertyCPU(Window window) {

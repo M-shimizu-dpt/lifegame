@@ -16,10 +16,10 @@ package lifegame.game.object;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Random;
 
 import lifegame.game.WaitThread;
+import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.Searcher;
@@ -38,6 +38,8 @@ public class Card {
 	public static boolean usedFixedCard;
 	public static boolean usedRandomCard;
 	public static boolean usedOthersCard;
+
+
 
 	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
 		this.name = name;
@@ -94,37 +96,68 @@ public class Card {
 		this.ability = ability;
 	}
 
+	public static ArrayList<Card> getElectedCard(){
+		ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
+		Random rand = new Random();
+		boolean get=false;
+		int index=0;
+		for(int i = 0;i<8;i++) {//表示するカード8枚を選出
+			do {
+				get=false;
+				boolean flag;
+				do {//今まで選出したカードと今回選出したカードが被った場合は再選
+					flag=true;
+					index = rand.nextInt(Card.cardList.size());
+					for(Card card : canBuyCardlist) {
+						if(card.contains(Card.cardList.get(index))) {
+							flag=false;
+						}
+					}
+				}while(!flag);
+				int rarity=0;
+				do {
+					if(rand.nextInt(100)<30) {
+						get=true;
+					}
+					rarity++;
+				}while(rarity<Card.cardList.get(index).getRarity());
+			}while(!get);
+			canBuyCardlist.add(Card.cardList.get(index));
+		}
+		return canBuyCardlist;
+	}
+
 	//0,1
-	private void useAbility(Dice dice) {
+	private void useAbility() {
 		if(this.id==0) {
-			dice.setNum(this.ability);
+			Dice.setNum(this.ability);
 		}else if(this.id == 1) {
 			Card.usedFixedCard();
-			dice.setResult(this.ability);
+			Dice.setResult(this.ability);
 		}
 	}
 
-	//2,5
-	private void useAbility(Window window,Map<Integer,Player> players,int turn) {
+	//2,3,4,5
+	private void useAbility(Window window) {
 		Random rand = new Random();
 		if(this.id==2) {
 			Coordinates coor = new Coordinates();
 			//誰に影響を与えるのか
 			Card.usedRandomCard();
 			if(name.equals("サミットカード")) {
-				coor.setValue(players.get(turn).getNowMass());
+				coor.setValue(Player.players.get(App.turn).getNowMass());
 				for(int roop=0;roop<4;roop++) {
-					if(roop==turn)continue;
+					if(roop==App.turn)continue;
 					window.moveMaps(roop,coor);
 				}
 			}else if(name.equals("北へ！カード")) {
 				do {
 					coor = this.useRandomAbility();
-				}while(players.get(turn).getNowMass().getY()<coor.getY());
+				}while(Player.players.get(App.turn).getNowMass().getY()<coor.getY());
 			}else if(name.equals("ピッタリカード")){
-				coor.setValue(players.get(rand.nextInt(4)).getNowMass());
+				coor.setValue(Player.players.get(rand.nextInt(4)).getNowMass());
 			}else if(name.equals("最寄り駅カード")){
-				Searcher.searchNearestStation(window,players.get(turn));
+				Searcher.searchNearestStation(window,Player.players.get(App.turn));
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -134,7 +167,7 @@ public class Card {
 				}
 				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
 			}else if(name.equals("星に願いをカード")){
-				Searcher.searchNearestShop(window,players.get(turn));
+				Searcher.searchNearestShop(window,Player.players.get(App.turn));
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -146,16 +179,45 @@ public class Card {
 			}else {
 				coor = this.useRandomAbility();
 			}
-			window.moveMaps(turn,coor);
-			players.get(turn).getNowMass().setValue(coor);
+			window.moveMaps(App.turn,coor);
+			Player.players.get(App.turn).getNowMass().setValue(coor);
 
+		}else if(this.id==3) {
+			int enemy = Player.players.get(App.turn).getRandomEnemy();
+			int period;
+			do {
+				period = rand.nextInt(5);
+			}while(period <= 1);
+			Player.players.get(enemy).getBuff().addBuff(this.ability, period);
+			System.out.println(Player.players.get(App.turn).getName());
+		}else if(this.id==4) {
+			Card.usedOthersCard();
+			if(name.equals("一頭地を抜くカード")) {
+				int maxMoney=0;
+				for(Player player:Player.players.values()) {
+					if(player.containsMoney(maxMoney)>0) {
+						maxMoney=player.getMoney();
+					}
+				}
+				Player.players.get(App.turn).addMoney(maxMoney);
+			}else if(name.equals("起死回生カード")) {
+				if(Player.players.get(App.turn).containsMoney(0)<0) {
+					Player.players.get(App.turn).addMoney(-Player.players.get(App.turn).getMoney()*2);
+				}
+			}else if(name.equals("徳政令カード")) {
+				for(int player=0;player<4;player++) {
+					if(Player.players.get(player).containsMoney(0)<0) {
+						Player.players.get(player).addMoney(-Player.players.get(player).getMoney());
+					}
+				}
+			}
 		}else if(this.id==5) {
 			if(name.equals("福袋カード")) {
 				int count=0;
 				do {
 					int randcard = rand.nextInt(Card.cardList.size());
-					players.get(turn).addCard(Card.cardList.get(randcard));
-					if(players.get(turn).getCards().size()>8) {
+					Player.players.get(App.turn).addCard(Card.cardList.get(randcard));
+					if(Player.players.get(App.turn).getCards().size()>8) {
 						window.cardFull();
 					}
 					count++;
@@ -166,60 +228,23 @@ public class Card {
 		}
 	}
 
-	//3,4
-	private void useAbility(Map<Integer,Player> players,int turn) {
-		if(this.id==3) {
-			Random rand = new Random();
-			int enemy = players.get(turn).getRandomEnemy();
-			int period;
-			do {
-				period = rand.nextInt(5);
-			}while(period <= 1);
-			players.get(enemy).getBuff().addBuff(this.ability, period);
-			System.out.println(players.get(turn).getName());
-		}else if(this.id==4) {
-			Card.usedOthersCard();
-			if(name.equals("一頭地を抜くカード")) {
-				int maxMoney=0;
-				for(Player player:players.values()) {
-					if(player.containsMoney(maxMoney)>0) {
-						maxMoney=player.getMoney();
-					}
-				}
-				players.get(turn).addMoney(maxMoney);
-			}else if(name.equals("起死回生カード")) {
-				if(players.get(turn).containsMoney(0)<0) {
-					players.get(turn).addMoney(-players.get(turn).getMoney()*2);
-				}
-			}else if(name.equals("徳政令カード")) {
-				for(int player=0;player<4;player++) {
-					if(players.get(player).containsMoney(0)<0) {
-						players.get(player).addMoney(-players.get(player).getMoney());
-					}
-				}
-			}
-		}
-	}
 
-
-	public void useAbility(Window window, Dice dice, Map<Integer,Player> players, int turn) {
+	public void useAbilitys(Window window) {
 		if(id==0 || id==1) {
-			useAbility(dice);
-		}else if(id==2 || id==5){
-			useAbility(window,players,turn);
-		}else if(id==3 || id==4) {
-			useAbility(players,turn);
+			useAbility();
+		}else if(id==2 || id==3 || id==4 || id==5){
+			useAbility(window);
 		}
-		if(!players.get(turn).isPlayer()) System.out.println("Use Card!  "+name+"   user:"+players.get(turn).getName());//何を使ったか表示(ポップアップに変更すべき)
+		if(!Player.players.get(App.turn).isPlayer()) System.out.println("Use Card!  "+name+"   user:"+Player.players.get(App.turn).getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊
 		if(name.split("周遊").length==2) {
 			this.setCount(this.getCount()+1);
 			if(new Random().nextInt(100)<30 || this.getCount()>5) {
-				players.get(turn).getCards().remove(this);
+				Player.players.get(App.turn).getCards().remove(this);
 			}
 		}else {
-			players.get(turn).getCards().remove(this);
+			Player.players.get(App.turn).getCards().remove(this);
 		}
 
 		if(!name.equals("徳政令カード")) {
@@ -266,7 +291,7 @@ public class Card {
 		while(true) {
 			x=rand.nextInt(17);
 			y=rand.nextInt(17);
-			if(Window.japan.contains(x, y)) {
+			if(App.japan.contains(x, y)) {
 				break;
 			}
 		}

@@ -7,7 +7,7 @@ package lifegame.game.map.information;
 
 import java.util.ArrayList;
 
-import lifegame.game.map.print.Window;
+import lifegame.game.main.App;
 
 public class Coordinates {
 	private int x;
@@ -43,7 +43,7 @@ public class Coordinates {
 	}
 
 	private int getVirtualCost() {
-		return getDistance(this,Window.japan.getGoal());
+		return getDistance(this,App.japan.getGoal());
 	}
 	//最適探索範囲を取得
 	public int getMaxCost(Coordinates start,Coordinates goal){

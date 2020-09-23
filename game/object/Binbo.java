@@ -127,36 +127,33 @@ public  class Binbo{
 public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//ながくなったため、分けた(ボンビー擦り付けメソッド)
 		if(tf == true) {//残り移動マスが減るとき(進むとき)
 			//boolean onceflag = false;//同じマスに複数人存在している際に一度だけしか交換しないように
-			this.samePlacePlayer(turn,players);
-			if(this.player.containsID(turn)) {//ボンビーと一緒に移動していたら
-				if(this.getSameMossPlayers()!=null) {
-					for (Player whowith : this.getSameMossPlayers()) {
-						this.setBonbyBefore(this.player);
-						this.changeBonby(whowith);//ボンビーつく人とplayerのボンビーフラグTFを変えるメソッド
-						break;
+			Player nullflag = this.getBinboPlayer();
+			if(nullflag!=null) {
+				this.samePlacePlayer(turn,players);
+				if(this.player.containsID(turn)) {//ボンビーと一緒に移動していたら
+					if(this.getSameMossPlayers()!=null) {
+						for (Player whowith : this.getSameMossPlayers()) {
+							this.setBonbyBefore(this.player);
+							this.changeBonby(whowith);//ボンビーつく人とplayerのボンビーフラグTFを変えるメソッド
+							break;
+						}
 					}
-				}
-			}else {
-				if(this.player.getNowMass().contains(players.get(turn).getNowMass())) {
-					this.setBonbyBefore(this.player);
-					this.changeBonby(players.get(turn));
+				}else {
+					if(this.player.getNowMass().contains(players.get(turn).getNowMass())) {
+						this.setBonbyBefore(this.player);
+						this.changeBonby(players.get(turn));
+					}
 				}
 			}
 		}else {////残り移動マスが増えるとき(戻るとき)
 			if(this.getBonbyBefore().size()!=0) {
 				if(this.getSameMossPlayers().size()!=0) {
-					//System.out.println(this.before.size()+"       サイズ");
-					//System.out.println(this.getSameMossPlayers().size()+"       サイズ2");
 					if(this.getBonbyLastBefore().containsID(players.get(turn))) {
-						//System.out.println("判定22");
 						this.clearBonbyLastBefore();//リスト一番上消す
 						this.changeBonby(players.get(turn));
 					}else {
 						for (Player whowith : this.getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
-							//System.out.println(whowith.getID()+"       サイズ1");
-							//System.out.println(this.getBonbyLastBefore().getID()+"       サイズ2");
 							if(this.getBonbyLastBefore().containsID(whowith)) {
-								//System.out.println("判定11");
 								this.clearBonbyLastBefore();//リスト一番上消す
 								this.changeBonby(whowith);
 								break;
@@ -167,19 +164,17 @@ public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//な
 			}
 			this.samePlacePlayer(turn,players);
 		}
+		/*
 		for(int i = 0;i<4;i++) {
 			//System.out.println(players.get(i).isBonby());
 		}
-		//System.out.println("-------------------------------------");
+		*/
 	}
 
 	private void changeBonby(Player who) {//ボンビー入れ替えメソッド
-		//System.out.println("判定"+player.isBonby());
-		System.out.println("判定"+this.player.isBonby());
 		this.player.changeBonby();
 		this.setBinboPlayer(who);
 		this.player.changeBonby();
-		System.out.println("判定"+this.player.isBonby());
 	}
 
 	private void samePlacePlayer(int turn,Map<Integer,Player> players) {//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)

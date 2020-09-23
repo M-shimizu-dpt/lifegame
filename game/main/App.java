@@ -5,80 +5,91 @@
 
 package lifegame.game.main;
 
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JTextField;
-
+import lifegame.game.WaitThread;
+import lifegame.game.map.information.Japan;
 import lifegame.game.map.print.Window;
+import lifegame.game.object.Card;
+import lifegame.game.object.Dice;
+import lifegame.game.object.Player;
+import lifegame.game.search.Searcher;
 
-public class App  implements ActionListener{
-	private Boolean flag = false;
+public class App {
+	public static int turn=0;//現在のターン
+	public static int year=1;//今の年
+	public static int month=4;//今の月
+	public static Japan japan = new Japan();//物件やマス情報
+	public static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
 
     public static void main(String[] args) {
         App app = new App();
     	app.run();
     }
 
+    /*
+     * プレイヤーの順番をランダムに入れ替えれるようにする
+     */
     private void run() {
-    	JFrame initFrame = new JFrame("桃大郎電鉄");
-    	initFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//アプリ終了
-    	initFrame.setSize(800,600);
-    	initFrame.setLayout(null);
-    	initFrame.setLocationRelativeTo(null);
-    	JLayeredPane init = initFrame.getLayeredPane();
-    	JLabel labelTitle = new JLabel("桃大郎電鉄");
-    	labelTitle.setFont(new Font("SansSerif", Font.ITALIC, 50));
-    	labelTitle.setBounds(280, 10, 400, 60);
-    	JLabel labelYear = new JLabel("何年プレイしますか？");
-    	labelYear.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	labelYear.setBounds(20, 50, 200, 50);
-    	JTextField textYear = new JTextField("3");
-    	textYear.setBounds(20, 100, 200, 50);
-    	JLabel labelPlayers = new JLabel("プレイヤーの人数は何人ですか？");
-    	labelPlayers.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	labelPlayers.setBounds(20, 150, 300, 50);
-    	JTextField textPlayers = new JTextField("1");
-    	textPlayers.setBounds(20, 200, 200, 50);
-    	JButton startButton = new JButton("始める");
-    	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	startButton.setBounds(600,490,180,60);
-    	startButton.addActionListener(this);
-    	init.add(labelTitle);
-    	init.add(labelYear);
-    	init.add(textYear);
-    	init.add(labelPlayers);
-    	init.add(textPlayers);
-    	init.add(startButton);
+    	Window window = new Window();
 
-    	initFrame.setVisible(true);
-    	while(!flag) {
-    		try {
-    			Thread.sleep(100);
-    		}catch(InterruptedException e) {
+    	int[] result = window.printStart();
 
-    		}
-    	}
-    	initFrame.setVisible(false);
+    	int playerCount = result[0];
+    	int yearLimit = result[1];
+    	assert(playerCount>=0 && playerCount<=3);
+    	assert(yearLimit>0 && yearLimit<=100);
 
-    	assert(Integer.parseInt(textPlayers.getText())>=0 && Integer.parseInt(textPlayers.getText())<=3);
-    	assert(Integer.parseInt(textYear.getText())>0 && Integer.parseInt(textYear.getText())<=100);
 
-    	start(Integer.parseInt(textYear.getText()),Integer.parseInt(textPlayers.getText()));//将来的にはCPUを実装しその人数を入力できるようにする
+    	Card.init(window);
+    	Dice.init();
+
+    	window.initWindow(yearLimit,playerCount);
+    	try {
+        	play(window,yearLimit);
+        }catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
     }
 
-    private void start(int endYear,int player) {
-    	new Window(endYear,player);
-    }
-    public void actionPerformed(ActionEvent e){
-    	String cmd = e.getActionCommand();
-    	if(cmd.equals("始める")) {
-    		flag=true;
-    	}
-    }
+    //プレイ中の動作
+  	private void play(Window window,int endYear) throws InterruptedException{
+  		Boolean first=true;
+  		Player.setStopFlag(false);
+		//ボンビー初期設定***
+		//player.changeBonby();//debug
+		//poorgod.setBinboPlayer(player);
+
+  		while(true) {
+	  		if(window.monthUpdate(first,endYear)) {
+		  		break;
+		  	}
+		  	first=false;
+		  	System.out.println(App.turn);
+		  	Player.setNowPlayer();//このターンのプレイヤーを選定
+		  	window.waitButtonUpdate();
+		  	Searcher.searchShortestRoute(window,Player.player);//目的地までの最短経路を探索
+		  	WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
+		  	waitthred.start();
+		  	waitthred.join();
+		  	App.japan.saveGoal();
+		  	window.moveMaps();//画面遷移が少し遅い
+		  	window.reloadInfo();//画面上部に表示している情報を更新
+		  	Card.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
+		  	if(!Player.player.isPlayer()) {//cpu操作
+		  		Player.player.cpu(window,turn);
+		  	}else {
+		  		window.printMenu();
+		  	}
+			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
+			turnEnd.start();
+			turnEnd.join();
+			window.bonbyplayer();
+			Thread.sleep(1000);
+			Window.turnEndFlag=false;
+			App.japan.alreadys.clear();//このターンに購入した物件リストを初期化
+		}
+		System.out.println("終わり");
+	}
+  	public static void start() {
+  		App.startFlag=true;
+  	}
 }

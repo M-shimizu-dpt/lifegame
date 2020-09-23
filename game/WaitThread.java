@@ -4,16 +4,21 @@
  * id=2→最短経路探索待ち
  * id=3→決算待ち
  * id=4→移動可能マス探索待ち
+ * id=5→ボンビーターン待ち
  * id=6→全てのプレイヤーの最短距離探索待ち
  * id=7→一時停止
- * id=8→カードを捨てる待ち
+ * id=8→randomイベント待ち
+ * id=9→カード捨て待ち
  */
 package lifegame.game;
 
+import lifegame.game.event.ClosingEvent;
+import lifegame.game.main.App;
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Player;
 import lifegame.game.search.OnlyDistanceSearchThread;
 import lifegame.game.search.SearchThread;
+import lifegame.game.search.Searcher;
 
 public class WaitThread extends Thread{
 	private int id;
@@ -21,7 +26,6 @@ public class WaitThread extends Thread{
 	private int size;
 	private int againtime;
 
-	public WaitThread() {}
 	public WaitThread(int id) {
 		this.id=id;
 		this.againtime=0;
@@ -47,7 +51,7 @@ public class WaitThread extends Thread{
 	public void run() {
 		switch(id) {
 		case 0:
-			while(!Window.turnEndFlag) {//プレイヤーのターン中の処理が終わるとループを抜ける
+			while(!Window.turnEndFlag) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -65,7 +69,7 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 2:
-			while(System.currentTimeMillis()-Window.time <= SearchThread.searchTime+againtime) {
+			while(System.currentTimeMillis()-Searcher.time <= SearchThread.searchTime+againtime) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -75,17 +79,17 @@ public class WaitThread extends Thread{
 			SearchThread.initSearchTime();
 			break;
 		case 3:
-			while(!Window.closingEndFlag) {
+			while(!ClosingEvent.closingEndFlag) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 
 				}
 			}
-			Window.closingEndFlag=false;
+			ClosingEvent.closingEndFlag=false;
 			break;
 		case 4:
-			while(System.currentTimeMillis()-Window.time <= 500) {
+			while(System.currentTimeMillis()-Searcher.time <= 500) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -94,7 +98,7 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 5:
-			while(!Window.bonbyTurnEndFlag) {//ボンビーターン中の処理が終わるとループを抜ける
+			while(!Window.bonbyTurnEndFlag) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -103,7 +107,7 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 6:
-			while(System.currentTimeMillis()-Window.time <= SearchThread.searchTime*4) {
+			while(System.currentTimeMillis()-Searcher.time <= SearchThread.searchTime*4) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -141,8 +145,17 @@ public class WaitThread extends Thread{
 			}
 			Window.throwFlag=false;
 			break;
+		case 10:
+			while(!App.startFlag) {
+	    		try {
+	    			Thread.sleep(100);
+	    		}catch(InterruptedException e) {
+
+	    		}
+	    	}
+			break;
 		case 11:
-			while(System.currentTimeMillis()-Window.time <= OnlyDistanceSearchThread.searchTime+againtime) {
+			while(System.currentTimeMillis()-Searcher.time <= OnlyDistanceSearchThread.searchTime+againtime) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
