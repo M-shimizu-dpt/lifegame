@@ -44,9 +44,9 @@ public class Player {
 
 	private int goaldistance;
 	private boolean bonby;//ボンビー識別
-	private ArrayList<Integer> whowith;
-	private int givebonby;
-	private int getbonby;
+	//private ArrayList<Integer> whowith;
+	//private int givebonby;
+	//private int getbonby;
 	//private int givebonby;
 
 	public Player(String name,int money,int id,boolean cpuflag) {
@@ -65,11 +65,12 @@ public class Player {
 		this.nowMass.setValue(6, 9);//大阪
 		clearMove();
 
-		this.whowith = new ArrayList<Integer>();
 		initGoalDistance();
 		bonby = false;//ボンビー識別
-		givebonby = 0;
-		getbonby = 0;
+
+		//givebonby = 0;
+		//getbonby = 0;
+		//this.whowith = new ArrayList<Integer>();
 	}
 
 	public int getCardSize() {
@@ -240,7 +241,6 @@ public class Player {
 	}
 
 	public void changeBonby() {//ボンビーついたら変更
-		System.out.println("判定"+this.isBonby());
 		if(this.isBonby()) {
 			this.bonby = false;
 		}else {
@@ -255,6 +255,7 @@ public class Player {
 
 	public void setGoalDistance(int distance) {//最短距離をセット
 		this.goaldistance = distance;
+		System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
 	}
 
 	public boolean containsGoalDistance(int distance) {
@@ -270,40 +271,6 @@ public class Player {
 
 	public void initGoalDistance() {
 		this.goaldistance=100;
-	}
-
-	public void addSameMossPlayer(int who) {//だれと一緒にいるか変更
-		this.whowith.add(who);
-	}
-
-	public ArrayList<Integer> getSameMossPlayers() {//だれと一緒にいるか取得
-		return this.whowith;
-	}
-	public void sameMossPlayersClear() {//だれと一緒にいるかクリア
-
-		if(this.whowith!=null) {
-			this.whowith.clear();
-		}
-	}
-
-	public void setBonbyAfter(int id) {//ボンビーだれにあげたか変更
-		this.givebonby = id;
-	}
-
-	public int getBonbyAfter() {//ボンビーだれにあげたか取得
-		return this.givebonby;
-	}
-	public void clearBonbyAfter() {//ボンビーだれにあげたか初期化
-		this.givebonby = -1;
-	}
-	public void setBonbyBefore(int id) {//ボンビーだれからもらったかか変更
-		this.getbonby = id;
-	}
-	public int getBonbyBefore() {//ボンビーだれからもらったか取得
-		return this.getbonby;
-	}
-	public void clearBonbyBefore() {//ボンビーだれからもらったか初期化
-		this.getbonby = -1;
 	}
 
 	public static boolean isStop() {

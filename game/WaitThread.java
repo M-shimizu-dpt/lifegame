@@ -12,6 +12,7 @@ package lifegame.game;
 
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Player;
+import lifegame.game.search.OnlyDistanceSearchThread;
 import lifegame.game.search.SearchThread;
 
 public class WaitThread extends Thread{
@@ -140,8 +141,19 @@ public class WaitThread extends Thread{
 			}
 			Window.throwFlag=false;
 			break;
+		case 11:
+			while(System.currentTimeMillis()-Window.time <= OnlyDistanceSearchThread.searchTime+againtime) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			OnlyDistanceSearchThread.initSearchTime();
+			break;
 		default:
 			break;
+
 		}
 	}
 }
