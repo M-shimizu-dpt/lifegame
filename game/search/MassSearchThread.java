@@ -2,6 +2,7 @@ package lifegame.game.search;
 
 import java.util.ArrayList;
 
+import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.model.SearchThreadModel;
@@ -9,7 +10,7 @@ import lifegame.game.search.model.SearchThreadModel;
 public class MassSearchThread extends SearchThreadModel{
 	//start
 	public MassSearchThread(Window window,int count) {
-		Window.time = System.currentTimeMillis();
+		Searcher.time = System.currentTimeMillis();
 		this.setWindow(window);
 		this.setCount(count);
 	}
@@ -26,19 +27,19 @@ public class MassSearchThread extends SearchThreadModel{
 		boolean first;
 		Coordinates next = new Coordinates();
 		//while(true) {
-		while(System.currentTimeMillis()-Window.time<MassSearchThread.searchTime) {
+		while(System.currentTimeMillis()-Searcher.time<MassSearchThread.searchTime) {
 			next.setValue(0, 0);
 			first=true;
 			count--;
 			synchronized(MassSearchThread.lock2) {
-				moveTrajectory.add(Window.japan.getCoordinates(nowMass));
+				moveTrajectory.add(App.japan.getCoordinates(nowMass));
 			}
 			if(count < 0) {
 				goal();
 				break;
 			}
 			synchronized(MassSearchThread.lock1) {
-				list = Window.japan.getMovePossibles(this.nowMass);
+				list = App.japan.getMovePossibles(this.nowMass);
 			}
 
 			for(Coordinates coor:list) {

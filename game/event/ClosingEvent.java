@@ -6,7 +6,7 @@ import lifegame.game.map.information.Property;
 import lifegame.game.object.Player;
 
 public abstract class ClosingEvent {
-
+	public static boolean closingEndFlag=false;//決算処理が終了するのを待つためのフラグ
 	/*
 	 * 決算
 	 */
@@ -60,4 +60,7 @@ public abstract class ClosingEvent {
 		Player.addAssetsList(assetsList);
 	}
 
+	public static void closed() {
+		closingEndFlag=true;
+	}
 }
