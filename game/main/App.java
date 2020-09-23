@@ -54,6 +54,9 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
+		//ボンビー初期設定***
+		//player.changeBonby();//debug
+		//poorgod.setBinboPlayer(player);
 
   		while(true) {
 	  		if(window.monthUpdate(first,endYear)) {
@@ -79,7 +82,7 @@ public class App {
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
-			window.bonbyplayer(Player.player);
+			window.bonbyplayer();
 			Thread.sleep(1000);
 			Window.turnEndFlag=false;
 			App.japan.alreadys.clear();//このターンに購入した物件リストを初期化
