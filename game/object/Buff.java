@@ -1,4 +1,5 @@
-package lifegame.game;
+
+package lifegame.game.object;
 
 public class Buff{//インターフェースっぽい？
 	private int effect;

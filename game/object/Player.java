@@ -13,7 +13,6 @@ import java.util.Random;
 
 import javax.swing.JLabel;
 
-import lifegame.game.Buff;
 import lifegame.game.WaitThread;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;

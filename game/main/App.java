@@ -3,7 +3,7 @@
  * 基本的な処理は全てこのクラスに実装
  */
 
-package lifegame.game;
+package lifegame.game.main;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
