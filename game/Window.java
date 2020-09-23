@@ -2111,11 +2111,13 @@ public class Window implements ActionListener{
 		searchShortestRouteAllPlayers();
 		/////////
 		for(int i=0;i<players.size();i++) {
-			System.out.println(shortestList.get(players.get(i)));
-			if((maxdistance <shortestList.get(players.get(i)))&&(whobonbylist !=null)) whobonbylist.clear();
-				if(maxdistance<=shortestList.get(players.get(i))) {
-					maxdistance = shortestList.get(players.get(i));
-					whobonbylist.add(i);
+			System.out.println(players.get(players.get(i)));
+			if(players.get(i).containsGoalDistance(maxdistance)) {
+				if( ! (players.get(i).EqualsGoalDistance(maxdistance))) {
+					whobonbylist.clear();
+				}
+				maxdistance = players.get(i).getGoalDistance();
+				whobonbylist.add(i);
 			}
 		}
 

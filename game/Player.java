@@ -225,9 +225,17 @@ public class Player {
 	public void setGoalDistance(int distance) {//最短距離をセット
 		this.goaldistance = distance;
 	}
+	//analysisbonby
+	//
+	public int judgeGoalDistance() {
+		return 1;
+	}
 
 	public boolean containsGoalDistance(int distance) {
-		return this.goaldistance>distance;
+		return this.goaldistance>=distance;
+	}
+	public boolean EqualsGoalDistance(int distance) {
+		return this.goaldistance==distance;
 	}
 
 	public int getGoalDistance() {//最短距離を取得
