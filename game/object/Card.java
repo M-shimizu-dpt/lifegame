@@ -11,13 +11,18 @@
  * 5:カード授受
  */
 
-package lifegame.game;
+package lifegame.game.object;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
+
+import lifegame.game.WaitThread;
+import lifegame.game.map.information.Coordinates;
+import lifegame.game.map.print.Window;
+import lifegame.game.search.Searcher;
 
 public class Card {
 	private String name;//名前

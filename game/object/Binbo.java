@@ -4,7 +4,7 @@
  */
 
 
-package lifegame.game;
+package lifegame.game.object;
 
 public  class Binbo{
 	private Player catchplayer;
