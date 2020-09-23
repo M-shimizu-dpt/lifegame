@@ -265,6 +265,14 @@ public class Window implements ActionListener{
 
     	startFrame.setVisible(true);
 
+    	WaitThread wait = new WaitThread(10);
+    	wait.start();
+    	try {
+    		wait.join();
+    	}catch(InterruptedException e) {
+    		e.printStackTrace();
+    	}
+
     	startFrame.setVisible(false);
 
     	int[] list= {0,0};

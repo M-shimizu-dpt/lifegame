@@ -9,6 +9,7 @@
  * id=7→一時停止
  * id=8→randomイベント待ち
  * id=9→カード捨て待ち
+ * id=10→アプリ開始待ち
  */
 package lifegame.game;
 

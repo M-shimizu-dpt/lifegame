@@ -86,6 +86,7 @@ public class App {
 		}
 		System.out.println("終わり");
 	}
+
   	public static void start() {
   		App.startFlag=true;
   	}
