@@ -17,6 +17,7 @@ import lifegame.game.event.ClosingEvent;
 import lifegame.game.main.App;
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Player;
+import lifegame.game.search.OnlyDistanceSearchThread;
 import lifegame.game.search.SearchThread;
 import lifegame.game.search.Searcher;
 
@@ -154,8 +155,19 @@ public class WaitThread extends Thread{
 	    		}
 	    	}
 			break;
+		case 11:
+			while(System.currentTimeMillis()-Searcher.time <= OnlyDistanceSearchThread.searchTime+againtime) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			OnlyDistanceSearchThread.initSearchTime();
+			break;
 		default:
 			break;
+
 		}
 	}
 }
