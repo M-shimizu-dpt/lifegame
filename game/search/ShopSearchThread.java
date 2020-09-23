@@ -2,6 +2,7 @@ package lifegame.game.search;
 
 import java.util.ArrayList;
 
+import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.model.SearchThreadModel;
@@ -9,15 +10,15 @@ import lifegame.game.search.model.SearchThreadModel;
 public class ShopSearchThread extends SearchThreadModel{
 	//start
 	public ShopSearchThread(Window window) {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
+		Searcher.time = System.currentTimeMillis();
+		Searcher.count=100;
 		super.setWindow(window);
 		super.initSearchTime();
 	}
 	//start
 	public ShopSearchThread(Window window,int searchtime) {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
+		Searcher.time = System.currentTimeMillis();
+		Searcher.count=100;
 		super.setWindow(window);
 		super.initSearchTime(searchtime);
 	}
@@ -32,11 +33,11 @@ public class ShopSearchThread extends SearchThreadModel{
 
 		boolean first;
 		Coordinates next = new Coordinates();
-		while(count<=Window.count && count<=20 && System.currentTimeMillis()-Window.time<ShopSearchThread.searchTime) {
+		while(count<=Searcher.count && count<=20 && System.currentTimeMillis()-Searcher.time<ShopSearchThread.searchTime) {
 			next.setValue(0, 0);
 			first=true;
 			synchronized(ShopSearchThread.lock2) {
-				if(Window.japan.containsShop(this.nowMass)) {
+				if(App.japan.containsShop(this.nowMass)) {
 					goal();
 					break;
 				}
@@ -44,7 +45,7 @@ public class ShopSearchThread extends SearchThreadModel{
 
 			count++;
 			synchronized(ShopSearchThread.lock1) {
-				list = Window.japan.getMovePossibles(this.nowMass);
+				list = App.japan.getMovePossibles(this.nowMass);
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
 

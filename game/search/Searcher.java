@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lifegame.game.WaitThread;
+import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Player;
@@ -20,6 +21,9 @@ public class Searcher{
 	public static ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
 	public static ArrayList<Coordinates> nearestShopList = new ArrayList<Coordinates>();//最寄り店のリスト(複数存在する場合、その中からランダムに選択)
 	public static ArrayList<Coordinates> nearestMassToGoalList = new ArrayList<Coordinates>();//ゴールから最も近いマスリスト
+
+	public static int count;//目的のマスまでの最短距離
+	public static long time;//マルチスレッド開始からの経過時間
 
 	//行くことが出来るマスを探索
 	public static void searchCanMoveMass(Window window,Player player) {
@@ -40,7 +44,7 @@ public class Searcher{
 		if(NearestSearchThread.nearestCount>=count) {
 			if(NearestSearchThread.nearestCount>count) nearestMassToGoalList.clear();
 			NearestSearchThread.nearestCount=count;
-			nearestMassToGoalList.add(Window.japan.getCoordinates(nearest));
+			nearestMassToGoalList.add(App.japan.getCoordinates(nearest));
 		}
 	}
 
@@ -53,11 +57,11 @@ public class Searcher{
 			}
 		}
 
-		canMoveMass = Window.japan.getCoordinates(canMoveMass);//インスタンスの統一
+		canMoveMass = App.japan.getCoordinates(canMoveMass);//インスタンスの統一
 		if(flag) {
-			canMoveTrajectoryList.put(Window.japan.getCoordinates(canMoveMass), new ArrayList<ArrayList<Coordinates>>());
+			canMoveTrajectoryList.put(App.japan.getCoordinates(canMoveMass), new ArrayList<ArrayList<Coordinates>>());
 		}
-		canMoveTrajectoryList.get(Window.japan.getCoordinates(canMoveMass)).add(trajectory);
+		canMoveTrajectoryList.get(App.japan.getCoordinates(canMoveMass)).add(trajectory);
 	}
 
 	//最寄り駅を探索
@@ -70,9 +74,9 @@ public class Searcher{
 
 	//最寄り駅の探索結果を格納
 	public static synchronized void setNearestStationResult(int count, Coordinates nearestStation) {
-		if(Window.count>=count) {
-			if(Window.count>count) nearestStationList.clear();//最寄り駅の更新があった場合
-			Window.count=count;
+		if(Searcher.count>=count) {
+			if(Searcher.count>count) nearestStationList.clear();//最寄り駅の更新があった場合
+			Searcher.count=count;
 			boolean flag=true;
 			for(Coordinates coor:nearestStationList) {//既に探索済みの駅か
 				if(coor.contains(nearestStation)) {
@@ -96,9 +100,9 @@ public class Searcher{
 
 	//最寄り店の探索結果を格納
 	public static synchronized void setNearestShopResult(int count, Coordinates nearestShop) {
-		if(Window.count>=count) {
-			if(Window.count>count)nearestShopList.clear();
-			Window.count=count;
+		if(Searcher.count>=count) {
+			if(Searcher.count>count)nearestShopList.clear();
+			Searcher.count=count;
 			boolean flag=true;
 			for(Coordinates coor:nearestShopList) {
 				if(coor.contains(nearestShop)) {
@@ -118,11 +122,11 @@ public class Searcher{
 		int againtime=0;
 		do{
 			nearestTrajectoryList.clear();
-			Window.japan.allClose();
+			App.japan.allClose();
 			//Threadを立ち上げる
 			SearchThread thread = new SearchThread(window,player.getNowMass(),SearchThread.searchTime+againtime);
 			thread.setMass(player.getNowMass());
-			Window.japan.getCoordinates(player.getNowMass()).open(0);
+			App.japan.getCoordinates(player.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 
@@ -135,15 +139,15 @@ public class Searcher{
 			}
 			againtime+=100;
 			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-		}while(Window.count==500 && againtime<1000);
-		if(Window.count==500) System.out.println("探索失敗");
+		}while(Searcher.count==500 && againtime<1000);
+		if(Searcher.count==500) System.out.println("探索失敗");
 	}
 
 	//目的地までの最短距離と最短ルートを格納
 	public static synchronized void setSearchResult(int count, ArrayList<Coordinates> trajectory) {
 		trajectory.remove(0);
-		if(Window.count>=count) {
-			Window.count=count;
+		if(Searcher.count>=count) {
+			Searcher.count=count;
 			if(!nearestTrajectoryList.containsKey(count)) {
 				nearestTrajectoryList.put(count,new ArrayList<ArrayList<Coordinates>>());
 			}
@@ -156,11 +160,11 @@ public class Searcher{
 		//再探索は10回まで(1回で出てほしい…)
 		int againtime=0;
 		do{
-			Window.japan.allClose();
+			App.japan.allClose();
 			//Threadを立ち上げる
 			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(window,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 			thread.setMass(selectedPlayer.getNowMass());
-			Window.japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
+			App.japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 
@@ -173,8 +177,8 @@ public class Searcher{
 			}
 			againtime+=100;
 			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-		}while(Window.count==500 && againtime<1000);
-		if(Window.count==500) System.out.println("探索失敗");
+		}while(Searcher.count==500 && againtime<1000);
+		if(Searcher.count==500) System.out.println("探索失敗");
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
@@ -183,11 +187,11 @@ public class Searcher{
 		for(Player selectedPlayer:players.values()) {
 			int againtime=0;
 			do{
-				Window.japan.allClose();
+				App.japan.allClose();
 				//Threadを立ち上げる
 				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(window,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 				thread.setMass(selectedPlayer.getNowMass());
-				Window.japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
+				App.japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 				thread.setPriority(Thread.MAX_PRIORITY);
 				thread.start();
 
@@ -200,8 +204,8 @@ public class Searcher{
 				}
 				againtime+=100;
 				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-			}while(Window.count==500 && againtime<1000);
-			if(Window.count==500) System.out.println("探索失敗");
+			}while(Searcher.count==500 && againtime<1000);
+			if(Searcher.count==500) System.out.println("探索失敗");
 		}
 	}
 }

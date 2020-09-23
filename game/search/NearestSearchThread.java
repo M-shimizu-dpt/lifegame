@@ -2,6 +2,7 @@ package lifegame.game.search;
 
 import java.util.ArrayList;
 
+import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.model.SearchThreadModel;
@@ -14,8 +15,8 @@ public class NearestSearchThread extends SearchThreadModel{
 
 	//start
 	public NearestSearchThread(Window window) {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
+		Searcher.time = System.currentTimeMillis();
+		Searcher.count=100;
 		NearestSearchThread.nearestCount=100;
 		this.setWindow(window);
 		NearestSearchThread.initSearchTime();
@@ -23,8 +24,8 @@ public class NearestSearchThread extends SearchThreadModel{
 
 	//start
 	public NearestSearchThread(Window window,int searchTime) {
-		Window.time = System.currentTimeMillis();
-		Window.count=100;
+		Searcher.time = System.currentTimeMillis();
+		Searcher.count=100;
 		NearestSearchThread.nearestCount=100;
 		this.setWindow(window);
 		NearestSearchThread.initSearchTime(searchTime);
@@ -43,13 +44,13 @@ public class NearestSearchThread extends SearchThreadModel{
 
 		boolean first;
 		Coordinates next = new Coordinates();
-		while(count<=NearestSearchThread.nearestCount && count<=35 && System.currentTimeMillis()-Window.time<searchTime) {
+		while(count<=NearestSearchThread.nearestCount && count<=35 && System.currentTimeMillis()-Searcher.time<searchTime) {
 			next.setValue(0, 0);
 			first=true;
 
 			count++;
 			synchronized(NearestSearchThread.lock1) {
-				list = Window.japan.getMovePossibles(this.nowMass);
+				list = App.japan.getMovePossibles(this.nowMass);
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
 			for(Coordinates goal:goals) {
