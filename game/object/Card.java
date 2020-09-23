@@ -39,7 +39,7 @@ public class Card {
 	public static boolean usedRandomCard;
 	public static boolean usedOthersCard;
 
-	private static ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
+
 
 	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
 		this.name = name;
@@ -97,6 +97,7 @@ public class Card {
 	}
 
 	public static ArrayList<Card> getElectedCard(){
+		ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 		Random rand = new Random();
 		boolean get=false;
 		int index=0;
