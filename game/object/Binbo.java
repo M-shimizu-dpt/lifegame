@@ -41,7 +41,7 @@ public class Binbo{
 		//スタブメソッド
 		System.out.println(name + "のターン");
 		System.out.println(this.binboplayer.getName());
-		window.bonbyplayer();
+		window.bonbyPlayer();
 		randomBinboEvent();
 		System.out.println(name +"のターン終了");
 	}

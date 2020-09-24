@@ -55,7 +55,6 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		boolean onceflag=false;//bonb付着debug用
 
   		while(true) {
 	  		if(window.monthUpdate(first,endYear)) {
@@ -77,12 +76,6 @@ public class App {
 		  		Player.player.cpu(window,turn);
 		  	}else {
 		  		window.printMenu();
-		  	}
-		  	if(onceflag==false) {//debug用
-				//ボンビー初期設定//debug用
-				Player.player.changeBonby();//debug
-				poorgod.setPlayerBinbo(Player.player);
-				onceflag=true;
 		  	}
 		  	poorgod.clearStopPlayersNowMass();
 		  	poorgod.setStopPlayersNowMass();//動いていない人の現在地を取得(ボンビー用)

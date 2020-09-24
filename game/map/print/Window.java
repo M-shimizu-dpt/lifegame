@@ -429,7 +429,7 @@ public class Window implements ActionListener{
 		shopFrontFrame.setVisible(true);
 	}
 
-	public void bonbyplayer() {
+	public void bonbyPlayer() {
 		/*
 		for(int i = 0;i<4;i++) {
 			System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
@@ -614,8 +614,6 @@ public class Window implements ActionListener{
 		App.turnEnd();
 	}
 
-
-
 	//店用フレームを閉じる
 	public void closeShop() {
 		Random rand = new Random();
@@ -629,8 +627,6 @@ public class Window implements ActionListener{
 			App.turnEnd();
 		}
 	}
-
-
 
 	//自分の持ち物件一覧を閉じる
 	private void closeTakeStations() {
@@ -921,7 +917,6 @@ public class Window implements ActionListener{
 		closeDice();
 	}
 
-
 	//メイン画面でのメニューボタンを無効
 	public void enableMenu() {
 		saikoro.setEnabled(false);
@@ -931,42 +926,6 @@ public class Window implements ActionListener{
 		allmap.setEnabled(false);
 	}
 
-
-
-
-
-
-	public void initWindow(int endYear,int playerCount){
-		initPlayFrame(playerCount);
-		initMaps();
-    	createMoveButton();
-  		App.japan.initGoal();
-
-  		setGoalColor();
-
-  		initMenu();
-
-        JLayeredPane menu = playFrame.getLayeredPane();//ボタンが前に出ない
-
-        back.setBackground(Color.CYAN);
-        back.setBounds(640,350,110,210);
-        back.setName("ボタン背景");
-        menu.add(back,JLayeredPane.PALETTE_LAYER,-1);
-        menu.add(company,JLayeredPane.PALETTE_LAYER,0);
-        menu.add(saikoro,JLayeredPane.PALETTE_LAYER,0);
-    	menu.add(cardB,JLayeredPane.PALETTE_LAYER,0);
-    	menu.add(minimap,JLayeredPane.PALETTE_LAYER,0);
-    	menu.add(allmap,JLayeredPane.PALETTE_LAYER,0);
-
-    	// ウィンドウを表示
-        playFrame.setVisible(true);
-
-        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count);
-      	moveLabel.setName("moves");
-      	playFrame.setBackground(Color.ORANGE);
-      	closeMoveButton();
-      	addPlayFrame(waitButton);
-	}
 
 	private void drawLine(JLayeredPane lines,int x,int y,int size,int somethig) {
 		ArrayList<Coordinates> list = App.japan.getMovePossibles(x, y);
@@ -1146,6 +1105,38 @@ public class Window implements ActionListener{
 		throwFlag=false;
 	}
 
+	public void initWindow(int endYear,int playerCount){
+		initPlayFrame(playerCount);
+		initMaps();
+    	createMoveButton();
+  		App.japan.initGoal();
+
+  		setGoalColor();
+
+  		initMenu();
+
+        JLayeredPane menu = playFrame.getLayeredPane();//ボタンが前に出ない
+
+        back.setBackground(Color.CYAN);
+        back.setBounds(640,350,110,210);
+        back.setName("ボタン背景");
+        menu.add(back,JLayeredPane.PALETTE_LAYER,-1);
+        menu.add(company,JLayeredPane.PALETTE_LAYER,0);
+        menu.add(saikoro,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(cardB,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(minimap,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(allmap,JLayeredPane.PALETTE_LAYER,0);
+
+    	// ウィンドウを表示
+        playFrame.setVisible(true);
+
+        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count);
+      	moveLabel.setName("moves");
+      	playFrame.setBackground(Color.ORANGE);
+      	closeMoveButton();
+      	addPlayFrame(waitButton);
+	}
+
 	public static boolean isThrowed() {
 		return throwFlag;
 	}
@@ -1298,8 +1289,7 @@ public class Window implements ActionListener{
 		String name;//if文が長すぎる為
 		JLayeredPane play = playFrame.getLayeredPane();
 
-
-		MoveEvent.moveMaps(x, y);
+		MoveEvent.movePlayer(x, y);
 
 		for(int i=0;i<play.getComponentCount();i++) {
 			name=play.getComponent(i).getName();
@@ -1313,7 +1303,7 @@ public class Window implements ActionListener{
 			}
 		}
 
-		boolean tf = MoveEvent.isReturned(play.getComponentAt(400, 300).getName());
+		MoveEvent.updateTrajectory(play.getComponentAt(400, 300).getName());
 
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
@@ -1600,7 +1590,6 @@ public class Window implements ActionListener{
 		setCloseFrame(2);
 	}
 
-
 	//カードショップの売却画面
 	private void printSellShop() {
 		shopFrontFrame.setVisible(false);
@@ -1651,7 +1640,6 @@ public class Window implements ActionListener{
 		shopFrontFrame.setVisible(true);
 		setCloseFrame(1);
 	}
-
 
 	public int[] printStart() {
   		JFrame startFrame = new JFrame("桃大郎電鉄");
@@ -2083,7 +2071,6 @@ public class Window implements ActionListener{
 		Assets();
 	}
 
-
 	private void sellCard(Card card) {
 		Player.player.sellCard(card);
 		shopFrame.setVisible(false);
@@ -2126,11 +2113,9 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	public static void throwEnd() {
 		throwFlag=true;
 	}
-
 
 	public void waitButtonUpdate() {
   		if(Player.player.isPlayer()) {
@@ -2150,6 +2135,7 @@ class CPUTimerTask extends TimerTask{
 		this.id=id;
 		this.window=window;
 	}
+
 	@Override
 	public void run() {
 		switch(id) {
