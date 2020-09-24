@@ -3,7 +3,7 @@
  * 探索する必要のある処理を記述
  */
 
-package lifegame.game.search;
+package lifegame.game.event.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;

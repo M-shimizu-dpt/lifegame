@@ -31,6 +31,7 @@ import lifegame.game.event.MassEvent;
 import lifegame.game.event.MoveEvent;
 import lifegame.game.event.RandomEvent;
 import lifegame.game.event.WaitThread;
+import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;
@@ -39,7 +40,6 @@ import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
-import lifegame.game.search.Searcher;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
