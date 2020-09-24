@@ -15,32 +15,29 @@ public abstract class MoveEvent {
 	}
 
 	public static void clearTrajectory() {
-		MoveEvent.moveTrajectory.clear();
+		moveTrajectory.clear();
 	}
 
-	public static boolean isReturned(String component) {
+	public static void updateTrajectory(String component) {
 		//移動先が1つ前と同じか
 		if(moveTrajectory.size()>1) {
 			if(component.equals(moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
 				moveTrajectory.remove(moveTrajectory.size()-1);
 				Player.player.setMove(Player.player.getMove()+1);
 				App.poorgod.passingBackBonby();
-				return false;
 			}else {//違う場合、移動した先の座標をmoveTrajectoryに格納
 				moveTrajectory.add(component);
 				Player.player.setMove(Player.player.getMove()-1);
 				App.poorgod.passingGoBonby();
-				return true;
 			}
 		}else {
 			moveTrajectory.add(component);
 			Player.player.setMove(Player.player.getMove()-1);
 			App.poorgod.passingGoBonby();
-			return true;
 		}
 	}
 
-	public static void moveMaps(int x,int y) {
+	public static void movePlayer(int x,int y) {
 		do {
 			//移動
 			if(x<0) {

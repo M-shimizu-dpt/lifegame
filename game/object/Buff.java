@@ -21,7 +21,7 @@ public class Buff{//インターフェースっぽい？
 		if(period == 0) {
 			clearEffect();
 		}else if(period < 0) {
-			System.out.println("periodの値が不適切です。");
+			//System.out.println("periodの値が不適切です。");
 		}
 	}
 	public void clearEffect() {

@@ -55,14 +55,12 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		boolean onceflag=false;//bonb付着debug用
 
   		while(true) {
 	  		if(window.monthUpdate(first,endYear)) {
 		  		break;
 		  	}
 		  	first=false;
-		  	System.out.println(App.turn);
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	window.waitButtonUpdate();
 		  	Searcher.searchShortestRoute(window,Player.player);//目的地までの最短経路を探索
@@ -77,12 +75,6 @@ public class App {
 		  		Player.player.cpu(window,turn);
 		  	}else {
 		  		window.printMenu();
-		  	}
-		  	if(onceflag==false) {//debug用
-				//ボンビー初期設定//debug用
-				Player.player.changeBonby();//debug
-				poorgod.setPlayerBinbo(Player.player);
-				onceflag=true;
 		  	}
 		  	poorgod.clearStopPlayersNowMass();
 		  	poorgod.setStopPlayersNowMass();//動いていない人の現在地を取得(ボンビー用)
