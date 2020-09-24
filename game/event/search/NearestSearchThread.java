@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.print.Window;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.print.Window;
 
 public class NearestSearchThread extends SearchThreadModel{
 	public static int nearestCount = 100;//目的地から移動可能マスまでの最短距離

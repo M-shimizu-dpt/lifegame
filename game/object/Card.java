@@ -21,8 +21,8 @@ import java.util.Random;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.print.Window;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.print.Window;
 
 public class Card {
 	private String name;//名前

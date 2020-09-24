@@ -17,9 +17,9 @@ import lifegame.game.event.search.OnlyDistanceSearchThread;
 import lifegame.game.event.search.SearchThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
-import lifegame.game.map.print.Window;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.print.Window;
 
 public class WaitThread extends Thread{
 	private int id;

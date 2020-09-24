@@ -3,9 +3,9 @@ package lifegame.game.event;
 import java.util.ArrayList;
 
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Coordinates;
 
 public abstract class MoveEvent {
 	private static ArrayList<String> moveTrajectory = new ArrayList<String>();//プレイヤーの移動の軌跡
