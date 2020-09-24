@@ -45,7 +45,7 @@ public class OnlyDistanceSearchThread extends SearchThread{
 	@Override
 	protected void goal() {
 		synchronized(OnlyDistanceSearchThread.lock3) {
-			if(player.containsGoalDistance(super.count)) {
+			if(player.containsGoalDistance(super.count)==1) {
 				player.setGoalDistance(super.count);
 			}
 		}

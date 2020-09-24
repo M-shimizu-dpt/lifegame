@@ -10,11 +10,12 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.Searcher;
 
 public  class Binbo{
+	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private String name;
 	private Player player;
 	private ArrayList<Player> together;
@@ -28,7 +29,6 @@ public  class Binbo{
 		this.together = new ArrayList<Player>();
 		this.before = new ArrayList<Player>();
 	}
-
 
 	public int getBmonth() {//??
 		return this.month;
@@ -104,8 +104,8 @@ public  class Binbo{
 		}
 		for(int i=0;i<players.size();i++) {
 			//System.out.println(players.get(i).getGoalDistance()+"最長距離"+i);
-			if(players.get(i).containsGoalDistance(maxdistance)) {
-				if( ! (players.get(i).equalsGoalDistance(maxdistance))) {
+			if(players.get(i).containsGoalDistance(maxdistance)==1) {
+				if(players.get(i).containsGoalDistance(maxdistance)!=0) {
 					if(whobonbylist!=null) {
 						whobonbylist.clear();
 					}
@@ -122,9 +122,7 @@ public  class Binbo{
 		this.setBinboPlayer(players.get(whobonby));
 	}
 
-
-
-public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//ながくなったため、分けた(ボンビー擦り付けメソッド)
+	public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//ながくなったため、分けた(ボンビー擦り付けメソッド)
 		if(tf == true) {//残り移動マスが減るとき(進むとき)
 			//boolean onceflag = false;//同じマスに複数人存在している際に一度だけしか交換しないように
 			Player nullflag = this.getBinboPlayer();
@@ -194,12 +192,6 @@ public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//な
 		}
 	}
 
-
-
-
-
-
-
 	private void randomBinboEvent() {
 		Random rand = new Random();
 		int result = rand.nextInt(100);
@@ -222,6 +214,18 @@ public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//な
 		}else{
 			this.name = "キングボンビー";
 		}
+	}
+
+	public static void initBinboFlag() {
+		Binbo.bonbyTurnEndFlag=false;
+	}
+
+	public static void binboFinish() {
+		Binbo.bonbyTurnEndFlag=true;
+	}
+
+	public static boolean isBinboTurn() {
+		return Binbo.bonbyTurnEndFlag;
 	}
 
 }

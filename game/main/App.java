@@ -5,7 +5,7 @@
 
 package lifegame.game.main;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.map.information.Japan;
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Card;
@@ -18,7 +18,8 @@ public class App {
 	public static int year=1;//今の年
 	public static int month=4;//今の月
 	public static Japan japan = new Japan();//物件やマス情報
-	public static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
+	private static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
+	private static boolean turnEndFlag=false;//ターン交代するためのフラグ
 
     public static void main(String[] args) {
         App app = new App();
@@ -84,7 +85,7 @@ public class App {
 			turnEnd.join();
 			window.bonbyplayer();
 			Thread.sleep(1000);
-			Window.turnEndFlag=false;
+			App.turnEndFlag=false;
 			App.japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
 		System.out.println("終わり");
@@ -92,5 +93,21 @@ public class App {
 
   	public static void start() {
   		App.startFlag=true;
+  	}
+
+  	public static boolean isStarted() {
+  		return App.startFlag;
+  	}
+
+  	public static void initTurnEndFlag() {
+  		App.turnEndFlag=false;
+  	}
+
+  	public static void turnEnd() {
+  		App.turnEndFlag=true;
+  	}
+
+  	public static boolean isTurnEnd() {
+  		return App.turnEndFlag;
   	}
 }

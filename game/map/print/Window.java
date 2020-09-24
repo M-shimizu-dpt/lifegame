@@ -29,8 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import lifegame.game.WaitThread;
 import lifegame.game.event.ClosingEvent;
+import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;
@@ -72,12 +72,9 @@ public class Window implements ActionListener{
 
 	private JFrame binboFrame;//貧乏神イベント用フレーム＊＊＊＊
 
-	public static boolean turnEndFlag=false;//ターン交代するためのフラグ
-
 	public static boolean shoppingEndFlag=false;//店での買い物が終わるまで待つためのフラグ
 	public static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
 	public static boolean random2EndFlag=false;//randomイベントが終わるまで待つためのフラグ
-	public static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
 
 	private ArrayList<String> moveTrajectory = new ArrayList<String>();//プレイヤーの移動の軌跡
 
@@ -341,7 +338,7 @@ public class Window implements ActionListener{
 		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
-			turnEndFlag=true;
+			App.turnEnd();
 		}
 	}
 
@@ -362,7 +359,7 @@ public class Window implements ActionListener{
 			if(rand.nextInt(100) < 3) {
 				randomEvent();
 			}else {
-				turnEndFlag=true;
+				App.turnEnd();
 			}
 		}
 	}
@@ -402,7 +399,7 @@ public class Window implements ActionListener{
 		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
-			turnEndFlag=true;
+			App.turnEnd();
 		}
 	}
 
@@ -476,7 +473,7 @@ public class Window implements ActionListener{
 		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
-			turnEndFlag=true;
+			App.turnEnd();
 		}
 	}
 
@@ -678,7 +675,7 @@ public class Window implements ActionListener{
 		randomFrame.setVisible(false);
 		randomFrame.removeAll();
 		playFrame.setVisible(true);
-		turnEndFlag = true;
+		App.turnEnd();
 	}
 
 	//月が替わった時に何月か表示
@@ -1556,7 +1553,7 @@ public class Window implements ActionListener{
 		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
-			turnEndFlag=true;
+			App.turnEnd();
 		}
 	}
 
@@ -1888,12 +1885,6 @@ public class Window implements ActionListener{
 
 	public void bonbyplayer() {
 
-		//moveTrajectoryと全プレイヤーの位置が重なるごとにどっちかがbonbyフラグがONなら交代
-		for(int i = 0;i<4;i++) {
-			//System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
-		}
-
-		bonbyTurnEndFlag = true;
 		if(Player.player.isBonby()) {
 			poorgod.binboTurn();
 			playFrame.setVisible(false);
@@ -1918,9 +1909,9 @@ public class Window implements ActionListener{
 			text2 = createText(10,110,600,100,20,"テストボンビー２");
 			//text3 = createText(10,210,600,100,20,"テストボンビー3");
 
-			text1.setHorizontalTextPosition(SwingConstants.LEFT);
+			text1.setHorizontalAlignment(SwingConstants.LEFT);
 			binbo.add(text1);
-			text2.setHorizontalTextPosition(SwingConstants.LEFT);
+			text2.setHorizontalAlignment(SwingConstants.LEFT);
 			binbo.add(text2);
 			//text3.setHorizontalTextPosition(SwingConstants.LEFT);
 			//binbo.add(text3);
@@ -1930,17 +1921,17 @@ public class Window implements ActionListener{
 
 			setCloseFrame(5);
 		}else {
-			bonbyTurnEndFlag = true;
+			Binbo.binboFinish();
 		}
 
 	}
 
-	public void closeBinboEvent() {//＊＊＊＊
+	public void closeBinboEvent() {
 		binboFrame.setVisible(false);
 		binboFrame.removeAll();
 		playFrame.setVisible(true);
 		poorgod.sutabBinboFinishTurn();
-		bonbyTurnEndFlag = true;
+		Binbo.binboFinish();
 	}
 
 	//ゴール画面を表示
@@ -2002,7 +1993,7 @@ public class Window implements ActionListener{
 		if(rand.nextInt(100) < 3) {
 			randomEvent();
 		}else {
-			turnEndFlag=true;
+			App.turnEnd();
 		}
 	}
 
@@ -2116,7 +2107,7 @@ public class Window implements ActionListener{
 			if(rand.nextInt(100) < 3) {
 				randomEvent();
 			}else {
-				turnEndFlag=true;
+				App.turnEnd();
 			}
 		}
 	}
@@ -2278,7 +2269,7 @@ public class Window implements ActionListener{
 			Card.resetUsedOthersCard();
 			ableMenu();
 			if(playFrame.isVisible()) {
-				turnEndFlag=true;
+				App.turnEnd();
 			}
 		}
 
