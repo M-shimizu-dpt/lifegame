@@ -429,7 +429,7 @@ public class Window implements ActionListener{
 		shopFrontFrame.setVisible(true);
 	}
 
-	public void bonbyplayer() {
+	public void bonbyPlayer() {
 		/*
 		for(int i = 0;i<4;i++) {
 			System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
@@ -520,7 +520,7 @@ public class Window implements ActionListener{
 		binboFrame.setVisible(false);
 		binboFrame.removeAll();
 		playFrame.setVisible(true);
-		App.poorgod.finishTurn();
+		Binbo.turnFinish();
 		Binbo.binboFinish();
 	}
 
@@ -1019,7 +1019,7 @@ public class Window implements ActionListener{
 
 		setGoalColor();
 
-		App.poorgod.binboPossessPlayer(this);
+		Binbo.binboPossessPlayer(this);
 	}
 
 	//会社情報を表示
@@ -1313,12 +1313,12 @@ public class Window implements ActionListener{
 			}
 		}
 
-		boolean tf = MoveEvent.isReturned(play.getComponentAt(400, 300).getName());
+		MoveEvent.isReturned(play.getComponentAt(400, 300).getName());
 
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
 			Dice.clear();
-			App.poorgod.clearBonbyBefore();
+			Binbo.clearBonbyBefore();
 			if(!Card.usedRandomCard) {
 				massEvent();
 			}
