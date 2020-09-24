@@ -1873,8 +1873,8 @@ public class Window implements ActionListener{
     		for(Property property : App.japan.getPropertys()) {
     			//オーナーの有無の判断
     			if(property.isOwner()) {
-    				//物件が1～3かどうか判断
-    				if(property.getGroup()==1||property.getGroup()==2||property.getGroup()==3) {
+    				//物件が1かどうか判断
+    				if(property.getGroup()==1) {
     					//物件の選出
     					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
     					//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
