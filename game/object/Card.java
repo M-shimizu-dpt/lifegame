@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
@@ -183,7 +183,7 @@ public class Card {
 			Player.players.get(App.turn).getNowMass().setValue(coor);
 
 		}else if(this.id==3) {
-			int enemy = Player.players.get(App.turn).getRandomEnemy();
+			int enemy = Player.players.get(App.turn).getAnotherPlayer();
 			int period;
 			do {
 				period = rand.nextInt(5);

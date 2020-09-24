@@ -9,10 +9,10 @@
  * id=7→一時停止
  * id=8→randomイベント待ち
  * id=9→カード捨て待ち
+ * id=10→アプリ開始待ち
  */
-package lifegame.game;
+package lifegame.game.event;
 
-import lifegame.game.event.ClosingEvent;
 import lifegame.game.main.App;
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Binbo;
@@ -52,7 +52,7 @@ public class WaitThread extends Thread{
 	public void run() {
 		switch(id) {
 		case 0:
-			while(!Window.turnEndFlag) {
+			while(!App.isTurnEnd()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
@@ -99,13 +99,15 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 5:
-			while(!Binbo.bonbyTurnEndFlag) {
+
+			while(!Binbo.isBinboTurn()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
+			Binbo.initBinboFlag();
 			break;
 		case 6:
 			while(System.currentTimeMillis()-Searcher.time <= SearchThread.searchTime*4) {
@@ -127,27 +129,27 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 8:
-			while(!Window.random2EndFlag) {
+			while(!RandomEvent.isEnd()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 
 				}
 			}
-			Window.random2EndFlag=false;
+			RandomEvent.initEndFlag();;
 			break;
 		case 9:
-			while(!Window.throwFlag) {
+			while(!Window.isThrowed()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			Window.throwFlag=false;
+			Window.initThrowFlag();
 			break;
 		case 10:
-			while(!App.startFlag) {
+			while(!App.isStarted()) {
 	    		try {
 	    			Thread.sleep(100);
 	    		}catch(InterruptedException e) {

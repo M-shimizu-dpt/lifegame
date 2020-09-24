@@ -9,14 +9,15 @@ package lifegame.game.object;
 import java.util.ArrayList;
 import java.util.Random;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.Searcher;
 
-public  class Binbo{
-	public static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
+public class Binbo{
+
+	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private String name;
 	private Player binboplayer;
 	private ArrayList<Player> together;
@@ -33,8 +34,10 @@ public  class Binbo{
 		//this.allplayernowMass = new ArrayList<Coordinates>();
 	}
 
+
 	//binboのターンメソッド
 	public void start(Window window) {
+
 		//スタブメソッド
 		System.out.println(name + "のターン");
 		System.out.println(this.binboplayer.getName());
@@ -174,8 +177,8 @@ public  class Binbo{
 		}
 		for(int i=0;i<Player.players.size();i++) {
 			//System.out.println(players.get(i).getGoalDistance()+"最長距離"+i);
-			if(Player.players.get(i).containsGoalDistance(maxdistance)) {
-				if( ! (Player.players.get(i).equalsGoalDistance(maxdistance))) {
+			if(Player.players.get(i).containsGoalDistance(maxdistance)==1) {
+				if(Player.players.get(i).containsGoalDistance(maxdistance)!=0) {
 					if(whobonbylist!=null) {
 						whobonbylist.clear();
 					}
@@ -284,6 +287,18 @@ public  class Binbo{
 		}else{
 			this.name = "キングボンビー";
 		}
+	}
+
+	public static void initBinboFlag() {
+		Binbo.bonbyTurnEndFlag=false;
+	}
+
+	public static void binboFinish() {
+		Binbo.bonbyTurnEndFlag=true;
+	}
+
+	public static boolean isBinboTurn() {
+		return Binbo.bonbyTurnEndFlag;
 	}
 
 }
