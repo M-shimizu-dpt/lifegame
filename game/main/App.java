@@ -7,12 +7,12 @@ package lifegame.game.main;
 
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
-import lifegame.game.map.information.Japan;
-import lifegame.game.map.print.Window;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Japan;
+import lifegame.game.object.map.print.Window;
 
 public class App {
 	public static int turn=0;//現在のターン

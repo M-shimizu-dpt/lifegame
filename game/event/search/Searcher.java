@@ -11,9 +11,9 @@ import java.util.Map;
 
 import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.print.Window;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.print.Window;
 
 public class Searcher{
 	public static Map<Integer,ArrayList<ArrayList<Coordinates>>> nearestTrajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//目的地までの移動の軌跡

@@ -12,8 +12,8 @@ import java.util.Random;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.print.Window;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.print.Window;
 
 public abstract class Binbo{
 	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ

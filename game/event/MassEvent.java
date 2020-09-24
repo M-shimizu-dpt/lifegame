@@ -3,9 +3,9 @@ package lifegame.game.event;
 import java.util.Random;
 
 import lifegame.game.main.App;
-import lifegame.game.map.print.Window;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.print.Window;
 
 public abstract class MassEvent {
 	//マスに到着した時のマスのイベント処理

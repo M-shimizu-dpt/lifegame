@@ -2,8 +2,8 @@ package lifegame.game.event;
 
 import java.util.Map;
 
-import lifegame.game.map.information.Property;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Property;
 
 public abstract class ClosingEvent {
 	public static boolean closingEndFlag=false;//決算処理が終了するのを待つためのフラグ

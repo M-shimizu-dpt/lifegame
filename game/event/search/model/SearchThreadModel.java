@@ -7,8 +7,8 @@ package lifegame.game.event.search.model;
 
 import java.util.ArrayList;
 
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.print.Window;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.print.Window;
 
 public abstract class SearchThreadModel extends Thread{
 	protected ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡

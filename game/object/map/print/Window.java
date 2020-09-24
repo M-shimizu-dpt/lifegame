@@ -2,7 +2,7 @@
  * 画面表示に関する処理を管理するクラス
  * 画面表示をする際にこのクラスのメソッドを使用
 */
-package lifegame.game.map.print;
+package lifegame.game.object.map.print;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -33,13 +33,13 @@ import lifegame.game.event.RandomEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.information.Property;
-import lifegame.game.map.information.Station;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Property;
+import lifegame.game.object.map.information.Station;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム

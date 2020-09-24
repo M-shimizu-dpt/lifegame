@@ -3,7 +3,7 @@
  * マスの座標に関する処理を記述
  */
 
-package lifegame.game.map.information;
+package lifegame.game.object.map.information;
 
 import java.util.ArrayList;
 
