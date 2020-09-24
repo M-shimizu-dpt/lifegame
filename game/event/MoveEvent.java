@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
+import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
 
 public abstract class MoveEvent {
@@ -24,16 +25,20 @@ public abstract class MoveEvent {
 			if(component.equals(moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
 				moveTrajectory.remove(moveTrajectory.size()-1);
 				Player.player.setMove(Player.player.getMove()+1);
-				App.poorgod.passingBackBonby();
+				Binbo.passingBackBonby();
 			}else {//違う場合、移動した先の座標をmoveTrajectoryに格納
 				moveTrajectory.add(component);
 				Player.player.setMove(Player.player.getMove()-1);
-				App.poorgod.passingGoBonby();
+				if(	Binbo.stopPlayersNowMassContains()){
+					Binbo.passingGoBonby();
+				}
 			}
 		}else {
 			moveTrajectory.add(component);
 			Player.player.setMove(Player.player.getMove()-1);
-			App.poorgod.passingGoBonby();
+			if(	Binbo.stopPlayersNowMassContains()){
+				Binbo.passingGoBonby();
+			}
 		}
 	}
 

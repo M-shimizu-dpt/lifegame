@@ -20,8 +20,6 @@ public class App {
 	public static int month=4;//今の月
 	public static Japan japan = new Japan();//物件やマス情報
 
-	public static Binbo poorgod = new Binbo();
-
 	private static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
 	private static boolean turnEndFlag=false;//ターン交代するためのフラグ
 
@@ -55,6 +53,7 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
+  		Binbo.initBinbo();
 
   		while(true) {
 	  		if(window.monthUpdate(first,endYear)) {
@@ -76,13 +75,13 @@ public class App {
 		  	}else {
 		  		window.printMenu();
 		  	}
-		  	poorgod.clearStopPlayersNowMass();
-		  	poorgod.setStopPlayersNowMass();//動いていない人の現在地を取得(ボンビー用)
+		  	Binbo.clearStopPlayersNowMass();
+		  	Binbo.setStopPlayersNowMass();//動いていない人の現在地を取得(ボンビー用)
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
-			if(poorgod.containsBinbo(Player.player)) {
-				poorgod.start(window);
+			if(Binbo.containsBinbo()) {
+				Binbo.start(window);
 				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
 				bonbyTurnEnd.start();
 				bonbyTurnEnd.join();
