@@ -8,6 +8,7 @@ package lifegame.game.main;
 import lifegame.game.WaitThread;
 import lifegame.game.map.information.Japan;
 import lifegame.game.map.print.Window;
+import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
@@ -19,6 +20,7 @@ public class App {
 	public static int month=4;//今の月
 	public static Japan japan = new Japan();//物件やマス情報
 	public static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
+	public static Binbo poorgod = new Binbo();
 
     public static void main(String[] args) {
         App app = new App();
@@ -54,9 +56,7 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-		//ボンビー初期設定***
-		//player.changeBonby();//debug
-		//poorgod.setBinboPlayer(player);
+  		boolean onceflag=false;//bonb付着debug用
 
   		while(true) {
 	  		if(window.monthUpdate(first,endYear)) {
@@ -79,10 +79,23 @@ public class App {
 		  	}else {
 		  		window.printMenu();
 		  	}
+		  	if(onceflag==false) {//debug用
+				//ボンビー初期設定//debug用
+				Player.player.changeBonby();//debug
+				poorgod.setPlayerBinbo(Player.player);
+				onceflag=true;
+		  	}
+		  	poorgod.clearStopPlayersNowMass();
+		  	poorgod.setStopPlayersNowMass();//動いていない人の現在地を取得(ボンビー用)
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
-			window.bonbyplayer();
+			if(poorgod.containsBinbo(Player.player)) {
+				poorgod.start(window);
+				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
+				bonbyTurnEnd.start();
+				bonbyTurnEnd.join();
+			}
 			Thread.sleep(1000);
 			Window.turnEndFlag=false;
 			App.japan.alreadys.clear();//このターンに購入した物件リストを初期化

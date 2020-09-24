@@ -77,12 +77,11 @@ public class Window implements ActionListener{
 	public static boolean shoppingEndFlag=false;//店での買い物が終わるまで待つためのフラグ
 	public static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
 	public static boolean random2EndFlag=false;//randomイベントが終わるまで待つためのフラグ
-	public static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
+
 
 	private ArrayList<String> moveTrajectory = new ArrayList<String>();//プレイヤーの移動の軌跡
 
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
-	public Binbo poorgod = new Binbo();
 
 	public Window() {
 
@@ -317,8 +316,6 @@ public class Window implements ActionListener{
 			shopEvent();
 		}else{
 			if(App.japan.getGoalName().equals(massName)) {
-				//debug
-				//bonbycatch();
 				goal();
 			}else {
 				printPropertys(massName);
@@ -1662,7 +1659,6 @@ public class Window implements ActionListener{
 	public void moveMaps(int x,int y) {
 		String name;//if文が長すぎる為
 		JLayeredPane play = playFrame.getLayeredPane();
-		boolean tf;//進むか戻るか
 		do {
 			//移動
 			if(x<0) {
@@ -1698,22 +1694,26 @@ public class Window implements ActionListener{
 			if(play.getComponentAt(400, 300).getName().equals(moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
 				moveTrajectory.remove(moveTrajectory.size()-1);
 				Player.player.setMove(Player.player.getMove()+1);
-				tf = false;
+				App.poorgod.passingBackBonby();
 			}else {//違う場合、移動した先の座標をmoveTrajectoryに格納
 				moveTrajectory.add(play.getComponentAt(400, 300).getName());
 				Player.player.setMove(Player.player.getMove()-1);
-				tf = true;
+				if(App.poorgod.stopPlayersNowMassContains()) {
+					App.poorgod.passingGoBonby();
+				}
 			}
 		}else {
 			moveTrajectory.add(play.getComponentAt(400, 300).getName());
 			Player.player.setMove(Player.player.getMove()-1);
-			tf = true;
+			if(App.poorgod.stopPlayersNowMassContains()) {
+				App.poorgod.passingGoBonby();
+			}
 		}
-		poorgod.passingBonby(tf,Player.players,App.turn);
+
 		if(Player.player.getMove()<=0) {
 			moveTrajectory.clear();
 			Dice.clear();
-			poorgod.clearBonbyBefore();
+			App.poorgod.clearBonbyBefore();
 			if(!Card.usedRandomCard) {
 				massEvent();
 			}
@@ -1887,51 +1887,44 @@ public class Window implements ActionListener{
 	}
 
 	public void bonbyplayer() {
-
-		//moveTrajectoryと全プレイヤーの位置が重なるごとにどっちかがbonbyフラグがONなら交代
+		/*
 		for(int i = 0;i<4;i++) {
-			//System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
+			System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
 		}
-
-		bonbyTurnEndFlag = true;
-		if(Player.player.isBonby()) {
-			poorgod.binboTurn();
-			playFrame.setVisible(false);
-			binboFrame = new JFrame();
-			JLayeredPane binbo = binboFrame.getLayeredPane();
-			binboFrame.setSize(800,600);
-			binboFrame.setLocationRelativeTo(null);
-			//ImageIcon icon =  new ImageIcon("./img/days_res.png");
-			//icon.createImageIcon("./img/days_res.png",");
-			JLabel text1=new JLabel();
-			JLabel text2=new JLabel();
-			//JLabel text3=new JLabel(icon);
-			JButton closeButton = createButton(580,500,180,50,10,"閉じる");
-			closeButton.setActionCommand("貧乏神イベントを閉じる");
-			if(!Player.player.isPlayer()) {
-				closeButton.setEnabled(false);
-			}
-			binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-			binboFrame.setName("ボンビーのターン");
-
-			text1 = createText(10,10,600,100,20,"テストボンビー1");
-			text2 = createText(10,110,600,100,20,"テストボンビー２");
-			//text3 = createText(10,210,600,100,20,"テストボンビー3");
-
-			text1.setHorizontalTextPosition(SwingConstants.LEFT);
-			binbo.add(text1);
-			text2.setHorizontalTextPosition(SwingConstants.LEFT);
-			binbo.add(text2);
-			//text3.setHorizontalTextPosition(SwingConstants.LEFT);
-			//binbo.add(text3);
-			//System.out.println(icon.getIconWidth());
-			//System.out.println(icon.getIconHeight());
-			binboFrame.setVisible(true);
-
-			setCloseFrame(5);
-		}else {
-			bonbyTurnEndFlag = true;
+		*/
+		playFrame.setVisible(false);
+		binboFrame = new JFrame();
+		JLayeredPane binbo = binboFrame.getLayeredPane();
+		binboFrame.setSize(800,600);
+		binboFrame.setLocationRelativeTo(null);
+		//ImageIcon icon =  new ImageIcon("./img/days_res.png");
+		//icon.createImageIcon("./img/days_res.png",");
+		JLabel text1=new JLabel();
+		JLabel text2=new JLabel();
+		//JLabel text3=new JLabel(icon);
+		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
+		closeButton.setActionCommand("貧乏神イベントを閉じる");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
 		}
+		binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		binboFrame.setName("ボンビーのターン");
+
+		text1 = createText(10,10,600,100,20,"テストボンビー1");
+		text2 = createText(10,110,600,100,20,"テストボンビー２");
+		//text3 = createText(10,210,600,100,20,"テストボンビー3");
+
+		text1.setHorizontalTextPosition(SwingConstants.LEFT);
+		binbo.add(text1);
+		text2.setHorizontalTextPosition(SwingConstants.LEFT);
+		binbo.add(text2);
+		//text3.setHorizontalTextPosition(SwingConstants.LEFT);
+		//binbo.add(text3);
+		//System.out.println(icon.getIconWidth());
+		//System.out.println(icon.getIconHeight());
+		binboFrame.setVisible(true);
+
+		setCloseFrame(5);
 
 	}
 
@@ -1939,8 +1932,8 @@ public class Window implements ActionListener{
 		binboFrame.setVisible(false);
 		binboFrame.removeAll();
 		playFrame.setVisible(true);
-		poorgod.sutabBinboFinishTurn();
-		bonbyTurnEndFlag = true;
+		App.poorgod.finishTurn();
+		Binbo.bonbyTurnEndFlag = true;
 	}
 
 	//ゴール画面を表示
@@ -1972,7 +1965,7 @@ public class Window implements ActionListener{
 
 		setGoalColor();
 
-		poorgod.binboPossessPlayer(this,Player.players);
+		App.poorgod.binboPossessPlayer(this);
 	}
 
 	//ゴール画面を閉じる

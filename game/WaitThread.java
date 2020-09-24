@@ -15,6 +15,7 @@ package lifegame.game;
 import lifegame.game.event.ClosingEvent;
 import lifegame.game.main.App;
 import lifegame.game.map.print.Window;
+import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
 import lifegame.game.search.OnlyDistanceSearchThread;
 import lifegame.game.search.SearchThread;
@@ -98,7 +99,7 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 5:
-			while(!Window.bonbyTurnEndFlag) {
+			while(!Binbo.bonbyTurnEndFlag) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
