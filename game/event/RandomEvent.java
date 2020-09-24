@@ -72,16 +72,13 @@ public abstract class RandomEvent {
 		//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
 		//臨時収入を追加
 		int s;
-		s=(int)(App.year/rndnum*5000);
+		s=(1000*App.year*rndnum);
 
-		if(property.getOwner() == Player.players.get(0).getName()) {
-			Player.players.get(0).addMoney(s);
-		}else if(property.getOwner() == Player.players.get(1).getName()) {
-			Player.players.get(1).addMoney(s);
-		}else if(property.getOwner() == Player.players.get(2).getName()) {
-			Player.players.get(2).addMoney(s);
-		}else if(property.getOwner() == Player.players.get(3).getName()) {
-			Player.players.get(3).addMoney(s);
+		for(int i=0;i<4;i++) {
+			if(property.getOwner() == Player.players.get(i).getName()) {
+				Player.players.get(i).addMoney(s);
+				break;
+			}
 		}
 	}
 
