@@ -198,7 +198,7 @@ public class Player {
 			System.out.println("remove:"+this.getCard(0).getName());
 			Card.priceSort(this.getCards());
 		}while(this.getCardSize()>8);
-		Window.throwFlag=true;
+		Window.throwEnd();
 	}
 
 	public void changeBonby() {//ボンビーついたら変更

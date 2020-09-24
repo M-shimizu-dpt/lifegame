@@ -26,32 +26,27 @@ public class App {
     	app.run();
     }
 
-    /*
-     * プレイヤーの順番をランダムに入れ替えれるようにする
-     */
-    private void run() {
-    	Window window = new Window();
+  	public static void initTurnEndFlag() {
+  		App.turnEndFlag=false;
+  	}
 
-    	int[] result = window.printStart();
+  	public static boolean isTurnEnd() {
+  		return App.turnEndFlag;
+  	}
 
-    	int playerCount = result[0];
-    	int yearLimit = result[1];
-    	assert(playerCount>=0 && playerCount<=3);
-    	assert(yearLimit>0 && yearLimit<=100);
+  	public static boolean isStarted() {
+  		return App.startFlag;
+  	}
 
+  	public static void start() {
+  		App.startFlag=true;
+  	}
 
-    	Card.init(window);
-    	Dice.init();
+  	public static void turnEnd() {
+  		App.turnEndFlag=true;
+  	}
 
-    	window.initWindow(yearLimit,playerCount);
-    	try {
-        	play(window,yearLimit);
-        }catch(InterruptedException e) {
-        	e.printStackTrace();
-        }
-    }
-
-    //プレイ中の動作
+  	 //プレイ中の動作
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
@@ -91,23 +86,31 @@ public class App {
 		System.out.println("終わり");
 	}
 
-  	public static void start() {
-  		App.startFlag=true;
-  	}
+    /*
+     * プレイヤーの順番をランダムに入れ替えれるようにする
+     */
+    private void run() {
+    	Window window = new Window();
 
-  	public static boolean isStarted() {
-  		return App.startFlag;
-  	}
+    	int[] result = window.printStart();
 
-  	public static void initTurnEndFlag() {
-  		App.turnEndFlag=false;
-  	}
+    	int playerCount = result[0];
+    	int yearLimit = result[1];
+    	assert(playerCount>=0 && playerCount<=3);
+    	assert(yearLimit>0 && yearLimit<=100);
 
-  	public static void turnEnd() {
-  		App.turnEndFlag=true;
-  	}
 
-  	public static boolean isTurnEnd() {
-  		return App.turnEndFlag;
-  	}
+    	Card.init(window);
+    	Dice.init();
+
+    	window.initWindow(yearLimit,playerCount);
+    	try {
+        	play(window,yearLimit);
+        }catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
+    }
+
+
+
 }

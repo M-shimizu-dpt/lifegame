@@ -128,24 +128,24 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 8:
-			while(!Window.random2EndFlag) {
+			while(!RandomEvent.isEnd()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 
 				}
 			}
-			Window.random2EndFlag=false;
+			RandomEvent.initEndFlag();;
 			break;
 		case 9:
-			while(!Window.throwFlag) {
+			while(!Window.isThrowed()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			Window.throwFlag=false;
+			Window.initThrowFlag();
 			break;
 		case 10:
 			while(!App.isStarted()) {
