@@ -1,11 +1,11 @@
-package lifegame.game.search;
+package lifegame.game.event.search;
 
 import java.util.ArrayList;
 
+import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
-import lifegame.game.search.model.SearchThreadModel;
 
 public class ShopSearchThread extends SearchThreadModel{
 	//start

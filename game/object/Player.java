@@ -16,12 +16,12 @@ import java.util.Random;
 import javax.swing.JLabel;
 
 import lifegame.game.event.WaitThread;
+import lifegame.game.event.search.NearestSearchThread;
+import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;
 import lifegame.game.map.print.Window;
-import lifegame.game.search.NearestSearchThread;
-import lifegame.game.search.Searcher;
 
 public class Player {
 	public static Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
