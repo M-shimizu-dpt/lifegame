@@ -446,7 +446,7 @@ public class Player {
 	}
 
 	public void initGoalDistance() {
-		this.goaldistance=100;
+		this.goaldistance=500;
 	}
 
 	public boolean isBonby() {//ボンビーついているか取得
