@@ -927,7 +927,7 @@ public class Japan {
 
 	//駅名で指定した駅を取得
 	public Station getStation(String stationName) {
-		System.out.println(stationName);
+		//System.out.println(stationName);
 		for(Station sta : stations) {
 			if(sta.getName().equals(stationName)) {
 				return sta;
@@ -1009,7 +1009,7 @@ public class Japan {
 				return sta.getPropertySize();
 			}
 		}
-		System.out.println("error");
+		//System.out.println("error");
 		return -1;
 	}
 

@@ -1,4 +1,4 @@
-package lifegame.game.search;
+package lifegame.game.event.search;
 
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Player;

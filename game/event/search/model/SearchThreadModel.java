@@ -3,7 +3,7 @@
  * 探索する際の処理を記述
  */
 
-package lifegame.game.search.model;
+package lifegame.game.event.search.model;
 
 import java.util.ArrayList;
 

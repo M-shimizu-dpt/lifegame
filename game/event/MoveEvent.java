@@ -16,10 +16,10 @@ public abstract class MoveEvent {
 	}
 
 	public static void clearTrajectory() {
-		MoveEvent.moveTrajectory.clear();
+		moveTrajectory.clear();
 	}
 
-	public static void isReturned(String component) {
+	public static void updateTrajectory(String component) {
 		//移動先が1つ前と同じか
 		if(moveTrajectory.size()>1) {
 			if(component.equals(moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
@@ -42,7 +42,7 @@ public abstract class MoveEvent {
 		}
 	}
 
-	public static void moveMaps(int x,int y) {
+	public static void movePlayer(int x,int y) {
 		do {
 			//移動
 			if(x<0) {

@@ -3,7 +3,7 @@
  * 探索する必要のある処理を記述
  */
 
-package lifegame.game.search;
+package lifegame.game.event.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -138,7 +138,7 @@ public class Searcher{
 				e.printStackTrace();
 			}
 			againtime+=100;
-			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+			//System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 		}while(Searcher.count==500 && againtime<1000);
 		if(Searcher.count==500) System.out.println("探索失敗");
 	}
@@ -176,7 +176,7 @@ public class Searcher{
 				e.printStackTrace();
 			}
 			againtime+=100;
-			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+			//System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 		}while(Searcher.count==500 && againtime<1000);
 		if(Searcher.count==500) System.out.println("探索失敗");
 	}
@@ -203,7 +203,7 @@ public class Searcher{
 					e.printStackTrace();
 				}
 				againtime+=100;
-				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+				//System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 			}while(Searcher.count==500 && againtime<1000);
 			if(Searcher.count==500) System.out.println("探索失敗");
 		}

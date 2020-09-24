@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import lifegame.game.event.WaitThread;
+import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
-import lifegame.game.search.Searcher;
 
 public abstract class Binbo{
 	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
@@ -32,23 +32,25 @@ public abstract class Binbo{
 		stopplayernowMass = new ArrayList<Coordinates>();
 		//allplayernowMass = new ArrayList<Coordinates>();
 	}
-
+	public static String getName() {
+		return name;
+	}
 
 	//binboのターンメソッド
 	public static void start(Window window) {
 
 		//スタブメソッド
-		System.out.println(name + "のターン");
-		System.out.println(binboplayer.getName());
+		//System.out.println(name + "のターン");
+		//System.out.println(this.binboplayer.getName());
 		window.bonbyPlayer();
 		randomBinboEvent();
-		System.out.println(name +"のターン終了");
+		//System.out.println(name +"のターン終了");
 	}
 
 	//ボンビー終了メソッド
 	public static void turnFinish() {
 		//スタブメソッド
-		System.out.print("ボンビーターン終了");
+		//System.out.print("ボンビーターン終了");
 	}
 
 	//ボンビーが憑くプレイヤーをセット

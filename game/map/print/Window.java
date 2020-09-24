@@ -31,6 +31,7 @@ import lifegame.game.event.MassEvent;
 import lifegame.game.event.MoveEvent;
 import lifegame.game.event.RandomEvent;
 import lifegame.game.event.WaitThread;
+import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;
@@ -39,7 +40,6 @@ import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
-import lifegame.game.search.Searcher;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
@@ -482,7 +482,7 @@ public class Window implements ActionListener{
 	private void buyPropertys(String name, int index) {
 		App.japan.buyPropertys(name, index, Player.player);
 
-		System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+		//System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		propertyFrame.setVisible(false);
 		propertyFrame.removeAll();
 		printPropertys(name);
@@ -614,8 +614,6 @@ public class Window implements ActionListener{
 		App.turnEnd();
 	}
 
-
-
 	//店用フレームを閉じる
 	public void closeShop() {
 		Random rand = new Random();
@@ -629,8 +627,6 @@ public class Window implements ActionListener{
 			App.turnEnd();
 		}
 	}
-
-
 
 	//自分の持ち物件一覧を閉じる
 	private void closeTakeStations() {
@@ -921,7 +917,6 @@ public class Window implements ActionListener{
 		closeDice();
 	}
 
-
 	//メイン画面でのメニューボタンを無効
 	public void enableMenu() {
 		saikoro.setEnabled(false);
@@ -931,42 +926,6 @@ public class Window implements ActionListener{
 		allmap.setEnabled(false);
 	}
 
-
-
-
-
-
-	public void initWindow(int endYear,int playerCount){
-		initPlayFrame(playerCount);
-		initMaps();
-    	createMoveButton();
-  		App.japan.initGoal();
-
-  		setGoalColor();
-
-  		initMenu();
-
-        JLayeredPane menu = playFrame.getLayeredPane();//ボタンが前に出ない
-
-        back.setBackground(Color.CYAN);
-        back.setBounds(640,350,110,210);
-        back.setName("ボタン背景");
-        menu.add(back,JLayeredPane.PALETTE_LAYER,-1);
-        menu.add(company,JLayeredPane.PALETTE_LAYER,0);
-        menu.add(saikoro,JLayeredPane.PALETTE_LAYER,0);
-    	menu.add(cardB,JLayeredPane.PALETTE_LAYER,0);
-    	menu.add(minimap,JLayeredPane.PALETTE_LAYER,0);
-    	menu.add(allmap,JLayeredPane.PALETTE_LAYER,0);
-
-    	// ウィンドウを表示
-        playFrame.setVisible(true);
-
-        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count);
-      	moveLabel.setName("moves");
-      	playFrame.setBackground(Color.ORANGE);
-      	closeMoveButton();
-      	addPlayFrame(waitButton);
-	}
 
 	private void drawLine(JLayeredPane lines,int x,int y,int size,int somethig) {
 		ArrayList<Coordinates> list = App.japan.getMovePossibles(x, y);
@@ -1146,6 +1105,38 @@ public class Window implements ActionListener{
 		throwFlag=false;
 	}
 
+	public void initWindow(int endYear,int playerCount){
+		initPlayFrame(playerCount);
+		initMaps();
+    	createMoveButton();
+  		App.japan.initGoal();
+
+  		setGoalColor();
+
+  		initMenu();
+
+        JLayeredPane menu = playFrame.getLayeredPane();//ボタンが前に出ない
+
+        back.setBackground(Color.CYAN);
+        back.setBounds(640,350,110,210);
+        back.setName("ボタン背景");
+        menu.add(back,JLayeredPane.PALETTE_LAYER,-1);
+        menu.add(company,JLayeredPane.PALETTE_LAYER,0);
+        menu.add(saikoro,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(cardB,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(minimap,JLayeredPane.PALETTE_LAYER,0);
+    	menu.add(allmap,JLayeredPane.PALETTE_LAYER,0);
+
+    	// ウィンドウを表示
+        playFrame.setVisible(true);
+
+        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count);
+      	moveLabel.setName("moves");
+      	playFrame.setBackground(Color.ORANGE);
+      	closeMoveButton();
+      	addPlayFrame(waitButton);
+	}
+
 	public static boolean isThrowed() {
 		return throwFlag;
 	}
@@ -1298,8 +1289,7 @@ public class Window implements ActionListener{
 		String name;//if文が長すぎる為
 		JLayeredPane play = playFrame.getLayeredPane();
 
-
-		MoveEvent.moveMaps(x, y);
+		MoveEvent.movePlayer(x, y);
 
 		for(int i=0;i<play.getComponentCount();i++) {
 			name=play.getComponent(i).getName();
@@ -1313,7 +1303,7 @@ public class Window implements ActionListener{
 			}
 		}
 
-		MoveEvent.isReturned(play.getComponentAt(400, 300).getName());
+		MoveEvent.updateTrajectory(play.getComponentAt(400, 300).getName());
 
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
@@ -1600,7 +1590,6 @@ public class Window implements ActionListener{
 		setCloseFrame(2);
 	}
 
-
 	//カードショップの売却画面
 	private void printSellShop() {
 		shopFrontFrame.setVisible(false);
@@ -1651,7 +1640,6 @@ public class Window implements ActionListener{
 		shopFrontFrame.setVisible(true);
 		setCloseFrame(1);
 	}
-
 
 	public int[] printStart() {
   		JFrame startFrame = new JFrame("桃大郎電鉄");
@@ -1856,7 +1844,7 @@ public class Window implements ActionListener{
 	private void random2Event() {
 		int rndnum;
 		rndnum = new Random().nextInt(11)+1;
-		System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
+		//System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
 
 
 		if(App.month==rndnum) {
@@ -1874,30 +1862,34 @@ public class Window implements ActionListener{
     		text1 = createText(10,10,600,100,20,"トピックスです");
         	text2 = createText(10,110,600,100,20,"全国の放送局で特集が放送されました！");
     		text3 = createText(10,210,600,100,20,"テレビの影響はすごく,大きな収入が出ています。");
-    		System.out.println("所持金");
+    		//System.out.println("所持金");
+    		/*
     		for(int i=0;i<4;i++) {
     			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
     		}
+    		*/
 
     		//物件の情報を取得
     		for(Property property : App.japan.getPropertys()) {
     			//オーナーの有無の判断
     			if(property.isOwner()) {
-    				//物件が1～3かどうか判断
-    				if(property.getGroup()==1||property.getGroup()==2||property.getGroup()==3) {
+    				//物件が1かどうか判断
+    				if(property.getGroup()==1) {
     					//物件の選出
     					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
-    					System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
+    					//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
     					//臨時収入を追加
     					RandomEvent.random2Event(property,rndnum);
     					break;
     				}
     			}
         	}
-    		System.out.println("所持金");
+    		//System.out.println("所持金");
+    		/*
     		for(int i=0;i<4;i++) {
     			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
     		}
+    		*/
 
     		text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
     		Random2.add(text1);
@@ -2083,7 +2075,6 @@ public class Window implements ActionListener{
 		Assets();
 	}
 
-
 	private void sellCard(Card card) {
 		Player.player.sellCard(card);
 		shopFrame.setVisible(false);
@@ -2116,7 +2107,7 @@ public class Window implements ActionListener{
 	public void sellPropertys(Property property) {
 		App.japan.sellPropertys(property,Player.player);
 
-		System.out.println(property.getName()+"を売却");
+		//System.out.println(property.getName()+"を売却");
 		sellStationFrame.setVisible(false);
 		sellStationFrame.removeAll();
 		if(Player.player.getPropertys().size()>0) {
@@ -2126,11 +2117,9 @@ public class Window implements ActionListener{
 		}
 	}
 
-
 	public static void throwEnd() {
 		throwFlag=true;
 	}
-
 
 	public void waitButtonUpdate() {
   		if(Player.player.isPlayer()) {
@@ -2150,6 +2139,7 @@ class CPUTimerTask extends TimerTask{
 		this.id=id;
 		this.window=window;
 	}
+
 	@Override
 	public void run() {
 		switch(id) {

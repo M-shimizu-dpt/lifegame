@@ -19,10 +19,10 @@ import java.util.Comparator;
 import java.util.Random;
 
 import lifegame.game.event.WaitThread;
+import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
-import lifegame.game.search.Searcher;
 
 public class Card {
 	private String name;//名前
@@ -189,7 +189,7 @@ public class Card {
 				period = rand.nextInt(5);
 			}while(period <= 1);
 			Player.players.get(enemy).getBuff().addBuff(this.ability, period);
-			System.out.println(Player.players.get(App.turn).getName());
+			//System.out.println(Player.players.get(App.turn).getName());
 		}else if(this.id==4) {
 			Card.usedOthersCard();
 			if(name.equals("一頭地を抜くカード")) {
@@ -296,7 +296,7 @@ public class Card {
 			}
 		}
 		movedMass.setValue(x, y);
-		System.out.println("random move  x:"+x+"  y:"+y);
+		//System.out.println("random move  x:"+x+"  y:"+y);
 		return movedMass;
 	}
 
