@@ -187,7 +187,7 @@ public class Player {
 			}
 			App.japan.alreadys.add(App.japan.getStaInProperty(name,index).getName()+index);
 
-			System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+			//System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		}
 	}
 
@@ -195,7 +195,7 @@ public class Player {
 	public void cardFullCPU() {
 		do{
 			this.getCards().remove(this.getCard(0));
-			System.out.println("remove:"+this.getCard(0).getName());
+			//System.out.println("remove:"+this.getCard(0).getName());
 			Card.priceSort(this.getCards());
 		}while(this.getCardSize()>8);
 		Window.throwEnd();
@@ -305,7 +305,7 @@ public class Player {
 					cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(Searcher.nearestMassToGoalList.get(0)).get(0));
 				}
 			}
-			System.out.println("player.move:"+this.getMove()+"       終わりました");
+			//System.out.println("player.move:"+this.getMove()+"       終わりました");
 			if(this.getMove()>0) {
 				System.out.println("異常終了");
 			}
@@ -489,7 +489,7 @@ public class Player {
 
 	public void setGoalDistance(int distance) {//最短距離をセット
 		this.goaldistance = distance;
-		System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
+		//System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
 	}
 
 	public void setMass(int x,int y) {

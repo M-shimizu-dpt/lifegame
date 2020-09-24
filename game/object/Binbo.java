@@ -39,17 +39,17 @@ public class Binbo{
 	public void start(Window window) {
 
 		//スタブメソッド
-		System.out.println(name + "のターン");
-		System.out.println(this.binboplayer.getName());
+		//System.out.println(name + "のターン");
+		//System.out.println(this.binboplayer.getName());
 		window.bonbyPlayer();
 		randomBinboEvent();
-		System.out.println(name +"のターン終了");
+		//System.out.println(name +"のターン終了");
 	}
 
 	//ボンビー終了メソッド
 	public void finishTurn() {
 		//スタブメソッド
-		System.out.print("ボンビーターン終了");
+		//System.out.print("ボンビーターン終了");
 	}
 
 	//ボンビーが憑くプレイヤーをセット

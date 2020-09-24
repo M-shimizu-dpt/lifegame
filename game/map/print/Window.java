@@ -482,7 +482,7 @@ public class Window implements ActionListener{
 	private void buyPropertys(String name, int index) {
 		App.japan.buyPropertys(name, index, Player.player);
 
-		System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+		//System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		propertyFrame.setVisible(false);
 		propertyFrame.removeAll();
 		printPropertys(name);
@@ -1844,7 +1844,7 @@ public class Window implements ActionListener{
 	private void random2Event() {
 		int rndnum;
 		rndnum = new Random().nextInt(11)+1;
-		System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
+		//System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
 
 
 		if(App.month==rndnum) {
@@ -1862,10 +1862,12 @@ public class Window implements ActionListener{
     		text1 = createText(10,10,600,100,20,"トピックスです");
         	text2 = createText(10,110,600,100,20,"全国の放送局で特集が放送されました！");
     		text3 = createText(10,210,600,100,20,"テレビの影響はすごく,大きな収入が出ています。");
-    		System.out.println("所持金");
+    		//System.out.println("所持金");
+    		/*
     		for(int i=0;i<4;i++) {
     			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
     		}
+    		*/
 
     		//物件の情報を取得
     		for(Property property : App.japan.getPropertys()) {
@@ -1875,17 +1877,19 @@ public class Window implements ActionListener{
     				if(property.getGroup()==1||property.getGroup()==2||property.getGroup()==3) {
     					//物件の選出
     					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
-    					System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
+    					//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
     					//臨時収入を追加
     					RandomEvent.random2Event(property,rndnum);
     					break;
     				}
     			}
         	}
-    		System.out.println("所持金");
+    		//System.out.println("所持金");
+    		/*
     		for(int i=0;i<4;i++) {
     			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
     		}
+    		*/
 
     		text1.setHorizontalTextPosition(SwingConstants.LEFT);//左に寄せたいができない
     		Random2.add(text1);
@@ -2103,7 +2107,7 @@ public class Window implements ActionListener{
 	public void sellPropertys(Property property) {
 		App.japan.sellPropertys(property,Player.player);
 
-		System.out.println(property.getName()+"を売却");
+		//System.out.println(property.getName()+"を売却");
 		sellStationFrame.setVisible(false);
 		sellStationFrame.removeAll();
 		if(Player.player.getPropertys().size()>0) {

@@ -61,7 +61,6 @@ public class App {
 		  		break;
 		  	}
 		  	first=false;
-		  	System.out.println(App.turn);
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	window.waitButtonUpdate();
 		  	Searcher.searchShortestRoute(window,Player.player);//目的地までの最短経路を探索

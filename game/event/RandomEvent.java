@@ -69,7 +69,7 @@ public abstract class RandomEvent {
 
 	public static void random2Event(Property property,int rndnum) {
 		//物件の選出
-		System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
+		//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
 		//臨時収入を追加
 		int s;
 		s=(int)(App.year/rndnum*5000);
