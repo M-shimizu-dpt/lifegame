@@ -159,6 +159,7 @@ public class Searcher{
 	public static void searchShortestRouteSelectPlayer(Window window,Player selectedPlayer) {
 		//再探索は10回まで(1回で出てほしい…)
 		int againtime=0;
+		boolean endflag;
 		do{
 			App.japan.allClose();
 			//Threadを立ち上げる
@@ -176,8 +177,12 @@ public class Searcher{
 				e.printStackTrace();
 			}
 			againtime+=100;
-			//System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-		}while(Searcher.count==500 && againtime<1000);
+			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+			endflag = true;
+			for(Player p:Player.players.values()) {
+				if(p.getGoalDistance()==500)endflag=false;
+			}
+		}while(!endflag && againtime<1000);
 		if(Searcher.count==500) System.out.println("探索失敗");
 	}
 
@@ -186,6 +191,7 @@ public class Searcher{
 		//再探索は10回まで(1回で出てほしい…)
 		for(Player selectedPlayer:players.values()) {
 			int againtime=0;
+			boolean endflag;
 			do{
 				App.japan.allClose();
 				//Threadを立ち上げる
@@ -203,8 +209,12 @@ public class Searcher{
 					e.printStackTrace();
 				}
 				againtime+=100;
-				//System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-			}while(Searcher.count==500 && againtime<1000);
+				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+				endflag = true;
+				for(Player p:Player.players.values()) {
+					if(p.getGoalDistance()==500)endflag=false;
+				}
+			}while(!endflag && againtime<1000);
 			if(Searcher.count==500) System.out.println("探索失敗");
 		}
 	}
