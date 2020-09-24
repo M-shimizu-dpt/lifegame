@@ -7,94 +7,167 @@
 package lifegame.game.object;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 
 import lifegame.game.event.WaitThread;
+import lifegame.game.main.App;
+import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;
 import lifegame.game.search.Searcher;
 
-public  class Binbo{
+public class Binbo{
+
 	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private String name;
-	private Player player;
+	private Player binboplayer;
 	private ArrayList<Player> together;
 	private ArrayList<Player> before;
-	//private Player after;
-	//private int playerId;
-	private int month = 4;//??
+	//private ArrayList<Coordinates> allplayernowMass;//将来的に全員にbufさせるために全員の位置を取得する
+	//動いている人が重なったタイミングでメソッド実行されるようにするためのList
+	private ArrayList<Coordinates> stopplayernowMass;
 
 	public Binbo() {
 		name = "ボンビー";
 		this.together = new ArrayList<Player>();
 		this.before = new ArrayList<Player>();
+		this.stopplayernowMass = new ArrayList<Coordinates>();
+		//this.allplayernowMass = new ArrayList<Coordinates>();
 	}
 
-	public int getBmonth() {//??
-		return this.month;
-	}
 
-	public void binboTurn() {
+	//binboのターンメソッド
+	public void start(Window window) {
+
 		//スタブメソッド
 		System.out.println(name + "のターン");
-		System.out.println(this.player.getName());
+		System.out.println(this.binboplayer.getName());
+		window.bonbyplayer();
 		randomBinboEvent();
 		System.out.println(name +"のターン終了");
 	}
-	public void sutabBinboFinishTurn() {
+
+	//ボンビー終了メソッド
+	public void finishTurn() {
 		//スタブメソッド
 		System.out.print("ボンビーターン終了");
 	}
 
-	public void setBinboPlayer(Player player) {
-		this.player = player;
+	//ボンビーが憑くプレイヤーをセット
+	public void setPlayerBinbo(Player player) {
+		this.binboplayer = player;
 	}
 
+	//ボンビーが憑くプレイヤーを取得
 	public Player getBinboPlayer() {
-		return this.player;
+		return this.binboplayer;
 	}
 
-	public void addSameMossPlayer(Player player) {//だれと一緒にいるか変更
-		this.together.add(player);
+	//ボンビーが憑いているプレイヤーが現在動いているPlayerかを判断
+	public boolean containsBinbo(Player player) {
+		return this.binboplayer==player;
 	}
 
-	public ArrayList<Player> getSameMossPlayers() {//だれと一緒にいるか取得
+/*将来必要
+ 	//全てのプレイヤーの現在地set
+	public void setAllPlayersNowMass() {
+		for(int player=0;player<Player.players.size();player++) {
+				this.allplayernowMass.add(Player.players.get(player).getNowMass());
+		}
+	}
+
+	//全てのプレイヤーの現在地取得
+	public ArrayList<Coordinates> getAllPlayersNowMass() {
+		return	this.allplayernowMass;
+	}
+
+	//全てのプレイヤーの現在地clear
+	public void clearAllPlayersNowMass() {
+		this.allplayernowMass.clear();
+	}
+*/
+
+	//現在動いていないプレイヤーの現在地set
+	public void setStopPlayersNowMass() {
+		for(int player=0;player<Player.players.size();player++) {
+			if(player!=App.turn) {
+				this.stopplayernowMass.add(Player.players.get(player).getNowMass());
+			}
+		}
+	}
+
+	//現在動いていないプレイヤーの現在地取得
+	public ArrayList<Coordinates> getStopPlayersNowMass() {
+		return	this.stopplayernowMass;
+	}
+
+	//現在動いていないプレイヤーの現在地clear
+	public void clearStopPlayersNowMass() {
+		this.stopplayernowMass.clear();
+	}
+
+	//現在動いているプレイヤーと動いていないプレイヤーが重なったか判定
+	public boolean stopPlayersNowMassContains() {
+		for(Coordinates playernowmass : this.stopplayernowMass) {
+			if(playernowmass.contains(Player.player.getNowMass())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	//だれと一緒にいるかListをset
+	public void addSameMossPlayer(Player samemassplayer) {
+		this.together.add(samemassplayer);
+	}
+
+	//だれと一緒にいるかListを取得
+	public ArrayList<Player> getSameMossPlayers() {
 		return this.together;
 	}
-	public void sameMossPlayersClear() {//だれと一緒にいるかクリア
 
+	//だれと一緒にいるかListをclear
+	public void sameMossPlayersClear() {
 		if(this.together!=null) {
 			this.together.clear();
 		}
 	}
 
-	public void setBonbyBefore(Player player) {//ボンビーだれからもらったかか変更
-		this.before.add(player);
+	//ボンビーが前回憑いていた人を記憶
+	public void setBonbyBefore(Player beforeplayer) {
+		this.before.add(beforeplayer);
 	}
-	public ArrayList<Player> getBonbyBefore() {//ボンビーだれからもらったか取得
+
+	//ボンビーが前回憑いていた人を取得
+	public ArrayList<Player> getBonbyBefore() {
 		return this.before;
 	}
-	public Player getBonbyLastBefore() {//ボンビーだれからもらったか直近取得
+
+	//ボンビーが前回憑いていた人を直近でだれからもらったか取得
+	public Player getBonbyLastBefore() {
 		if(this.before!=null) {
 			return this.before.get(this.before.size()-1);
 		}else {
 			return null;
 		}
 	}
-	public void clearBonbyLastBefore() {//ボンビーだれからもらったか初期化
+
+	//ボンビーが前回憑いていた人を直近のプレイヤーをListから削除
+	public void clearBonbyLastBefore() {
 		this.before.remove(this.before.size()-1);
 	}
 
-	public void clearBonbyBefore() {//ボンビーだれからもらったか初期化
+	//ボンビーが前回憑いていた人を初期化
+	public void clearBonbyBefore() {
 		this.before.clear();
 	}
 
-	public void binboPossessPlayer(Window window,Map<Integer,Player> players) {//一番遠い人にボンビーが付く
+	//一番遠い人にボンビーが付くメソッド
+	public void binboPossessPlayer(Window window) {
 		ArrayList<Integer> whobonbylist = new ArrayList<Integer>();
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int whobonby = 0;
-		Searcher.searchShortestRouteAllPlayers(window,players);
+		Searcher.searchShortestRouteAllPlayers(window,Player.players);
    		WaitThread waitthred  = new WaitThread(11);
 		waitthred.start();
 		try {
@@ -102,96 +175,95 @@ public  class Binbo{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		for(int i=0;i<players.size();i++) {
+		for(int i=0;i<Player.players.size();i++) {
 			//System.out.println(players.get(i).getGoalDistance()+"最長距離"+i);
-			if(players.get(i).containsGoalDistance(maxdistance)==1) {
-				if(players.get(i).containsGoalDistance(maxdistance)!=0) {
+			if(Player.players.get(i).containsGoalDistance(maxdistance)==1) {
+				if(Player.players.get(i).containsGoalDistance(maxdistance)!=0) {
 					if(whobonbylist!=null) {
 						whobonbylist.clear();
 					}
-					maxdistance = players.get(i).getGoalDistance();
+					maxdistance = Player.players.get(i).getGoalDistance();
 				}
 				whobonbylist.add(i);
 			}
 		}
 		whobonby = whobonbylist.get(rand.nextInt(1000)%whobonbylist.size());//同じ距離にいた場合ランダム
 		if(this.getBinboPlayer()!=null) {
-			this.player.changeBonby();
+			this.binboplayer.changeBonby();
 		}
-		players.get(whobonby).changeBonby();
-		this.setBinboPlayer(players.get(whobonby));
+		Player.players.get(whobonby).changeBonby();
+		this.setPlayerBinbo(Player.players.get(whobonby));
 	}
 
-	public void passingBonby(boolean tf,Map<Integer,Player> players,int turn) {//ながくなったため、分けた(ボンビー擦り付けメソッド)
-		if(tf == true) {//残り移動マスが減るとき(進むとき)
-			//boolean onceflag = false;//同じマスに複数人存在している際に一度だけしか交換しないように
-			Player nullflag = this.getBinboPlayer();
-			if(nullflag!=null) {
-				this.samePlacePlayer(turn,players);
-				if(this.player.containsID(turn)) {//ボンビーと一緒に移動していたら
-					if(this.getSameMossPlayers()!=null) {
-						for (Player whowith : this.getSameMossPlayers()) {
-							this.setBonbyBefore(this.player);
-							this.changeBonby(whowith);//ボンビーつく人とplayerのボンビーフラグTFを変えるメソッド
+	//ボンビー擦り付けメソッド--進んだ際
+	public void passingGoBonby() {
+		Player nullflag = this.getBinboPlayer();
+		if(nullflag!=null) {
+			this.samePlacePlayer();
+			if(this.binboplayer.containsID(App.turn)) {//ボンビーと一緒に移動していたら
+				if(this.getSameMossPlayers()!=null) {
+					for (Player whowith : this.getSameMossPlayers()) {
+						this.setBonbyBefore(this.binboplayer);//だれについていたかlist
+						this.changeBonby(whowith);//ボンビーつく人
+						break;//同じマスに複数人存在している際に一度だけしか交換しないように
+					}
+				}
+			}else {
+				if(this.binboplayer.getNowMass().contains(Player.player.getNowMass())) {
+					this.setBonbyBefore(this.binboplayer);
+					this.changeBonby(Player.player);
+				}
+			}
+		}
+	}
+
+	//ボンビー擦り付けメソッド--戻った際
+	public void passingBackBonby() {//ながくなったため、分けた(ボンビー擦り付けメソッド)
+		if(this.getBonbyBefore().size()!=0) {
+			if(this.getSameMossPlayers().size()!=0) {
+				if(this.getBonbyLastBefore().containsID(Player.player)) {
+					this.clearBonbyLastBefore();//リスト一番上消す
+					this.changeBonby(Player.player);
+				}else {
+					for (Player whowith : this.getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
+						if(this.getBonbyLastBefore().containsID(whowith)) {
+							this.clearBonbyLastBefore();//リスト一番上消す
+							this.changeBonby(whowith);
 							break;
 						}
 					}
-				}else {
-					if(this.player.getNowMass().contains(players.get(turn).getNowMass())) {
-						this.setBonbyBefore(this.player);
-						this.changeBonby(players.get(turn));
-					}
 				}
 			}
-		}else {////残り移動マスが増えるとき(戻るとき)
-			if(this.getBonbyBefore().size()!=0) {
-				if(this.getSameMossPlayers().size()!=0) {
-					if(this.getBonbyLastBefore().containsID(players.get(turn))) {
-						this.clearBonbyLastBefore();//リスト一番上消す
-						this.changeBonby(players.get(turn));
-					}else {
-						for (Player whowith : this.getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
-							if(this.getBonbyLastBefore().containsID(whowith)) {
-								this.clearBonbyLastBefore();//リスト一番上消す
-								this.changeBonby(whowith);
-								break;
-							}
-						}
-					}
-				}
-			}
-			this.samePlacePlayer(turn,players);
 		}
-		/*
-		for(int i = 0;i<4;i++) {
-			//System.out.println(players.get(i).isBonby());
-		}
-		*/
+		this.samePlacePlayer();
 	}
 
-	private void changeBonby(Player who) {//ボンビー入れ替えメソッド
-		this.player.changeBonby();
-		this.setBinboPlayer(who);
-		this.player.changeBonby();
+	//ボンビー入れ替えメソッド
+	private void changeBonby(Player who) {
+		this.binboplayer.changeBonby();
+		this.setPlayerBinbo(who);
+		this.binboplayer.changeBonby();
 	}
 
-	private void samePlacePlayer(int turn,Map<Integer,Player> players) {//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)
+	//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)
+	private void samePlacePlayer() {
 		this.sameMossPlayersClear();
-		int i = turn;
+		int i = App.turn;
 		while(true) {
 			i++;
-			if(i==players.size()) {
+			if(i==Player.players.size()) {
 				i=0;
 			}
-			if(i==turn) {
+			if(i==App.turn) {
 				break;
 			}
-			if(this.player.getNowMass().contains(players.get(i).getNowMass())){
-				this.addSameMossPlayer(players.get(i));
+			if(this.binboplayer.getNowMass().contains(Player.players.get(i).getNowMass())){
+				this.addSameMossPlayer(Player.players.get(i));
 			}
 		}
 	}
 
+	//ランダムイベント
 	private void randomBinboEvent() {
 		Random rand = new Random();
 		int result = rand.nextInt(100);
@@ -202,6 +274,7 @@ public  class Binbo{
 		}
 	}
 
+	//ボンビーが成るメソッド
 	private void Makeover() {
 		Random rand = new Random();
 		double result = rand.nextDouble();

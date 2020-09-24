@@ -74,7 +74,6 @@ public class Window implements ActionListener{
 	private static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
 
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
-	public Binbo poorgod = new Binbo();
 
 	public Window() {
 
@@ -389,6 +388,7 @@ public class Window implements ActionListener{
 			}
 		}
 
+
 		//グラフの具体的な数値(右半部)
 		JLabel assetsThisYearLabel = createText(400,10,370,40,15,"今年の総資産");
 		assetsThisYearLabel.setBackground(Color.BLUE);
@@ -430,45 +430,44 @@ public class Window implements ActionListener{
 	}
 
 	public void bonbyplayer() {
-
-		if(Player.player.isBonby()) {
-			poorgod.binboTurn();
-			playFrame.setVisible(false);
-			binboFrame = new JFrame();
-			JLayeredPane binbo = binboFrame.getLayeredPane();
-			binboFrame.setSize(800,600);
-			binboFrame.setLocationRelativeTo(null);
-			//ImageIcon icon =  new ImageIcon("./img/days_res.png");
-			//icon.createImageIcon("./img/days_res.png",");
-			JLabel text1=new JLabel();
-			JLabel text2=new JLabel();
-			//JLabel text3=new JLabel(icon);
-			JButton closeButton = createButton(580,500,180,50,10,"閉じる");
-			closeButton.setActionCommand("貧乏神イベントを閉じる");
-			if(!Player.player.isPlayer()) {
-				closeButton.setEnabled(false);
-			}
-			binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-			binboFrame.setName("ボンビーのターン");
-
-			text1 = createText(10,10,600,100,20,"テストボンビー1");
-			text2 = createText(10,110,600,100,20,"テストボンビー２");
-			//text3 = createText(10,210,600,100,20,"テストボンビー3");
-
-			text1.setHorizontalAlignment(SwingConstants.LEFT);
-			binbo.add(text1);
-			text2.setHorizontalAlignment(SwingConstants.LEFT);
-			binbo.add(text2);
-			//text3.setHorizontalTextPosition(SwingConstants.LEFT);
-			//binbo.add(text3);
-			//System.out.println(icon.getIconWidth());
-			//System.out.println(icon.getIconHeight());
-			binboFrame.setVisible(true);
-
-			setCloseFrame(5);
-		}else {
-			Binbo.binboFinish();
+		/*
+		for(int i = 0;i<4;i++) {
+			System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
 		}
+		*/
+		playFrame.setVisible(false);
+		binboFrame = new JFrame();
+		JLayeredPane binbo = binboFrame.getLayeredPane();
+		binboFrame.setSize(800,600);
+		binboFrame.setLocationRelativeTo(null);
+		//ImageIcon icon =  new ImageIcon("./img/days_res.png");
+		//icon.createImageIcon("./img/days_res.png",");
+		JLabel text1=new JLabel();
+		JLabel text2=new JLabel();
+		//JLabel text3=new JLabel(icon);
+		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
+		closeButton.setActionCommand("貧乏神イベントを閉じる");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
+		binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		binboFrame.setName("ボンビーのターン");
+
+		text1 = createText(10,10,600,100,20,"テストボンビー1");
+		text2 = createText(10,110,600,100,20,"テストボンビー２");
+		//text3 = createText(10,210,600,100,20,"テストボンビー3");
+
+		text1.setHorizontalAlignment(SwingConstants.LEFT);
+		binbo.add(text1);
+		text2.setHorizontalAlignment(SwingConstants.LEFT);
+		binbo.add(text2);
+		//text3.setHorizontalTextPosition(SwingConstants.LEFT);
+		//binbo.add(text3);
+		//System.out.println(icon.getIconWidth());
+		//System.out.println(icon.getIconHeight());
+		binboFrame.setVisible(true);
+
+		setCloseFrame(5);
 
 	}
 
@@ -521,7 +520,7 @@ public class Window implements ActionListener{
 		binboFrame.setVisible(false);
 		binboFrame.removeAll();
 		playFrame.setVisible(true);
-		poorgod.sutabBinboFinishTurn();
+		App.poorgod.finishTurn();
 		Binbo.binboFinish();
 	}
 
@@ -1020,7 +1019,7 @@ public class Window implements ActionListener{
 
 		setGoalColor();
 
-		poorgod.binboPossessPlayer(this,Player.players);
+		App.poorgod.binboPossessPlayer(this);
 	}
 
 	//会社情報を表示
@@ -1316,11 +1315,10 @@ public class Window implements ActionListener{
 
 		boolean tf = MoveEvent.isReturned(play.getComponentAt(400, 300).getName());
 
-		poorgod.passingBonby(tf,Player.players,App.turn);
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
 			Dice.clear();
-			poorgod.clearBonbyBefore();
+			App.poorgod.clearBonbyBefore();
 			if(!Card.usedRandomCard) {
 				massEvent();
 			}
@@ -1602,6 +1600,7 @@ public class Window implements ActionListener{
 		setCloseFrame(2);
 	}
 
+
 	//カードショップの売却画面
 	private void printSellShop() {
 		shopFrontFrame.setVisible(false);
@@ -1623,8 +1622,6 @@ public class Window implements ActionListener{
 		}
 		shopFrame.setVisible(true);
 	}
-
-
 
 	//店イベント
 	public void printShop() {
@@ -1830,7 +1827,6 @@ public class Window implements ActionListener{
 			text2 = createText(10,110,600,100,20,"富士山の登頂に成功し、気分が良くなった");
 			text3 = createText(10,210,600,100,20,"登山費用として5000万円失った");
 		}
-
 		text1.setHorizontalAlignment(SwingConstants.LEFT);
 		random.add(text1);
 		text2.setHorizontalAlignment(SwingConstants.LEFT);
@@ -1861,6 +1857,7 @@ public class Window implements ActionListener{
 		int rndnum;
 		rndnum = new Random().nextInt(11)+1;
 		System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
+
 
 		if(App.month==rndnum) {
     		JFrame RandomEvent2 = new JFrame("トピックス");

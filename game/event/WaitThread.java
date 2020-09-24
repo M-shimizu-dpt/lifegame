@@ -99,6 +99,7 @@ public class WaitThread extends Thread{
 			}
 			break;
 		case 5:
+
 			while(!Binbo.isBinboTurn()) {
 				try {
 					Thread.sleep(100);
