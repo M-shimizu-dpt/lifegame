@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.print.Window;

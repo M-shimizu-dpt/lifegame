@@ -5,7 +5,7 @@
 
 package lifegame.game.main;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.map.information.Japan;
 import lifegame.game.map.print.Window;
 import lifegame.game.object.Card;
@@ -18,39 +18,35 @@ public class App {
 	public static int year=1;//今の年
 	public static int month=4;//今の月
 	public static Japan japan = new Japan();//物件やマス情報
-	public static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
+	private static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
+	private static boolean turnEndFlag=false;//ターン交代するためのフラグ
 
     public static void main(String[] args) {
         App app = new App();
     	app.run();
     }
 
-    /*
-     * プレイヤーの順番をランダムに入れ替えれるようにする
-     */
-    private void run() {
-    	Window window = new Window();
+  	public static void initTurnEndFlag() {
+  		App.turnEndFlag=false;
+  	}
 
-    	int[] result = window.printStart();
+  	public static boolean isTurnEnd() {
+  		return App.turnEndFlag;
+  	}
 
-    	int playerCount = result[0];
-    	int yearLimit = result[1];
-    	assert(playerCount>=0 && playerCount<=3);
-    	assert(yearLimit>0 && yearLimit<=100);
+  	public static boolean isStarted() {
+  		return App.startFlag;
+  	}
 
+  	public static void start() {
+  		App.startFlag=true;
+  	}
 
-    	Card.init(window);
-    	Dice.init();
+  	public static void turnEnd() {
+  		App.turnEndFlag=true;
+  	}
 
-    	window.initWindow(yearLimit,playerCount);
-    	try {
-        	play(window,yearLimit);
-        }catch(InterruptedException e) {
-        	e.printStackTrace();
-        }
-    }
-
-    //プレイ中の動作
+  	 //プレイ中の動作
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
@@ -84,12 +80,37 @@ public class App {
 			turnEnd.join();
 			window.bonbyplayer();
 			Thread.sleep(1000);
-			Window.turnEndFlag=false;
+			App.turnEndFlag=false;
 			App.japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
 		System.out.println("終わり");
 	}
-  	public static void start() {
-  		App.startFlag=true;
-  	}
+
+    /*
+     * プレイヤーの順番をランダムに入れ替えれるようにする
+     */
+    private void run() {
+    	Window window = new Window();
+
+    	int[] result = window.printStart();
+
+    	int playerCount = result[0];
+    	int yearLimit = result[1];
+    	assert(playerCount>=0 && playerCount<=3);
+    	assert(yearLimit>0 && yearLimit<=100);
+
+
+    	Card.init(window);
+    	Dice.init();
+
+    	window.initWindow(yearLimit,playerCount);
+    	try {
+        	play(window,yearLimit);
+        }catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
+    }
+
+
+
 }

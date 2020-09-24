@@ -15,7 +15,7 @@ import java.util.Random;
 
 import javax.swing.JLabel;
 
-import lifegame.game.WaitThread;
+import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.map.information.Coordinates;
 import lifegame.game.map.information.Property;
@@ -27,33 +27,29 @@ public class Player {
 	public static Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	public static Player player;//操作中のプレイヤー
 
-	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
-	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
-
 	public static int maxProfit=100;//最高収益(グラフ作成用)
 	public static int minProfit=0;//最低収益(グラフ作成用)
 	public static int maxAssets=100;//最高資産(グラフ作成用)
 	public static int minAssets=0;//最低資産(グラフ作成用)
 
+	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
+	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
+
 	private static boolean stopFlag;//一時停止用フラグ
 
-	private String name;//名前
-	private int money;//所持金
-	private int move;//進めるマス
+	private boolean bonby;//ボンビー識別
 	private Buff buff;//一定期間の持続効果
 	private ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
-	private Coordinates nowMass;//現在地
 	private JLabel colt;//プレイヤーの駒
-	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
-	private int id;//識別番号
 	private boolean cpuflag;
-
 	private int goaldistance;
-	private boolean bonby;//ボンビー識別
-	//private ArrayList<Integer> whowith;
-	//private int givebonby;
-	//private int getbonby;
-	//private int givebonby;
+	private int id;//識別番号
+	private String name;//名前
+	private Coordinates nowMass;//現在地
+	private int money;//所持金
+	private int move;//進めるマス
+	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
+
 
 	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
@@ -79,6 +75,42 @@ public class Player {
 		//this.whowith = new ArrayList<Integer>();
 	}
 
+	public static void addProfitList(Integer[] list){
+		Player.allProfitList.add(list);
+	}
+
+	public static void addAssetsList(Integer[] list){
+		Player.allAssetsList.add(list);
+	}
+
+	public static ArrayList<Integer[]> getAssetsList(){
+		return Player.allAssetsList;
+	}
+
+	public static Integer[] getAssetsList(int index){
+		return Player.allAssetsList.get(index);
+	}
+
+	public static int getAssetsListSize(){
+		return Player.allAssetsList.size();
+	}
+
+	public static Player getPlayer(int index) {
+		return Player.players.get(index);
+	}
+
+	public static ArrayList<Integer[]> getProfitList(){
+		return Player.allProfitList;
+	}
+
+	public static Integer[] getProfitList(int index){
+		return Player.allProfitList.get(index);
+	}
+
+	public static int getProfitListSize(){
+		return Player.allProfitList.size();
+	}
+
 	public static void initPlayers(Window window,int playerCount) {
 		for(int i=0;i<4;i++) {
   			if(playerCount>i) {//プレイヤー
@@ -97,46 +129,33 @@ public class Player {
 		Player.player=Player.players.get(0);
 	}
 
+	public static boolean isStop() {
+		return Player.stopFlag;
+	}
+
 	public static void setNowPlayer() {
 		Player.player=Player.players.get(App.turn);
 	}
 
-	public static Player getPlayer(int index) {
-		return Player.players.get(index);
+	public static void setStopFlag(boolean tf) {
+		Player.stopFlag = tf;
 	}
 
-	public int getCardSize() {
-		return cards.size();
+	public static void sortProperty(ArrayList<Property> propertys) {
+		Collections.sort(propertys, new Comparator<Property>() {
+			public int compare(Property property1, Property property2) {
+				return Integer.compare(property1.getAmount(), property2.getAmount());
+			}
+		});
 	}
 
-	public int getAnotherPlayer() {
-		int rand;
-		do {
-			rand = new Random().nextInt(4);
-		}while(rand != this.id);
-		return rand;
+
+	public void addCard(Card card) {
+		cards.add(card);
 	}
 
-	public int containsMoney(int money) {
-		if(this.money>money) {
-			return 1;
-		}else if(this.money<money) {
-			return -1;
-		}else {
-			return 0;
-		}
-	}
-
-	public boolean isPlayer() {
-		return cpuflag;
-	}
-
-	public boolean containsID(int id) {
-		return this.id==id;
-	}
-
-	public boolean containsID(Player player) {
-		return this.id==player.id;
+	public void addMoney(int money) {
+		this.money += money;
 	}
 
 	public void addProfit() {
@@ -149,127 +168,37 @@ public class Player {
 		this.propertys.add(property);
 	}
 
-	public void removeProperty(Property proerty) {
-		this.propertys.remove(proerty);
-	}
-
-	public void addCard(Card card) {
-		cards.add(card);
-	}
-
-	public void sellCard(Card card) {
-		this.removeCard(card);
-		this.addMoney(card.getSellPrice());
-	}
-
 	public void buyCard(Card card) {
 		this.addCard(card);
 		this.addMoney(-card.getBuyPrice());
 	}
 
-	public void removeCard(Card card) {
-		cards.remove(card);
-	}
+	//物件購入・増築処理
+	public void buyPropertysCPU(String name) {
+		for(int index = 0;index<App.japan.getStaInPropertySize(name);index++) {
+			if(App.japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
+			if(!App.japan.getStaInProperty(name,index).isOwner()) {
+				App.japan.getStaInProperty(name,index).buy(this,0);
+				if(App.japan.getStation(name).isMono()) {
+					App.japan.monopoly(name);
+				}
+			}else {
+				App.japan.getStaInProperty(name,index).buy(this);
+			}
+			App.japan.alreadys.add(App.japan.getStaInProperty(name,index).getName()+index);
 
-	public void setMass(int x,int y) {
-		this.nowMass.setValue(x, y);
-	}
-
-	public void setMove(int move) {
-		this.move=move;
-	}
-
-	public void clearMove() {
-		this.move=0;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void addMoney(int money) {
-		this.money += money;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public int getMoney() {
-		return this.money;
-	}
-
-	public int getMove() {
-		return this.move;
-	}
-
-	public Buff getBuff() {
-		return this.buff;
-	}
-
-	public ArrayList<Card> getCards(){
-		return this.cards;
-	}
-
-	public Card getCard(int index) {
-		return this.cards.get(index);
-	}
-
-	public Coordinates getNowMass() {
-		return this.nowMass;
-	}
-
-	public int getRandomEnemy() {
-		Random rand = new Random();
-		int enemy;
-		do {
-			enemy = rand.nextInt(4);
-		}while(enemy==this.id);
-		return enemy;
-	}
-
-	public int getID() {
-		return this.id;
-	}
-
-	public void setColt(JLabel colt) {
-		this.colt = colt;
-	}
-
-	public JLabel getColt() {
-		return this.colt;
-	}
-
-	public ArrayList<Property> getPropertys() {
-		return this.propertys;
-	}
-
-	public Property getProperty(int index) {
-		return this.propertys.get(index);
-	}
-
-	public boolean isEffect() {
-		if(getEffect() != 0) {
-			return true;
-		}else {
-			return false;
+			System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		}
 	}
 
-	public int getEffect() {
-		return getBuff().getEffect();
-	}
-
-	public int getPeriod() {
-		return getBuff().getPeriod();
-	}
-
-	public static void sortProperty(ArrayList<Property> propertys) {
-		Collections.sort(propertys, new Comparator<Property>() {
-			public int compare(Property property1, Property property2) {
-				return Integer.compare(property1.getAmount(), property2.getAmount());
-			}
-		});
+	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
+	public void cardFullCPU() {
+		do{
+			this.getCards().remove(this.getCard(0));
+			System.out.println("remove:"+this.getCard(0).getName());
+			Card.priceSort(this.getCards());
+		}while(this.getCardSize()>8);
+		Window.throwEnd();
 	}
 
 	public void changeBonby() {//ボンビーついたら変更
@@ -280,63 +209,36 @@ public class Player {
 		}
 	}
 
-	public boolean isBonby() {//ボンビーついているか取得
-		return this.bonby;
+	public void clearMove() {
+		this.move=0;
 	}
 
-
-	public void setGoalDistance(int distance) {//最短距離をセット
-		this.goaldistance = distance;
-		System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
+	public int containsGoalDistance(int distance) {
+		if(this.goaldistance>distance) {
+			return 1;
+		}else if(this.goaldistance<distance){
+			return -1;
+		}else {
+			return 0;
+		}
 	}
 
-	public boolean containsGoalDistance(int distance) {
-		return this.goaldistance>distance;
-	}
-	public boolean equalsGoalDistance(int distance) {
-		return this.goaldistance==distance;
+	public boolean containsID(int id) {
+		return this.id==id;
 	}
 
-	public int getGoalDistance() {//最短距離を取得
-		return this.goaldistance;
+	public boolean containsID(Player player) {
+		return this.id==player.id;
 	}
 
-	public void initGoalDistance() {
-		this.goaldistance=100;
-	}
-
-	public static boolean isStop() {
-		return Player.stopFlag;
-	}
-
-	public static void setStopFlag(boolean tf) {
-		Player.stopFlag = tf;
-	}
-
-	public static ArrayList<Integer[]> getProfitList(){
-		return Player.allProfitList;
-	}
-	public static Integer[] getProfitList(int index){
-		return Player.allProfitList.get(index);
-	}
-	public static int getProfitListSize(){
-		return Player.allProfitList.size();
-	}
-	public static void addProfitList(Integer[] list){
-		Player.allProfitList.add(list);
-	}
-
-	public static ArrayList<Integer[]> getAssetsList(){
-		return Player.allAssetsList;
-	}
-	public static Integer[] getAssetsList(int index){
-		return Player.allAssetsList.get(index);
-	}
-	public static int getAssetsListSize(){
-		return Player.allAssetsList.size();
-	}
-	public static void addAssetsList(Integer[] list){
-		Player.allAssetsList.add(list);
+	public int containsMoney(int money) {
+		if(this.money>money) {
+			return 1;
+		}else if(this.money<money) {
+			return -1;
+		}else {
+			return 0;
+		}
 	}
 
 	//CPU操作
@@ -366,7 +268,7 @@ public class Player {
 					Card.resetUsedOthersCard();
 					window.ableMenu();
 					diceFlag=false;
-					Window.turnEndFlag=true;
+					App.turnEnd();
 				}
 			}
 		}
@@ -475,37 +377,133 @@ public class Player {
 		}
 	}
 
-	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
-	public void cardFullCPU() {
-		do{
-			this.getCards().remove(this.getCard(0));
-			System.out.println("remove:"+this.getCard(0).getName());
-			Card.priceSort(this.getCards());
-		}while(this.getCardSize()>8);
-		Window.throwFlag=true;
+	public int getAnotherPlayer() {
+		int rand;
+		do {
+			rand = new Random().nextInt(4);
+		}while(rand != this.id);
+		return rand;
 	}
 
-	//物件購入・増築処理
-	public void buyPropertysCPU(String name) {
-		for(int index = 0;index<App.japan.getStaInPropertySize(name);index++) {
-			if(App.japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
-			if(!App.japan.getStaInProperty(name,index).isOwner()) {
-				App.japan.getStaInProperty(name,index).buy(this,0);
-				if(App.japan.getStation(name).isMono()) {
-					App.japan.monopoly(name);
-				}
-			}else {
-				App.japan.getStaInProperty(name,index).buy(this);
-			}
-			App.japan.alreadys.add(App.japan.getStaInProperty(name,index).getName()+index);
+	public Buff getBuff() {
+		return this.buff;
+	}
 
-			System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+	public Card getCard(int index) {
+		return this.cards.get(index);
+	}
+
+	public ArrayList<Card> getCards(){
+		return this.cards;
+	}
+
+	public int getCardSize() {
+		return cards.size();
+	}
+
+	public JLabel getColt() {
+		return this.colt;
+	}
+
+	public int getEffect() {
+		return getBuff().getEffect();
+	}
+
+	public int getGoalDistance() {//最短距離を取得
+		return this.goaldistance;
+	}
+
+	public int getID() {
+		return this.id;
+	}
+
+	public int getMoney() {
+		return this.money;
+	}
+
+	public int getMove() {
+		return this.move;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public Coordinates getNowMass() {
+		return this.nowMass;
+	}
+
+	public int getPeriod() {
+		return getBuff().getPeriod();
+	}
+
+	public Property getProperty(int index) {
+		return this.propertys.get(index);
+	}
+
+	public ArrayList<Property> getPropertys() {
+		return this.propertys;
+	}
+
+	public void initGoalDistance() {
+		this.goaldistance=100;
+	}
+
+	public boolean isBonby() {//ボンビーついているか取得
+		return this.bonby;
+	}
+
+	public boolean isEffect() {
+		if(getEffect() != 0) {
+			return true;
+		}else {
+			return false;
 		}
 	}
+
+	public boolean isPlayer() {
+		return cpuflag;
+	}
+
+	public void removeProperty(Property proerty) {
+		this.propertys.remove(proerty);
+	}
+
+	public void removeCard(Card card) {
+		cards.remove(card);
+	}
+
+	public void sellCard(Card card) {
+		this.removeCard(card);
+		this.addMoney(card.getSellPrice());
+	}
+
 	public void sellPropertyCPU(Window window) {
 		Player.sortProperty(this.getPropertys());
 		window.sellPropertys(this.getProperty(0));
 	}
+
+	public void setColt(JLabel colt) {
+		this.colt = colt;
+	}
+
+	public void setGoalDistance(int distance) {//最短距離をセット
+		this.goaldistance = distance;
+		System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
+	}
+
+	public void setMass(int x,int y) {
+		this.nowMass.setValue(x, y);
+	}
+
+	public void setMove(int move) {
+		this.move=move;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }
 
 
