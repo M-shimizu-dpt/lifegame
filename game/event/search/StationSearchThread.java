@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.search.model.SearchThreadModel;
-import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.print.Window;
 
 public class StationSearchThread extends SearchThreadModel{
@@ -43,7 +43,7 @@ public class StationSearchThread extends SearchThreadModel{
 
 			//終了
 			synchronized(StationSearchThread.lock2) {
-				if(App.japan.containsStation(this.nowMass)) {
+				if(ContainsEvent.isStation(this.nowMass)) {
 					goal();
 					break;
 				}
@@ -52,7 +52,7 @@ public class StationSearchThread extends SearchThreadModel{
 			//情報の取得・更新
 			super.count++;
 			synchronized(StationSearchThread.lock1) {
-				list = App.japan.getMovePossibles(this.nowMass);
+				list = Japan.getMovePossibles(this.nowMass);
 			}
 			super.moveTrajectory.add(new Coordinates(this.nowMass));
 

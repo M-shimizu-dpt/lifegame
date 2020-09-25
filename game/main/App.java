@@ -19,7 +19,6 @@ public class App {
 	public static int turn=0;//現在のターン
 	public static int year=1;//今の年
 	public static int month=4;//今の月
-	public static Japan japan = new Japan();//物件やマス情報
 
 	private static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
 	private static boolean turnEndFlag=false;//ターン交代するためのフラグ
@@ -67,7 +66,7 @@ public class App {
 		  	WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
 		  	waitthred.start();
 		  	waitthred.join();
-		  	App.japan.saveGoal();
+		  	Japan.saveGoal();
 		  	window.moveMaps();//画面遷移が少し遅い
 		  	window.reloadInfo();//画面上部に表示している情報を更新
 		  	Card.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
@@ -87,7 +86,7 @@ public class App {
 			}
 			Thread.sleep(1000);
 			App.turnEndFlag=false;
-			App.japan.alreadys.clear();//このターンに購入した物件リストを初期化
+			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
 		System.out.println("終わり");
 	}
@@ -96,6 +95,7 @@ public class App {
      * プレイヤーの順番をランダムに入れ替えれるようにする
      */
     private void run() {
+    	Japan.init();
     	Window window = new Window();
 
     	int[] result = window.printStart();

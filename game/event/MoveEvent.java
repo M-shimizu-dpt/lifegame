@@ -2,7 +2,6 @@ package lifegame.game.event;
 
 import java.util.ArrayList;
 
-import lifegame.game.main.App;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
 
@@ -21,21 +20,21 @@ public abstract class MoveEvent {
 	public static void updateTrajectory(String component) {
 		//移動先が1つ前と同じか
 		if(moveTrajectory.size()>1) {
-			if(component.equals(moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
+			if(ContainsEvent.name(component,moveTrajectory.get(moveTrajectory.size()-2))) {//同じ場合、1つ前のmoveTrajectoryを削除
 				moveTrajectory.remove(moveTrajectory.size()-1);
 				Player.player.setMove(Player.player.getMove()+1);
 				BinboEvent.passingBackBonby();
 			}else {//違う場合、移動した先の座標をmoveTrajectoryに格納
 				moveTrajectory.add(component);
 				Player.player.setMove(Player.player.getMove()-1);
-				if(	BinboEvent.stopPlayersNowMassContains()){
+				if(	ContainsEvent.stopPlayersNowMass()){
 					BinboEvent.passingGoBonby();
 				}
 			}
 		}else {
 			moveTrajectory.add(component);
 			Player.player.setMove(Player.player.getMove()-1);
-			if(	BinboEvent.stopPlayersNowMassContains()){
+			if(	ContainsEvent.stopPlayersNowMass()){
 				BinboEvent.passingGoBonby();
 			}
 		}
@@ -55,10 +54,10 @@ public abstract class MoveEvent {
 			}else if(y>0) {
 				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1);
 			}
-			if(!App.japan.contains(Player.player.getNowMass().getX(),Player.player.getNowMass().getY())) {//2マス開いている場合
+			if(!ContainsEvent.isMass(Player.player.getNowMass())) {//2マス開いている場合
 				coor.setValue(coor.getX()*2, coor.getY()*2);
 			}
-		}while(!App.japan.contains(Player.player.getNowMass()));
+		}while(!ContainsEvent.isMass(Player.player.getNowMass()));
 		return coor;
 	}
 

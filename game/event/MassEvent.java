@@ -29,9 +29,7 @@ public abstract class MassEvent {
 		}else if(massName.substring(0, 1).equals("S")) {
 			shopEvent(window);
 		}else{
-			if(App.japan.getGoalName().equals(massName)) {
-				//debug
-				//bonbycatch();
+			if(ContainsEvent.goal(massName)) {
 				window.goal();
 			}else {
 				window.printPropertys(massName);
@@ -68,7 +66,7 @@ public abstract class MassEvent {
 		result -= result%100;
 		System.out.println(-result);
 		Player.player.addMoney(-result);
-		if(Player.player.getMoney() < 0 && Player.player.getPropertys().size() > 0) {
+		if(ContainsEvent.money(0) < 0 && ContainsEvent.propertySize()) {
 			window.printTakeStations();
 		}else{
 			if(rand.nextInt(100) < 3) {
@@ -99,7 +97,7 @@ public abstract class MassEvent {
 			}
 		}
 		Player.player.addCard(Card.cardList.get(index));
-		if(Player.player.getCards().size()>8) {
+		if(ContainsEvent.isMaxCard()) {
 			window.cardFull();
 			WaitThread wait = new WaitThread(9);
 			wait.start();

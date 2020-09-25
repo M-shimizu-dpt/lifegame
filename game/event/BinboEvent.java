@@ -17,7 +17,6 @@ public abstract class BinboEvent{
 
 	private static void initBinbo(Player player) {
 		Binbo.setPlayerBinbo(player);//初期でボンビーを憑けさせるなら
-		Binbo.getBinboPlayer().changeBonby();//初期でボンビーを憑けさせるなら
 	}
 
 	//binboのターンメソッド
@@ -37,18 +36,16 @@ public abstract class BinboEvent{
 	}
 
 	//うごいている人と同じマスの人を保存
-	public static void sameMossPlayerEvent(){
-		if(Binbo.isSameMossPlayers()) {
-			Binbo.sameMossPlayersClear();
+	public static void sameMassPlayerEvent(){
+		if(ContainsEvent.isTogether()) {
+			Binbo.sameMassPlayersClear();
 		}
-		Binbo.addSameMossPlayer();
+		Binbo.addSameMassPlayer();
 	}
 
 	//ボンビー入れ替えメソッド
 	public static void changeBonby(Player who) {
-		Binbo.getBinboPlayer().changeBonby();
 		Binbo.setPlayerBinbo(who);
-		Binbo.getBinboPlayer().changeBonby();
 		/*
 		for(int i = 0;i<4;i++) {//debug
 			System.out.println(Player.players.get(i).isBonby());
@@ -57,43 +54,22 @@ public abstract class BinboEvent{
 	}
 
 	public static void clearBefore() {
-		if(Binbo.isBonbyBefore()) {
+		if(ContainsEvent.isBonbyBefore()) {
 			Binbo.clearBonbyBefore();
 		}
 	}
 
-	//現在動いているプレイヤーと動いていないプレイヤーが重なったか判定
-	public static boolean stopPlayersNowMassContains() {
-		for(int stopplayer = 0;stopplayer<Player.players.size();stopplayer++) {
-			if(Player.player.getID()!=stopplayer) {
-				if(ContainsEvent.coor(Player.player,Player.players.get(stopplayer))) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
-
-	//動いている人の前回止まっていたマスにボンビーが前回憑いていた人が存在するかTF
-	public static boolean isBonbyLastBefore() {
-		for (Player whowith : Binbo.getSameMossPlayers()) {//止まったマスに一緒にいる人一覧
-			if(ContainsEvent.id(Binbo.getBonbyLastBefore(),whowith)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	//ボンビー擦り付けメソッド--進んだ際
 	public static void passingGoBonby() {
-		if(Binbo.isBinboPlayer()) {
+		if(ContainsEvent.isBinboPlayer()) {
 			Player binboplayer = Binbo.getBinboPlayer();
-			 sameMossPlayerEvent();
+			 sameMassPlayerEvent();
 			if(ContainsEvent.binboPlayer()) {//ボンビーと一緒に移動していたら
-				if(Binbo.isSameMossPlayers()) {
+				if(ContainsEvent.isTogether()) {
 					Binbo.setBonbyBefore(binboplayer);//だれについていたかlist
-					BinboEvent.changeBonby(Binbo.getSameMossPlayer());//ボンビーつく人
+					BinboEvent.changeBonby(Binbo.getSameMassPlayer());//ボンビーつく人
 				}
 			}else {
 				if(ContainsEvent.coor(binboplayer,Player.player)) {
@@ -106,22 +82,22 @@ public abstract class BinboEvent{
 
 	//ボンビー擦り付けメソッド--戻った際
 	public static void passingBackBonby() {
-		if(Binbo.isBinboPlayer()){
-			if(Binbo.isBonbyBefore()) {
+		if(ContainsEvent.isBinboPlayer()){
+			if(ContainsEvent.isBonbyBefore()) {
 				Player bonbylastplayer = Binbo.getBonbyLastBefore();
-				if(Binbo.isSameMossPlayers()) {
+				if(ContainsEvent.isTogether()) {
 					if(ContainsEvent.id(bonbylastplayer,Player.player)) {//動いている人が前回のbinbo所持者だったら
 						Binbo.clearBonbyLastBefore();//リスト一番上消す
 						BinboEvent.changeBonby(Player.player);
 					}else {//前回binbo所持者が止まっていたら
-						if(BinboEvent.isBonbyLastBefore()) {
+						if(ContainsEvent.isBonbyLastBefore()) {
 							Binbo.clearBonbyLastBefore();//リスト一番上消す
 							BinboEvent.changeBonby(bonbylastplayer);
 						}
 					}
 				}
 			}
-			sameMossPlayerEvent();
+			sameMassPlayerEvent();
 		}
 	}
 
@@ -152,10 +128,6 @@ public abstract class BinboEvent{
 			}
 		}
 		nextbonbyplayer = nextbonbylist.get(rand.nextInt(1000)%nextbonbylist.size());//同じ距離にいた場合ランダム
-		if(Binbo.isBinboPlayer()) {
-			Binbo.getBinboPlayer().changeBonby();
-		}
-		Player.players.get(nextbonbyplayer).changeBonby();
 		Binbo.setPlayerBinbo(Player.players.get(nextbonbyplayer));
 	}
 
@@ -163,7 +135,7 @@ public abstract class BinboEvent{
 	private static void randomBinboEvent() {
 		Random rand = new Random();
 		int result = rand.nextInt(100);
-		if(result<10) {
+		if(result<10) {//debug用なのだとしたらメモを書いておくように！！！
 			Makeover();
 		}else {
 			Makeover();

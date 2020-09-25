@@ -14,20 +14,19 @@ import java.util.Map;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.object.Player;
 
-public class Japan {
-	private ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
-	private ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
-	private ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
-	private ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
-	private ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
-	private Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
-	private Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
-	private int goal;//目的地の要素番号
-	private int saveGoal;//ゴール保存用
-	public ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
+public abstract class Japan {
+	private static ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
+	private static ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
+	private static ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
+	private static ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
+	private static ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
+	private static Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
+	private static Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
+	private static int goal;//目的地の要素番号
+	private static int saveGoal;//ゴール保存用
+	public static ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
 
-	//1マス10
-	public Japan() {
+	public static void init() {
 		//近畿の駅
 		stations.add(new Station("赤穂",new Coordinates(1,8)));
 		stations.add(new Station("姫路",new Coordinates(2,7)));
@@ -629,227 +628,226 @@ public class Japan {
 		//リンク作成
 		for(Coordinates from : getAllCoordinates()) {
 			for(Coordinates to : getAllCoordinates()) {
-				//if(from.contains(to))continue;
 				int x = from.getX()-to.getX();
 				int y = from.getY()-to.getY();
 				if(!((x>=-2 && x<=2) && (y>=-2 && y<=2)))continue;//処理数を減らす
-				if(containsStation(from.getX(),from.getY())) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates()).get(0))) {
+				if(ContainsEvent.isStation(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(0))) {
 						if(x==2) {
-							if(!contains(from.getX()-1,from.getY())) {
-								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.getX()+1,from.getY())) {
-								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.getX(),from.getY()-1)) {
-								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.getX(),from.getY()+1)) {
-								stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else {
-							stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().addLinks(to);
+							stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 						}
 					}
-					railMapping.put(stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates(),stations.get(getIndexOfStation(from.getX(),from.getY())).getCoordinates().getLinks());
+					railMapping.put(stations.get(getIndexOfStation(from)).getCoordinates(),stations.get(getIndexOfStation(from)).getCoordinates().getLinks());
 				}
-				if(containsBlue(from.getX(),from.getY())) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from.getX(),from.getY()))).get(0))) {
+				if(ContainsEvent.isBlue(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(0))) {
 						if(x==2) {
-							if(!contains(from.getX()-1,from.getY())) {
-								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.getX()+1,from.getY())) {
-								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.getX(),from.getY()-1)) {
-								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.getX(),from.getY()+1)) {
-								blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else {
-							blue.get(getIndexOfBlue(from.getX(),from.getY())).addLinks(to);
+							blue.get(getIndexOfBlue(from)).addLinks(to);
 						}
 					}
-					railMapping.put(blue.get(getIndexOfBlue(from.getX(),from.getY())),blue.get(getIndexOfBlue(from.getX(),from.getY())).getLinks());
+					railMapping.put(blue.get(getIndexOfBlue(from)),blue.get(getIndexOfBlue(from)).getLinks());
 				}
-				if(containsRed(from.getX(),from.getY())) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from.getX(),from.getY()))).get(0))) {
+				if(ContainsEvent.isRed(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(red.get(getIndexOfRed(from))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from))).get(0))) {
 						if(x==2) {
-							if(!contains(from.getX()-1,from.getY())) {
-								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.getX()+1,from.getY())) {
-								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.getX(),from.getY()-1)) {
-								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.getX(),from.getY()+1)) {
-								red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else {
-							red.get(getIndexOfRed(from.getX(),from.getY())).addLinks(to);
+							red.get(getIndexOfRed(from)).addLinks(to);
 						}
 					}
-					railMapping.put(red.get(getIndexOfRed(from.getX(),from.getY())),red.get(getIndexOfRed(from.getX(),from.getY())).getLinks());
+					railMapping.put(red.get(getIndexOfRed(from)),red.get(getIndexOfRed(from)).getLinks());
 				}
-				if(containsYellow(from.getX(),from.getY())) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from.getX(),from.getY()))).get(0))) {
+				if(ContainsEvent.isYellow(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(0))) {
 						if(x==2) {
-							if(!contains(from.getX()-1,from.getY())) {
-								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.getX()+1,from.getY())) {
-								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.getX(),from.getY()-1)) {
-								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.getX(),from.getY()+1)) {
-								yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else {
-							yellow.get(getIndexOfYellow(from.getX(),from.getY())).addLinks(to);
+							yellow.get(getIndexOfYellow(from)).addLinks(to);
 						}
 					}
-					railMapping.put(yellow.get(getIndexOfYellow(from.getX(),from.getY())),yellow.get(getIndexOfYellow(from.getX(),from.getY())).getLinks());
+					railMapping.put(yellow.get(getIndexOfYellow(from)),yellow.get(getIndexOfYellow(from)).getLinks());
 				}
-				if(containsShop(from.getX(),from.getY())) {
-					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(3)) ||
-							(x==0 && (y==1 || y==2) && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(2)) ||
-							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(1)) ||
-							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from.getX(),from.getY()))).get(0))) {
+				if(ContainsEvent.isShop(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(0))) {
 						if(x==2) {
-							if(!contains(from.getX()-1,from.getY())) {
-								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!contains(from.getX()+1,from.getY())) {
-								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!contains(from.getX(),from.getY()-1)) {
-								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!contains(from.getX(),from.getY()+1)) {
-								shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
+							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else {
-							shop.get(getIndexOfShop(from.getX(),from.getY())).addLinks(to);
+							shop.get(getIndexOfShop(from)).addLinks(to);
 						}
 					}
-					railMapping.put(shop.get(getIndexOfShop(from.getX(),from.getY())),shop.get(getIndexOfShop(from.getX(),from.getY())).getLinks());
+					railMapping.put(shop.get(getIndexOfShop(from)),shop.get(getIndexOfShop(from)).getLinks());
 				}
 			}
 		}
 	}
 
-	public void buyPropertys(String name, int index,Player player) {
-		if(!this.getStaInProperty(name,index).isOwner()) {
-			this.getStaInProperty(name,index).buy(player,0);
-			if(this.getStation(name).isMono()) {
-				this.monopoly(name);
+	public static void buyPropertys(String name, int index,Player player) {
+		if(!ContainsEvent.isOwner(getStaInProperty(name,index))) {
+			getStaInProperty(name,index).buy(player,0);
+			if(getStation(name).isMono()) {
+				monopoly(name);
 			}
 		}else {
-			this.getStaInProperty(name,index).buy(player);
+			getStaInProperty(name,index).buy(player);
 		}
-		alreadys.add(this.getStaInProperty(name,index).getName()+index);
+		alreadys.add(getStaInProperty(name,index).getName()+index);
 	}
 
-	public void sellPropertys(Property property,Player player) {
+	public static void sellPropertys(Property property,Player player) {
 		property.sell(player);
-		if(this.getStation(property).isMono()) {
-			this.monopoly(property);
+		if(getStation(property).isMono()) {
+			monopoly(property);
 		}
 	}
 
 	//全てのマスのコストをリセットする
-	public void allClose() {
+	public static void allClose() {
 		for(int i=0;i<getAllCoordinates().size();i++) {
 			getAllCoordinates().get(i).close();
 		}
 	}
 
 	//ゴールの要素番号を取得
-	public int getGoalIndex() {
+	public static int getGoalIndex() {
 		return goal;
 	}
 
 	//ゴールの座標を取得
-	public Coordinates getGoal() {
+	public static Coordinates getGoal() {
 		return getStationCoor(goal);
 	}
 
 	//ゴールの名前を取得
-	public String getGoalName() {
+	public static String getGoalName() {
 		return getStationName(getStationCoor(goal));
 	}
 
 	//ゴールを一時的に保存
-	public void saveGoal() {
+	public static void saveGoal() {
 		saveGoal = goal;
 	}
 
 	//保存したゴールの要素番号を取得
-	public int getSaveGoalIndex() {
+	public static int getSaveGoalIndex() {
 		return saveGoal;
 	}
 
 	//保存したゴールの座標を取得
-	public Coordinates getSaveGoal() {
+	public static Coordinates getSaveGoal() {
 		return getStationCoor(saveGoal);
 	}
 
 	//駅名で指定した駅の独占状態のOn/Offを切り替える
-	public void monopoly(String name) {
+	public static void monopoly(String name) {
 		getStation(name).changePropertysMono();
 	}
 
 	//物件情報で指定した駅の独占状態のOn/Offを切り替える
-	public void monopoly(Property property) {
+	public static void monopoly(Property property) {
 		getStation(property).changePropertysMono();
 	}
 
 	//駅の数を返す
-	public int stationSize() {
+	public static int stationSize() {
 		return stations.size();
 	}
 
 	//要素番号で指定した駅の座標を取得
-	public Coordinates getStationCoor(int index) {
+	public static Coordinates getStationCoor(int index) {
 		return stations.get(index).getCoordinates();
 	}
 
 	//駅の座標一覧を取得
-	public ArrayList<Coordinates> getStationsCoor(){
+	public static ArrayList<Coordinates> getStationsCoor(){
 		ArrayList<Coordinates> result = new ArrayList<Coordinates>();
 		for(Station s:stations) {
 			result.add(s.getCoordinates());
@@ -858,52 +856,52 @@ public class Japan {
 	}
 
 	//青マスの座標一覧を取得
-	public ArrayList<Coordinates> getBlueCoor(){
+	public static ArrayList<Coordinates> getBlueCoor(){
 		return blue;
 	}
 
 	//要素番号で指定した青マスの座標を取得
-	public Coordinates getBlueCoor(int index) {
+	public static Coordinates getBlueCoor(int index) {
 		return blue.get(index);
 	}
 
 	//赤マスの座標一覧を取得
-	public ArrayList<Coordinates> getRedCoor(){
+	public static ArrayList<Coordinates> getRedCoor(){
 		return red;
 	}
 
 	//要素番号で指定した赤マスの座標を取得
-	public Coordinates getRedCoor(int index) {
+	public static Coordinates getRedCoor(int index) {
 		return red.get(index);
 	}
 
 	//黄マスの座標一覧を取得
-	public ArrayList<Coordinates> getYellowCoor(){
+	public static ArrayList<Coordinates> getYellowCoor(){
 		return yellow;
 	}
 
 	//要素番号で指定した黄マスの座標を取得
-	public Coordinates getYellowCoor(int index) {
+	public static Coordinates getYellowCoor(int index) {
 		return yellow.get(index);
 	}
 
 	//店マスの座標一覧を取得
-	public ArrayList<Coordinates> getshopCoor(){
+	public static ArrayList<Coordinates> getshopCoor(){
 		return shop;
 	}
 
 	//要素番号で指定した店マスの座標を取得
-	public Coordinates getShopCoor(int index) {
+	public static Coordinates getShopCoor(int index) {
 		return shop.get(index);
 	}
 
 	//駅の一覧を取得
-	public ArrayList<Station> getStations(){
+	public static ArrayList<Station> getStations(){
 		return stations;
 	}
 
 	//駅の名前一覧を取得
-	public ArrayList<String> getStationNameList(){
+	public static ArrayList<String> getStationNameList(){
 		ArrayList<String> list = new ArrayList<String>();
 		for(Station sta:stations) {
 			list.add(sta.getName());
@@ -912,12 +910,12 @@ public class Japan {
 	}
 
 	//要素番号で指定した駅を取得
-	public Station getStation(int index) {
+	public static Station getStation(int index) {
 		return stations.get(index);
 	}
 
 	//指定のpropertyを含むstationを取得
-	public Station getStation(Property property) {
+	public static Station getStation(Property property) {
 		for(Station sta : stations) {
 			if(ContainsEvent.stationPropertys(sta, property)) {
 				return sta;
@@ -927,7 +925,7 @@ public class Japan {
 	}
 
 	//指定のpropertyを含むstationを取得
-	public Station getStation(Coordinates coor) {
+	public static Station getStation(Coordinates coor) {
 		for(Station sta : stations) {
 			if(ContainsEvent.coor(sta, coor)) {
 				return sta;
@@ -937,10 +935,9 @@ public class Japan {
 	}
 
 	//駅名で指定した駅を取得
-	public Station getStation(String stationName) {
-		//System.out.println(stationName);
+	public static Station getStation(String stationName) {
 		for(Station sta : stations) {
-			if(sta.getName().equals(stationName)) {
+			if(ContainsEvent.name(sta,stationName)) {
 				return sta;
 			}
 		}
@@ -948,7 +945,7 @@ public class Japan {
 	}
 
 	//座標で指定した駅名を取得
-	public String getStationName(Coordinates coor) {
+	public static String getStationName(Coordinates coor) {
 		for(Station sta : stations) {
 			if(ContainsEvent.coor(sta, coor)) {
 				return sta.getName();
@@ -958,7 +955,7 @@ public class Japan {
 	}
 
 	//座標で指定した駅名を取得
-	public String getStationName(int x,int y) {
+	public static String getStationName(int x,int y) {
 		for(Station sta : stations) {
 			if(ContainsEvent.coor(sta, x, y)) {
 				return sta.getName();
@@ -968,7 +965,7 @@ public class Japan {
 	}
 
 	//全ての物件の数を取得
-	public int propertySize() {
+	public static int propertySize() {
 		int size=0;
 		for(Station sta:stations) {
 			size+=sta.getPropertySize();
@@ -977,7 +974,7 @@ public class Japan {
 	}
 
 	//全ての物件情報を取得
-	public ArrayList<Property> getPropertys(){
+	public static ArrayList<Property> getPropertys(){
 		ArrayList<Property> list = new ArrayList<Property>();
 		for(Station sta:stations) {
 			list.addAll(sta.getPropertys());
@@ -985,16 +982,8 @@ public class Japan {
 		return list;
 	}
 
-	//所有者のいる物件があるか判定
-	public boolean isOwners() {
-		for(Property property:getPropertys()) {
-			if(property.isOwner()) return true;
-		}
-		return false;
-	}
-
 	//駅名で指定した駅に属する物件一覧を取得
-	public ArrayList<Property> getStaInPropertys(String name){
+	public static ArrayList<Property> getStaInPropertys(String name){
 		for(Station sta : stations) {
 			if(sta.getName().equals(name)) {
 				return sta.getPropertys();
@@ -1004,9 +993,9 @@ public class Japan {
 	}
 
 	//駅名で指定した駅に属する物件の内、要素番号で指定した物件を取得
-	public Property getStaInProperty(String name,int index){
+	public static Property getStaInProperty(String name,int index){
 		for(Station sta : stations) {
-			if(sta.getName().equals(name)) {
+			if(ContainsEvent.name(sta,name)) {
 				return sta.getProperty(index);
 			}
 		}
@@ -1014,9 +1003,9 @@ public class Japan {
 	}
 
 	//駅名で指定した駅の物件数を取得
-	public int getStaInPropertySize(String name){
+	public static int getStaInPropertySize(String name){
 		for(Station sta : stations) {
-			if(sta.getName().equals(name)) {
+			if(ContainsEvent.name(sta,name)) {
 				return sta.getPropertySize();
 			}
 		}
@@ -1025,7 +1014,7 @@ public class Japan {
 	}
 
 	//全てのマス座標を取得
-	public ArrayList<Coordinates> getAllCoordinates(){
+	public static ArrayList<Coordinates> getAllCoordinates(){
 		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
 		list.addAll(getStationsCoor());
 		list.addAll(blue);
@@ -1045,33 +1034,11 @@ public class Japan {
 		return list;
 	}
 
-	//指定の座標にマスが存在するか
-	public synchronized boolean contains(int x,int y) {
-		Boolean flag=false;
-		for(Coordinates coor:getAllCoordinates()) {
-			if(coor.getX()==x && coor.getY()==y) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標にマスが存在するか
-	public synchronized boolean contains(Coordinates coordinates) {
-		Boolean flag=false;
-		for(Coordinates coor:getAllCoordinates()) {
-			if(ContainsEvent.coor(coor, coordinates)) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
 	//指定の座標のCoordinatesインスタンスを取得
-	public synchronized Coordinates getCoordinates(int x,int y) {
+	public static synchronized Coordinates getCoordinates(int x,int y) {
 		ArrayList<Coordinates> list = getAllCoordinates();
 		for(int i = 0;i<list.size();i++) {
-			if(list.get(i).getX()==x && list.get(i).getY()==y) {
+			if(ContainsEvent.coor(list.get(i),x,y)) {
 				return list.get(i);
 			}
 		}
@@ -1079,132 +1046,20 @@ public class Japan {
 	}
 
 	//指定の座標のCoordinatesインスタンスを取得
-	public synchronized Coordinates getCoordinates(Coordinates coordinates) {
-		int x=coordinates.getX();
-		int y=coordinates.getY();
+	public static synchronized Coordinates getCoordinates(Coordinates coor) {
 		ArrayList<Coordinates> list = getAllCoordinates();
 		for(int i = 0;i<list.size();i++) {
-			if(list.get(i).getX()==x && list.get(i).getY()==y) {
+			if(ContainsEvent.coor(list.get(i),coor)) {
 				return list.get(i);
 			}
 		}
 		return null;
-	}
-
-	//指定の座標に駅が存在するか
-	public boolean containsStation(int x,int y) {
-		Boolean flag=false;
-		for(Coordinates coor:getStationsCoor()) {
-			if(coor.getX()==x && coor.getY()==y) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に駅が存在するか
-	public boolean containsStation(Coordinates coordinates) {
-		Boolean flag=false;
-		for(Coordinates coor:getStationsCoor()) {
-			if(ContainsEvent.coor(coor, coordinates)) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に青マスが存在するか
-	public boolean containsBlue(int x,int y) {
-		Boolean flag=false;
-		for(Coordinates coor:blue) {
-			if(coor.getX()==x && coor.getY()==y) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に青マスが存在するか
-	public boolean containsBlue(Coordinates coordinates) {
-		Boolean flag=false;
-		for(Coordinates coor:blue) {
-			if(ContainsEvent.coor(coor, coordinates)) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に赤マスが存在するか
-	public boolean containsRed(int x,int y) {
-		Boolean flag=false;
-		for(Coordinates coor:red) {
-			if(coor.getX()==x && coor.getY()==y) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に赤マスが存在するか
-	public boolean containsRed(Coordinates coordinates) {
-		Boolean flag=false;
-		for(Coordinates coor:red) {
-			if(ContainsEvent.coor(coor, coordinates)) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に黄マスが存在するか
-	public boolean containsYellow(int x,int y) {
-		Boolean flag=false;
-		for(Coordinates coor:yellow) {
-			if(ContainsEvent.coor(coor, x, y)) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に黄マスが存在するか
-	public boolean containsYellow(Coordinates coordinates) {
-		Boolean flag=false;
-		for(Coordinates coor:yellow) {
-			if(ContainsEvent.coor(coor, coordinates)) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に店マスが存在するか
-	public boolean containsShop(int x,int y) {
-		Boolean flag=false;
-		for(Coordinates coor:shop) {
-			if(coor.getX()==x && coor.getY()==y) {
-				flag=true;
-			}
-		}
-		return flag;
-	}
-
-	//指定の座標に店マスが存在するか
-	public boolean containsShop(Coordinates coordinates) {
-		Boolean flag=false;
-		for(Coordinates coor:shop) {
-			if(ContainsEvent.coor(coor, coordinates)) {
-				flag=true;
-			}
-		}
-		return flag;
 	}
 
 	//ゴールマスを初期化
-	public void initGoal() {
+	public static void initGoal() {
 		int x=0,y=0;
-		while(!(this.containsStation(x, y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
+		while(!(ContainsEvent.isStation(x,y) && (x!=6 || y!=9))) {//スタート地点がゴールにならない為
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1217,9 +1072,9 @@ public class Japan {
 	}
 
 	//ゴールマスを変更
-	public void changeGoal() {
+	public static void changeGoal() {
 		int x=0,y=0;
-		while((!this.containsStation(x, y)) || goal==getIndexOfStation(x,y)) {
+		while((!ContainsEvent.isStation(x, y)) || goal==getIndexOfStation(x,y)) {
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1232,7 +1087,7 @@ public class Japan {
 	}
 
 	//指定の座標のマスの配列番号を取得
-	public int getIndexOf(int x,int y) {
+	public static int getIndexOf(int x,int y) {
 		int result;
 		result=getIndexOfStation(x,y);
 		if(result!=-1)return result;
@@ -1248,9 +1103,17 @@ public class Japan {
 	}
 
 	//指定の座標の駅の配列番号を取得
-	public int getIndexOfStation(int x,int y){
-		for(int list=0;list<this.stations.size();list++) {
-			if(ContainsEvent.coor(this.stations.get(list), x, y)) {//駅の座標が来たら
+	public static int getIndexOfStation(int x,int y){
+		for(int list=0;list<stations.size();list++) {
+			if(ContainsEvent.coor(stations.get(list), x, y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfStation(Coordinates coor){
+		for(int list=0;list<stations.size();list++) {
+			if(ContainsEvent.coor(stations.get(list),coor)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1258,9 +1121,17 @@ public class Japan {
 	}
 
 	//指定の座標の青マスの配列番号を取得
-	public int getIndexOfBlue(int x,int y){
-		for(int list=0;list<this.blue.size();list++) {
-			if(this.blue.get(list).getX() == x && this.blue.get(list).getY() == y) {//駅の座標が来たら
+	public static int getIndexOfBlue(int x,int y){
+		for(int list=0;list<blue.size();list++) {
+			if(ContainsEvent.coor(blue.get(list),x,y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfBlue(Coordinates coor){
+		for(int list=0;list<blue.size();list++) {
+			if(ContainsEvent.coor(blue.get(list),coor)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1268,9 +1139,17 @@ public class Japan {
 	}
 
 	//指定の座標の赤マスの配列番号を取得
-	public int getIndexOfRed(int x,int y){
-		for(int list=0;list<this.red.size();list++) {
-			if(this.red.get(list).getX() == x && this.red.get(list).getY() == y) {//駅の座標が来たら
+	public static int getIndexOfRed(int x,int y){
+		for(int list=0;list<red.size();list++) {
+			if(ContainsEvent.coor(red.get(list),x,y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfRed(Coordinates coor){
+		for(int list=0;list<red.size();list++) {
+			if(ContainsEvent.coor(red.get(list),coor)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1278,9 +1157,17 @@ public class Japan {
 	}
 
 	//指定の座標の黄マスの配列番号を取得
-	public int getIndexOfYellow(int x,int y){
-		for(int list=0;list<this.yellow.size();list++) {
-			if(this.yellow.get(list).getX() == x && this.yellow.get(list).getY() == y) {//駅の座標が来たら
+	public static int getIndexOfYellow(int x,int y){
+		for(int list=0;list<yellow.size();list++) {
+			if(ContainsEvent.coor(yellow.get(list),x,y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfYellow(Coordinates coor){
+		for(int list=0;list<yellow.size();list++) {
+			if(ContainsEvent.coor(yellow.get(list),coor)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1288,9 +1175,17 @@ public class Japan {
 	}
 
 	//指定の座標の店マスの配列番号を取得
-	public int getIndexOfShop(int x,int y){
-		for(int list=0;list<this.shop.size();list++) {
-			if(this.shop.get(list).getX() == x && this.shop.get(list).getY() == y) {//駅の座標が来たら
+	public static int getIndexOfShop(int x,int y){
+		for(int list=0;list<shop.size();list++) {
+			if(ContainsEvent.coor(shop.get(list),x,y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfShop(Coordinates coor){
+		for(int list=0;list<shop.size();list++) {
+			if(ContainsEvent.coor(shop.get(list),coor)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1298,7 +1193,7 @@ public class Japan {
 	}
 
 	//指定したTFをリストにして取得(処理を分ける方が良い)
-	private ArrayList<Boolean> getBoolList(Boolean top,Boolean bottom,Boolean left,Boolean right){
+	private static ArrayList<Boolean> getBoolList(Boolean top,Boolean bottom,Boolean left,Boolean right){
 		ArrayList<Boolean> rail = new ArrayList<Boolean>();
 		rail.add(left);
 		rail.add(right);
@@ -1308,29 +1203,29 @@ public class Japan {
 	}
 
 	//指定した座標から移動可能な方角一覧を取得
-	public ArrayList<Boolean> getVector(int x,int y,int size){
+	public static ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<stations.size();list++) {
-			if(ContainsEvent.coor(this.stations.get(list), x/size, y/size)) {//駅の座標が来たら
+			if(ContainsEvent.coor(stations.get(list), x/size, y/size)) {//駅の座標が来たら
 				return railBoolMapping.get(stations.get(list).getCoordinates());
 			}
 		}
 		for(int list=0;list<blue.size();list++) {
-			if(blue.get(list).getX() == x/size && blue.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(blue.get(list),x/size,y/size)) {
 				return railBoolMapping.get(blue.get(list));
 			}
 		}
 		for(int list=0;list<red.size();list++) {
-			if(red.get(list).getX() == x/size && red.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(red.get(list),x/size,y/size)) {
 				return railBoolMapping.get(red.get(list));
 			}
 		}
 		for(int list=0;list<yellow.size();list++) {
-			if(yellow.get(list).getX() == x/size && yellow.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(yellow.get(list),x/size,y/size)) {
 				return railBoolMapping.get(yellow.get(list));
 			}
 		}
 		for(int list=0;list<shop.size();list++) {
-			if(shop.get(list).getX() == x/size && shop.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(shop.get(list),x/size,y/size)) {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
@@ -1338,31 +1233,31 @@ public class Japan {
 	}
 
 	//指定した座標から移動可能な方角一覧を取得
-	public ArrayList<Boolean> getVector(Coordinates coor,int size){
+	public static ArrayList<Boolean> getVector(Coordinates coor,int size){
 		int x=coor.getX();
 		int y=coor.getY();
 		for(int list=0;list<stations.size();list++) {
-			if(ContainsEvent.coor(this.stations.get(list), x/size, y/size)) {//駅の座標が来たら
+			if(ContainsEvent.coor(stations.get(list), x/size, y/size)) {//駅の座標が来たら
 				return railBoolMapping.get(stations.get(list).getCoordinates());
 			}
 		}
 		for(int list=0;list<blue.size();list++) {
-			if(blue.get(list).getX() == x/size && blue.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(blue.get(list),x/size,y/size)) {
 				return railBoolMapping.get(blue.get(list));
 			}
 		}
 		for(int list=0;list<red.size();list++) {
-			if(red.get(list).getX() == x/size && red.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(red.get(list),x/size,y/size)) {
 				return railBoolMapping.get(red.get(list));
 			}
 		}
 		for(int list=0;list<yellow.size();list++) {
-			if(yellow.get(list).getX() == x/size && yellow.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(yellow.get(list),x/size,y/size)) {
 				return railBoolMapping.get(yellow.get(list));
 			}
 		}
 		for(int list=0;list<shop.size();list++) {
-			if(shop.get(list).getX() == x/size && shop.get(list).getY() == y/size) {
+			if(ContainsEvent.coor(shop.get(list),x/size,y/size)) {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
@@ -1370,16 +1265,16 @@ public class Japan {
 	}
 
 	//指定した座標から移動可能な座標一覧を取得
-	public ArrayList<Coordinates> getMovePossibles(int x,int y) {
-		if(containsStation(x,y)) {
+	public static ArrayList<Coordinates> getMovePossibles(int x,int y) {
+		if(ContainsEvent.isStation(x,y)) {
 			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
-		}else if(containsBlue(x,y)) {
+		}else if(ContainsEvent.isBlue(x,y)) {
 			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
-		}else if(containsRed(x,y)) {
+		}else if(ContainsEvent.isRed(x,y)) {
 			return railMapping.get(red.get(getIndexOfRed(x,y)));
-		}else if(containsYellow(x,y)) {
+		}else if(ContainsEvent.isYellow(x,y)) {
 			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
-		}else if(containsShop(x,y)) {
+		}else if(ContainsEvent.isShop(x,y)) {
 			return railMapping.get(shop.get(getIndexOfShop(x,y)));
 		}else {
 			return null;
@@ -1387,19 +1282,17 @@ public class Japan {
 	}
 
 	//指定した座標から移動可能な座標一覧を取得
-	public ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
-		int x=coor.getX();
-		int y=coor.getY();
-		if(containsStation(x,y)) {
-			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
-		}else if(containsBlue(x,y)) {
-			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
-		}else if(containsRed(x,y)) {
-			return railMapping.get(red.get(getIndexOfRed(x,y)));
-		}else if(containsYellow(x,y)) {
-			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
-		}else if(containsShop(x,y)) {
-			return railMapping.get(shop.get(getIndexOfShop(x,y)));
+	public static ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
+		if(ContainsEvent.isStation(coor)) {
+			return railMapping.get(stations.get(getIndexOfStation(coor)).getCoordinates());
+		}else if(ContainsEvent.isBlue(coor)) {
+			return railMapping.get(blue.get(getIndexOfBlue(coor)));
+		}else if(ContainsEvent.isRed(coor)) {
+			return railMapping.get(red.get(getIndexOfRed(coor)));
+		}else if(ContainsEvent.isYellow(coor)) {
+			return railMapping.get(yellow.get(getIndexOfYellow(coor)));
+		}else if(ContainsEvent.isShop(coor)) {
+			return railMapping.get(shop.get(getIndexOfShop(coor)));
 		}else {
 			return null;
 		}

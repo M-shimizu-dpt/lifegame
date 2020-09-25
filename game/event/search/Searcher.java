@@ -11,9 +11,9 @@ import java.util.Map;
 
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
-import lifegame.game.main.App;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.print.Window;
 
 public class Searcher{
@@ -45,7 +45,7 @@ public class Searcher{
 		if(NearestSearchThread.nearestCount>=count) {
 			if(NearestSearchThread.nearestCount>count) nearestMassToGoalList.clear();
 			NearestSearchThread.nearestCount=count;
-			nearestMassToGoalList.add(App.japan.getCoordinates(nearest));
+			nearestMassToGoalList.add(Japan.getCoordinates(nearest));
 		}
 	}
 
@@ -58,11 +58,11 @@ public class Searcher{
 			}
 		}
 
-		canMoveMass = App.japan.getCoordinates(canMoveMass);//インスタンスの統一
+		canMoveMass = Japan.getCoordinates(canMoveMass);//インスタンスの統一
 		if(flag) {
-			canMoveTrajectoryList.put(App.japan.getCoordinates(canMoveMass), new ArrayList<ArrayList<Coordinates>>());
+			canMoveTrajectoryList.put(Japan.getCoordinates(canMoveMass), new ArrayList<ArrayList<Coordinates>>());
 		}
-		canMoveTrajectoryList.get(App.japan.getCoordinates(canMoveMass)).add(trajectory);
+		canMoveTrajectoryList.get(Japan.getCoordinates(canMoveMass)).add(trajectory);
 	}
 
 	//最寄り駅を探索
@@ -123,11 +123,11 @@ public class Searcher{
 		int againtime=0;
 		do{
 			nearestTrajectoryList.clear();
-			App.japan.allClose();
+			Japan.allClose();
 			//Threadを立ち上げる
 			SearchThread thread = new SearchThread(window,player.getNowMass(),SearchThread.searchTime+againtime);
 			thread.setMass(player.getNowMass());
-			App.japan.getCoordinates(player.getNowMass()).open(0);
+			Japan.getCoordinates(player.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 
@@ -162,11 +162,11 @@ public class Searcher{
 		int againtime=0;
 		boolean endflag;
 		do{
-			App.japan.allClose();
+			Japan.allClose();
 			//Threadを立ち上げる
 			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(window,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 			thread.setMass(selectedPlayer.getNowMass());
-			App.japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
+			Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 
@@ -194,11 +194,11 @@ public class Searcher{
 			int againtime=0;
 			boolean endflag;
 			do{
-				App.japan.allClose();
+				Japan.allClose();
 				//Threadを立ち上げる
 				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(window,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 				thread.setMass(selectedPlayer.getNowMass());
-				App.japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
+				Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 				thread.setPriority(Thread.MAX_PRIORITY);
 				thread.start();
 
@@ -213,7 +213,7 @@ public class Searcher{
 				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 				endflag = true;
 				for(Player p:Player.players.values()) {
-					if(p.getGoalDistance()==500)endflag=false;
+					if(ContainsEvent.isDefaultGoalDistance(p))endflag=false;
 					//assert(p.getGoalDistance()==500) : (Player.player.getGoalDistance());
 				}
 

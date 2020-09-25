@@ -1,5 +1,6 @@
 package lifegame.game.event;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import lifegame.game.object.Player;
@@ -7,6 +8,47 @@ import lifegame.game.object.map.information.Property;
 
 public abstract class ClosingEvent {
 	public static boolean closingEndFlag=false;//決算処理が終了するのを待つためのフラグ
+	public static int maxProfit=100;//最高収益(グラフ作成用)
+	public static int minProfit=0;//最低収益(グラフ作成用)
+	public static int maxAssets=100;//最高資産(グラフ作成用)
+	public static int minAssets=0;//最低資産(グラフ作成用)
+
+	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
+	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
+
+	public static ArrayList<Integer[]> getProfitList(){
+		return ClosingEvent.allProfitList;
+	}
+
+	public static Integer[] getProfitList(int index){
+		return ClosingEvent.allProfitList.get(index);
+	}
+
+	public static int getProfitListSize(){
+		return ClosingEvent.allProfitList.size();
+	}
+
+	public static void addProfitList(Integer[] list){
+		ClosingEvent.allProfitList.add(list);
+	}
+
+	public static void addAssetsList(Integer[] list){
+		ClosingEvent.allAssetsList.add(list);
+	}
+
+	public static ArrayList<Integer[]> getAssetsList(){
+		return ClosingEvent.allAssetsList;
+	}
+
+	public static Integer[] getAssetsList(int index){
+		return ClosingEvent.allAssetsList.get(index);
+	}
+
+	public static int getAssetsListSize(){
+		return ClosingEvent.allAssetsList.size();
+	}
+
+
 	/*
 	 * 決算
 	 */
@@ -32,14 +74,10 @@ public abstract class ClosingEvent {
 			for(Property property:players.get(i).getPropertys()) {
 				profitList[i]+=property.getProfit();
 			}
-			if(Player.maxProfit<profitList[i]) {
-				Player.maxProfit=profitList[i];
-			}
-			if(Player.minProfit>profitList[i]) {
-				Player.minProfit=profitList[i];
-			}
+			ClosingEvent.maxProfit=Math.max(ClosingEvent.maxProfit,profitList[i]);
+			ClosingEvent.minProfit=Math.min(ClosingEvent.minProfit, profitList[i]);
 		}
-		Player.addProfitList(profitList);
+		ClosingEvent.addProfitList(profitList);
 	}
 
 	//総資産を集計
@@ -50,14 +88,10 @@ public abstract class ClosingEvent {
 			for(Property property : players.get(i).getPropertys()) {
 				assetsList[i]+=property.getAmount();
 			}
-			if(Player.maxAssets<assetsList[i]) {
-				Player.maxAssets=assetsList[i];
-			}
-			if(Player.minAssets>assetsList[i]) {
-				Player.minAssets=assetsList[i];
-			}
+			ClosingEvent.maxAssets=Math.max(ClosingEvent.maxAssets,assetsList[i]);
+			ClosingEvent.minAssets=Math.min(ClosingEvent.minAssets, assetsList[i]);
 		}
-		Player.addAssetsList(assetsList);
+		ClosingEvent.addAssetsList(assetsList);
 	}
 
 	public static void closed() {
