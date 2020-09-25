@@ -1,5 +1,6 @@
 package lifegame.game.event.search;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.Window;
 
@@ -45,7 +46,7 @@ public class OnlyDistanceSearchThread extends SearchThread{
 	@Override
 	protected void goal() {
 		synchronized(OnlyDistanceSearchThread.lock3) {
-			if(player.containsGoalDistance(super.count)==1) {
+			if(ContainsEvent.goalDistance(player, super.count)==1) {
 				player.setGoalDistance(super.count);
 			}
 		}

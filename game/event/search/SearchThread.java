@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
@@ -56,7 +57,7 @@ public class SearchThread extends SearchThreadModel{
 			Thread.yield();
 			ArrayList<Coordinates> list = new ArrayList<Coordinates>();
 			super.moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
-			if(nowMass.contains(App.japan.getGoal())){
+			if(ContainsEvent.coor(nowMass, App.japan.getGoal())){
 				goal();
 				break;
 			}
@@ -68,7 +69,7 @@ public class SearchThread extends SearchThreadModel{
 			for(Coordinates possibles : can) {//移動可能マスを取得
 				boolean conti=false;
 				for(Coordinates trajectory : super.moveTrajectory) {//既に通った場所を省く
-					if(trajectory.contains(possibles)) {//来た道の場合
+					if(ContainsEvent.coor(trajectory, possibles)) {//来た道の場合
 						conti=true;
 						break;
 					}

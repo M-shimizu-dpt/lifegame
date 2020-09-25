@@ -95,22 +95,4 @@ public class Coordinates {
 		this.x=coor.x;
 		this.y=coor.y;
 	}
-
-	//自分の方が大きいときtrue
-	public boolean containsCost(Coordinates coor) {
-		return getCost()>=coor.getCost();
-	}
-
-	public boolean contains(Coordinates coor) {
-		if(this.x==coor.x && this.y==coor.y) {
-			return true;
-		}
-		return false;
-	}
-	public boolean contains(int x, int y) {
-		if(this.x==x && this.y==y) {
-			return true;
-		}
-		return false;
-	}
 }

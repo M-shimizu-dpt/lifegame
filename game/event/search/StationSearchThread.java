@@ -2,6 +2,7 @@ package lifegame.game.event.search;
 
 import java.util.ArrayList;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
@@ -59,7 +60,7 @@ public class StationSearchThread extends SearchThreadModel{
 			for(Coordinates coor:list) {
 				boolean conti=false;
 				for(Coordinates trajectory:super.moveTrajectory) {//既に通った場所を省く
-					if(trajectory.contains(coor)) {//来た道の場合
+					if(ContainsEvent.coor(trajectory, coor)) {//来た道の場合
 						conti=true;
 						break;
 					}

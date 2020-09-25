@@ -9,6 +9,7 @@ package lifegame.game.object;
 import java.util.ArrayList;
 import java.util.Random;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
@@ -63,11 +64,6 @@ public abstract class Binbo{
 		return binboplayer;
 	}
 
-	//ボンビーが憑いているプレイヤーが現在動いているPlayerかを判断
-	public static boolean containsBinbo() {
-		return binboplayer==Player.player;
-	}
-
 /*将来必要
  	//全てのプレイヤーの現在地set
 	public static void setAllPlayersNowMass() {
@@ -109,7 +105,7 @@ public abstract class Binbo{
 	//現在動いているプレイヤーと動いていないプレイヤーが重なったか判定
 	public static boolean stopPlayersNowMassContains() {
 		for(Coordinates playernowmass : stopplayernowMass) {
-			if(playernowmass.contains(Player.player.getNowMass())) {
+			if(ContainsEvent.coor(playernowmass, Player.player.getNowMass())) {
 				return true;
 			}
 		}
@@ -178,8 +174,8 @@ public abstract class Binbo{
 		}
 		for(int i=0;i<Player.players.size();i++) {
 			//System.out.println(players.get(i).getGoalDistance()+"最長距離"+i);
-			if(Player.players.get(i).containsGoalDistance(maxdistance)==1) {
-				if(Player.players.get(i).containsGoalDistance(maxdistance)!=0) {
+			if(ContainsEvent.goalDistance(Player.players.get(i), maxdistance)==1) {
+				if(ContainsEvent.goalDistance(Player.players.get(i), maxdistance)!=0) {
 					if(whobonbylist!=null) {
 						whobonbylist.clear();
 					}
@@ -199,9 +195,12 @@ public abstract class Binbo{
 	//ボンビー擦り付けメソッド--進んだ際
 	public static void passingGoBonby() {
 		Player nullflag = getBinboPlayer();
+		//今移動している人Player.player
+		//ボンビーを持っている人binboPlayer
+		//移動先にいる人together
 		if(nullflag!=null) {
 			samePlacePlayer();
-			if(binboplayer.containsID(App.turn)) {//ボンビーと一緒に移動していたら
+			if(ContainsEvent.binboPlayer()) {//ボンビーと一緒に移動していたら
 				if(getSameMossPlayers()!=null) {
 					for (Player whowith : getSameMossPlayers()) {
 						setBonbyBefore(binboplayer);//だれについていたかlist
@@ -210,7 +209,7 @@ public abstract class Binbo{
 					}
 				}
 			}else {
-				if(binboplayer.getNowMass().contains(Player.player.getNowMass())) {
+				if(ContainsEvent.coor(getBinboPlayer(),Player.player)) {
 					setBonbyBefore(binboplayer);
 					changeBonby(Player.player);
 				}
@@ -224,12 +223,12 @@ public abstract class Binbo{
 		if(nullflag!=null) {
 			if(getBonbyBefore().size()!=0) {
 				if(getSameMossPlayers().size()!=0) {
-					if(getBonbyLastBefore().containsID(Player.player)) {
+					if(ContainsEvent.binboPlayer(getBonbyLastBefore())) {
 						clearBonbyLastBefore();//リスト一番上消す
 						changeBonby(Player.player);
 					}else {
 						for (Player whowith : getSameMossPlayers()) {//動いている人が止まったマスに一緒にいる人一覧
-							if(getBonbyLastBefore().containsID(whowith)) {
+							if(ContainsEvent.id(getBonbyLastBefore(),whowith)) {
 								clearBonbyLastBefore();//リスト一番上消す
 								changeBonby(whowith);
 								break;
@@ -266,7 +265,7 @@ public abstract class Binbo{
 			if(i==App.turn) {
 				break;
 			}
-			if(binboplayer.getNowMass().contains(Player.players.get(i).getNowMass())){
+			if(ContainsEvent.binboPlayer(Player.players.get(i))){
 				addSameMossPlayer(Player.players.get(i));
 			}
 		}

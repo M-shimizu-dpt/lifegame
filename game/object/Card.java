@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
@@ -52,12 +53,8 @@ public class Card {
 		this.ability=ability;
 	}
 
-	public boolean contains(Card card) {
-		return this.name.equals(card.name);
-	}
-
-	public boolean contains(String name) {
-		return this.name.equals(name);
+	public int getAbility() {
+		return this.ability;
 	}
 
 	public int getID() {
@@ -109,7 +106,7 @@ public class Card {
 					flag=true;
 					index = rand.nextInt(Card.cardList.size());
 					for(Card card : canBuyCardlist) {
-						if(card.contains(Card.cardList.get(index))) {
+						if(ContainsEvent.name(card, Card.cardList.get(index))) {
 							flag=false;
 						}
 					}
@@ -195,18 +192,18 @@ public class Card {
 			if(name.equals("一頭地を抜くカード")) {
 				int maxMoney=0;
 				for(Player player:Player.players.values()) {
-					if(player.containsMoney(maxMoney)>0) {
+					if(ContainsEvent.money(player, maxMoney)>0) {
 						maxMoney=player.getMoney();
 					}
 				}
 				Player.players.get(App.turn).addMoney(maxMoney);
 			}else if(name.equals("起死回生カード")) {
-				if(Player.players.get(App.turn).containsMoney(0)<0) {
-					Player.players.get(App.turn).addMoney(-Player.players.get(App.turn).getMoney()*2);
+				if(ContainsEvent.money(Player.player, 0)<0) {
+					Player.player.addMoney(-Player.player.getMoney()*2);
 				}
 			}else if(name.equals("徳政令カード")) {
 				for(int player=0;player<4;player++) {
-					if(Player.players.get(player).containsMoney(0)<0) {
+					if(ContainsEvent.money(Player.players.get(player), 0)<0) {
 						Player.players.get(player).addMoney(-Player.players.get(player).getMoney());
 					}
 				}

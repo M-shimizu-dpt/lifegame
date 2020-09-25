@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import lifegame.game.event.ClosingEvent;
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.MassEvent;
 import lifegame.game.event.MoveEvent;
 import lifegame.game.event.RandomEvent;
@@ -1347,13 +1348,13 @@ public class Window implements ActionListener{
 			for(ArrayList<Coordinates> list:Searcher.nearestTrajectoryList.get(Searcher.count)) {
 				for(Coordinates coor:list) {
 					for(int i=0;i<4;i++) {
-						if(coor.contains(Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
+						if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
 							playLeft.setBackground(Color.MAGENTA);
-						}else if(coor.contains(Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY())) {
+						}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY())) {
 							playRight.setBackground(Color.MAGENTA);
-						}else if(coor.contains(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1)) {
+						}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1)) {
 							playTop.setBackground(Color.MAGENTA);
-						}else if(coor.contains(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1)) {
+						}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1)) {
 							playBottom.setBackground(Color.MAGENTA);
 						}
 					}
@@ -1432,7 +1433,7 @@ public class Window implements ActionListener{
         	labelName.setBackground(Color.LIGHT_GRAY);
         	labelText.setBackground(Color.LIGHT_GRAY);
         	useButton.setActionCommand(Player.player.getCard(i).getName());
-        	if(Player.player.getCard(i).contains("ダビングカード") && Player.player.getCards().size()<2) {
+        	if(ContainsEvent.name(Player.player.getCard(i), "ダビングカード") && Player.player.getCards().size()<2) {
         		useButton.setEnabled(false);
         	}
         	card.add(labelName);
