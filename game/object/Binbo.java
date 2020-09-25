@@ -6,6 +6,8 @@
 package lifegame.game.object;
 import java.util.ArrayList;
 
+import lifegame.game.event.ContainsEvent;
+
 public abstract class Binbo{
 	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
 	private static String name;
@@ -25,7 +27,7 @@ public abstract class Binbo{
 			if(turn==Player.player.getID()) {
 				break;
 			}
-			if(binboplayer.getNowMass().contains(Player.players.get(turn).getNowMass())){
+			if(ContainsEvent.coor(binboplayer,Player.players.get(turn))){
 				together.add(Player.players.get(turn));
 			}
 		}
@@ -110,6 +112,7 @@ public abstract class Binbo{
 	public static void setBonbyBefore(Player beforeplayer) {
 		before.add(beforeplayer);
 	}
+
 
 	//binboフラグ初期化
 	public static void initBinboFlag() {

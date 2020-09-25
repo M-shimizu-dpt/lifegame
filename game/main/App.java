@@ -6,6 +6,7 @@
 package lifegame.game.main;
 
 import lifegame.game.event.BinboEvent;
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.object.Card;
@@ -78,7 +79,7 @@ public class App {
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
-			if(Player.player.isBonby()) {
+			if(ContainsEvent.binboPlayer()) {
 				BinboEvent.start(window);
 				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
 				bonbyTurnEnd.start();

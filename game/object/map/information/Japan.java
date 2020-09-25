@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.object.Player;
 
 public class Japan {
@@ -918,7 +919,17 @@ public class Japan {
 	//指定のpropertyを含むstationを取得
 	public Station getStation(Property property) {
 		for(Station sta : stations) {
-			if(sta.containsProperty(property)) {
+			if(ContainsEvent.stationPropertys(sta, property)) {
+				return sta;
+			}
+		}
+		return null;
+	}
+
+	//指定のpropertyを含むstationを取得
+	public Station getStation(Coordinates coor) {
+		for(Station sta : stations) {
+			if(ContainsEvent.coor(sta, coor)) {
 				return sta;
 			}
 		}
@@ -939,7 +950,7 @@ public class Japan {
 	//座標で指定した駅名を取得
 	public String getStationName(Coordinates coor) {
 		for(Station sta : stations) {
-			if(sta.getCoordinates().contains(coor)) {
+			if(ContainsEvent.coor(sta, coor)) {
 				return sta.getName();
 			}
 		}
@@ -949,7 +960,7 @@ public class Japan {
 	//座標で指定した駅名を取得
 	public String getStationName(int x,int y) {
 		for(Station sta : stations) {
-			if(sta.getCoordinates().contains(x,y)) {
+			if(ContainsEvent.coor(sta, x, y)) {
 				return sta.getName();
 			}
 		}
@@ -1049,7 +1060,7 @@ public class Japan {
 	public synchronized boolean contains(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:getAllCoordinates()) {
-			if(coor.contains(coordinates)) {
+			if(ContainsEvent.coor(coor, coordinates)) {
 				flag=true;
 			}
 		}
@@ -1095,7 +1106,7 @@ public class Japan {
 	public boolean containsStation(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:getStationsCoor()) {
-			if(coor.contains(coordinates)) {
+			if(ContainsEvent.coor(coor, coordinates)) {
 				flag=true;
 			}
 		}
@@ -1117,7 +1128,7 @@ public class Japan {
 	public boolean containsBlue(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:blue) {
-			if(coor.contains(coordinates)) {
+			if(ContainsEvent.coor(coor, coordinates)) {
 				flag=true;
 			}
 		}
@@ -1139,7 +1150,7 @@ public class Japan {
 	public boolean containsRed(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:red) {
-			if(coor.contains(coordinates)) {
+			if(ContainsEvent.coor(coor, coordinates)) {
 				flag=true;
 			}
 		}
@@ -1150,7 +1161,7 @@ public class Japan {
 	public boolean containsYellow(int x,int y) {
 		Boolean flag=false;
 		for(Coordinates coor:yellow) {
-			if(coor.getX()==x && coor.getY()==y) {
+			if(ContainsEvent.coor(coor, x, y)) {
 				flag=true;
 			}
 		}
@@ -1161,7 +1172,7 @@ public class Japan {
 	public boolean containsYellow(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:yellow) {
-			if(coor.contains(coordinates)) {
+			if(ContainsEvent.coor(coor, coordinates)) {
 				flag=true;
 			}
 		}
@@ -1183,7 +1194,7 @@ public class Japan {
 	public boolean containsShop(Coordinates coordinates) {
 		Boolean flag=false;
 		for(Coordinates coor:shop) {
-			if(coor.contains(coordinates)) {
+			if(ContainsEvent.coor(coor, coordinates)) {
 				flag=true;
 			}
 		}
@@ -1239,7 +1250,7 @@ public class Japan {
 	//指定の座標の駅の配列番号を取得
 	public int getIndexOfStation(int x,int y){
 		for(int list=0;list<this.stations.size();list++) {
-			if(this.stations.get(list).getCoordinates().contains(x,y)) {//駅の座標が来たら
+			if(ContainsEvent.coor(this.stations.get(list), x, y)) {//駅の座標が来たら
 				return list;
 			}
 		}
@@ -1299,7 +1310,7 @@ public class Japan {
 	//指定した座標から移動可能な方角一覧を取得
 	public ArrayList<Boolean> getVector(int x,int y,int size){
 		for(int list=0;list<stations.size();list++) {
-			if(stations.get(list).getCoordinates().contains(x/size,y/size)) {//駅の座標が来たら
+			if(ContainsEvent.coor(this.stations.get(list), x/size, y/size)) {//駅の座標が来たら
 				return railBoolMapping.get(stations.get(list).getCoordinates());
 			}
 		}
@@ -1331,7 +1342,7 @@ public class Japan {
 		int x=coor.getX();
 		int y=coor.getY();
 		for(int list=0;list<stations.size();list++) {
-			if(stations.get(list).getCoordinates().contains(x/size,y/size)) {//駅の座標が来たら
+			if(ContainsEvent.coor(this.stations.get(list), x/size, y/size)) {//駅の座標が来たら
 				return railBoolMapping.get(stations.get(list).getCoordinates());
 			}
 		}

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.object.Player;
@@ -52,7 +53,7 @@ public class Searcher{
 	public static synchronized void setCanMoveMassResult(Coordinates canMoveMass, ArrayList<Coordinates> trajectory) {
 		boolean flag = true;
 		for(Coordinates coor : canMoveTrajectoryList.keySet()) {
-			if(coor.contains(canMoveMass)) {
+			if(ContainsEvent.coor(coor, canMoveMass)) {
 				flag=false;
 			}
 		}
@@ -79,7 +80,7 @@ public class Searcher{
 			Searcher.count=count;
 			boolean flag=true;
 			for(Coordinates coor:nearestStationList) {//既に探索済みの駅か
-				if(coor.contains(nearestStation)) {
+				if(ContainsEvent.coor(coor, nearestStation)) {
 					flag=false;
 				}
 			}
@@ -105,7 +106,7 @@ public class Searcher{
 			Searcher.count=count;
 			boolean flag=true;
 			for(Coordinates coor:nearestShopList) {
-				if(coor.contains(nearestShop)) {
+				if(ContainsEvent.coor(coor, nearestShop)) {
 					flag=false;
 				}
 			}
@@ -213,7 +214,9 @@ public class Searcher{
 				endflag = true;
 				for(Player p:Player.players.values()) {
 					if(p.getGoalDistance()==500)endflag=false;
+					//assert(p.getGoalDistance()==500) : (Player.player.getGoalDistance());
 				}
+
 			}while(!endflag && againtime<1000);
 			if(Searcher.count==500) System.out.println("探索失敗");
 		}

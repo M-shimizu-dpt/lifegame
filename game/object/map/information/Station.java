@@ -55,10 +55,6 @@ public class Station {
 		}
 	}
 
-	public boolean containsProperty(Property property) {
-		return propertys.contains(property);
-	}
-
 	public void setName(String name) {
 		this.name = name;
 	}

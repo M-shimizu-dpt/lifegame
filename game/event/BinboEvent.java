@@ -66,7 +66,7 @@ public abstract class BinboEvent{
 	public static boolean stopPlayersNowMassContains() {
 		for(int stopplayer = 0;stopplayer<Player.players.size();stopplayer++) {
 			if(Player.player.getID()!=stopplayer) {
-				if(Player.player.getNowMass().contains(Player.players.get(stopplayer).getNowMass())) {
+				if(ContainsEvent.coor(Player.player,Player.players.get(stopplayer))) {
 					return true;
 				}
 			}
@@ -78,7 +78,7 @@ public abstract class BinboEvent{
 	//動いている人の前回止まっていたマスにボンビーが前回憑いていた人が存在するかTF
 	public static boolean isBonbyLastBefore() {
 		for (Player whowith : Binbo.getSameMossPlayers()) {//止まったマスに一緒にいる人一覧
-			if(Binbo.getBonbyLastBefore().containsID(whowith)) {
+			if(ContainsEvent.id(Binbo.getBonbyLastBefore(),whowith)) {
 				return true;
 			}
 		}
@@ -90,13 +90,13 @@ public abstract class BinboEvent{
 		if(Binbo.isBinboPlayer()) {
 			Player binboplayer = Binbo.getBinboPlayer();
 			 sameMossPlayerEvent();
-			if(binboplayer.containsID(Player.player)) {//ボンビーと一緒に移動していたら
+			if(ContainsEvent.binboPlayer()) {//ボンビーと一緒に移動していたら
 				if(Binbo.isSameMossPlayers()) {
 					Binbo.setBonbyBefore(binboplayer);//だれについていたかlist
 					BinboEvent.changeBonby(Binbo.getSameMossPlayer());//ボンビーつく人
 				}
 			}else {
-				if(binboplayer.getNowMass().contains(Player.player.getNowMass())) {
+				if(ContainsEvent.coor(binboplayer,Player.player)) {
 					Binbo.setBonbyBefore(binboplayer);
 					BinboEvent.changeBonby(Player.player);
 				}
@@ -110,7 +110,7 @@ public abstract class BinboEvent{
 			if(Binbo.isBonbyBefore()) {
 				Player bonbylastplayer = Binbo.getBonbyLastBefore();
 				if(Binbo.isSameMossPlayers()) {
-					if(bonbylastplayer.containsID(Player.player)) {//動いている人が前回のbinbo所持者だったら
+					if(ContainsEvent.id(bonbylastplayer,Player.player)) {//動いている人が前回のbinbo所持者だったら
 						Binbo.clearBonbyLastBefore();//リスト一番上消す
 						BinboEvent.changeBonby(Player.player);
 					}else {//前回binbo所持者が止まっていたら
@@ -141,8 +141,8 @@ public abstract class BinboEvent{
 		}
 		for(int i=0;i<Player.players.size();i++) {
 			System.out.println(Player.players.get(i).getGoalDistance()+"最長距離"+i);
-			if(Player.players.get(i).containsGoalDistance(maxdistance)==1) {
-				if(Player.players.get(i).containsGoalDistance(maxdistance)!=0) {
+			if(ContainsEvent.goalDistance(Player.players.get(i),maxdistance)==1) {
+				if(ContainsEvent.goalDistance(Player.players.get(i),maxdistance)!=0) {
 					if(nextbonbylist!=null) {
 						nextbonbylist.clear();
 					}

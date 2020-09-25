@@ -15,6 +15,7 @@ import java.util.Random;
 
 import javax.swing.JLabel;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.NearestSearchThread;
 import lifegame.game.event.search.Searcher;
@@ -213,34 +214,6 @@ public class Player {
 		this.move=0;
 	}
 
-	public int containsGoalDistance(int distance) {
-		if(this.goaldistance>distance) {
-			return 1;
-		}else if(this.goaldistance<distance){
-			return -1;
-		}else {
-			return 0;
-		}
-	}
-
-	public boolean containsID(int id) {
-		return this.id==id;
-	}
-
-	public boolean containsID(Player player) {
-		return this.id==player.id;
-	}
-
-	public int containsMoney(int money) {
-		if(this.money>money) {
-			return 1;
-		}else if(this.money<money) {
-			return -1;
-		}else {
-			return 0;
-		}
-	}
-
 	//CPU操作
 	public void cpu(Window window,int turn) throws InterruptedException{
 		window.closeMoveButton();
@@ -287,7 +260,7 @@ public class Player {
 				NearestSearchThread searchthread = new NearestSearchThread(window);
 				searchthread.setMass(App.japan.getGoal());//探索開始位置をゴールに設定
 				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
-					if(coor.contains(App.japan.getGoal())) {//目的地に行ける場合
+					if(ContainsEvent.coor(coor, App.japan.getGoal())) {//目的地に行ける場合
 						cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;
@@ -327,7 +300,6 @@ public class Player {
 					wait.start();
 					wait.join();
 				}
-				//if(coor.contains(list.get(0)))continue;
 				int x = this.getNowMass().getX()-coor.getX();
 				int y = this.getNowMass().getY()-coor.getY();
 				if(x==0) {

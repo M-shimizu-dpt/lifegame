@@ -37,7 +37,7 @@ public abstract class RandomEvent {
 			Player.player.addMoney(20000);
 		}else if(randomNum < 0.6) {
 			for(int i=0;i<Card.cardList.size();i++) {
-				if(Card.cardList.get(i).contains("一頭地を抜くカード")) {
+				if(ContainsEvent.name(Card.cardList.get(i), "一頭地を抜くカード")) {
 					Player.player.addCard(Card.cardList.get(i));
 				}
 			}
