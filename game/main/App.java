@@ -5,10 +5,10 @@
 
 package lifegame.game.main;
 
+import lifegame.game.event.BinboEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
-import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
@@ -54,7 +54,7 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		Binbo.initBinbo();
+  		BinboEvent.initBinbo();
 
   		while(true) {
 	  		if(window.monthUpdate(first,endYear)) {
@@ -76,13 +76,11 @@ public class App {
 		  	}else {
 		  		window.printMenu();
 		  	}
-		  	Binbo.clearStopPlayersNowMass();
-		  	Binbo.setStopPlayersNowMass();//動いていない人の現在地を取得(ボンビー用)
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
 			if(ContainsEvent.binboPlayer()) {
-				Binbo.start(window);
+				BinboEvent.start(window);
 				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
 				bonbyTurnEnd.start();
 				bonbyTurnEnd.join();

@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import lifegame.game.event.BinboEvent;
 import lifegame.game.event.ClosingEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.MassEvent;
@@ -34,7 +35,6 @@ import lifegame.game.event.RandomEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
-import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
@@ -521,8 +521,7 @@ public class Window implements ActionListener{
 		binboFrame.setVisible(false);
 		binboFrame.removeAll();
 		playFrame.setVisible(true);
-		Binbo.turnFinish();
-		Binbo.binboFinish();
+		BinboEvent.turnFinish();
 	}
 
 	//所持カード一覧を閉じる
@@ -979,7 +978,7 @@ public class Window implements ActionListener{
 
 		setGoalColor();
 
-		Binbo.binboPossessPlayer(this);
+		BinboEvent.binboPossessPlayer(this);
 	}
 
 	//会社情報を表示
@@ -1309,7 +1308,7 @@ public class Window implements ActionListener{
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
 			Dice.clear();
-			Binbo.clearBonbyBefore();
+			BinboEvent.clearBefore();
 			if(!Card.usedRandomCard) {
 				massEvent();
 			}
