@@ -6,8 +6,8 @@ import java.util.Comparator;
 
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.search.model.SearchThreadModel;
-import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.print.Window;
 
 public class SearchThread extends SearchThreadModel{
@@ -46,25 +46,25 @@ public class SearchThread extends SearchThreadModel{
 		//内容をコピーした上で自分とは別方向に移動させる。
 		while(count<=Searcher.count && count <= 40 && System.currentTimeMillis()-Searcher.time<=searchTime) {
 			synchronized(SearchThread.lock2) {
-				if(App.japan.getCoordinates(nowMass).isMinRange(getStart(),App.japan.getGoal())) {//最適な範囲でごたついているThreadの優先度が高くなる可能性があるので、openlistを用意して今までのコストと比較し自分がどれくらいのレベルに居るのかを考慮すると本当に最適なpriorityを指定することが可能になるはず(処理が長くなり各threadが消費するリソースが膨大になる可能性を考慮すべし)
+				if(ContainsEvent.isMinRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoal())) {//最適な範囲でごたついているThreadの優先度が高くなる可能性があるので、openlistを用意して今までのコストと比較し自分がどれくらいのレベルに居るのかを考慮すると本当に最適なpriorityを指定することが可能になるはず(処理が長くなり各threadが消費するリソースが膨大になる可能性を考慮すべし)
 					super.setPriority(Thread.MIN_PRIORITY);
-				}else if(App.japan.getCoordinates(nowMass).isNormRange(getStart(),App.japan.getGoal())){
+				}else if(ContainsEvent.isNormRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoal())){
 					super.setPriority(Thread.NORM_PRIORITY);
-				}else if(App.japan.getCoordinates(nowMass).isMaxRange(getStart(), App.japan.getGoal())){
+				}else if(ContainsEvent.isMaxRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoal())){
 					super.setPriority(Thread.MAX_PRIORITY);
 				}
 			}
 			Thread.yield();
 			ArrayList<Coordinates> list = new ArrayList<Coordinates>();
 			super.moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
-			if(ContainsEvent.coor(nowMass, App.japan.getGoal())){
+			if(ContainsEvent.coor(nowMass, Japan.getGoal())){
 				goal();
 				break;
 			}
 			count++;
 			ArrayList<Coordinates> can = new ArrayList<Coordinates>();
 			synchronized(SearchThread.lock1) {
-				can.addAll(App.japan.getMovePossibles(super.nowMass));
+				can.addAll(Japan.getMovePossibles(super.nowMass));
 			}
 			for(Coordinates possibles : can) {//移動可能マスを取得
 				boolean conti=false;
@@ -78,7 +78,7 @@ public class SearchThread extends SearchThreadModel{
 					continue;
 				}
 				possibles.open(super.count);
-				if(possibles.getCost() <= possibles.getMaxCost(start,App.japan.getGoal())) {
+				if(ContainsEvent.isBestRange(possibles,start)) {
 					list.add(possibles);
 				}
 				possibles.close();
@@ -86,7 +86,7 @@ public class SearchThread extends SearchThreadModel{
 			//open処理
 			synchronized(SearchThread.lock2) {
 				for(Coordinates coor:list) {//open処理
-					App.japan.getCoordinates(coor).open(super.count);//探索予定のマスをopenにする。(コストを計算し保持する。)
+					Japan.getCoordinates(coor).open(super.count);//探索予定のマスをopenにする。(コストを計算し保持する。)
 				}
 			}
 			Collections.sort(list,new Comparator<Coordinates>() {

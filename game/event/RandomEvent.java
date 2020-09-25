@@ -5,6 +5,7 @@ import java.util.Random;
 import lifegame.game.main.App;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 
 public abstract class RandomEvent {
@@ -41,13 +42,13 @@ public abstract class RandomEvent {
 					Player.player.addCard(Card.cardList.get(i));
 				}
 			}
-		}else if(randomNum < 0.7 && App.japan.isOwners()) {
+		}else if(randomNum < 0.7 && ContainsEvent.isOwners()) {
 			//誰かの物件の所有権を初期化
-			for(Property property : App.japan.getPropertys()) {
-				if(property.isOwner()) {
+			for(Property property : Japan.getPropertys()) {
+				if(ContainsEvent.isOwner(property)) {
 					property.setOwner("");
-					if(App.japan.getStation(property).isMono()) {
-						App.japan.monopoly(property);
+					if(Japan.getStation(property).isMono()) {
+						Japan.monopoly(property);
 					}
 					break;
 				}
@@ -75,7 +76,7 @@ public abstract class RandomEvent {
 		s=(1000*App.year*rndnum);
 
 		for(int i=0;i<4;i++) {
-			if(property.getOwner() == Player.players.get(i).getName()) {
+			if(ContainsEvent.owner(property,Player.players.get(i))) {
 				Player.players.get(i).addMoney(s);
 				break;
 			}

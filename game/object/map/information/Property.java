@@ -39,10 +39,6 @@ public class Property {
 		this.monoflag=false;
 	}
 
-	public boolean isOwner() {
-		return !this.owner.equals("");
-	}
-
 	public String getName() {
 		return this.name;
 	}

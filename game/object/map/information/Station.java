@@ -7,6 +7,8 @@ package lifegame.game.object.map.information;
 
 import java.util.ArrayList;
 
+import lifegame.game.event.ContainsEvent;
+
 public class Station {
 	private String name;
 	private Coordinates coordinates = new Coordinates();
@@ -37,10 +39,14 @@ public class Station {
 	}
 
 	public void updateMono() {
+		if(!ContainsEvent.isOwners(this)) {
+			monoFlag=false;
+			return;
+		}
 		for(int i=0;i<getPropertySize();i++) {
 			for(int j=i;j<getPropertySize();j++) {
 				if(i==j)continue;
-				if(!getProperty(i).getOwner().equals(getProperty(j).getOwner()) || !getProperty(i).isOwner()) {
+				if(!ContainsEvent.owner(getProperty(i),getProperty(j))) {
 					monoFlag=false;
 					return;
 				}

@@ -17,14 +17,14 @@ public abstract class Binbo{
 	//private ArrayList<Coordinates> allplayernowMass = new ArrayList<Coordinates>();//将来的に全員にbufさせるために全員の位置を取得する
 
 	//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)
-	public static void addSameMossPlayer() {
+	public static void addSameMassPlayer() {
 		int turn = Player.player.getID();
 		while(true) {
 			turn++;
 			if(turn==Player.players.size()) {
 				turn=0;
 			}
-			if(turn==Player.player.getID()) {
+			if(ContainsEvent.id(turn)) {
 				break;
 			}
 			if(ContainsEvent.coor(binboplayer,Player.players.get(turn))){
@@ -64,33 +64,18 @@ public abstract class Binbo{
 	}
 
 	//だれと一緒にいるかListを取得
-	public static ArrayList<Player> getSameMossPlayers() {
+	public static ArrayList<Player> getSameMassPlayers() {
 		return together;
 	}
 
 	//だれと一緒にいるかListの一番最初を返す
-	public static Player getSameMossPlayer() {
+	public static Player getSameMassPlayer() {
 		return together.get(0);
-	}
-
-	//だれと一緒にいるかListがあるかどうかTF
-	public static boolean isSameMossPlayers() {
-		return together!=null;
-	}
-
-	//binboplayerがいるかどうかTF
-	public static boolean isBinboPlayer() {
-		return binboplayer!=null;
 	}
 
 	//ボンビーが前回憑いていた人を取得
 	public static ArrayList<Player> getBonbyBefore() {
 		return before;
-	}
-
-	//ボンビーが前回憑いていた人がいるかどうか取得
-	public static boolean isBonbyBefore() {
-		return before!=null;
 	}
 
 	//ボンビーが前回憑いていた人を直近でだれからもらったか取得
@@ -104,7 +89,7 @@ public abstract class Binbo{
 	}
 
 	//だれと一緒にいるかListをclear
-	public static void sameMossPlayersClear() {
+	public static void sameMassPlayersClear() {
 		together.clear();
 	}
 

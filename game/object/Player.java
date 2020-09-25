@@ -21,6 +21,7 @@ import lifegame.game.event.search.NearestSearchThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.print.Window;
 
@@ -28,17 +29,8 @@ public class Player {
 	public static Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
 	public static Player player;//操作中のプレイヤー
 
-	public static int maxProfit=100;//最高収益(グラフ作成用)
-	public static int minProfit=0;//最低収益(グラフ作成用)
-	public static int maxAssets=100;//最高資産(グラフ作成用)
-	public static int minAssets=0;//最低資産(グラフ作成用)
-
-	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
-	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
-
 	private static boolean stopFlag;//一時停止用フラグ
 
-	private boolean bonby;//ボンビー識別
 	private Buff buff;//一定期間の持続効果
 	private ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
 	private JLabel colt;//プレイヤーの駒
@@ -51,7 +43,6 @@ public class Player {
 	private int move;//進めるマス
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
 
-
 	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
 		this.move=0;
@@ -59,57 +50,17 @@ public class Player {
 		this.cards = new ArrayList<Card>();
 		this.propertys = new ArrayList<Property>();
 		this.id=id;
-		this.bonby = false;
 		this.cpuflag=cpuflag;
-		this.bonby = false;
 		setName(name);
 		addMoney(money);
 		this.nowMass = new Coordinates();
 		this.nowMass.setValue(6, 9);//大阪
 		clearMove();
-
 		initGoalDistance();
-		bonby = false;//ボンビー識別
-
-		//givebonby = 0;
-		//getbonby = 0;
-		//this.whowith = new ArrayList<Integer>();
-	}
-
-	public static void addProfitList(Integer[] list){
-		Player.allProfitList.add(list);
-	}
-
-	public static void addAssetsList(Integer[] list){
-		Player.allAssetsList.add(list);
-	}
-
-	public static ArrayList<Integer[]> getAssetsList(){
-		return Player.allAssetsList;
-	}
-
-	public static Integer[] getAssetsList(int index){
-		return Player.allAssetsList.get(index);
-	}
-
-	public static int getAssetsListSize(){
-		return Player.allAssetsList.size();
 	}
 
 	public static Player getPlayer(int index) {
 		return Player.players.get(index);
-	}
-
-	public static ArrayList<Integer[]> getProfitList(){
-		return Player.allProfitList;
-	}
-
-	public static Integer[] getProfitList(int index){
-		return Player.allProfitList.get(index);
-	}
-
-	public static int getProfitListSize(){
-		return Player.allProfitList.size();
 	}
 
 	public static void initPlayers(Window window,int playerCount) {
@@ -176,19 +127,19 @@ public class Player {
 
 	//物件購入・増築処理
 	public void buyPropertysCPU(String name) {
-		for(int index = 0;index<App.japan.getStaInPropertySize(name);index++) {
-			if(App.japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
-			if(!App.japan.getStaInProperty(name,index).isOwner()) {
-				App.japan.getStaInProperty(name,index).buy(this,0);
-				if(App.japan.getStation(name).isMono()) {
-					App.japan.monopoly(name);
+		for(int index = 0;index<Japan.getStaInPropertySize(name);index++) {
+			if(Japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
+			if(!ContainsEvent.isOwner(Japan.getStaInProperty(name,index))) {
+				Japan.getStaInProperty(name,index).buy(this,0);
+				if(Japan.getStation(name).isMono()) {
+					Japan.monopoly(name);
 				}
 			}else {
-				App.japan.getStaInProperty(name,index).buy(this);
+				Japan.getStaInProperty(name,index).buy(this);
 			}
-			App.japan.alreadys.add(App.japan.getStaInProperty(name,index).getName()+index);
+			Japan.alreadys.add(Japan.getStaInProperty(name,index).getName()+index);
 
-			//System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+			//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		}
 	}
 
@@ -200,14 +151,6 @@ public class Player {
 			Card.priceSort(this.getCards());
 		}while(this.getCardSize()>8);
 		Window.throwEnd();
-	}
-
-	public void changeBonby() {//ボンビーついたら変更
-		if(this.isBonby()) {
-			this.bonby = false;
-		}else {
-			this.bonby = true;
-		}
 	}
 
 	public void clearMove() {
@@ -258,9 +201,9 @@ public class Player {
 				boolean flag=false;
 				//行くことが出来るマス取得
 				NearestSearchThread searchthread = new NearestSearchThread(window);
-				searchthread.setMass(App.japan.getGoal());//探索開始位置をゴールに設定
+				searchthread.setMass(Japan.getGoal());//探索開始位置をゴールに設定
 				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
-					if(ContainsEvent.coor(coor, App.japan.getGoal())) {//目的地に行ける場合
+					if(ContainsEvent.coor(coor, Japan.getGoal())) {//目的地に行ける場合
 						cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;
@@ -419,18 +362,6 @@ public class Player {
 
 	public void initGoalDistance() {
 		this.goaldistance=500;
-	}
-
-	public boolean isBonby() {//ボンビーついているか取得
-		return this.bonby;
-	}
-
-	public boolean isEffect() {
-		if(getEffect() != 0) {
-			return true;
-		}else {
-			return false;
-		}
 	}
 
 	public boolean isPlayer() {

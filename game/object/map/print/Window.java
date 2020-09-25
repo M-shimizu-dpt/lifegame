@@ -39,6 +39,7 @@ import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.information.Station;
 
@@ -171,7 +172,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("貧乏神イベントを閉じる")) {
 			closeBinboEvent();
 		}
-		for(Station sta:App.japan.getStations()) {
+		for(Station sta:Japan.getStations()) {
 			if(cmd.equals(sta.getName())) {
 				printPropertys(cmd);
 			}
@@ -180,7 +181,7 @@ public class Window implements ActionListener{
 		for(int i=0;i<Card.cardList.size();i++) {
 			if(cmd.equals(Card.cardList.get(i).getName())) {//カードを使う
 				Card.cardList.get(i).useAbilitys(this);
-				if(Card.cardList.get(i).getID()==2){
+				if(ContainsEvent.id(Card.cardList.get(i),2)){
 					moveMaps();
 					try {
 						Thread.sleep(2000);
@@ -229,8 +230,8 @@ public class Window implements ActionListener{
 					break;
 				}
 			}
-			for(int i=0;i<App.japan.stationSize();i++) {
-				if(pre[0].equals(App.japan.getStationName(App.japan.getStationCoor(i))+"b")) {//物件を購入
+			for(int i=0;i<Japan.stationSize();i++) {
+				if(pre[0].equals(Japan.getStationName(Japan.getStationCoor(i))+"b")) {//物件を購入
 					buyPropertys(pre[0].substring(0, pre[0].length()-1),Integer.parseInt(pre[1]));
 					break;
 				}
@@ -276,11 +277,11 @@ public class Window implements ActionListener{
 		maps.add(p4,JLayeredPane.PALETTE_LAYER,-1);
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				if(!App.japan.contains(j, i))continue;
-				if(App.japan.containsStation(j,i)) {//駅の座標が来たら
-					int list=App.japan.getIndexOfStation(j, i);
-					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,App.japan.getStationName(App.japan.getStationCoor(list)));
-					if(list==App.japan.getGoalIndex()) {
+				if(!ContainsEvent.isMass(j, i))continue;
+				if(ContainsEvent.isStation(j,i)) {//駅の座標が来たら
+					int list=Japan.getIndexOfStation(j, i);
+					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,Japan.getStationName(Japan.getStationCoor(list)));
+					if(list==Japan.getGoalIndex()) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -308,16 +309,16 @@ public class Window implements ActionListener{
 		assetsLabel.setBackground(Color.BLUE);
 		Assets.add(assetsLabel);
 
-		for(float i=0;i<Player.getAssetsListSize();i++) {
+		for(float i=0;i<ClosingEvent.getAssetsListSize();i++) {
 			for(int j=0;j<4;j++) {
 				JPanel graph = new JPanel();
-				int x = (int)(300*((i+1)/Player.getAssetsListSize()));
-				int y = (int)(500-(400*Player.getAssetsList((int)i)[j]/(Player.maxAssets-Player.minAssets)));
+				int x = (int)(300*((i+1)/ClosingEvent.getAssetsListSize()));
+				int y = (int)(500-(400*ClosingEvent.getAssetsList((int)i)[j]/(ClosingEvent.maxAssets-ClosingEvent.minAssets)));
 				graph.setBounds(x,y,5,5);
 				graph.setBackground(Color.YELLOW);
 				Assets.add(graph);
 				//System.out.println("x:"+x+"\ty:"+y);
-				if(i==Player.getAssetsListSize()-1) {//ぬるぽ回避
+				if(i==ClosingEvent.getAssetsListSize()-1) {//ぬるぽ回避
 					continue;
 				}
 				//グラフ線分
@@ -333,8 +334,8 @@ public class Window implements ActionListener{
 				 */
 				int x1=(int)x;
 				int y1=(int)y;
-				int x2=(int)(300*((i+2)/Player.getAssetsListSize()));									//翌年のx座標
-				int y2=(int)(500-(400*Player.getAssetsList((int)i+1)[j]/(Player.maxAssets-Player.minAssets)));		//翌年のy座標
+				int x2=(int)(300*((i+2)/ClosingEvent.getAssetsListSize()));									//翌年のx座標
+				int y2=(int)(500-(400*ClosingEvent.getAssetsList((int)i+1)[j]/(ClosingEvent.maxAssets-ClosingEvent.minAssets)));		//翌年のy座標
 
 				//System.out.println("x1:"+x+"\ty1:"+y1+"\tx2:"+x2+"\ty2:"+y2);
 
@@ -398,7 +399,7 @@ public class Window implements ActionListener{
 			JLabel playerNameLabel = createText(400,110+(100*i),100,40,10,Player.players.get(i).getName());
 			playerNameLabel.setBackground(Color.white);
 			Assets.add(playerNameLabel,JLayeredPane.DEFAULT_LAYER,0);
-			JLabel playerAssetsLabel = createText(500,110+(100*i),100,40,10,String.valueOf(Player.getAssetsList(Player.getAssetsListSize()-1)[i]));
+			JLabel playerAssetsLabel = createText(500,110+(100*i),100,40,10,String.valueOf(ClosingEvent.getAssetsList(ClosingEvent.getAssetsListSize()-1)[i]));
 			playerAssetsLabel.setBackground(Color.white);
 			Assets.add(playerAssetsLabel,JLayeredPane.DEFAULT_LAYER,0);
 		}
@@ -481,9 +482,9 @@ public class Window implements ActionListener{
 
 	//物件購入・増築処理
 	private void buyPropertys(String name, int index) {
-		App.japan.buyPropertys(name, index, Player.player);
+		Japan.buyPropertys(name, index, Player.player);
 
-		//System.out.println(App.japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+		//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		propertyFrame.setVisible(false);
 		propertyFrame.removeAll();
 		printPropertys(name);
@@ -549,7 +550,7 @@ public class Window implements ActionListener{
 
 	public void closeGoal() {
 		goalFrame.setVisible(false);
-		printPropertys(App.japan.getStationName(App.japan.getSaveGoal()));
+		printPropertys(Japan.getStationName(Japan.getSaveGoal()));
 	}
 
 	//会社情報を閉じる
@@ -678,22 +679,22 @@ public class Window implements ActionListener{
 	//駅以外のマスを作成
 	private JPanel createMass(int j,int i,int distance) {
 		JPanel mass = new JPanel();
-		if(App.japan.containsBlue(j,i)) {
+		if(ContainsEvent.isBlue(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.BLUE);
-			mass.setName("B"+App.japan.getIndexOfBlue(j, i));
-		}else if(App.japan.containsRed(j,i)) {
+			mass.setName("B"+Japan.getIndexOfBlue(j, i));
+		}else if(ContainsEvent.isRed(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.RED);
-			mass.setName("R"+App.japan.getIndexOfRed(j, i));
-		}else if(App.japan.containsYellow(j,i)) {
+			mass.setName("R"+Japan.getIndexOfRed(j, i));
+		}else if(ContainsEvent.isYellow(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.YELLOW);
-			mass.setName("Y"+App.japan.getIndexOfYellow(j, i));
-		}else if(App.japan.containsShop(j,i)) {
+			mass.setName("Y"+Japan.getIndexOfYellow(j, i));
+		}else if(ContainsEvent.isShop(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.GRAY);
-			mass.setName("S"+App.japan.getIndexOfShop(j, i));
+			mass.setName("S"+Japan.getIndexOfShop(j, i));
 		}
 		return mass;
 	}
@@ -928,7 +929,7 @@ public class Window implements ActionListener{
 
 
 	private void drawLine(JLayeredPane lines,int x,int y,int size,int somethig) {
-		ArrayList<Coordinates> list = App.japan.getMovePossibles(x, y);
+		ArrayList<Coordinates> list = Japan.getMovePossibles(x, y);
 		for(Coordinates coor : list) {
 			JPanel line = new JPanel();
 			line.setBackground(Color.BLACK);
@@ -974,7 +975,7 @@ public class Window implements ActionListener{
 
 		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 
-		App.japan.changeGoal();
+		Japan.changeGoal();
 
 		setGoalColor();
 
@@ -1054,7 +1055,7 @@ public class Window implements ActionListener{
 	}
 
 	private void initMenu() {
-		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count+"マス");
+		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count+"マス");
 		mainInfo.setBackground(Color.BLUE);
 		mainInfo.setName(Player.player.getName()+Player.player.getMoney());
 		playFrame.getLayeredPane().add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
@@ -1075,9 +1076,9 @@ public class Window implements ActionListener{
 		int distance=130;
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				if(!App.japan.contains(j, i))continue;
-				if(App.japan.containsStation(j,i)) {
-					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,App.japan.getStationName(j, i));
+				if(!ContainsEvent.isMass(j, i))continue;
+				if(ContainsEvent.isStation(j,i)) {
+					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,Japan.getStationName(j, i));
 					pre.setBackground(Color.WHITE);
 					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
 				}else {
@@ -1109,7 +1110,7 @@ public class Window implements ActionListener{
 		initPlayFrame(playerCount);
 		initMaps();
     	createMoveButton();
-  		App.japan.initGoal();
+  		Japan.initGoal();
 
   		setGoalColor();
 
@@ -1130,7 +1131,7 @@ public class Window implements ActionListener{
     	// ウィンドウを表示
         playFrame.setVisible(true);
 
-        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count);
+        moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
       	moveLabel.setName("moves");
       	playFrame.setBackground(Color.ORANGE);
       	closeMoveButton();
@@ -1185,11 +1186,11 @@ public class Window implements ActionListener{
 		maps.add(p4,JLayeredPane.PALETTE_LAYER,-1);
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				if(!App.japan.contains(j, i))continue;
-				if(App.japan.containsStation(j,i)) {//駅の座標が来たら
-					int list=App.japan.getIndexOfStation(j, i);
-					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,App.japan.getStationName(App.japan.getStationCoor(list)));
-					if(list==App.japan.getGoalIndex()) {
+				if(!ContainsEvent.isMass(j, i))continue;
+				if(ContainsEvent.isStation(j,i)) {//駅の座標が来たら
+					int list=Japan.getIndexOfStation(j, i);
+					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,Japan.getStationName(Japan.getStationCoor(list)));
+					if(list==Japan.getGoalIndex()) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -1341,7 +1342,7 @@ public class Window implements ActionListener{
 	//メイン画面での移動ボタンを表示
 	private void printMoveButton() {
 		ArrayList<Boolean> vector = new ArrayList<Boolean>();
-		vector = App.japan.getVector(Player.player.getNowMass(),1);
+		vector = Japan.getVector(Player.player.getNowMass(),1);
 		closeMoveButton();
 		if(Searcher.nearestTrajectoryList.containsKey(Searcher.count)) {
 			for(ArrayList<Coordinates> list:Searcher.nearestTrajectoryList.get(Searcher.count)) {
@@ -1377,7 +1378,7 @@ public class Window implements ActionListener{
 			}
 		}
 
-		moveLabel.setText("残り移動可能マス数:"+Player.player.getMove()+"　"+App.japan.getGoalName()+"までの最短距離:"+Searcher.count);
+		moveLabel.setText("残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
 		moveLabel.setVisible(true);
 		playFrame.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 	}
@@ -1525,7 +1526,7 @@ public class Window implements ActionListener{
 		monthFrame.setVisible(false);
 		playFrame.setVisible(true);
 
-		if(App.japan.isOwners()) {
+		if(ContainsEvent.isOwners()) {
 			random2Event();
 		}
 	}
@@ -1534,34 +1535,34 @@ public class Window implements ActionListener{
 	public void printPropertys(String name) {
 		playFrame.setVisible(false);
 		propertyFrame = new JFrame(name + "の物件情報");
-		propertyFrame.setSize(800, 35*App.japan.getStaInPropertySize(name)+150);
+		propertyFrame.setSize(800, 35*Japan.getStaInPropertySize(name)+150);
 		propertyFrame.setLayout(null);
 		propertyFrame.setLocationRelativeTo(null);
 		propertyFrame.setVisible(false);
 		Container propertys = propertyFrame.getContentPane();
-		JButton closeButton = createButton(580,35*App.japan.getStaInPropertySize(name)+50,180,50,10,"閉じる");
+		JButton closeButton = createButton(580,35*Japan.getStaInPropertySize(name)+50,180,50,10,"閉じる");
 		closeButton.setActionCommand("物件情報を閉じる");
 
 		propertys.add(createText(150,10,200,40,20,"物件名"));
 		propertys.add(createText(400,10,150,40,20,"値段"));
 		propertys.add(createText(550,10,100,40,20,"利益率"));
 		propertys.add(createText(650,10,100,40,20,"所有者"));
-		if(App.japan.getStation(name).isMono()) {
+		if(Japan.getStation(name).isMono()) {
 			JLabel label = createText(750,10,30,40,20,"独");
 			label.setBackground(Color.RED);
 			propertys.add(label);
 		}
-		for(int i=0;i<App.japan.getStaInPropertySize(name);i++) {
-			String property = App.japan.getStaInProperty(name,i).getName();//名前
-			String owner = App.japan.getStaInProperty(name,i).getOwner();//管理者
-			int money = App.japan.getStaInProperty(name,i).getAmount();//購入金額
+		for(int i=0;i<Japan.getStaInPropertySize(name);i++) {
+			String property = Japan.getStaInProperty(name,i).getName();//名前
+			String owner = Japan.getStaInProperty(name,i).getOwner();//管理者
+			int money = Japan.getStaInProperty(name,i).getAmount();//購入金額
 			JButton buyButton = createButton(20,15+(i+1)*35,80,30,10,"購入");
-			if(mapFrame.isShowing() || App.japan.getStaInProperty(name,i).getLevel()>=2
-					|| (!owner.equals("") && !owner.equals(Player.player.getName())) || Player.player.getMoney()<App.japan.getStaInProperty(name,i).getAmount()) {
+			if(mapFrame.isShowing() || Japan.getStaInProperty(name,i).getLevel()>=2
+					|| (!owner.equals("") && !owner.equals(Player.player.getName())) || Player.player.getMoney()<Japan.getStaInProperty(name,i).getAmount()) {
 				buyButton.setEnabled(false);
 			}
-			for(String already:App.japan.alreadys) {
-				if(already.equals(App.japan.getStaInProperty(name,i).getName()+i)) {
+			for(String already:Japan.alreadys) {
+				if(already.equals(Japan.getStaInProperty(name,i).getName()+i)) {
 					buyButton.setEnabled(false);
 					//sellButton.setEnabled(false);
 					break;
@@ -1569,7 +1570,7 @@ public class Window implements ActionListener{
 			}
 			buyButton.setActionCommand(name+"b:"+i);
 			propertys.add(buyButton);
-			int rate = App.japan.getStaInProperty(name,i).getRate();//利益率(3段階)
+			int rate = Japan.getStaInProperty(name,i).getRate();//利益率(3段階)
 			propertys.add(createText(150,10+(i+1)*35,200,40,15,property));
 			if(money<10000) {
 				propertys.add(createText(400,10+(i+1)*35,150,40,15,money+"万円"));
@@ -1780,13 +1781,13 @@ public class Window implements ActionListener{
 			text1 = createText(10,10,600,100,20,"ちゅんちゅんちゅん");
 			text2 = createText(10,110,600,100,20,"ちゅんちゅんちゅんちゅんちゅんちゅんちゅんちゅんちゅん");
 			text3 = createText(10,210,600,100,20,"ちゅんちゅんちゅん(一頭地を抜くカードをもらった)");
-		}else if(rand < 0.7 && App.japan.isOwners()) {
+		}else if(rand < 0.7 && ContainsEvent.isOwners()) {
 			randomFrame.setName("鋼鉄の人");
 			text1 = createText(10,10,600,100,20,"全身赤い装甲に身を包んだアメリカの空飛ぶ天才発明家が現れた！");
 			text2 = createText(10,110,600,100,20,"Destroying properties at random！Don't hold a grudge.");
 			//誰かの物件の所有権を初期化
-			for(Property property : App.japan.getPropertys()) {
-				if(property.isOwner()) {
+			for(Property property : Japan.getPropertys()) {
+				if(ContainsEvent.isOwner(property)) {
 					text3 = createText(10,210,600,100,20,"誰かの物件が破壊された(" + property.getOwner() + "の" + property.getName() + ")");
 					break;
 				}
@@ -1804,7 +1805,7 @@ public class Window implements ActionListener{
 			randomFrame.setName("スキャンダル");
 			text1 = createText(10,10,600,100,20,"若者とキャッキャウフフしていたのがばれた");
 			text2 = createText(10,110,600,100,20,"世間体を気にして移動を自粛することにした");
-			if(Player.player.isEffect()) {
+			if(ContainsEvent.isEffect()) {
 				text3 = createText(10,210,600,100,20,"移動距離が-3される");
 			}else {
 				text3 = createText(10,210,600,100,20,"3カ月の間、移動距離が-3される");
@@ -1870,9 +1871,9 @@ public class Window implements ActionListener{
     		*/
 
     		//物件の情報を取得
-    		for(Property property : App.japan.getPropertys()) {
+    		for(Property property : Japan.getPropertys()) {
     			//オーナーの有無の判断
-    			if(property.isOwner()) {
+    			if(ContainsEvent.isOwner(property)) {
     				//物件が1かどうか判断
     				if(property.getGroup()==1) {
     					//物件の選出
@@ -1928,21 +1929,21 @@ public class Window implements ActionListener{
 	//メイン画面の上に書いてあるプレイヤーの情報を更新
 	public void reloadInfo() {
 		mainInfo.setVisible(false);
-		if(Player.player.isEffect()){
+		if(ContainsEvent.isEffect()){
 			if(Player.player.getMoney()<10000) {
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
 			}else if(Player.player.getMoney()%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
 			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
 			}
 		}else {
 			if(Player.player.getMoney()<10000) {
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"まで"+Searcher.count+"マス");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス");
 			}else if(Player.player.getMoney()%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"まで"+Searcher.count+"マス");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス");
 			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+App.japan.getGoalName()+"まで"+Searcher.count+"マス");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス");
 			}
 		}
 		mainInfo.setVisible(true);
@@ -1962,16 +1963,16 @@ public class Window implements ActionListener{
 		profitLabel.setBackground(Color.BLUE);
 		revenue.add(profitLabel);
 		//グラフ作成(左半分)
-		for(float i=0;i<Player.getProfitListSize();i++) {
+		for(float i=0;i<ClosingEvent.getProfitListSize();i++) {
 			for(int j=0;j<4;j++) {
 				JPanel graph = new JPanel();
-				int x=(int)(300*((i+1)/Player.getProfitListSize()));								//x座標を算出
-				int y=(int)(500-(400*Player.getProfitList((int)i)[j]/(Player.maxProfit-Player.minProfit)));	//y座標を算出
+				int x=(int)(300*((i+1)/ClosingEvent.getProfitListSize()));								//x座標を算出
+				int y=(int)(500-(400*ClosingEvent.getProfitList((int)i)[j]/(ClosingEvent.maxProfit-ClosingEvent.minProfit)));	//y座標を算出
 				graph.setBounds(x,y,5,5);													//（x,y）をプロット
 				graph.setBackground(Color.YELLOW);
 				revenue.add(graph);
 				//System.out.println("x:" + String.valueOf(x) + "\ty:" + String.valueOf(y));
-				if(i==Player.getProfitListSize()-1) {//ぬるぽ回避
+				if(i==ClosingEvent.getProfitListSize()-1) {//ぬるぽ回避
 					continue;
 				}
 				//グラフ線分
@@ -1987,8 +1988,8 @@ public class Window implements ActionListener{
 				 */
 				int x1=(int)x;
 				int y1=(int)y;
-				int x2=(int)(300*((i+2)/Player.getProfitListSize()));									//翌年のx座標を算出
-				int y2=(int)(500-(400*Player.getProfitList((int)i+1)[j]/(Player.maxProfit-Player.minProfit)));		//翌年のy座標を算出
+				int x2=(int)(300*((i+2)/ClosingEvent.getProfitListSize()));									//翌年のx座標を算出
+				int y2=(int)(500-(400*ClosingEvent.getProfitList((int)i+1)[j]/(ClosingEvent.maxProfit-ClosingEvent.minProfit)));		//翌年のy座標を算出
 
 				//System.out.println("x1:"+x+"\ty1:"+y1+"\tx2:"+x2+"\ty2:"+y2);
 
@@ -2052,7 +2053,7 @@ public class Window implements ActionListener{
 			JLabel playerNameLabel = createText(400,110+(100*i),100,40,10,Player.players.get(i).getName());
 			playerNameLabel.setBackground(Color.white);
 			revenue.add(playerNameLabel,JLayeredPane.DEFAULT_LAYER,0);
-			JLabel playerProfitLabel = createText(500,110+(100*i),100,40,10,String.valueOf(Player.getProfitList(Player.getProfitListSize()-1)[i]));
+			JLabel playerProfitLabel = createText(500,110+(100*i),100,40,10,String.valueOf(ClosingEvent.getProfitList(ClosingEvent.getProfitListSize()-1)[i]));
 			playerProfitLabel.setBackground(Color.white);
 			revenue.add(playerProfitLabel,JLayeredPane.DEFAULT_LAYER,0);
 		}
@@ -2096,7 +2097,7 @@ public class Window implements ActionListener{
 		JLayeredPane play = playFrame.getLayeredPane();
 		for(int i=0;i<play.getComponentCount();i++) {
 			if(play.getComponent(i).getName()==null)continue;
-			if(play.getComponent(i).getName().equals(App.japan.getGoalName())) {
+			if(play.getComponent(i).getName().equals(Japan.getGoalName())) {
 				play.getComponent(i).setBackground(Color.MAGENTA);
 				break;
 			}
@@ -2105,7 +2106,7 @@ public class Window implements ActionListener{
 
 	//物件売却処理
 	public void sellPropertys(Property property) {
-		App.japan.sellPropertys(property,Player.player);
+		Japan.sellPropertys(property,Player.player);
 
 		//System.out.println(property.getName()+"を売却");
 		sellStationFrame.setVisible(false);
