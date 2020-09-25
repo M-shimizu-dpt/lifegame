@@ -3,7 +3,7 @@
  * 物件情報を取得したり、利益計算などを記述
  */
 
-package lifegame.game.map.information;
+package lifegame.game.object.map.information;
 
 import java.util.ArrayList;
 import java.util.HashMap;

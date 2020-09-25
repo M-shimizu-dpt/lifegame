@@ -2,7 +2,7 @@
  * 画面表示に関する処理を管理するクラス
  * 画面表示をする際にこのクラスのメソッドを使用
 */
-package lifegame.game.map.print;
+package lifegame.game.object.map.print;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -34,12 +34,12 @@ import lifegame.game.event.RandomEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.information.Property;
-import lifegame.game.map.information.Station;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Property;
+import lifegame.game.object.map.information.Station;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
@@ -1288,17 +1288,17 @@ public class Window implements ActionListener{
 		String name;//if文が長すぎる為
 		JLayeredPane play = playFrame.getLayeredPane();
 
-		MoveEvent.movePlayer(x, y);
+		Coordinates coor = MoveEvent.movePlayer(x, y);
 
 		for(int i=0;i<play.getComponentCount();i++) {
 			name=play.getComponent(i).getName();
 			if(name==null) {
-				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
+				play.getComponent(i).setLocation(play.getComponent(i).getX()+coor.getX(),play.getComponent(i).getY()+coor.getY());
 			}else if(!(name.equals("stop") || name.equals("start") || name.equals("右") || name.equals("左") || name.equals("下") || name.equals("上") ||
 					name.equals("サイコロ") || name.equals("会社情報") || name.equals("カード") ||
 					name.equals("詳細マップ") || name.equals("全体マップ") || name.equals("ボタン背景") ||
 					name.equals(mainInfo.getName()) || name.equals(moveLabel.getName()) || name.equals(Player.player.getName()))) {//移動・閉じるボタン以外を動かす
-				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
+				play.getComponent(i).setLocation(play.getComponent(i).getX()+coor.getX(),play.getComponent(i).getY()+coor.getY());
 			}
 		}
 

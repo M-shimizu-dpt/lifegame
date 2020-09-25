@@ -3,9 +3,9 @@ package lifegame.game.event;
 import java.util.Random;
 
 import lifegame.game.main.App;
-import lifegame.game.map.information.Property;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Property;
 
 public abstract class RandomEvent {
 	private static boolean random2EndFlag=false;//randomイベントが終わるまで待つためのフラグ

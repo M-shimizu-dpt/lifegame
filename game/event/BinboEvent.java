@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import lifegame.game.event.search.Searcher;
-import lifegame.game.map.print.Window;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.print.Window;
 
 public abstract class BinboEvent{
 	//binboクラス初期化
 	public static void initBinbo() {
 		Binbo.setName("ボンビー");
+		initBinbo(Player.players.get(0));//初期でボンビーを憑けさせるなら
+	}
 
+	private static void initBinbo(Player player) {
+		Binbo.setPlayerBinbo(player);//初期でボンビーを憑けさせるなら
+		Binbo.getBinboPlayer().changeBonby();//初期でボンビーを憑けさせるなら
 	}
 
 	//binboのターンメソッド
@@ -126,7 +131,7 @@ public abstract class BinboEvent{
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int nextbonbyplayer;
-		Searcher.searchShortestRouteAllPlayers(window,Player.players);
+		Searcher.searchShortestRouteAllPlayers(window,Player.players);//うまく動くときと動かないときがある。
    		WaitThread waitthred  = new WaitThread(11);
 		waitthred.start();
 		try {
@@ -135,7 +140,7 @@ public abstract class BinboEvent{
 			e.printStackTrace();
 		}
 		for(int i=0;i<Player.players.size();i++) {
-			//System.out.println(players.get(i).getGoalDistance()+"最長距離"+i);
+			System.out.println(Player.players.get(i).getGoalDistance()+"最長距離"+i);
 			if(Player.players.get(i).containsGoalDistance(maxdistance)==1) {
 				if(Player.players.get(i).containsGoalDistance(maxdistance)!=0) {
 					if(nextbonbylist!=null) {

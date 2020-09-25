@@ -3,7 +3,7 @@
  * 駅の座標や駅に属する物件などを取得・変更することが出来る。
  */
 
-package lifegame.game.map.information;
+package lifegame.game.object.map.information;
 
 import java.util.ArrayList;
 

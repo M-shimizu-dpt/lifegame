@@ -6,8 +6,8 @@ import java.util.Comparator;
 
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
-import lifegame.game.map.print.Window;
+import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.print.Window;
 
 public class SearchThread extends SearchThreadModel{
 	protected Coordinates start = new Coordinates();

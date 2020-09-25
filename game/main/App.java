@@ -8,11 +8,11 @@ package lifegame.game.main;
 import lifegame.game.event.BinboEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
-import lifegame.game.map.information.Japan;
-import lifegame.game.map.print.Window;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Japan;
+import lifegame.game.object.map.print.Window;
 
 public class App {
 	public static int turn=0;//現在のターン
@@ -78,7 +78,7 @@ public class App {
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
-			if(Player.player.isBonby()) {//playerのメソッドに似た処理ある
+			if(Player.player.isBonby()) {
 				BinboEvent.start(window);
 				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
 				bonbyTurnEnd.start();

@@ -3,8 +3,8 @@ package lifegame.game.event;
 import java.util.ArrayList;
 
 import lifegame.game.main.App;
-import lifegame.game.map.information.Coordinates;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Coordinates;
 
 public abstract class MoveEvent {
 	private static ArrayList<String> moveTrajectory = new ArrayList<String>();//プレイヤーの移動の軌跡
@@ -41,7 +41,8 @@ public abstract class MoveEvent {
 		}
 	}
 
-	public static void movePlayer(int x,int y) {
+	public static Coordinates movePlayer(int x,int y) {
+		Coordinates coor = new Coordinates(x,y);
 		do {
 			//移動
 			if(x<0) {
@@ -55,10 +56,10 @@ public abstract class MoveEvent {
 				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1);
 			}
 			if(!App.japan.contains(Player.player.getNowMass().getX(),Player.player.getNowMass().getY())) {//2マス開いている場合
-				x*=2;
-				y*=2;
+				coor.setValue(coor.getX()*2, coor.getY()*2);
 			}
 		}while(!App.japan.contains(Player.player.getNowMass()));
+		return coor;
 	}
 
 	public static void moveTo(int player,Coordinates to) {
