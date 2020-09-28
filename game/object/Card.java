@@ -21,7 +21,6 @@ import java.util.Random;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
-import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.print.Window;
 
@@ -142,15 +141,15 @@ public class Card {
 			//誰に影響を与えるのか
 			Card.usedRandomCard();
 			if(name.equals("サミットカード")) {
-				coor.setValue(Player.players.get(App.turn).getNowMass());
+				coor.setValue(Player.player.getNowMass());
 				for(int roop=0;roop<4;roop++) {
 					if(ContainsEvent.isTurn(roop))continue;
-					window.moveMaps(roop,coor);
+					window.moveMaps(Player.players.get(roop),coor);
 				}
 			}else if(name.equals("北へ！カード")) {
 				do {
 					coor = this.useRandomAbility();
-				}while(Player.players.get(App.turn).getNowMass().getY()<coor.getY());
+				}while(Player.player.getNowMass().getY()<coor.getY());
 			}else if(name.equals("ピッタリカード")){
 				coor.setValue(Player.players.get(rand.nextInt(4)).getNowMass());
 			}else if(name.equals("最寄り駅カード")){
@@ -176,7 +175,7 @@ public class Card {
 			}else {
 				coor = this.useRandomAbility();
 			}
-			window.moveMaps(App.turn,coor);
+			window.moveMaps(Player.player,coor);
 			Player.player.getNowMass().setValue(coor);
 
 		}else if(this.id==3) {
@@ -196,7 +195,7 @@ public class Card {
 						maxMoney=player.getMoney();
 					}
 				}
-				Player.players.get(App.turn).addMoney(maxMoney);
+				Player.player.addMoney(maxMoney);
 			}else if(name.equals("起死回生カード")) {
 				if(ContainsEvent.money(0)<0) {
 					Player.player.addMoney(-Player.player.getMoney()*2);
@@ -349,7 +348,6 @@ public class Card {
 
 		//バフ・デバフ
 		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす",3,-3));
-
 
 		//お金がもらえる
 		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる",4,0));

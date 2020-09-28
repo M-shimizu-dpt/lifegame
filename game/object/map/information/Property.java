@@ -25,18 +25,19 @@ public class Property {
 		this.setAmount(amount);
 		this.setOwner("");
 		this.setGroup(group);
-		ArrayList<Double> falseRate = new ArrayList<Double>();
-		falseRate.add(rate1);
-		falseRate.add(rate2);
-		falseRate.add(rate3);
-		this.rate.put(false, falseRate);
-		ArrayList<Double> trueRate = new ArrayList<Double>();
-		trueRate.add(rate1*2);
-		trueRate.add(rate2*2);
-		trueRate.add(rate3*2);
-		this.rate.put(true, trueRate);
 		this.setLevel(0);
 		this.setStation(station);
+		ArrayList<Double> normRate = new ArrayList<Double>();
+		normRate.add(rate1);
+		normRate.add(rate2);
+		normRate.add(rate3);
+		this.rate.put(false, normRate);
+		ArrayList<Double> monoRate = new ArrayList<Double>();
+		monoRate.add(rate1*2);
+		monoRate.add(rate2*2);
+		monoRate.add(rate3*2);
+		this.rate.put(true, monoRate);
+
 	}
 
 	public Station getStation() {

@@ -91,9 +91,6 @@ public class App {
 		System.out.println("終わり");
 	}
 
-    /*
-     * プレイヤーの順番をランダムに入れ替えれるようにする
-     */
     private void run() {
     	Japan.init();
     	Window window = new Window();

@@ -128,10 +128,7 @@ public class Player {
 	public void buyPropertys(String name, int index) {
 		if(!ContainsEvent.isOwner(Japan.getStaInProperty(name,index))) {
 			Japan.getStaInProperty(name,index).buy(this,0);
-			Japan.getStation(name).updateMono();
-			if(Japan.getStation(name).isMono()) {
-				Japan.monopoly(name);
-			}
+			Japan.updateStationMono(name);
 		}else {
 			Japan.getStaInProperty(name,index).buy(this);
 		}
@@ -140,10 +137,7 @@ public class Player {
 
 	public void sellPropertys(Property property) {
 		property.sell(this);
-		Japan.getStation(property).updateMono();
-		if(Japan.getStation(property).isMono()) {
-			Japan.monopoly(property);
-		}
+		Japan.updateStationMono(property);
 	}
 
 	//物件購入・増築処理
@@ -152,9 +146,7 @@ public class Player {
 			if(Japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
 			if(!ContainsEvent.isOwner(Japan.getStaInProperty(name,index))) {
 				Japan.getStaInProperty(name,index).buy(this,0);
-				if(Japan.getStation(name).isMono()) {
-					Japan.monopoly(name);
-				}
+				Japan.updateStationMono(name);
 			}else {
 				Japan.getStaInProperty(name,index).buy(this);
 			}
