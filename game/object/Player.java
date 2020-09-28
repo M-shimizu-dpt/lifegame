@@ -211,9 +211,9 @@ public class Player {
 				boolean flag=false;
 				//行くことが出来るマス取得
 				NearestSearchThread searchthread = new NearestSearchThread(window);
-				searchthread.setMass(Japan.getGoal());//探索開始位置をゴールに設定
+				searchthread.setMass(Japan.getGoalCoor());//探索開始位置をゴールに設定
 				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
-					if(ContainsEvent.coor(coor, Japan.getGoal())) {//目的地に行ける場合
+					if(ContainsEvent.isGoal(coor)) {//目的地に行ける場合
 						cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;

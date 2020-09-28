@@ -41,7 +41,7 @@ public class Coordinates {
 	}
 
 	private int getVirtualCost() {
-		return getDistance(this,Japan.getGoal());
+		return getDistance(this,Japan.getGoalCoor());
 	}
 	//最適探索範囲を取得
 	public int getMaxCost(Coordinates start,Coordinates goal){
@@ -69,6 +69,7 @@ public class Coordinates {
 	public ArrayList<Coordinates> getLinks(){
 		return links;
 	}
+
 	public void setValue(int x,int y) {
 		this.x=x;
 		this.y=y;

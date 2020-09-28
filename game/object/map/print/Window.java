@@ -277,9 +277,9 @@ public class Window implements ActionListener{
 			for(int j=1;j<=17;j++) {
 				if(!ContainsEvent.isMass(j, i))continue;
 				if(ContainsEvent.isStation(j,i)) {//駅の座標が来たら
-					int list=Japan.getIndexOfStation(j, i);
-					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,Japan.getStationName(Japan.getStationCoor(list)));
-					if(list==Japan.getGoalIndex()) {
+					Station list=Japan.getStation(j, i);
+					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,list.getName());
+					if(ContainsEvent.isGoal(list)) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -548,7 +548,7 @@ public class Window implements ActionListener{
 
 	public void closeGoal() {
 		goalFrame.setVisible(false);
-		printPropertys(Japan.getStationName(Japan.getSaveGoal()));
+		printPropertys(Japan.getSaveGoalName());
 	}
 
 	//会社情報を閉じる
@@ -988,7 +988,7 @@ public class Window implements ActionListener{
 
 		setGoalColor();
 
-		BinboEvent.binboPossessPlayer(this);
+		BinboEvent.binboPossessPlayer();
 	}
 
 	//会社情報を表示
@@ -1197,9 +1197,9 @@ public class Window implements ActionListener{
 			for(int j=1;j<=17;j++) {
 				if(!ContainsEvent.isMass(j, i))continue;
 				if(ContainsEvent.isStation(j,i)) {//駅の座標が来たら
-					int list=Japan.getIndexOfStation(j, i);
-					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,Japan.getStationName(Japan.getStationCoor(list)));
-					if(list==Japan.getGoalIndex()) {
+					Station list=Japan.getStation(j, i);
+					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,list.getName());
+					if(ContainsEvent.isGoal(list)) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -1212,7 +1212,7 @@ public class Window implements ActionListener{
 		mapFrame.setVisible(true);
 	}
 
-	public boolean monthUpdate(boolean first, int endYear) {
+	public void monthUpdate(boolean first) {
   		if(first) {
   			printMonthFrame();
   		}else {
@@ -1234,11 +1234,6 @@ public class Window implements ActionListener{
 	    		}else {
 	    			App.turn++;
 	    		}
-  		}
-  		if(App.year>endYear) {
-  			return true;
-  		}else {
-  			return false;
   		}
   	}
 
@@ -1459,17 +1454,32 @@ public class Window implements ActionListener{
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
+		diceFrame.setSize(200, 250);
+		diceFrame.setLayout(null);
+		JButton button =createButton(50,50,100,50,10,"回す");
+		JButton closeButton =createButton(100,150,70,50,10,"戻る");
+		closeButton.setActionCommand("サイコロを閉じる");
+		diceP.add(button);
+		diceP.add(closeButton);
+		// ウィンドウを表示
+        diceFrame.setVisible(true);
+	}
+
+	/*
+	//サイコロ画面表示
+	private void printDice() {
+		JLayeredPane diceP = diceFrame.getLayeredPane();
 		diceFrame.setSize(600, 600);
 		diceFrame.setLayout(null);
 
-		/*
+		//iconの取得が出来ない
 		ImageIcon icon = new ImageIcon("./dice1.gif","description");
 		assert icon.getDescription() == null : "sample";
 		JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
 		JPanel p1 = new JPanel();
 		p1.add(d1);
 		diceFrame.getContentPane().add(p1);
-		*/
+
 
 		JButton button =createButton(490,450,70,50,10,"回す");
 		JButton closeButton =createButton(490,500,70,50,10,"戻る");
@@ -1479,6 +1489,7 @@ public class Window implements ActionListener{
 		// ウィンドウを表示
         diceFrame.setVisible(true);
 	}
+	 */
 
 	//カードの複製を行う画面を表示
 	public void printDubbing() {

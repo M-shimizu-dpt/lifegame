@@ -2,15 +2,13 @@ package lifegame.game.event.search;
 
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.object.Player;
-import lifegame.game.object.map.print.Window;
 
 
 public class OnlyDistanceSearchThread extends SearchThread{
 	private Player player;
 
 	//start
-	public OnlyDistanceSearchThread(Window window,Player player) {
-		super.setWindow(window);
+	public OnlyDistanceSearchThread(Player player) {
 		super.start.setValue(player.getNowMass());
 		this.player=player;
 		player.initGoalDistance();
@@ -20,8 +18,7 @@ public class OnlyDistanceSearchThread extends SearchThread{
 	}
 
 	//start
-	public OnlyDistanceSearchThread(Window window,Player player,int searchTime) {
-		super.setWindow(window);
+	public OnlyDistanceSearchThread(Player player,int searchTime) {
 		super.start.setValue(player.getNowMass());
 		this.player=player;
 		player.initGoalDistance();
@@ -36,7 +33,6 @@ public class OnlyDistanceSearchThread extends SearchThread{
 	}
 
 	protected void threadCopy(OnlyDistanceSearchThread original) {
-		//this.setWindow(original.window);
 		super.setCount(original.count);
 		super.setStart(original.start);
 		this.player=original.player;
@@ -46,8 +42,8 @@ public class OnlyDistanceSearchThread extends SearchThread{
 	@Override
 	protected void goal() {
 		synchronized(OnlyDistanceSearchThread.lock3) {
-			if(ContainsEvent.goalDistance(player, super.count)==1) {
-				player.setGoalDistance(super.count);
+			if(ContainsEvent.goalDistance(this.player, super.count)==1) {
+				this.player.setGoalDistance(super.count);
 			}
 		}
 	}

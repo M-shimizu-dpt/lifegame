@@ -5,6 +5,7 @@ import java.util.Random;
 import lifegame.game.main.App;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.print.Window;
 
 public abstract class MassEvent {
@@ -19,6 +20,8 @@ public abstract class MassEvent {
 				e.printStackTrace();
 			}
 		}
+		assert massName.substring(0, 1).equals("B") || massName.substring(0, 1).equals("R") || massName.substring(0, 1).equals("Y")
+			|| massName.substring(0, 1).equals("S") || Japan.getStationNameList().contains(massName) : "massNameが正しくありません";
 
 		if(massName.substring(0, 1).equals("B")) {
 			blueEvent(window);

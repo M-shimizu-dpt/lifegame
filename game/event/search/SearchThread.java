@@ -46,18 +46,18 @@ public class SearchThread extends SearchThreadModel{
 		//内容をコピーした上で自分とは別方向に移動させる。
 		while(count<=Searcher.count && count <= 40 && System.currentTimeMillis()-Searcher.time<=searchTime) {
 			synchronized(SearchThread.lock2) {
-				if(ContainsEvent.isMinRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoal())) {//最適な範囲でごたついているThreadの優先度が高くなる可能性があるので、openlistを用意して今までのコストと比較し自分がどれくらいのレベルに居るのかを考慮すると本当に最適なpriorityを指定することが可能になるはず(処理が長くなり各threadが消費するリソースが膨大になる可能性を考慮すべし)
+				if(ContainsEvent.isMinRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoalCoor())) {//最適な範囲でごたついているThreadの優先度が高くなる可能性があるので、openlistを用意して今までのコストと比較し自分がどれくらいのレベルに居るのかを考慮すると本当に最適なpriorityを指定することが可能になるはず(処理が長くなり各threadが消費するリソースが膨大になる可能性を考慮すべし)
 					super.setPriority(Thread.MIN_PRIORITY);
-				}else if(ContainsEvent.isNormRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoal())){
+				}else if(ContainsEvent.isNormRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoalCoor())){
 					super.setPriority(Thread.NORM_PRIORITY);
-				}else if(ContainsEvent.isMaxRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoal())){
+				}else if(ContainsEvent.isMaxRange(Japan.getCoordinates(nowMass), getStart(), Japan.getGoalCoor())){
 					super.setPriority(Thread.MAX_PRIORITY);
 				}
 			}
 			Thread.yield();
 			ArrayList<Coordinates> list = new ArrayList<Coordinates>();
 			super.moveTrajectory.add(new Coordinates(nowMass));//移動履歴を追加
-			if(ContainsEvent.coor(nowMass, Japan.getGoal())){
+			if(ContainsEvent.isGoal(nowMass)){
 				goal();
 				break;
 			}

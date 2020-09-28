@@ -27,13 +27,13 @@ public class Card extends CardModel{
 
 	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
 		super.setName(name);
-		this.setCount(0);
-		this.setRarity(rarity);
-		this.setSellPrice(buy/2);
-		this.setBuyPrice(buy);
-		this.cardText=cardText;
-		this.id=id;
-		this.ability=ability;
+		super.setCount(0);
+		super.setRarity(rarity);
+		super.setSellPrice(buy/2);
+		super.setBuyPrice(buy);
+		super.setText(cardText);
+		super.setID(id);
+		super.setAbility(ability);
 	}
 
 	public static ArrayList<Card> getElectedCard(){
@@ -168,7 +168,6 @@ public class Card extends CardModel{
 		}
 	}
 
-
 	public void useAbilitys(Window window) {
 		if(id==0 || id==1) {
 			useAbility();
@@ -191,8 +190,6 @@ public class Card extends CardModel{
 			Card.used();//カードを使ったことにする
 		}
 	}
-
-
 
 	public Coordinates useRandomAbility() {
 		Random rand = new Random();
