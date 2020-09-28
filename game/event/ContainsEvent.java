@@ -495,4 +495,5 @@ public abstract class ContainsEvent {
 	public static boolean isTurn(int num) {
 		return App.turn==num;
 	}
+
 }

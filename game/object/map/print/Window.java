@@ -86,7 +86,7 @@ public class Window implements ActionListener{
 	public void ableMenu() {
 		saikoro.setEnabled(true);
 		company.setEnabled(true);
-		if(!Card.usedCard) {
+		if(!Card.isUsed()) {
 			cardB.setEnabled(true);
 		}
 		minimap.setEnabled(true);
@@ -179,10 +179,10 @@ public class Window implements ActionListener{
 			}
 		}
 
-		for(int i=0;i<Card.cardList.size();i++) {
-			if(cmd.equals(Card.cardList.get(i).getName())) {//カードを使う
-				Card.cardList.get(i).useAbilitys(this);
-				if(ContainsEvent.id(Card.cardList.get(i),2)){
+		for(int i=0;i<Card.getCardListSize();i++) {
+			if(cmd.equals(Card.getCard(i).getName())) {//カードを使う
+				Card.getCard(i).useAbilitys(this);
+				if(ContainsEvent.id(Card.getCard(i),2)){
 					moveMaps();
 					try {
 						Thread.sleep(2000);
@@ -193,24 +193,21 @@ public class Window implements ActionListener{
 				ableMenu();
 				closeCard();
 				break;
-			}else if(cmd.equals(Card.cardList.get(i).getName()+"t")) {//カードを捨てる
-				Player.player.getCards().remove(Card.cardList.get(i));
+			}else if(cmd.equals(Card.getCard(i).getName()+"t")) {//カードを捨てる
+				Player.player.getCards().remove(Card.getCard(i));
 				Window.throwFlag=true;
 				errorFrame.setVisible(false);
 				playFrame.setVisible(true);
 				break;
-			}else if(cmd.equals(Card.cardList.get(i).getName()+"d")) {//カードを複製
-				Player.player.getCards().add(Card.cardList.get(i));
+			}else if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
+				Player.player.getCards().add(Card.getCard(i));
 				closeDubbing();
 				break;
 			}
 		}
 
-		if(Card.usedRandomCard || Card.usedOthersCard) {
-			Card.resetUsedCard();
-			Card.resetUsedFixedCard();
-			Card.resetUsedRandomCard();
-			Card.resetUsedOthersCard();
+		if(Card.isUsedRandom() || Card.isUsedOthers()) {
+			Card.resetFlags();
 			ableMenu();
 			if(playFrame.isVisible()) {
 				App.turnEnd();
@@ -225,7 +222,7 @@ public class Window implements ActionListener{
 					break;
 				}
 			}
-			for(Card card:Card.cardList) {
+			for(Card card:Card.getCardList()) {
 				if(pre[0].equals(card.getName()) && pre[1].equals("b")) {//カード購入
 					buyCard(card);
 					break;
@@ -925,8 +922,8 @@ public class Window implements ActionListener{
 		}
 		closeMenu();
 		Dice.clear();
-		Card.resetUsedCard();
-		Card.resetUsedFixedCard();
+		Card.resetUsed();
+		Card.resetUsedFixed();
 		closeDice();
 	}
 
@@ -1322,7 +1319,7 @@ public class Window implements ActionListener{
 			MoveEvent.clearTrajectory();
 			Dice.clear();
 			BinboEvent.clearBefore();
-			if(!Card.usedRandomCard) {
+			if(!Card.isUsedRandom()) {
 				massEvent();
 			}
 		}
@@ -1636,7 +1633,7 @@ public class Window implements ActionListener{
 	}
 
 	//店イベント
-	public void printShop() {
+	public void printShop(ArrayList<Card> cardList) {
 		playFrame.setVisible(false);
 		shopFrontFrame = new JFrame("カードショップ");
 		JLayeredPane shop = shopFrontFrame.getLayeredPane();
@@ -1658,7 +1655,7 @@ public class Window implements ActionListener{
 			buyButton.setEnabled(false);
 			sellButton.setEnabled(false);
 		}
-		canBuyCardlist.addAll(Card.getElectedCard());
+		canBuyCardlist.addAll(cardList);
 		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 		shopFrontFrame.setVisible(true);
 		setCloseFrame(1);

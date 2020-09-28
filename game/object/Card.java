@@ -14,8 +14,6 @@
 package lifegame.game.object;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Random;
 
 import lifegame.game.event.ContainsEvent;
@@ -23,73 +21,19 @@ import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.print.Window;
+import lifegame.game.object.model.CardModel;
 
-public class Card {
-	private String name;//名前
-	private String cardText;//能力説明
-	private int sellPrice;//売る時の値段
-	private int buyPrice;//買う時の値段
-	private int count;//カード破壊カウント(周遊用)
-	private int rarity;
-	private int ability;
-	private int id;
-	public static ArrayList<Card> cardList = new ArrayList<Card>();
-	public static boolean usedCard;
-	public static boolean usedFixedCard;
-	public static boolean usedRandomCard;
-	public static boolean usedOthersCard;
-
-
+public class Card extends CardModel{
 
 	public Card(String name,int buy,int rarity,String cardText,int id,int ability) {
-		this.name = name;
-		this.count=0;
-		this.rarity=rarity;
-		this.sellPrice = buy/2;
-		this.buyPrice = buy;
+		super.setName(name);
+		this.setCount(0);
+		this.setRarity(rarity);
+		this.setSellPrice(buy/2);
+		this.setBuyPrice(buy);
 		this.cardText=cardText;
 		this.id=id;
 		this.ability=ability;
-	}
-
-	public int getAbility() {
-		return this.ability;
-	}
-
-	public int getID() {
-		return id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public String getText() {
-		return this.cardText;
-	}
-
-	public int getSellPrice() {
-		return this.sellPrice;
-	}
-
-	public int getBuyPrice() {
-		return this.buyPrice;
-	}
-
-	public int getRarity() {
-		return this.rarity;
-	}
-
-	public int getCount() {
-		return this.count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
-	}
-
-	public void setAbility(int ability) {
-		this.ability = ability;
 	}
 
 	public static ArrayList<Card> getElectedCard(){
@@ -128,7 +72,7 @@ public class Card {
 		if(this.id==0) {
 			Dice.setNum(this.ability);
 		}else if(this.id == 1) {
-			Card.usedFixedCard();
+			Card.usedFixed();
 			Dice.setResult(this.ability);
 		}
 	}
@@ -139,7 +83,7 @@ public class Card {
 		if(this.id==2) {
 			Coordinates coor = new Coordinates();
 			//誰に影響を与えるのか
-			Card.usedRandomCard();
+			Card.usedRandom();
 			if(name.equals("サミットカード")) {
 				coor.setValue(Player.player.getNowMass());
 				for(int roop=0;roop<4;roop++) {
@@ -187,7 +131,7 @@ public class Card {
 			Player.players.get(enemy).getBuff().addBuff(this.ability, period);
 			//System.out.println(Player.players.get(App.turn).getName());
 		}else if(this.id==4) {
-			Card.usedOthersCard();
+			Card.usedOthers();
 			if(name.equals("一頭地を抜くカード")) {
 				int maxMoney=0;
 				for(Player player:Player.players.values()) {
@@ -244,41 +188,11 @@ public class Card {
 		}
 
 		if(!name.equals("徳政令カード")) {
-			Card.usedCard();//カードを使ったことにする
+			Card.used();//カードを使ったことにする
 		}
 	}
 
-	public static void resetUsedCard() {
-		Card.usedCard=false;
-	}
 
-	public static void usedCard() {
-		Card.usedCard=true;
-	}
-
-	public static void resetUsedFixedCard() {
-		Card.usedFixedCard=false;
-	}
-
-	public static void usedFixedCard() {
-		Card.usedFixedCard=true;
-	}
-
-	public static void resetUsedRandomCard() {
-		Card.usedRandomCard=false;
-	}
-
-	public static void usedRandomCard() {
-		Card.usedRandomCard=true;
-	}
-
-	public static void resetUsedOthersCard() {
-		Card.usedOthersCard=false;
-	}
-
-	public static void usedOthersCard() {
-		Card.usedOthersCard=true;
-	}
 
 	public Coordinates useRandomAbility() {
 		Random rand = new Random();
@@ -294,28 +208,8 @@ public class Card {
 		return movedMass;
 	}
 
-	public static void raritySort(ArrayList<Card> cards){
-		Collections.sort(cards,new Comparator<Card>() {
-        	public int compare(Card card1, Card card2) {
-				return Integer.compare(card1.getRarity(), card2.getRarity());
-			}
-        });
-    }
-
-	public static void priceSort(ArrayList<Card> cards){
-        Collections.sort(cards,new Comparator<Card>() {
-        	public int compare(Card card1, Card card2) {
-				return Integer.compare(card1.getBuyPrice(), card2.getBuyPrice());
-			}
-        });
-    }
-
 	public static void init(Window window) {
-		resetUsedCard();
-		resetUsedFixedCard();
-		resetUsedRandomCard();
-		resetUsedOthersCard();
-
+		resetFlags();
 
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
@@ -326,7 +220,6 @@ public class Card {
 		cardList.add(new Card("新幹線周遊カード",50000,4,"何度かサイコロを4つ回すことが出来る",0,4));
 		cardList.add(new Card("のぞみカード",20000,4,"サイコロを5つ回すことが出来る",0,5));
 
-
 		//固定値
 		cardList.add(new Card("足踏みカード",4000,3,"その場に留まることが出来る",1,0));
 		cardList.add(new Card("1進めるカード",10000,3,"1マス進める",1,1));
@@ -335,7 +228,6 @@ public class Card {
 		cardList.add(new Card("4進めるカード",10000,3,"4マス進める",1,4));
 		cardList.add(new Card("5進めるカード",10000,3,"5マス進める",1,5));
 		cardList.add(new Card("6進めるカード",10000,3,"6マス進める",1,6));
-
 
 		//どこかへ移動する
 		cardList.add(new Card("ぶっとびカード",10000,1,"どこかに移動することが出来る",2,0));

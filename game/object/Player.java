@@ -190,11 +190,8 @@ public class Player {
 					window.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
 				}
-				if(Card.usedRandomCard || Card.usedOthersCard) {
-					Card.resetUsedCard();
-					Card.resetUsedFixedCard();
-					Card.resetUsedRandomCard();
-					Card.resetUsedOthersCard();
+				if(Card.isUsedRandom() || Card.isUsedOthers()) {
+					Card.resetFlags();
 					window.ableMenu();
 					diceFlag=false;
 					App.turnEnd();
