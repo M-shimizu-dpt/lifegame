@@ -1073,9 +1073,7 @@ public class Window implements ActionListener{
 		int x=-400;
 		int y=-900;
 		for(int i=0;i<play.getComponentCount();i++) {
-			if(!(i>=0&&i<6)) {
-				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
-			}
+			play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
 		}
 	}
 
@@ -2140,7 +2138,7 @@ public class Window implements ActionListener{
 			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",5000);
 		}
 	}
-	
+
 	private void sellCard(Card card) {
 		Player.player.sellCard(card);
 		shopFrame.setVisible(false);

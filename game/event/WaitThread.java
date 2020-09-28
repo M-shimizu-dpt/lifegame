@@ -59,6 +59,7 @@ public class WaitThread extends Thread{
 					e.printStackTrace();
 				}
 			}
+			App.initTurnEndFlag();
 			break;
 		case 1:
 			while(this.money < 0 && this.size > 0) {

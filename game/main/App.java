@@ -72,11 +72,10 @@ public class App {
 		  	window.reloadInfo();//画面上部に表示している情報を更新
 		  	Card.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!Player.player.isPlayer()) {//cpu操作
-		  		Player.player.cpu(window,turn);
+		  		Player.player.cpu(window);
 		  	}else {
 		  		window.printMenu();
 		  	}
-		  	Player.player.addCard(Card.getCard(0));//debug
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
@@ -87,7 +86,6 @@ public class App {
 				bonbyTurnEnd.join();
 			}
 			Thread.sleep(1000);
-			App.turnEndFlag=false;
 			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
   		assert endYear < year;
@@ -117,7 +115,4 @@ public class App {
         	e.printStackTrace();
         }
     }
-
-
-
 }

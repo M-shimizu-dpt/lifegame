@@ -70,7 +70,7 @@ public class Player {
 	  		}else {//CPU
   				Player.players.put(i,new Player("CPU"+(i+1-playerCount),1000,i,false));
   			}
-  			Player.players.get(i).setColt(window.createText(401,301,20,20,10,Player.players.get(i).getName()));
+  			Player.players.get(i).setColt(window.createText(401+400,301+900,20,20,10,Player.players.get(i).getName()));
   	  		Player.players.get(i).getColt().setBackground(Color.BLACK);
   	  		Player.players.get(i).getColt().setName(Player.players.get(i).getName());
   	  		window.addPlayFrame(Player.players.get(i).getColt());
@@ -171,7 +171,7 @@ public class Player {
 	}
 
 	//CPU操作
-	public void cpu(Window window,int turn) throws InterruptedException{
+	public void cpu(Window window) throws InterruptedException{
 		window.closeMoveButton();
 		Thread.sleep(500);
 		if(Player.isStop()) {
@@ -302,12 +302,12 @@ public class Player {
 		}
 	}
 
-	public int getAnotherPlayer() {
+	public Player getAnotherPlayer() {
 		int rand;
 		do {
 			rand = new Random().nextInt(4);
 		}while(rand != this.id);
-		return rand;
+		return players.get(rand);
 	}
 
 	public Buff getBuff() {
@@ -425,6 +425,9 @@ public class Player {
 		this.name = name;
 	}
 
+	public void addBuff(int ability,int period) {
+		getBuff().addBuff(ability, period);
+	}
 }
 
 
