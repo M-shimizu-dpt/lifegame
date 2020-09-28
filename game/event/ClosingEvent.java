@@ -1,6 +1,7 @@
 package lifegame.game.event;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import lifegame.game.object.Player;
@@ -15,7 +16,8 @@ public abstract class ClosingEvent {
 
 	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
 	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
-
+	private static ArrayList<Integer[]> rank = new ArrayList<>();
+	
 	public static ArrayList<Integer[]> getProfitList(){
 		return ClosingEvent.allProfitList;
 	}
@@ -48,6 +50,9 @@ public abstract class ClosingEvent {
 		return ClosingEvent.allAssetsList.size();
 	}
 
+	public static Integer[] getRankList(int index){
+		return ClosingEvent.rank.get(index);
+	}
 
 	/*
 	 * 決算
@@ -92,6 +97,20 @@ public abstract class ClosingEvent {
 			ClosingEvent.minAssets=Math.min(ClosingEvent.minAssets, assetsList[i]);
 		}
 		ClosingEvent.addAssetsList(assetsList);
+	}
+	
+	//総資産で降順に並び替え、一番を返す
+	public static String finish() {
+		for(int i=0;i<4;i++) {
+			rank.add(getAssetsList(i));
+		}
+		Collections.sort(rank, Collections.reverseOrder());
+		for(int i=0;i<4;i++) {
+			if(getRankList(0)==getAssetsList(i)) {
+				return Player.players.get(i).getName();
+			}
+		}
+		return null;
 	}
 
 	public static void closed() {
