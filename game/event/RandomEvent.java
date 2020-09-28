@@ -47,9 +47,7 @@ public abstract class RandomEvent {
 			for(Property property : Japan.getPropertys()) {
 				if(ContainsEvent.isOwner(property)) {
 					property.setOwner("");
-					if(Japan.getStation(property).isMono()) {
-						Japan.monopoly(property);
-					}
+					Japan.updateStationMono(property);
 					break;
 				}
 			}

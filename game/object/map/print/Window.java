@@ -172,7 +172,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("貧乏神イベントを閉じる")) {
 			closeBinboEvent();
 		}
-		for(Station sta:Japan.getStations()) {
+		for(Station sta:Japan.getStationList()) {
 			if(cmd.equals(sta.getName())) {
 				printPropertys(cmd);
 			}
@@ -230,7 +230,7 @@ public class Window implements ActionListener{
 					break;
 				}
 			}
-			for(int i=0;i<Japan.stationSize();i++) {
+			for(int i=0;i<Japan.getStationSize();i++) {
 				if(pre[0].equals(Japan.getStationName(Japan.getStationCoor(i))+"b")) {//物件を購入
 					buyPropertys(pre[0].substring(0, pre[0].length()-1),Integer.parseInt(pre[1]));
 					break;

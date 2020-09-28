@@ -807,17 +807,17 @@ public abstract class Japan {
 	}
 
 	//駅名で指定した駅の独占状態のOn/Offを切り替える
-	public static void monopoly(String name) {
+	public static void updateStationMono(String name) {
 		getStation(name).updateMono();
 	}
 
 	//物件情報で指定した駅の独占状態のOn/Offを切り替える
-	public static void monopoly(Property property) {
+	public static void updateStationMono(Property property) {
 		getStation(property).updateMono();
 	}
 
 	//駅の数を返す
-	public static int stationSize() {
+	public static int getStationSize() {
 		return stations.size();
 	}
 
@@ -827,7 +827,7 @@ public abstract class Japan {
 	}
 
 	//駅の座標一覧を取得
-	public static ArrayList<Coordinates> getStationsCoor(){
+	public static ArrayList<Coordinates> getStationCoorList(){
 		ArrayList<Coordinates> result = new ArrayList<Coordinates>();
 		for(Station s:stations) {
 			result.add(s.getCoordinates());
@@ -836,7 +836,7 @@ public abstract class Japan {
 	}
 
 	//青マスの座標一覧を取得
-	public static ArrayList<Coordinates> getBlueCoor(){
+	public static ArrayList<Coordinates> getBlueCoorList(){
 		return blue;
 	}
 
@@ -846,7 +846,7 @@ public abstract class Japan {
 	}
 
 	//赤マスの座標一覧を取得
-	public static ArrayList<Coordinates> getRedCoor(){
+	public static ArrayList<Coordinates> getRedCoorList(){
 		return red;
 	}
 
@@ -856,7 +856,7 @@ public abstract class Japan {
 	}
 
 	//黄マスの座標一覧を取得
-	public static ArrayList<Coordinates> getYellowCoor(){
+	public static ArrayList<Coordinates> getYellowCoorList(){
 		return yellow;
 	}
 
@@ -866,7 +866,7 @@ public abstract class Japan {
 	}
 
 	//店マスの座標一覧を取得
-	public static ArrayList<Coordinates> getshopCoor(){
+	public static ArrayList<Coordinates> getShopCoorList(){
 		return shop;
 	}
 
@@ -876,7 +876,7 @@ public abstract class Japan {
 	}
 
 	//駅の一覧を取得
-	public static ArrayList<Station> getStations(){
+	public static ArrayList<Station> getStationList(){
 		return stations;
 	}
 
@@ -893,8 +893,6 @@ public abstract class Japan {
 	public static Station getStation(int index) {
 		return stations.get(index);
 	}
-
-	//指定のpropertyを含むstationを取得
 	public static Station getStation(Property property) {
 		for(Station sta : stations) {
 			if(ContainsEvent.stationPropertys(sta, property)) {
@@ -903,8 +901,6 @@ public abstract class Japan {
 		}
 		return null;
 	}
-
-	//指定のpropertyを含むstationを取得
 	public static Station getStation(Coordinates coor) {
 		for(Station sta : stations) {
 			if(ContainsEvent.coor(sta, coor)) {
@@ -913,8 +909,6 @@ public abstract class Japan {
 		}
 		return null;
 	}
-
-	//駅名で指定した駅を取得
 	public static Station getStation(String stationName) {
 		for(Station sta : stations) {
 			if(ContainsEvent.name(sta,stationName)) {
@@ -933,8 +927,6 @@ public abstract class Japan {
 		}
 		return null;
 	}
-
-	//座標で指定した駅名を取得
 	public static String getStationName(int x,int y) {
 		for(Station sta : stations) {
 			if(ContainsEvent.coor(sta, x, y)) {
@@ -996,7 +988,7 @@ public abstract class Japan {
 	//全てのマス座標を取得
 	public static ArrayList<Coordinates> getAllCoordinates(){
 		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
-		list.addAll(getStationsCoor());
+		list.addAll(getStationCoorList());
 		list.addAll(blue);
 		list.addAll(red);
 		list.addAll(yellow);
@@ -1024,8 +1016,6 @@ public abstract class Japan {
 		}
 		return null;
 	}
-
-	//指定の座標のCoordinatesインスタンスを取得
 	public static synchronized Coordinates getCoordinates(Coordinates coor) {
 		ArrayList<Coordinates> list = getAllCoordinates();
 		for(int i = 0;i<list.size();i++) {
@@ -1078,6 +1068,20 @@ public abstract class Japan {
 		result=getIndexOfYellow(x,y);
 		if(result!=-1)return result;
 		result=getIndexOfShop(x,y);
+		if(result!=-1)return result;
+		return -1;
+	}
+	public static int getIndexOf(Coordinates coor) {
+		int result;
+		result=getIndexOfStation(coor);
+		if(result!=-1)return result;
+		result=getIndexOfBlue(coor);
+		if(result!=-1)return result;
+		result=getIndexOfRed(coor);
+		if(result!=-1)return result;
+		result=getIndexOfYellow(coor);
+		if(result!=-1)return result;
+		result=getIndexOfShop(coor);
 		if(result!=-1)return result;
 		return -1;
 	}
@@ -1211,8 +1215,6 @@ public abstract class Japan {
 		}
 		return null;
 	}
-
-	//指定した座標から移動可能な方角一覧を取得
 	public static ArrayList<Boolean> getVector(Coordinates coor,int size){
 		int x=coor.getX();
 		int y=coor.getY();
@@ -1260,8 +1262,6 @@ public abstract class Japan {
 			return null;
 		}
 	}
-
-	//指定した座標から移動可能な座標一覧を取得
 	public static ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
 		if(ContainsEvent.isStation(coor)) {
 			return railMapping.get(stations.get(getIndexOfStation(coor)).getCoordinates());

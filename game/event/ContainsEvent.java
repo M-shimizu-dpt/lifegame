@@ -404,7 +404,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isStation(int x,int y) {
-		for(Coordinates coor:Japan.getStationsCoor()) {
+		for(Coordinates coor:Japan.getStationCoorList()) {
 			if(ContainsEvent.coor(coor, x, y)) {
 				return true;
 			}
@@ -412,7 +412,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isStation(Coordinates coordinates) throws ExceptionInInitializerError{
-		for(Coordinates coor:Japan.getStationsCoor()) {
+		for(Coordinates coor:Japan.getStationCoorList()) {
 			if(ContainsEvent.coor(coor, coordinates)) {
 				return true;
 			}
@@ -420,7 +420,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isBlue(int x,int y) {
-		for(Coordinates coor:Japan.getBlueCoor()) {
+		for(Coordinates coor:Japan.getBlueCoorList()) {
 			if(ContainsEvent.coor(coor, x, y)) {
 				return true;
 			}
@@ -428,7 +428,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isBlue(Coordinates coordinates) {
-		for(Coordinates coor:Japan.getBlueCoor()) {
+		for(Coordinates coor:Japan.getBlueCoorList()) {
 			if(ContainsEvent.coor(coor, coordinates)) {
 				return true;
 			}
@@ -436,7 +436,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isRed(int x,int y) {
-		for(Coordinates coor:Japan.getRedCoor()) {
+		for(Coordinates coor:Japan.getRedCoorList()) {
 			if(ContainsEvent.coor(coor, x, y)) {
 				return true;
 			}
@@ -444,7 +444,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isRed(Coordinates coordinates) {
-		for(Coordinates coor:Japan.getRedCoor()) {
+		for(Coordinates coor:Japan.getRedCoorList()) {
 			if(ContainsEvent.coor(coor, coordinates)) {
 				return true;
 			}
@@ -452,7 +452,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isYellow(int x,int y) {
-		for(Coordinates coor:Japan.getYellowCoor()) {
+		for(Coordinates coor:Japan.getYellowCoorList()) {
 			if(ContainsEvent.coor(coor, x, y)) {
 				return true;
 			}
@@ -460,7 +460,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isYellow(Coordinates coordinates) {
-		for(Coordinates coor:Japan.getYellowCoor()) {
+		for(Coordinates coor:Japan.getYellowCoorList()) {
 			if(ContainsEvent.coor(coor, coordinates)) {
 				return true;
 			}
@@ -468,7 +468,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isShop(int x,int y) {
-		for(Coordinates coor:Japan.getshopCoor()) {
+		for(Coordinates coor:Japan.getShopCoorList()) {
 			if(ContainsEvent.coor(coor, x, y)) {
 				return true;
 			}
@@ -476,7 +476,7 @@ public abstract class ContainsEvent {
 		return false;
 	}
 	public static boolean isShop(Coordinates coordinates) {
-		for(Coordinates coor:Japan.getshopCoor()) {
+		for(Coordinates coor:Japan.getShopCoorList()) {
 			if(ContainsEvent.coor(coor, coordinates)) {
 				return true;
 			}
