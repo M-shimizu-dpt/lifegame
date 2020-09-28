@@ -36,6 +36,16 @@ public class Card extends CardModel{
 		super.setAbility(ability);
 	}
 
+	public Card(String name,int buy,int rarity,String cardText,int id) {
+		super.setName(name);
+		super.setCount(0);
+		super.setRarity(rarity);
+		super.setSellPrice(buy/2);
+		super.setBuyPrice(buy);
+		super.setText(cardText);
+		super.setID(id);
+	}
+
 	public static ArrayList<Card> getElectedCard(){
 		ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 		Random rand = new Random();
@@ -180,10 +190,10 @@ public class Card extends CardModel{
 		if(name.split("周遊").length==2) {
 			this.setCount(this.getCount()+1);
 			if(new Random().nextInt(100)<30 || this.getCount()>5) {
-				Player.player.getCards().remove(this);
+				Player.player.removeCard(this);
 			}
 		}else {
-			Player.player.getCards().remove(this);
+			Player.player.removeCard(this);
 		}
 
 		if(!name.equals("徳政令カード")) {
@@ -227,26 +237,26 @@ public class Card extends CardModel{
 		cardList.add(new Card("6進めるカード",10000,3,"6マス進める",1,6));
 
 		//どこかへ移動する
-		cardList.add(new Card("ぶっとびカード",10000,1,"どこかに移動することが出来る",2,0));
-		cardList.add(new Card("ぶっとび周遊カード",40000,2,"何度かどこかに移動することが出来る",2,0));
-		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る",2,0));
-		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る",2,0));
-		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る",2,0));
-		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る",2,0));
-		cardList.add(new Card("星に願いをカード",40000,2,"最寄りのカードショップに移動することが出来る",2,0));
+		cardList.add(new Card("ぶっとびカード",10000,1,"どこかに移動することが出来る",2));
+		cardList.add(new Card("ぶっとび周遊カード",40000,2,"何度かどこかに移動することが出来る",2));
+		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る",2));
+		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る",2));
+		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る",2));
+		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る",2));
+		cardList.add(new Card("星に願いをカード",40000,2,"最寄りのカードショップに移動することが出来る",2));
 
 		//バフ・デバフ
 		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす",3,-3));
 
 		//お金がもらえる
-		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる",4,0));
-		cardList.add(new Card("起死回生カード",16000,2,"持ち金のマイナスがそのままプラスになる",4,0));
-		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする",4,0));
+		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる",4));
+		cardList.add(new Card("起死回生カード",16000,2,"持ち金のマイナスがそのままプラスになる",4));
+		cardList.add(new Card("徳政令カード",500,1,"全ての人の借金を0にする",4));
 
 
 		//カードがもらえる
-		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5,0));
-		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5,0));
+		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5));
+		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5));
 
 		Card.raritySort(Card.cardList);
 

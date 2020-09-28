@@ -194,13 +194,11 @@ public class Window implements ActionListener{
 				closeCard();
 				break;
 			}else if(cmd.equals(Card.getCard(i).getName()+"t")) {//カードを捨てる
-				Player.player.getCards().remove(Card.getCard(i));
-				Window.throwFlag=true;
-				errorFrame.setVisible(false);
-				playFrame.setVisible(true);
+				Player.player.removeCard(Card.getCard(i));
+				closeErrorFrame();
 				break;
 			}else if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
-				Player.player.getCards().add(Card.getCard(i));
+				Player.player.addCard(Card.getCard(i));
 				closeDubbing();
 				break;
 			}
@@ -429,7 +427,7 @@ public class Window implements ActionListener{
 	private void backShop() {
 		shopFrame.setVisible(false);
 		shopFrame.removeAll();
-		if(Player.player.getCards().size()>0) {
+		if(Player.player.getCardSize()>0) {
 			shopFrontFrame.getLayeredPane().getComponentAt(100,110).setEnabled(true);
 		}else {
 			shopFrontFrame.getLayeredPane().getComponentAt(100,110).setEnabled(false);
@@ -503,13 +501,13 @@ public class Window implements ActionListener{
 		errorFrame.setLayout(null);
 		JLayeredPane error = errorFrame.getLayeredPane();
 		JLabel titleName = createText(170,10,100,40,30,"名前");
-		for(int i=0;i<Player.player.getCards().size();i++) {
+		for(int i=0;i<Player.player.getCardSize();i++) {
         	JButton throwButton = createButton(10,35*(i+1)+30,70,30,10,"捨てる");
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
-        	JLabel label = createText(100,35*(i+1)+30,200,30,10,Player.player.getCard(i).getName());
+        	JLabel label = createText(100,35*(i+1)+30,200,30,10,Player.player.getCardName(i));
         	label.setBackground(Color.LIGHT_GRAY);
         	error.add(label);
-        	throwButton.setActionCommand(Player.player.getCard(i).getName()+"t");
+        	throwButton.setActionCommand(Player.player.getCardName(i)+"t");
         	error.add(throwButton);
         }
 		error.add(titleName);
@@ -552,6 +550,12 @@ public class Window implements ActionListener{
 		}else {
 			App.turnEnd();
 		}
+	}
+
+	public void closeErrorFrame() {
+		Window.throwFlag=true;
+		errorFrame.setVisible(false);
+		playFrame.setVisible(true);
 	}
 
 	public void closeGoal() {
@@ -1415,7 +1419,7 @@ public class Window implements ActionListener{
 		for(int i=1; i<=canBuyCardlist.size(); i++) {
 			JButton buyButton = createButton(500,i*50,70,50,10,"購入");
 			buyButton.setActionCommand(canBuyCardlist.get(i-1).getName()+":b");
-			if(canBuyCardlist.get(i-1).getBuyPrice() > Player.player.getMoney() || Player.player.getCards().size() > 7) {
+			if(canBuyCardlist.get(i-1).getBuyPrice() > Player.player.getMoney() || Player.player.getCardSize() > 7) {
 				buyButton.setEnabled(false);
 			}
 			shopBuy.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
@@ -1425,7 +1429,7 @@ public class Window implements ActionListener{
 			shopBuy.add(amount,JLayeredPane.PALETTE_LAYER,-1);
 		}
 
-		if(Player.player.getCards().size() > 7) {
+		if(Player.player.getCardSize() > 7) {
 			JLabel cardFull = createText(450,5,130,40,10,"カードがいっぱいです");
 			shopBuy.add(cardFull);
 		}
@@ -1441,15 +1445,15 @@ public class Window implements ActionListener{
         closeButton.setActionCommand("所持カード一覧を閉じる");
         JLabel titleName = createText(150,10,100,40,30,"名前");
         JLabel titleText = createText(420,10,100,40,30,"説明");
-        for(int i=0;i<Player.player.getCards().size();i++) {
+        for(int i=0;i<Player.player.getCardSize();i++) {
         	JButton useButton = createButton(10,35*(i+1)+30,70,30,10,"使用");
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
-        	JLabel labelName = createText(100,35*(i+1)+30,180,30,10,Player.player.getCards().get(i).getName());
-        	JLabel labelText = createText(300,35*(i+1)+30,350,30,10,Player.player.getCards().get(i).getText());
+        	JLabel labelName = createText(100,35*(i+1)+30,180,30,10,Player.player.getCardName(i));
+        	JLabel labelText = createText(300,35*(i+1)+30,350,30,10,Player.player.getCardText(i));
         	labelName.setBackground(Color.LIGHT_GRAY);
         	labelText.setBackground(Color.LIGHT_GRAY);
-        	useButton.setActionCommand(Player.player.getCard(i).getName());
-        	if(ContainsEvent.name(Player.player.getCard(i), "ダビングカード") && Player.player.getCards().size()<2) {
+        	useButton.setActionCommand(Player.player.getCardName(i));
+        	if(ContainsEvent.name(Player.player.getCard(i), "ダビングカード") && Player.player.getCardSize()<2) {
         		useButton.setEnabled(false);
         	}
         	card.add(labelName);
@@ -1510,14 +1514,14 @@ public class Window implements ActionListener{
 		dubbingCardFrame.setLayout(null);
         JLabel titleName = createText(150,10,100,40,30,"名前");
         JLabel titleText = createText(420,10,100,40,30,"説明");
-        for(int roop=0;roop<Player.player.getCards().size();roop++) {
+        for(int roop=0;roop<Player.player.getCardSize();roop++) {
         	JButton useButton = createButton(10,35*(roop+1)+30,70,30,10,"複製");
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
-        	JLabel labelName = createText(100,35*(roop+1)+30,180,30,10,Player.player.getCards().get(roop).getName());
-        	JLabel labelText = createText(300,35*(roop+1)+30,350,30,10,Player.player.getCards().get(roop).getText());
+        	JLabel labelName = createText(100,35*(roop+1)+30,180,30,10,Player.player.getCardName(roop));
+        	JLabel labelText = createText(300,35*(roop+1)+30,350,30,10,Player.player.getCardText(roop));
         	labelName.setBackground(Color.LIGHT_GRAY);
         	labelText.setBackground(Color.LIGHT_GRAY);
-        	useButton.setActionCommand(Player.player.getCards().get(roop).getName()+"d");
+        	useButton.setActionCommand(Player.player.getCardName(roop)+"d");
         	dubbing.add(labelName);
         	dubbing.add(labelText);
         	dubbing.add(useButton);
@@ -1643,11 +1647,11 @@ public class Window implements ActionListener{
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
 		closeButton.setActionCommand("カード売却を終える");
 		shopSell.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-		for(int i=1; i<=Player.player.getCards().size(); i++) {
+		for(int i=1; i<=Player.player.getCardSize(); i++) {
 			JButton sellButton = createButton(500,i*50,70,50,10,"売却");
-			sellButton.setActionCommand(Player.player.getCard(i-1).getName()+":s");
+			sellButton.setActionCommand(Player.player.getCardName(i-1)+":s");
 			shopSell.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
-			JLabel name = createText(10,i*50,300,50,10,Player.player.getCard(i-1).getName());
+			JLabel name = createText(10,i*50,300,50,10,Player.player.getCardName(i-1));
 			shopSell.add(name,JLayeredPane.PALETTE_LAYER,-1);
 			JLabel amount = createText(320,i*50,100,50,10,String.valueOf(Player.player.getCard(i-1).getSellPrice()));
 			shopSell.add(amount,JLayeredPane.PALETTE_LAYER,-1);
@@ -1670,7 +1674,7 @@ public class Window implements ActionListener{
 		shop.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
 		JButton sellButton = createButton(100,110,100,50,10,"売る");
 		sellButton.setActionCommand("カードを売る");
-		if(Player.player.getCards().size()==0) {
+		if(Player.player.getCardSize()==0) {
 			sellButton.setEnabled(false);
 		}
 		if(!Player.player.isPlayer()) {

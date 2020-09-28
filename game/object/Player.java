@@ -159,7 +159,7 @@ public class Player {
 	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
 	public void cardFullCPU() {
 		do{
-			this.getCards().remove(this.getCard(0));
+			this.removeCard(this.getCard(0));
 			//System.out.println("remove:"+this.getCard(0).getName());
 			Card.priceSort(this.getCards());
 		}while(this.getCardSize()>8);
@@ -352,6 +352,14 @@ public class Player {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getCardName(int index) {
+		return getCard(index).getName();
+	}
+
+	public String getCardText(int index) {
+		return getCard(index).getText();
 	}
 
 	public Coordinates getNowMass() {
