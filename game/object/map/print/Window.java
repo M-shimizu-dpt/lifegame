@@ -482,7 +482,7 @@ public class Window implements ActionListener{
 
 	//物件購入・増築処理
 	private void buyPropertys(String name, int index) {
-		Japan.buyPropertys(name, index, Player.player);
+		Player.player.buyPropertys(name, index);
 
 		//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		propertyFrame.setVisible(false);
@@ -1552,9 +1552,6 @@ public class Window implements ActionListener{
 			label.setBackground(Color.RED);
 			propertys.add(label);
 		}
-		for(Property pro:Japan.getStation(name).getPropertys()) {
-			System.out.println("name:"+pro.getName()+"   rate:"+pro.getRate()+"   level:"+pro.getLevel()+"   mono:"+pro.isMono()+"   stamono:"+Japan.getStation(name).isMono());
-		}
 		for(int i=0;i<Japan.getStaInPropertySize(name);i++) {
 			String property = Japan.getStaInProperty(name,i).getName();//名前
 			String owner = Japan.getStaInProperty(name,i).getOwner();//管理者
@@ -2109,7 +2106,7 @@ public class Window implements ActionListener{
 
 	//物件売却処理
 	public void sellPropertys(Property property) {
-		Japan.sellPropertys(property,Player.player);
+		Player.player.sellPropertys(property);
 
 		//System.out.println(property.getName()+"を売却");
 		sellStationFrame.setVisible(false);

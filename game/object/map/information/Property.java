@@ -18,13 +18,13 @@ public class Property {
 	private int group;//物件分類（1：食品、2：農林、3：観光、4：水産、5：工業、6：商業）
 	private Map<Boolean,ArrayList<Double>> rate = new HashMap<Boolean,ArrayList<Double>>();//利益率(3段階)
 	private int level;//利益率の段階
-	private boolean monoflag;
+	private Station station;//所属する駅
 
-	public Property(String name,int amount,int group,double rate1, double rate2,double rate3) {
-		this.name=name;
-		this.amount=amount;
-		this.owner = "";
-		this.group=group;
+	public Property(String name,int amount,int group,double rate1, double rate2,double rate3,Station station) {
+		this.setName(name);
+		this.setAmount(amount);
+		this.setOwner("");
+		this.setGroup(group);
 		ArrayList<Double> falseRate = new ArrayList<Double>();
 		falseRate.add(rate1);
 		falseRate.add(rate2);
@@ -35,12 +35,24 @@ public class Property {
 		trueRate.add(rate2*2);
 		trueRate.add(rate3*2);
 		this.rate.put(true, trueRate);
-		this.level=0;
-		this.monoflag=false;
+		this.setLevel(0);
+		this.setStation(station);
+	}
+
+	public Station getStation() {
+		return this.station;
+	}
+
+	public void setStation(Station station) {
+		this.station=station;
 	}
 
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name=name;
 	}
 
 	public String getOwner() {
@@ -55,32 +67,36 @@ public class Property {
 		return this.amount;
 	}
 
+	public void setAmount(int amount) {
+		this.amount=amount;
+	}
+
 	public int getGroup() {
 		return this.group;
+	}
+
+	public void setGroup(int group) {
+		this.group=group;
 	}
 
 	public int getLevel() {
 		return this.level;
 	}
 
+	public void setLevel(int level) {
+		this.level=level;
+	}
+
 	public boolean isMono() {
-		return monoflag;
-	}
-
-	public void setMono(boolean mono) {
-		this.monoflag=mono;
-	}
-
-	public void updateMono(Station station) {
-		monoflag = station.getMono();
+		return station.isMono();
 	}
 
 	public int getRate() {
-		return (int)((double)rate.get(monoflag).get(level)*100.0);
+		return (int)((double)rate.get(this.station.isMono()).get(level)*100.0);
 	}
 
 	public int getRate(int level) {
-		return (int)((double)rate.get(monoflag).get(level)*100.0);
+		return (int)((double)rate.get(this.station.isMono()).get(level)*100.0);
 	}
 
 	public int getRate(boolean monoflag,int level) {
@@ -90,7 +106,7 @@ public class Property {
 	//利益計算
 	public int getProfit() {
 		int profit=0;
-		profit = (int)((double)amount * rate.get(monoflag).get(level));
+		profit = (int)((double)amount * rate.get(this.station.isMono()).get(level));
 		return profit;
 	}
 
