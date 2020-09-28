@@ -91,6 +91,7 @@ public class App {
 			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
   		assert endYear < year;
+  		window.finish();
 		System.out.println("終わり");
 	}
 
