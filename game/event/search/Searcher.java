@@ -27,7 +27,7 @@ public class Searcher{
 	public static long time;//マルチスレッド開始からの経過時間
 
 	//行くことが出来るマスを探索
-	public static void searchCanMoveMass(Window window,Player player) {
+	public static int searchCanMoveMass(Window window,Player player) {
 		canMoveTrajectoryList.clear();
 		MassSearchThread thread = new MassSearchThread(window,player.getMove());
 		thread.setMass(player.getNowMass());
@@ -39,6 +39,7 @@ public class Searcher{
 		}catch(InterruptedException e){
 			e.printStackTrace();
 		}
+		return 0;
 	}
 	//行くことが出来るマスの内、目的地に最も近いマスを探索
 	public static synchronized void setNearestMass(Coordinates nearest,int count) {
@@ -118,7 +119,7 @@ public class Searcher{
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得
-	public static void searchShortestRoute(Window window,Player player) {
+	public static int searchShortestRoute(Window window,Player player) {
 		//再探索は10回まで(1回で出てほしい…)
 		int againtime=0;
 		do{
@@ -142,6 +143,7 @@ public class Searcher{
 			//System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 		}while(Searcher.count==500 && againtime<1000);
 		if(Searcher.count==500) System.out.println("探索失敗");
+		return 0;
 	}
 
 	//目的地までの最短距離と最短ルートを格納
@@ -157,7 +159,7 @@ public class Searcher{
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	public static void searchShortestRouteSelectPlayer(Player selectedPlayer) {
+	public static int searchShortestRouteSelectPlayer(Player selectedPlayer) {
 		//再探索は10回まで(1回で出てほしい…)
 		int againtime=0;
 		boolean endflag;
@@ -180,13 +182,13 @@ public class Searcher{
 			againtime+=100;
 			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 			endflag = true;
-			if(selectedPlayer.getGoalDistance()==500)endflag=false;
+			if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
 		}while(!endflag && againtime<1000);
-		//assert ContainsEvent.isDefaultGoalDistance(selectedPlayer) : "探索失敗";
+		return 0;
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	public static void searchShortestRouteAllPlayers() {
+	public static int searchShortestRouteAllPlayers() {
 		//再探索は10回まで(1回で出てほしい…)
 		for(Player selectedPlayer:Player.players.values()) {
 			int againtime=0;
@@ -212,7 +214,7 @@ public class Searcher{
 				endflag = true;
 				if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
 			}while(!endflag && againtime<1000);
-			//assert ContainsEvent.isDefaultGoalDistance(selectedPlayer) : "探索失敗";
 		}
+		return 0;
 	}
 }

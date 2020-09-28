@@ -66,7 +66,7 @@ public class Card extends CardModel{
 				}while(!flag);
 				int rarity=0;
 				do {
-					if(rand.nextInt(100)<30) {
+					if(rand.nextInt(10)<3) {
 						get=true;
 					}
 					rarity++;
@@ -105,7 +105,7 @@ public class Card extends CardModel{
 					coor = this.useRandomAbility();
 				}while(Player.player.getNowMass().getY()<coor.getY());
 			}else if(name.equals("ピッタリカード")){
-				coor.setValue(Player.players.get(rand.nextInt(4)).getNowMass());
+				coor.setValue(Player.player.getAnotherPlayer().getNowMass());
 			}else if(name.equals("最寄り駅カード")){
 				Searcher.searchNearestStation(window,Player.player);
 				Thread thread = new Thread(new WaitThread(2));
@@ -133,13 +133,11 @@ public class Card extends CardModel{
 			Player.player.getNowMass().setValue(coor);
 
 		}else if(this.id==3) {
-			int enemy = Player.player.getAnotherPlayer();
 			int period;
 			do {
 				period = rand.nextInt(5);
 			}while(period <= 1);
-			Player.players.get(enemy).getBuff().addBuff(this.ability, period);
-			//System.out.println(Player.players.get(App.turn).getName());
+			Player.player.getAnotherPlayer().addBuff(this.ability, period);
 		}else if(this.id==4) {
 			Card.usedOthers();
 			if(name.equals("一頭地を抜くカード")) {
@@ -166,8 +164,8 @@ public class Card extends CardModel{
 				int count=0;
 				do {
 					int randcard = rand.nextInt(Card.cardList.size());
-					Player.player.addCard(Card.cardList.get(randcard));
-					if(Player.player.getCards().size()>8) {
+					Player.player.addCard(Card.getCard(randcard));
+					if(Player.player.getCardSize()>8) {
 						window.cardFull();
 					}
 					count++;
@@ -205,11 +203,10 @@ public class Card extends CardModel{
 		Random rand = new Random();
 		Coordinates movedMass=new Coordinates();
 		int x,y;
-		while(true) {
+		do {
 			x=rand.nextInt(17);
 			y=rand.nextInt(17);
-			if(ContainsEvent.isMass(x, y))break;
-		}
+		}while(!ContainsEvent.isMass(x, y));
 		movedMass.setValue(x, y);
 		//System.out.println("random move  x:"+x+"  y:"+y);
 		return movedMass;
