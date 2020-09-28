@@ -34,20 +34,40 @@ public abstract class CardModel {
 		return this.name;
 	}
 
+	public String getName(int index) {
+		return cardList.get(index).getName();
+	}
+
 	public String getText() {
 		return this.cardText;
+	}
+
+	public String getText(int index) {
+		return cardList.get(index).getText();
 	}
 
 	public int getSellPrice() {
 		return this.sellPrice;
 	}
 
+	public int getSellPrice(int index) {
+		return cardList.get(index).getSellPrice();
+	}
+
 	public int getBuyPrice() {
 		return this.buyPrice;
 	}
 
+	public int getBuyPrice(int index) {
+		return cardList.get(index).getBuyPrice();
+	}
+
 	public int getRarity() {
 		return this.rarity;
+	}
+
+	public int getRarity(int index) {
+		return cardList.get(index).getRarity();
 	}
 
 	public int getCount() {
