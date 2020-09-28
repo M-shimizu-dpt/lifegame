@@ -8,17 +8,23 @@
 
 # object
 objectにはアプリで管理すべきオブジェクトが入っています。<br>
+* model
 * map
 * Binbo.java　→　ボンビー情報を管理する
 * Player.java　→　プレイヤー情報を管理する
 * Buff.java　→　そのプレイヤーに付いているバフを管理する
 * Card.java　→　カード情報を管理する
 * Dice.java　→　サイコロ情報を管理する
+## model
+* CardModel.java →　Card.javaの親クラスでCardが出来る基本機能を持っている
 ## map
 * print
 * information
 ### print
+* diceImage
 * Window.java　→　画面表示を管理する
+#### diceImage
+* サイコロ画面で表示する予定のサイコロの写真が入っている
 ### information
 * Japan.java　→　マップ全体の情報を管理する
 * Station.java　→　駅情報を管理する
@@ -43,7 +49,7 @@ objectにはアプリで管理すべきオブジェクトが入っています�
 * StationSearchThread.java　→　最寄り駅を探索する
 * Searcher.java　→　これらのThreadを使って探索させる
 ### model
-* SearchThreadModel.java　→　search以下のThreadすべての親クラス
+* SearchThreadModel.java　→　search以下のThreadすべての親クラスでSearchThreadが出来る基本機能を持っている
 
 # システムの流れ
 ユーザがactionを起こすと、それを実現するEventが発生します。<br>
