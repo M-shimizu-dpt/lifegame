@@ -102,7 +102,7 @@ public class App {
 
     	int playerCount = result[0];
     	int yearLimit = result[1];
-    	assert(playerCount>=0 && playerCount<=3);
+    	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
 

@@ -34,7 +34,6 @@ public class Station {
 	}
 
 	public boolean isMono() {
-		updateMono();//別ですべき
 		return monoFlag;
 	}
 
@@ -53,12 +52,6 @@ public class Station {
 			}
 		}
 		monoFlag=true;
-	}
-
-	public void changePropertysMono() {
-		for(int i=0;i<getPropertySize();i++) {
-			getProperty(i).updateMono(this);
-		}
 	}
 
 	public void setName(String name) {
