@@ -1552,6 +1552,9 @@ public class Window implements ActionListener{
 			label.setBackground(Color.RED);
 			propertys.add(label);
 		}
+		for(Property pro:Japan.getStation(name).getPropertys()) {
+			System.out.println("name:"+pro.getName()+"   rate:"+pro.getRate()+"   level:"+pro.getLevel()+"   mono:"+pro.isMono()+"   stamono:"+Japan.getStation(name).isMono());
+		}
 		for(int i=0;i<Japan.getStaInPropertySize(name);i++) {
 			String property = Japan.getStaInProperty(name,i).getName();//名前
 			String owner = Japan.getStaInProperty(name,i).getOwner();//管理者

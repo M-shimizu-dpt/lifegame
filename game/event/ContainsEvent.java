@@ -358,7 +358,7 @@ public abstract class ContainsEvent {
 		}
 	}
 	public static boolean isOwner(Property property) {
-		return property.getOwner().equals("");
+		return !property.getOwner().equals("");
 	}
 	public static boolean isOwners() {
 		for(Property property:Japan.getPropertys()) {
