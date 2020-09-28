@@ -405,12 +405,20 @@ public class Window implements ActionListener{
 		closeButton.setActionCommand("決算画面を閉じる");
 		Assets.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		AssetsFrame.setVisible(true);
-		WaitThread thread = new WaitThread(3);
-		thread.start();
-		try {
-			thread.join();
-		}catch(InterruptedException e) {
-			e.printStackTrace();
+		if(Player.player.isPlayer()) {
+			WaitThread thread = new WaitThread(3);
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}else {
+			try {
+				Thread.sleep(3000);
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		AssetsFrame.setVisible(false);
 		Assets.removeAll();
@@ -985,7 +993,11 @@ public class Window implements ActionListener{
 		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 
 		Japan.changeGoal();
-
+		if(!Player.player.isPlayer()) {
+			createPopUp("目的地","次の目的地は"+Japan.getGoalName()+"です！",3000);
+		}else {
+			createPopUp("目的地","次の目的地は"+Japan.getGoalName()+"です！",3000);
+		}
 		setGoalColor();
 
 		BinboEvent.binboPossessPlayer();
@@ -2092,12 +2104,20 @@ public class Window implements ActionListener{
 		closeButton.setActionCommand("決算画面を閉じる");
 		revenue.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		revenueFrame.setVisible(true);
-		WaitThread thread = new WaitThread(3);
-		thread.start();
-		try {
-			thread.join();
-		}catch(InterruptedException e) {
-			e.printStackTrace();
+		if(Player.player.isPlayer()) {
+			WaitThread thread = new WaitThread(3);
+			thread.start();
+			try {
+				thread.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}else {
+			try {
+				Thread.sleep(3000);
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		revenueFrame.setVisible(false);
 		revenue.removeAll();
@@ -2106,6 +2126,17 @@ public class Window implements ActionListener{
 		Assets();
 	}
 
+	//最終結果表示
+	public void finish() {
+		closing();
+		String name = ClosingEvent.finish();
+		if(!Player.player.isPlayer()) {
+			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",3000);
+		}else {
+			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",5000);
+		}
+	}
+	
 	private void sellCard(Card card) {
 		Player.player.sellCard(card);
 		shopFrame.setVisible(false);
