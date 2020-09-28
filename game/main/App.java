@@ -75,7 +75,6 @@ public class App {
 		  	}else {
 		  		window.printMenu();
 		  	}
-		  	Player.player.addMoney(100000000);//debug
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
@@ -92,9 +91,6 @@ public class App {
 		System.out.println("終わり");
 	}
 
-    /*
-     * プレイヤーの順番をランダムに入れ替えれるようにする
-     */
     private void run() {
     	Japan.init();
     	Window window = new Window();

@@ -18,6 +18,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -899,6 +900,17 @@ public class Window implements ActionListener{
 		return text;
 	}
 
+	//textを作成
+	public JLabel createImage(int x,int y,int w,int h,int size,String image) {
+		ImageIcon icon = new ImageIcon(image);
+		assert icon==null : "null";
+		System.out.println("h:"+icon.getIconHeight()+"   w:"+icon.getIconWidth());
+		JLabel images = new JLabel(icon);
+		images.setOpaque(true);
+		images.setBounds(x, y, w, h);
+		return images;
+	}
+
 	//サイコロ操作
 	public void diceShuffle() {
 		Player.player.setMove(Dice.shuffle(Player.player));
@@ -1317,12 +1329,12 @@ public class Window implements ActionListener{
 	}
 
 	//プレイマップの画面遷移処理
-	public void moveMaps(int player,Coordinates to) {
+	public void moveMaps(Player player,Coordinates to) {
 		JLayeredPane play = playFrame.getLayeredPane();
-		int x=(to.getX()-Player.players.get(player).getNowMass().getX())*130;
-		int y=(to.getY()-Player.players.get(player).getNowMass().getY())*130;
+		int x=(to.getX()-player.getNowMass().getX())*130;
+		int y=(to.getY()-player.getNowMass().getY())*130;
 		for(int i=0;i<play.getComponentCount();i++) {
-			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(Player.players.get(player).getName())) {
+			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(player.getName())) {
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
 			}
 		}
@@ -1450,10 +1462,20 @@ public class Window implements ActionListener{
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
-		diceFrame.setSize(200, 250);
+		diceFrame.setSize(600, 600);
 		diceFrame.setLayout(null);
-		JButton button =createButton(50,50,100,50,10,"回す");
-		JButton closeButton =createButton(100,150,70,50,10,"戻る");
+
+		/*
+		ImageIcon icon = new ImageIcon("./dice1.gif","description");
+		assert icon.getDescription() == null : "sample";
+		JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
+		JPanel p1 = new JPanel();
+		p1.add(d1);
+		diceFrame.getContentPane().add(p1);
+		*/
+
+		JButton button =createButton(490,450,70,50,10,"回す");
+		JButton closeButton =createButton(490,500,70,50,10,"戻る");
 		closeButton.setActionCommand("サイコロを閉じる");
 		diceP.add(button);
 		diceP.add(closeButton);

@@ -61,8 +61,8 @@ public abstract class MoveEvent {
 		return coor;
 	}
 
-	public static void moveTo(int player,Coordinates to) {
-		Player.players.get(player).getNowMass().setValue(to);
+	public static void moveTo(Player player,Coordinates to) {
+		player.getNowMass().setValue(to);
 	}
 
 }
