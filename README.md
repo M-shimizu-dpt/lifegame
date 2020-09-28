@@ -38,6 +38,7 @@
 > * MassEvent.java　→　マスに止まった時の処理をする
 > * MoveEvent.java　→　マスを移動する時の処理をする
 > * RandomEvent.java　→　ランダムイベント処理をする
+> * SaleEvent.java →　購入・売却処理をする
 > * WaitThread.java　→　各処理が終わるまでメインスレッドを待たせる処理をする
 ## search
 > * model
