@@ -319,14 +319,40 @@ public abstract class ContainsEvent {
 		return property.getGroup()==group;
 	}
 
-
-	public static boolean stationNameCoor(String name,Coordinates coor) {
-		return name.equals(Japan.getStation(coor).getName());
+	public static boolean station(Station station1 ,Station station2) {
+		return station1.getName().equals(station2.getName());
 	}
-	public static boolean stationPropertys(Station station, Property property) {
+	public static boolean station(Station station, Property property) {
 		return station.getPropertys().contains(property);
 	}
+	public static boolean station(Station station1 ,String name) {
+		return station1.getName().equals(name);
+	}
+	public static boolean station(Station station, Coordinates coor) {
+		return ContainsEvent.coor(station.getCoordinates(), coor);
+	}
+	public static boolean station(Station station, int x,int y) {
+		return ContainsEvent.coor(station.getCoordinates(), x,y);
+	}
+	public static boolean station(String name,Coordinates coor) {
+		return name.equals(Japan.getStation(coor).getName());
+	}
+	public static boolean station(String name,int x,int y) {
+		return name.equals(Japan.getStation(x,y).getName());
+	}
 
+	public static boolean isGoal(String name) {
+		return name.equals(Japan.getGoalName());
+	}
+	public static boolean isGoal(int x,int y) {
+		return ContainsEvent.coor(Japan.getGoalCoor(),x,y);
+	}
+	public static boolean isGoal(Coordinates coor) {
+		return ContainsEvent.coor(coor,Japan.getGoalCoor());
+	}
+	public static boolean isGoal(Station station) {
+		return station.getName().equals(Japan.getGoalName());
+	}
 	public static boolean isBinboPlayer(Player targetPlayer, Collection<Player> players) {
 		for(Player player:players) {
 			if(id(targetPlayer,player))return true;
@@ -385,7 +411,7 @@ public abstract class ContainsEvent {
 		return now.getMaxCost(start,goal) - now.getCost() <=  Tolerances;
 	}
 	public static boolean isBestRange(Coordinates now,Coordinates start) {
-		return now.getCost() <= now.getMaxCost(start,Japan.getGoal());
+		return now.getCost() <= now.getMaxCost(start,Japan.getGoalCoor());
 	}
 	public static boolean isMass(int x,int y) {
 		for(Coordinates coor:Japan.getAllCoordinates()) {
@@ -489,10 +515,16 @@ public abstract class ContainsEvent {
 	public static boolean isMaxCard() {
 		return Player.player.getCardSize()>8;
 	}
+	public static boolean isMaxCard(Player player) {
+		return player.getCardSize()>8;
+	}
 	public static boolean isBonbyLastBefore() {
 		return ContainsEvent.isBinboPlayer(Binbo.getBonbyLastBefore(), Binbo.getSameMassPlayers());
 	}
 	public static boolean isTurn(int num) {
 		return App.turn==num;
+	}
+	public static boolean isEnd(int endYear) {
+		return App.year>endYear;
 	}
 }

@@ -157,14 +157,14 @@ public class Searcher{
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	public static void searchShortestRouteSelectPlayer(Window window,Player selectedPlayer) {
+	public static void searchShortestRouteSelectPlayer(Player selectedPlayer) {
 		//再探索は10回まで(1回で出てほしい…)
 		int againtime=0;
 		boolean endflag;
 		do{
 			Japan.allClose();
 			//Threadを立ち上げる
-			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(window,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
+			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 			thread.setMass(selectedPlayer.getNowMass());
 			Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
@@ -180,23 +180,21 @@ public class Searcher{
 			againtime+=100;
 			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 			endflag = true;
-			for(Player p:Player.players.values()) {
-				if(p.getGoalDistance()==500)endflag=false;
-			}
+			if(selectedPlayer.getGoalDistance()==500)endflag=false;
 		}while(!endflag && againtime<1000);
-		if(Searcher.count==500) System.out.println("探索失敗");
+		//assert ContainsEvent.isDefaultGoalDistance(selectedPlayer) : "探索失敗";
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	public static void searchShortestRouteAllPlayers(Window window,Map<Integer,Player> players) {
+	public static void searchShortestRouteAllPlayers() {
 		//再探索は10回まで(1回で出てほしい…)
-		for(Player selectedPlayer:players.values()) {
+		for(Player selectedPlayer:Player.players.values()) {
 			int againtime=0;
 			boolean endflag;
 			do{
 				Japan.allClose();
 				//Threadを立ち上げる
-				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(window,selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
+				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
 				thread.setMass(selectedPlayer.getNowMass());
 				Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 				thread.setPriority(Thread.MAX_PRIORITY);
@@ -212,13 +210,9 @@ public class Searcher{
 				againtime+=100;
 				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
 				endflag = true;
-				for(Player p:Player.players.values()) {
-					if(ContainsEvent.isDefaultGoalDistance(p))endflag=false;
-					//assert(p.getGoalDistance()==500) : (Player.player.getGoalDistance());
-				}
-
+				if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
 			}while(!endflag && againtime<1000);
-			if(Searcher.count==500) System.out.println("探索失敗");
+			//assert ContainsEvent.isDefaultGoalDistance(selectedPlayer) : "探索失敗";
 		}
 	}
 }

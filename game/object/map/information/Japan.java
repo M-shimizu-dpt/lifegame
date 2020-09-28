@@ -21,8 +21,8 @@ public abstract class Japan {
 	private static ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
 	private static Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
 	private static Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
-	private static int goal;//目的地の要素番号
-	private static int saveGoal;//ゴール保存用
+	private static Station goal;//目的地の要素番号
+	private static Station saveGoal;//ゴール保存用
 	public static ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
 
 	public static void init() {
@@ -454,7 +454,6 @@ public abstract class Japan {
 		blue.add(new Coordinates(12,1));
 		blue.add(new Coordinates(14,3));
 
-
 		railBoolMapping.put(blue.get(0),getBoolList(false,true,true,true));
 		railBoolMapping.put(blue.get(1),getBoolList(true,false,true,false));
 		railBoolMapping.put(blue.get(2),getBoolList(false,false,true,true));
@@ -478,8 +477,6 @@ public abstract class Japan {
 		railBoolMapping.put(blue.get(20),getBoolList(false,false,true,true));
 		railBoolMapping.put(blue.get(21),getBoolList(false,true,true,true));
 		railBoolMapping.put(blue.get(22),getBoolList(false,true,true,false));
-
-
 
 		//赤マス
 		red.add(new Coordinates(1,7));
@@ -549,8 +546,6 @@ public abstract class Japan {
 		railBoolMapping.put(red.get(30),getBoolList(false,true,false,true));
 		railBoolMapping.put(red.get(31),getBoolList(false,false,true,true));
 		railBoolMapping.put(red.get(32),getBoolList(true,true,false,false));
-
-
 
 		//黄マス
 		yellow.add(new Coordinates(3,8));
@@ -776,19 +771,18 @@ public abstract class Japan {
 		}
 	}
 
-	//ゴールの要素番号を取得
-	public static int getGoalIndex() {
-		return goal;
+	//ゴールの座標を取得
+	public static Coordinates getGoalCoor() {
+		return goal.getCoordinates();
 	}
 
-	//ゴールの座標を取得
-	public static Coordinates getGoal() {
-		return getStationCoor(goal);
+	public static Station getGoal() {
+		return goal;
 	}
 
 	//ゴールの名前を取得
 	public static String getGoalName() {
-		return getStationName(getStationCoor(goal));
+		return goal.getName();
 	}
 
 	//ゴールを一時的に保存
@@ -796,14 +790,17 @@ public abstract class Japan {
 		saveGoal = goal;
 	}
 
-	//保存したゴールの要素番号を取得
-	public static int getSaveGoalIndex() {
+	//保存したゴールの座標を取得
+	public static Coordinates getSaveGoalCoor() {
+		return saveGoal.getCoordinates();
+	}
+
+	public static Station getSaveGoal() {
 		return saveGoal;
 	}
 
-	//保存したゴールの座標を取得
-	public static Coordinates getSaveGoal() {
-		return getStationCoor(saveGoal);
+	public static String getSaveGoalName() {
+		return saveGoal.getName();
 	}
 
 	//駅名で指定した駅の独占状態のOn/Offを切り替える
@@ -818,12 +815,15 @@ public abstract class Japan {
 
 	//駅の数を返す
 	public static int getStationSize() {
+		assert stations.size()<=0 : "null";
 		return stations.size();
 	}
 
 	//要素番号で指定した駅の座標を取得
 	public static Coordinates getStationCoor(int index) {
-		return stations.get(index).getCoordinates();
+		Coordinates staCoor = stations.get(index).getCoordinates();
+		assert staCoor==null : "null";
+		return staCoor;
 	}
 
 	//駅の座標一覧を取得
@@ -842,7 +842,9 @@ public abstract class Japan {
 
 	//要素番号で指定した青マスの座標を取得
 	public static Coordinates getBlueCoor(int index) {
-		return blue.get(index);
+		Coordinates blueCoor = blue.get(index);
+		assert blueCoor==null : "null";
+		return blueCoor;
 	}
 
 	//赤マスの座標一覧を取得
@@ -852,7 +854,9 @@ public abstract class Japan {
 
 	//要素番号で指定した赤マスの座標を取得
 	public static Coordinates getRedCoor(int index) {
-		return red.get(index);
+		Coordinates redCoor = red.get(index);
+		assert redCoor==null : "null";
+		return redCoor;
 	}
 
 	//黄マスの座標一覧を取得
@@ -862,7 +866,9 @@ public abstract class Japan {
 
 	//要素番号で指定した黄マスの座標を取得
 	public static Coordinates getYellowCoor(int index) {
-		return yellow.get(index);
+		Coordinates yellowCoor=yellow.get(index);
+		assert yellowCoor==null : "null";
+		return yellowCoor;
 	}
 
 	//店マスの座標一覧を取得
@@ -872,7 +878,9 @@ public abstract class Japan {
 
 	//要素番号で指定した店マスの座標を取得
 	public static Coordinates getShopCoor(int index) {
-		return shop.get(index);
+		Coordinates shopCoor = shop.get(index);
+		assert shopCoor==null : "null";
+		return shopCoor;
 	}
 
 	//駅の一覧を取得
@@ -891,14 +899,17 @@ public abstract class Japan {
 
 	//要素番号で指定した駅を取得
 	public static Station getStation(int index) {
-		return stations.get(index);
+		Station station = stations.get(index);
+		assert station==null : "null";
+		return station;
 	}
 	public static Station getStation(Property property) {
 		for(Station sta : stations) {
-			if(ContainsEvent.stationPropertys(sta, property)) {
+			if(ContainsEvent.station(sta, property)) {
 				return sta;
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 	public static Station getStation(Coordinates coor) {
@@ -907,6 +918,16 @@ public abstract class Japan {
 				return sta;
 			}
 		}
+		assert null==null : "null";
+		return null;
+	}
+	public static Station getStation(int x,int y) {
+		for(Station sta : stations) {
+			if(ContainsEvent.coor(sta, x,y)) {
+				return sta;
+			}
+		}
+		assert null==null : "null";
 		return null;
 	}
 	public static Station getStation(String stationName) {
@@ -915,6 +936,7 @@ public abstract class Japan {
 				return sta;
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 
@@ -925,6 +947,7 @@ public abstract class Japan {
 				return sta.getName();
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 	public static String getStationName(int x,int y) {
@@ -933,6 +956,7 @@ public abstract class Japan {
 				return sta.getName();
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 
@@ -942,6 +966,7 @@ public abstract class Japan {
 		for(Station sta:stations) {
 			size+=sta.getPropertySize();
 		}
+		assert size==0 : "size error";
 		return size;
 	}
 
@@ -961,6 +986,7 @@ public abstract class Japan {
 				return sta.getPropertys();
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 
@@ -971,6 +997,7 @@ public abstract class Japan {
 				return sta.getProperty(index);
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 
@@ -981,7 +1008,7 @@ public abstract class Japan {
 				return sta.getPropertySize();
 			}
 		}
-		//System.out.println("error");
+		assert null==null : "null";
 		return -1;
 	}
 
@@ -1014,6 +1041,7 @@ public abstract class Japan {
 				return list.get(i);
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 	public static synchronized Coordinates getCoordinates(Coordinates coor) {
@@ -1023,6 +1051,7 @@ public abstract class Japan {
 				return list.get(i);
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 
@@ -1038,13 +1067,13 @@ public abstract class Japan {
 
 			}
 		}
-		goal = getIndexOfStation(x,y);
+		goal = getStation(x,y);
 	}
 
 	//ゴールマスを変更
 	public static void changeGoal() {
 		int x=0,y=0;
-		while((!ContainsEvent.isStation(x, y)) || goal==getIndexOfStation(x,y)) {
+		while((!ContainsEvent.isStation(x, y)) || goal==getStation(x,y)) {
 			x=(int)(Math.random()*Math.random()*100.0)%16;
 			y=(int)(Math.random()*Math.random()*100.0)%17;
 			try {
@@ -1053,7 +1082,7 @@ public abstract class Japan {
 
 			}
 		}
-		goal = getIndexOfStation(x,y);
+		goal = getStation(x,y);
 	}
 
 	//指定の座標のマスの配列番号を取得
@@ -1069,6 +1098,7 @@ public abstract class Japan {
 		if(result!=-1)return result;
 		result=getIndexOfShop(x,y);
 		if(result!=-1)return result;
+		assert null==null : "null";
 		return -1;
 	}
 	public static int getIndexOf(Coordinates coor) {
@@ -1083,6 +1113,7 @@ public abstract class Japan {
 		if(result!=-1)return result;
 		result=getIndexOfShop(coor);
 		if(result!=-1)return result;
+		assert null==null : "null";
 		return -1;
 	}
 
@@ -1093,6 +1124,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 	public static int getIndexOfStation(Coordinates coor){
@@ -1101,6 +1133,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 
@@ -1111,6 +1144,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 	public static int getIndexOfBlue(Coordinates coor){
@@ -1119,6 +1153,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 
@@ -1129,6 +1164,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 	public static int getIndexOfRed(Coordinates coor){
@@ -1137,6 +1173,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 
@@ -1147,6 +1184,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 	public static int getIndexOfYellow(Coordinates coor){
@@ -1155,6 +1193,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 
@@ -1165,6 +1204,7 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 	public static int getIndexOfShop(Coordinates coor){
@@ -1173,10 +1213,11 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		assert null==null : "null";
 		return -1;
 	}
 
-	//指定したTFをリストにして取得(処理を分ける方が良い)
+	//指定したTFをリストにして取得
 	private static ArrayList<Boolean> getBoolList(Boolean top,Boolean bottom,Boolean left,Boolean right){
 		ArrayList<Boolean> rail = new ArrayList<Boolean>();
 		rail.add(left);
@@ -1213,6 +1254,7 @@ public abstract class Japan {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 	public static ArrayList<Boolean> getVector(Coordinates coor,int size){
@@ -1243,6 +1285,7 @@ public abstract class Japan {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
+		assert null==null : "null";
 		return null;
 	}
 
@@ -1259,6 +1302,7 @@ public abstract class Japan {
 		}else if(ContainsEvent.isShop(x,y)) {
 			return railMapping.get(shop.get(getIndexOfShop(x,y)));
 		}else {
+			assert null==null : "null";
 			return null;
 		}
 	}
@@ -1274,6 +1318,7 @@ public abstract class Japan {
 		}else if(ContainsEvent.isShop(coor)) {
 			return railMapping.get(shop.get(getIndexOfShop(coor)));
 		}else {
+			assert null==null : "null";
 			return null;
 		}
 	}

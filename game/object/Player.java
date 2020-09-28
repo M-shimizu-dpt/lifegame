@@ -190,11 +190,8 @@ public class Player {
 					window.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
 				}
-				if(Card.usedRandomCard || Card.usedOthersCard) {
-					Card.resetUsedCard();
-					Card.resetUsedFixedCard();
-					Card.resetUsedRandomCard();
-					Card.resetUsedOthersCard();
+				if(Card.isUsedRandom() || Card.isUsedOthers()) {
+					Card.resetFlags();
 					window.ableMenu();
 					diceFlag=false;
 					App.turnEnd();
@@ -214,9 +211,9 @@ public class Player {
 				boolean flag=false;
 				//行くことが出来るマス取得
 				NearestSearchThread searchthread = new NearestSearchThread(window);
-				searchthread.setMass(Japan.getGoal());//探索開始位置をゴールに設定
+				searchthread.setMass(Japan.getGoalCoor());//探索開始位置をゴールに設定
 				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
-					if(ContainsEvent.coor(coor, Japan.getGoal())) {//目的地に行ける場合
+					if(ContainsEvent.isGoal(coor)) {//目的地に行ける場合
 						cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;

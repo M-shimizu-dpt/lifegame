@@ -86,7 +86,7 @@ public class Window implements ActionListener{
 	public void ableMenu() {
 		saikoro.setEnabled(true);
 		company.setEnabled(true);
-		if(!Card.usedCard) {
+		if(!Card.isUsed()) {
 			cardB.setEnabled(true);
 		}
 		minimap.setEnabled(true);
@@ -179,10 +179,10 @@ public class Window implements ActionListener{
 			}
 		}
 
-		for(int i=0;i<Card.cardList.size();i++) {
-			if(cmd.equals(Card.cardList.get(i).getName())) {//カードを使う
-				Card.cardList.get(i).useAbilitys(this);
-				if(ContainsEvent.id(Card.cardList.get(i),2)){
+		for(int i=0;i<Card.getCardListSize();i++) {
+			if(cmd.equals(Card.getCard(i).getName())) {//カードを使う
+				Card.getCard(i).useAbilitys(this);
+				if(ContainsEvent.id(Card.getCard(i),2)){
 					moveMaps();
 					try {
 						Thread.sleep(2000);
@@ -193,24 +193,21 @@ public class Window implements ActionListener{
 				ableMenu();
 				closeCard();
 				break;
-			}else if(cmd.equals(Card.cardList.get(i).getName()+"t")) {//カードを捨てる
-				Player.player.getCards().remove(Card.cardList.get(i));
+			}else if(cmd.equals(Card.getCard(i).getName()+"t")) {//カードを捨てる
+				Player.player.getCards().remove(Card.getCard(i));
 				Window.throwFlag=true;
 				errorFrame.setVisible(false);
 				playFrame.setVisible(true);
 				break;
-			}else if(cmd.equals(Card.cardList.get(i).getName()+"d")) {//カードを複製
-				Player.player.getCards().add(Card.cardList.get(i));
+			}else if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
+				Player.player.getCards().add(Card.getCard(i));
 				closeDubbing();
 				break;
 			}
 		}
 
-		if(Card.usedRandomCard || Card.usedOthersCard) {
-			Card.resetUsedCard();
-			Card.resetUsedFixedCard();
-			Card.resetUsedRandomCard();
-			Card.resetUsedOthersCard();
+		if(Card.isUsedRandom() || Card.isUsedOthers()) {
+			Card.resetFlags();
 			ableMenu();
 			if(playFrame.isVisible()) {
 				App.turnEnd();
@@ -225,7 +222,7 @@ public class Window implements ActionListener{
 					break;
 				}
 			}
-			for(Card card:Card.cardList) {
+			for(Card card:Card.getCardList()) {
 				if(pre[0].equals(card.getName()) && pre[1].equals("b")) {//カード購入
 					buyCard(card);
 					break;
@@ -280,9 +277,9 @@ public class Window implements ActionListener{
 			for(int j=1;j<=17;j++) {
 				if(!ContainsEvent.isMass(j, i))continue;
 				if(ContainsEvent.isStation(j,i)) {//駅の座標が来たら
-					int list=Japan.getIndexOfStation(j, i);
-					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,Japan.getStationName(Japan.getStationCoor(list)));
-					if(list==Japan.getGoalIndex()) {
+					Station list=Japan.getStation(j, i);
+					JButton button=createButton(j*distance,i*distance,distance/3,distance/3,6,list.getName());
+					if(ContainsEvent.isGoal(list)) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -551,7 +548,7 @@ public class Window implements ActionListener{
 
 	public void closeGoal() {
 		goalFrame.setVisible(false);
-		printPropertys(Japan.getStationName(Japan.getSaveGoal()));
+		printPropertys(Japan.getSaveGoalName());
 	}
 
 	//会社情報を閉じる
@@ -925,8 +922,8 @@ public class Window implements ActionListener{
 		}
 		closeMenu();
 		Dice.clear();
-		Card.resetUsedCard();
-		Card.resetUsedFixedCard();
+		Card.resetUsed();
+		Card.resetUsedFixed();
 		closeDice();
 	}
 
@@ -991,7 +988,7 @@ public class Window implements ActionListener{
 
 		setGoalColor();
 
-		BinboEvent.binboPossessPlayer(this);
+		BinboEvent.binboPossessPlayer();
 	}
 
 	//会社情報を表示
@@ -1200,9 +1197,9 @@ public class Window implements ActionListener{
 			for(int j=1;j<=17;j++) {
 				if(!ContainsEvent.isMass(j, i))continue;
 				if(ContainsEvent.isStation(j,i)) {//駅の座標が来たら
-					int list=Japan.getIndexOfStation(j, i);
-					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,Japan.getStationName(Japan.getStationCoor(list)));
-					if(list==Japan.getGoalIndex()) {
+					Station list=Japan.getStation(j, i);
+					JButton button = createButton(j*distance-20,i*distance-5,60,30,8,list.getName());
+					if(ContainsEvent.isGoal(list)) {
 						button.setBackground(Color.MAGENTA);
 					}
 					maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
@@ -1215,7 +1212,7 @@ public class Window implements ActionListener{
 		mapFrame.setVisible(true);
 	}
 
-	public boolean monthUpdate(boolean first, int endYear) {
+	public void monthUpdate(boolean first) {
   		if(first) {
   			printMonthFrame();
   		}else {
@@ -1237,11 +1234,6 @@ public class Window implements ActionListener{
 	    		}else {
 	    			App.turn++;
 	    		}
-  		}
-  		if(App.year>endYear) {
-  			return true;
-  		}else {
-  			return false;
   		}
   	}
 
@@ -1322,7 +1314,7 @@ public class Window implements ActionListener{
 			MoveEvent.clearTrajectory();
 			Dice.clear();
 			BinboEvent.clearBefore();
-			if(!Card.usedRandomCard) {
+			if(!Card.isUsedRandom()) {
 				massEvent();
 			}
 		}
@@ -1462,17 +1454,32 @@ public class Window implements ActionListener{
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
+		diceFrame.setSize(200, 250);
+		diceFrame.setLayout(null);
+		JButton button =createButton(50,50,100,50,10,"回す");
+		JButton closeButton =createButton(100,150,70,50,10,"戻る");
+		closeButton.setActionCommand("サイコロを閉じる");
+		diceP.add(button);
+		diceP.add(closeButton);
+		// ウィンドウを表示
+        diceFrame.setVisible(true);
+	}
+
+	/*
+	//サイコロ画面表示
+	private void printDice() {
+		JLayeredPane diceP = diceFrame.getLayeredPane();
 		diceFrame.setSize(600, 600);
 		diceFrame.setLayout(null);
 
-		/*
+		//iconの取得が出来ない
 		ImageIcon icon = new ImageIcon("./dice1.gif","description");
 		assert icon.getDescription() == null : "sample";
 		JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
 		JPanel p1 = new JPanel();
 		p1.add(d1);
 		diceFrame.getContentPane().add(p1);
-		*/
+
 
 		JButton button =createButton(490,450,70,50,10,"回す");
 		JButton closeButton =createButton(490,500,70,50,10,"戻る");
@@ -1482,6 +1489,7 @@ public class Window implements ActionListener{
 		// ウィンドウを表示
         diceFrame.setVisible(true);
 	}
+	 */
 
 	//カードの複製を行う画面を表示
 	public void printDubbing() {
@@ -1636,7 +1644,7 @@ public class Window implements ActionListener{
 	}
 
 	//店イベント
-	public void printShop() {
+	public void printShop(ArrayList<Card> cardList) {
 		playFrame.setVisible(false);
 		shopFrontFrame = new JFrame("カードショップ");
 		JLayeredPane shop = shopFrontFrame.getLayeredPane();
@@ -1658,7 +1666,7 @@ public class Window implements ActionListener{
 			buyButton.setEnabled(false);
 			sellButton.setEnabled(false);
 		}
-		canBuyCardlist.addAll(Card.getElectedCard());
+		canBuyCardlist.addAll(cardList);
 		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 		shopFrontFrame.setVisible(true);
 		setCloseFrame(1);

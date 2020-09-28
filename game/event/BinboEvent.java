@@ -102,12 +102,12 @@ public abstract class BinboEvent{
 	}
 
 	//一番遠い人にボンビーが付くメソッド
-	public static void binboPossessPlayer(Window window) {
+	public static void binboPossessPlayer() {
 		ArrayList<Integer> nextbonbylist = new ArrayList<Integer>();
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int nextbonbyplayer;
-		Searcher.searchShortestRouteAllPlayers(window,Player.players);//うまく動くときと動かないときがある。
+		Searcher.searchShortestRouteAllPlayers();//うまく動くときと動かないときがある。
    		WaitThread waitthred  = new WaitThread(11);
 		waitthred.start();
 		try {

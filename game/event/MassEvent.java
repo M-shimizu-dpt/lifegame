@@ -5,6 +5,7 @@ import java.util.Random;
 import lifegame.game.main.App;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.print.Window;
 
 public abstract class MassEvent {
@@ -19,6 +20,8 @@ public abstract class MassEvent {
 				e.printStackTrace();
 			}
 		}
+		assert massName.substring(0, 1).equals("B") || massName.substring(0, 1).equals("R") || massName.substring(0, 1).equals("Y")
+			|| massName.substring(0, 1).equals("S") || Japan.getStationNameList().contains(massName) : "massNameが正しくありません";
 
 		if(massName.substring(0, 1).equals("B")) {
 			blueEvent(window);
@@ -84,19 +87,19 @@ public abstract class MassEvent {
 		int index=0;
 		while(true) {
 			get=false;
-			index = rand.nextInt(Card.cardList.size());
+			index = rand.nextInt(Card.getCardListSize());
 			int i=0;
 			do {
 				if(rand.nextInt(100)<30) {
 					get=true;
 				}
 				i++;
-			}while(i<Card.cardList.get(index).getRarity());
+			}while(i<Card.getCard(index).getRarity());
 			if(!get) {
 				break;
 			}
 		}
-		Player.player.addCard(Card.cardList.get(index));
+		Player.player.addCard(Card.getCard(index));
 		if(ContainsEvent.isMaxCard()) {
 			window.cardFull();
 			WaitThread wait = new WaitThread(9);
@@ -107,7 +110,7 @@ public abstract class MassEvent {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Card Get! name:"+Card.cardList.get(index).getName()+"  rarity"+Card.cardList.get(index).getRarity());
+		System.out.println("Card Get! name:"+Card.getCard(index).getName()+"  rarity"+Card.getCard(index).getRarity());
 		if(rand.nextInt(100) < 3) {
 			window.randomEvent();
 		}else {
@@ -117,7 +120,7 @@ public abstract class MassEvent {
 
 	//店マスイベント
 	private static void shopEvent(Window window) {
-		window.printShop();
+		window.printShop(Card.getElectedCard());
 	}
 
 }
