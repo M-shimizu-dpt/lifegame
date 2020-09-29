@@ -31,8 +31,10 @@ public class Searcher{
 		canMoveTrajectoryList.clear();
 		MassSearchThread thread = new MassSearchThread(window,player.getMove());
 		thread.setMass(player.getNowMass());
+		thread.setDaemon(true);
 		thread.start();
 		WaitThread waitthread = new WaitThread(4);
+		waitthread.setDaemon(true);
 		waitthread.start();
 		try {
 			thread.join();
@@ -71,6 +73,7 @@ public class Searcher{
 		nearestStationList.clear();
 		StationSearchThread thread = new StationSearchThread(window);
 		thread.setMass(player.getNowMass());
+		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -97,6 +100,7 @@ public class Searcher{
 		nearestShopList.clear();
 		ShopSearchThread thread = new ShopSearchThread(window);
 		thread.setMass(player.getNowMass());
+		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -130,9 +134,11 @@ public class Searcher{
 			thread.setMass(player.getNowMass());
 			Japan.getCoordinates(player.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
+			thread.setDaemon(true);
 			thread.start();
 
 			WaitThread wt = new WaitThread(2);
+			wt.setDaemon(true);
 			wt.start();
 			try {
 				wt.join();
@@ -170,9 +176,11 @@ public class Searcher{
 			thread.setMass(selectedPlayer.getNowMass());
 			Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
+			thread.setDaemon(true);
 			thread.start();
 
 			WaitThread wt = new WaitThread(2,againtime);
+			wt.setDaemon(true);
 			wt.start();
 			try {
 				wt.join();
@@ -200,9 +208,11 @@ public class Searcher{
 				thread.setMass(selectedPlayer.getNowMass());
 				Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
 				thread.setPriority(Thread.MAX_PRIORITY);
+				thread.setDaemon(true);
 				thread.start();
 
 				WaitThread wt = new WaitThread(2,againtime);
+				wt.setDaemon(true);
 				wt.start();
 				try {
 					wt.join();

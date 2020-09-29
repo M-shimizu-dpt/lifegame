@@ -44,6 +44,7 @@ import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.information.Station;
+import lifegame.game.object.map.print.animation.DiceAnimationThread;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
@@ -110,6 +111,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("サイコロ")) {
 			enableMenu();
 			printDice();
+			//switchingDice();
 		}else if(cmd.equals("カード")) {
 			enableMenu();
 			printCard();
@@ -406,6 +408,7 @@ public class Window implements ActionListener{
 		AssetsFrame.setVisible(true);
 		if(Player.player.isPlayer()) {
 			WaitThread thread = new WaitThread(3);
+			thread.setDaemon(true);
 			thread.start();
 			try {
 				thread.join();
@@ -538,6 +541,7 @@ public class Window implements ActionListener{
 
 	//サイコロ画面を閉じる
 	private void closeDice() {
+		DiceAnimationThread.end();
 		diceFrame.setVisible(false);
 	}
 
@@ -923,6 +927,7 @@ public class Window implements ActionListener{
 
 	//サイコロ操作
 	public void shuffleDice() {
+		DiceAnimationThread.end();
 		Player.player.setMove(Dice.shuffle(Player.player));
 		Searcher.searchCanMoveMass(this,Player.player);
 		if(Player.player.getMove()==0) {
@@ -1389,6 +1394,7 @@ public class Window implements ActionListener{
 		}else {
 			Searcher.searchShortestRoute(this,Player.player);
 			WaitThread thread = new WaitThread(2);
+			thread.setDaemon(true);
 			thread.start();
 			try {
 				thread.join();
@@ -1466,6 +1472,7 @@ public class Window implements ActionListener{
         cardFrame.setVisible(true);
 	}
 
+	/*
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
@@ -1479,8 +1486,9 @@ public class Window implements ActionListener{
 		// ウィンドウを表示
         diceFrame.setVisible(true);
 	}
+	*/
 
-	/*
+
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
@@ -1488,12 +1496,12 @@ public class Window implements ActionListener{
 		diceFrame.setLayout(null);
 
 		//iconの取得が出来ない
-		ImageIcon icon = new ImageIcon("./dice1.gif","description");
-		assert icon.getDescription() == null : "sample";
-		JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
-		JPanel p1 = new JPanel();
-		p1.add(d1);
-		diceFrame.getContentPane().add(p1);
+		//ImageIcon icon = new ImageIcon("./dice1.gif","description");
+		//assert icon.getDescription() == null : "sample";
+		//JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
+		//JPanel p1 = new JPanel();
+		//p1.add(d1);
+		//diceFrame.getContentPane().add(p1);
 
 
 		JButton button =createButton(490,450,70,50,10,"回す");
@@ -1504,7 +1512,7 @@ public class Window implements ActionListener{
 		// ウィンドウを表示
         diceFrame.setVisible(true);
 	}
-	 */
+
 
 	//カードの複製を行う画面を表示
 	public void printDubbing() {
@@ -1721,6 +1729,7 @@ public class Window implements ActionListener{
     	startFrame.setVisible(true);
 
     	WaitThread wait = new WaitThread(10);
+    	wait.setDaemon(true);
     	wait.start();
     	try {
     		wait.join();
@@ -1952,6 +1961,7 @@ public class Window implements ActionListener{
 
     		if(Player.player.isPlayer()) {
 	    		Thread thread = new Thread(new WaitThread(8));
+	    		thread.setDaemon(true);
 	    		thread.start();
 	    		try {
 	    			thread.join();
@@ -2109,6 +2119,7 @@ public class Window implements ActionListener{
 		revenueFrame.setVisible(true);
 		if(Player.player.isPlayer()) {
 			WaitThread thread = new WaitThread(3);
+			thread.setDaemon(true);
 			thread.start();
 			try {
 				thread.join();
@@ -2182,6 +2193,18 @@ public class Window implements ActionListener{
 		}
 	}
 
+	private void switchingDice() {
+		DiceAnimationThread anime = new DiceAnimationThread(this,diceFrame.getLayeredPane());
+		anime.setDaemon(true);
+		anime.start();
+		try {
+			anime.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("asdfasdfasd");
+	}
+
 	public static void throwEnd() {
 		throwFlag=true;
 	}
@@ -2193,6 +2216,10 @@ public class Window implements ActionListener{
   			waitButton.setVisible(true);
   		}
   	}
+
+}
+
+class AnimationThread extends Thread{
 
 }
 
