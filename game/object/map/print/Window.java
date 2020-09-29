@@ -44,6 +44,7 @@ import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.information.Station;
+import lifegame.game.object.map.print.animation.DiceAnimationThread;
 
 public class Window implements ActionListener{
 	private JFrame playFrame = new JFrame("桃大郎電鉄");//メインフレーム
@@ -76,7 +77,6 @@ public class Window implements ActionListener{
 	private JFrame binboFrame;//貧乏神イベント用フレーム＊＊＊＊
 
 	private static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
-	private boolean animationFlag=false;
 
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
@@ -111,7 +111,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("サイコロ")) {
 			enableMenu();
 			printDice();
-			//switchingDice();//debug
+			//switchingDice();
 		}else if(cmd.equals("カード")) {
 			enableMenu();
 			printCard();
@@ -408,6 +408,7 @@ public class Window implements ActionListener{
 		AssetsFrame.setVisible(true);
 		if(Player.player.isPlayer()) {
 			WaitThread thread = new WaitThread(3);
+			thread.setDaemon(true);
 			thread.start();
 			try {
 				thread.join();
@@ -540,7 +541,7 @@ public class Window implements ActionListener{
 
 	//サイコロ画面を閉じる
 	private void closeDice() {
-		animationFlag=true;
+		DiceAnimationThread.end();
 		diceFrame.setVisible(false);
 	}
 
@@ -926,7 +927,7 @@ public class Window implements ActionListener{
 
 	//サイコロ操作
 	public void shuffleDice() {
-		animationFlag=true;
+		DiceAnimationThread.end();
 		Player.player.setMove(Dice.shuffle(Player.player));
 		Searcher.searchCanMoveMass(this,Player.player);
 		if(Player.player.getMove()==0) {
@@ -1393,6 +1394,7 @@ public class Window implements ActionListener{
 		}else {
 			Searcher.searchShortestRoute(this,Player.player);
 			WaitThread thread = new WaitThread(2);
+			thread.setDaemon(true);
 			thread.start();
 			try {
 				thread.join();
@@ -1727,6 +1729,7 @@ public class Window implements ActionListener{
     	startFrame.setVisible(true);
 
     	WaitThread wait = new WaitThread(10);
+    	wait.setDaemon(true);
     	wait.start();
     	try {
     		wait.join();
@@ -1958,6 +1961,7 @@ public class Window implements ActionListener{
 
     		if(Player.player.isPlayer()) {
 	    		Thread thread = new Thread(new WaitThread(8));
+	    		thread.setDaemon(true);
 	    		thread.start();
 	    		try {
 	    			thread.join();
@@ -2115,6 +2119,7 @@ public class Window implements ActionListener{
 		revenueFrame.setVisible(true);
 		if(Player.player.isPlayer()) {
 			WaitThread thread = new WaitThread(3);
+			thread.setDaemon(true);
 			thread.start();
 			try {
 				thread.join();
@@ -2189,25 +2194,14 @@ public class Window implements ActionListener{
 	}
 
 	private void switchingDice() {
-		JLayeredPane dice = diceFrame.getLayeredPane();
-		ArrayList<JLabel> dicelist = new ArrayList<JLabel>();
-		for(int i=1;i<=6;i++) {
-			dicelist.add(createText(50,50,300,300,100,String.valueOf(i)));
-			dicelist.get(dicelist.size()-1).setVisible(false);
-			dice.add(dicelist.get(i-1));
+		DiceAnimationThread anime = new DiceAnimationThread(this,diceFrame.getLayeredPane());
+		anime.setDaemon(true);
+		anime.start();
+		try {
+			anime.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
 		}
-		for(int i=0;i<6;i++) {
-			dicelist.get(i).setVisible(true);
-			try {
-				Thread.sleep(100);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-			dicelist.get(i).setVisible(false);
-			if(!animationFlag && i==5) i=0;
-			if(animationFlag) break;
-		}
-		animationFlag=false;
 		System.out.println("asdfasdfasd");
 	}
 
@@ -2222,6 +2216,10 @@ public class Window implements ActionListener{
   			waitButton.setVisible(true);
   		}
   	}
+
+}
+
+class AnimationThread extends Thread{
 
 }
 

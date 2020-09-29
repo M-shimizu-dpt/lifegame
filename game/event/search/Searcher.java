@@ -34,6 +34,7 @@ public class Searcher{
 		thread.setDaemon(true);
 		thread.start();
 		WaitThread waitthread = new WaitThread(4);
+		waitthread.setDaemon(true);
 		waitthread.start();
 		try {
 			thread.join();
@@ -137,6 +138,7 @@ public class Searcher{
 			thread.start();
 
 			WaitThread wt = new WaitThread(2);
+			wt.setDaemon(true);
 			wt.start();
 			try {
 				wt.join();
@@ -178,6 +180,7 @@ public class Searcher{
 			thread.start();
 
 			WaitThread wt = new WaitThread(2,againtime);
+			wt.setDaemon(true);
 			wt.start();
 			try {
 				wt.join();
@@ -209,6 +212,7 @@ public class Searcher{
 				thread.start();
 
 				WaitThread wt = new WaitThread(2,againtime);
+				wt.setDaemon(true);
 				wt.start();
 				try {
 					wt.join();
