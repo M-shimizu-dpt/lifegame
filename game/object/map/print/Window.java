@@ -33,6 +33,7 @@ import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.MassEvent;
 import lifegame.game.event.MoveEvent;
 import lifegame.game.event.RandomEvent;
+import lifegame.game.event.SaleEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
@@ -122,7 +123,7 @@ public class Window implements ActionListener{
 			playFrame.setVisible(false);
 			allMap();
 		}else if(cmd.equals("回す")) {
-			diceShuffle();
+			shuffleDice();
 		}else if(cmd.equals("サイコロを閉じる")) {
 			ableMenu();
 			closeDice();
@@ -478,7 +479,7 @@ public class Window implements ActionListener{
 	}
 
 	private void buyCard(Card card) {
-		Player.player.buyCard(card);
+		SaleEvent.buyCard(card);
 		shopFrame.setVisible(false);
 		shopFrame.removeAll();
 		printBuyShop();
@@ -486,7 +487,7 @@ public class Window implements ActionListener{
 
 	//物件購入・増築処理
 	private void buyPropertys(String name, int index) {
-		Player.player.buyPropertys(name, index);
+		SaleEvent.buyPropertys(name, index);
 
 		//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		propertyFrame.setVisible(false);
@@ -921,7 +922,7 @@ public class Window implements ActionListener{
 	}
 
 	//サイコロ操作
-	public void diceShuffle() {
+	public void shuffleDice() {
 		Player.player.setMove(Dice.shuffle(Player.player));
 		Searcher.searchCanMoveMass(this,Player.player);
 		if(Player.player.getMove()==0) {
@@ -1405,14 +1406,14 @@ public class Window implements ActionListener{
 	public void printBuyShop() {
 		shopFrontFrame.setVisible(false);
 		shopFrame = new JFrame("購入");
-		JLayeredPane shopBuy = shopFrame.getLayeredPane();
+		JLayeredPane buyShop = shopFrame.getLayeredPane();
 		shopFrame.setSize(600, 600);
 		shopFrame.setLocationRelativeTo(null);
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
 		closeButton.setActionCommand("カード購入を終える");
-		shopBuy.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		buyShop.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		JLabel myMoney = createText(10,5,400,40,10,"所持金"+Player.player.getMoney());
-		shopBuy.add(myMoney);
+		buyShop.add(myMoney);
 
 		for(int i=1; i<=canBuyCardlist.size(); i++) {
 			JButton buyButton = createButton(500,i*50,70,50,10,"購入");
@@ -1420,16 +1421,16 @@ public class Window implements ActionListener{
 			if(canBuyCardlist.get(i-1).getBuyPrice() > Player.player.getMoney() || Player.player.getCardSize() > 7) {
 				buyButton.setEnabled(false);
 			}
-			shopBuy.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
+			buyShop.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
 			JLabel name = createText(10,i*50,300,50,10,canBuyCardlist.get(i-1).getName());
-			shopBuy.add(name,JLayeredPane.PALETTE_LAYER,-1);
+			buyShop.add(name,JLayeredPane.PALETTE_LAYER,-1);
 			JLabel amount = createText(320,i*50,100,50,10,String.valueOf(canBuyCardlist.get(i-1).getBuyPrice()));
-			shopBuy.add(amount,JLayeredPane.PALETTE_LAYER,-1);
+			buyShop.add(amount,JLayeredPane.PALETTE_LAYER,-1);
 		}
 
 		if(Player.player.getCardSize() > 7) {
 			JLabel cardFull = createText(450,5,130,40,10,"カードがいっぱいです");
-			shopBuy.add(cardFull);
+			buyShop.add(cardFull);
 		}
 		shopFrame.setVisible(true);
 	}
@@ -1630,7 +1631,7 @@ public class Window implements ActionListener{
 		propertyFrame.setVisible(true);
 
 		if(!Player.player.isPlayer()) {
-			Player.player.buyPropertysCPU(name);
+			SaleEvent.buyPropertysCPU(name);
 		}
 		setCloseFrame(2);
 	}
@@ -2140,7 +2141,7 @@ public class Window implements ActionListener{
 	}
 
 	private void sellCard(Card card) {
-		Player.player.sellCard(card);
+		SaleEvent.sellCard(card);
 		shopFrame.setVisible(false);
 		shopFrame.removeAll();
 		printSellShop();
@@ -2169,7 +2170,7 @@ public class Window implements ActionListener{
 
 	//物件売却処理
 	public void sellPropertys(Property property) {
-		Player.player.sellPropertys(property);
+		SaleEvent.sellPropertys(property);
 
 		//System.out.println(property.getName()+"を売却");
 		sellStationFrame.setVisible(false);

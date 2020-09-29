@@ -63,6 +63,9 @@ public class Property {
 	public void setOwner(String owner) {
 		this.owner=owner;
 	}
+	public void setOwner(Player player) {
+		this.owner=player.getName();
+	}
 
 	public int getAmount() {
 		return this.amount;
@@ -109,25 +112,5 @@ public class Property {
 		int profit=0;
 		profit = (int)((double)amount * rate.get(this.station.isMono()).get(level));
 		return profit;
-	}
-
-	public void buy(Player player,int level) {
-		this.owner=player.getName();
-		player.addProperty(this);
-		player.addMoney(-this.amount);
-		this.level=level;
-	}
-	public void buy(Player player) {
-		this.owner=player.getName();
-		player.addProperty(this);
-		player.addMoney(-this.amount);
-		this.level++;
-	}
-
-	public void sell(Player player) {
-		this.owner="";
-		player.removeProperty(this);
-		player.addMoney(this.amount/2);
-		this.level=0;
 	}
 }

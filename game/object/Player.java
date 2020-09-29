@@ -120,42 +120,6 @@ public class Player {
 		this.propertys.add(property);
 	}
 
-	public void buyCard(Card card) {
-		this.addCard(card);
-		this.addMoney(-card.getBuyPrice());
-	}
-
-	public void buyPropertys(String name, int index) {
-		if(!ContainsEvent.isOwner(Japan.getStaInProperty(name,index))) {
-			Japan.getStaInProperty(name,index).buy(this,0);
-			Japan.updateStationMono(name);
-		}else {
-			Japan.getStaInProperty(name,index).buy(this);
-		}
-		Japan.alreadys.add(Japan.getStaInProperty(name,index).getName()+index);
-	}
-
-	public void sellPropertys(Property property) {
-		property.sell(this);
-		Japan.updateStationMono(property);
-	}
-
-	//物件購入・増築処理
-	public void buyPropertysCPU(String name) {
-		for(int index = 0;index<Japan.getStaInPropertySize(name);index++) {
-			if(Japan.getStaInProperty(name,index).getAmount() > this.getMoney())break;
-			if(!ContainsEvent.isOwner(Japan.getStaInProperty(name,index))) {
-				Japan.getStaInProperty(name,index).buy(this,0);
-				Japan.updateStationMono(name);
-			}else {
-				Japan.getStaInProperty(name,index).buy(this);
-			}
-			Japan.alreadys.add(Japan.getStaInProperty(name,index).getName()+index);
-
-			//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
-		}
-	}
-
 	//CPUの所持カードが最大を超えた場合、捨てるカードを選択
 	public void cardFullCPU() {
 		do{
@@ -199,7 +163,7 @@ public class Player {
 			}
 		}
 		if(diceFlag) {
-			window.diceShuffle();//サイコロを回す
+			window.shuffleDice();//サイコロを回す
 			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
 			waitthread.start();
 			waitthread.join();
@@ -392,11 +356,6 @@ public class Player {
 
 	public void removeCard(Card card) {
 		cards.remove(card);
-	}
-
-	public void sellCard(Card card) {
-		this.removeCard(card);
-		this.addMoney(card.getSellPrice());
 	}
 
 	public void sellPropertyCPU(Window window) {
