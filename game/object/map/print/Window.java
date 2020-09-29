@@ -76,6 +76,7 @@ public class Window implements ActionListener{
 	private JFrame binboFrame;//貧乏神イベント用フレーム＊＊＊＊
 
 	private static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
+	private boolean animationFlag=false;
 
 	private ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 
@@ -110,6 +111,7 @@ public class Window implements ActionListener{
 		}else if(cmd.equals("サイコロ")) {
 			enableMenu();
 			printDice();
+			//switchingDice();//debug
 		}else if(cmd.equals("カード")) {
 			enableMenu();
 			printCard();
@@ -538,6 +540,7 @@ public class Window implements ActionListener{
 
 	//サイコロ画面を閉じる
 	private void closeDice() {
+		animationFlag=true;
 		diceFrame.setVisible(false);
 	}
 
@@ -923,6 +926,7 @@ public class Window implements ActionListener{
 
 	//サイコロ操作
 	public void shuffleDice() {
+		animationFlag=true;
 		Player.player.setMove(Dice.shuffle(Player.player));
 		Searcher.searchCanMoveMass(this,Player.player);
 		if(Player.player.getMove()==0) {
@@ -1466,6 +1470,7 @@ public class Window implements ActionListener{
         cardFrame.setVisible(true);
 	}
 
+	/*
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
@@ -1479,8 +1484,9 @@ public class Window implements ActionListener{
 		// ウィンドウを表示
         diceFrame.setVisible(true);
 	}
+	*/
 
-	/*
+
 	//サイコロ画面表示
 	private void printDice() {
 		JLayeredPane diceP = diceFrame.getLayeredPane();
@@ -1488,12 +1494,12 @@ public class Window implements ActionListener{
 		diceFrame.setLayout(null);
 
 		//iconの取得が出来ない
-		ImageIcon icon = new ImageIcon("./dice1.gif","description");
-		assert icon.getDescription() == null : "sample";
-		JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
-		JPanel p1 = new JPanel();
-		p1.add(d1);
-		diceFrame.getContentPane().add(p1);
+		//ImageIcon icon = new ImageIcon("./dice1.gif","description");
+		//assert icon.getDescription() == null : "sample";
+		//JLabel d1 = createImage(10,10,300,300,50,"./dice1.gif");
+		//JPanel p1 = new JPanel();
+		//p1.add(d1);
+		//diceFrame.getContentPane().add(p1);
 
 
 		JButton button =createButton(490,450,70,50,10,"回す");
@@ -1504,7 +1510,7 @@ public class Window implements ActionListener{
 		// ウィンドウを表示
         diceFrame.setVisible(true);
 	}
-	 */
+
 
 	//カードの複製を行う画面を表示
 	public void printDubbing() {
@@ -2180,6 +2186,29 @@ public class Window implements ActionListener{
 		}else {
 			closeTakeStations();
 		}
+	}
+
+	private void switchingDice() {
+		JLayeredPane dice = diceFrame.getLayeredPane();
+		ArrayList<JLabel> dicelist = new ArrayList<JLabel>();
+		for(int i=1;i<=6;i++) {
+			dicelist.add(createText(50,50,300,300,100,String.valueOf(i)));
+			dicelist.get(dicelist.size()-1).setVisible(false);
+			dice.add(dicelist.get(i-1));
+		}
+		for(int i=0;i<6;i++) {
+			dicelist.get(i).setVisible(true);
+			try {
+				Thread.sleep(100);
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+			dicelist.get(i).setVisible(false);
+			if(!animationFlag && i==5) i=0;
+			if(animationFlag) break;
+		}
+		animationFlag=false;
+		System.out.println("asdfasdfasd");
 	}
 
 	public static void throwEnd() {
