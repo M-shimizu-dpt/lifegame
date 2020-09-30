@@ -6,10 +6,10 @@
 package lifegame.game.main;
 
 import lifegame.game.event.BinboEvent;
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.Searcher;
-import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
@@ -53,7 +53,8 @@ public class App {
   	private void play(Window window,int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		BinboEvent.initBinbo();
+  		//BinboEvent.initBinbo();初期でボンビーを憑けないなら
+  		BinboEvent.initIsBinbo();//初期でボンビーを憑けさせるなら
 
   		while(true) {
   			window.monthUpdate(first);
@@ -70,7 +71,7 @@ public class App {
 		  	Japan.saveGoal();
 		  	window.moveMaps();//画面遷移が少し遅い
 		  	window.reloadInfo();//画面上部に表示している情報を更新
-		  	Card.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
+		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!Player.player.isPlayer()) {//cpu操作
 		  		Player.player.cpu(window);
 		  	}else {
@@ -105,7 +106,7 @@ public class App {
     	assert(yearLimit>0 && yearLimit<=100);
 
 
-    	Card.init(window);
+    	CardEvent.init(window);
     	Dice.init();
 
     	window.initWindow(yearLimit,playerCount);

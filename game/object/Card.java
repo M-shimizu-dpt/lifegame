@@ -13,13 +13,6 @@
 
 package lifegame.game.object;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import lifegame.game.event.ContainsEvent;
-import lifegame.game.event.WaitThread;
-import lifegame.game.event.search.Searcher;
-import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.print.Window;
 import lifegame.game.object.model.CardModel;
 
@@ -45,7 +38,7 @@ public class Card extends CardModel{
 		super.setText(cardText);
 		super.setID(id);
 	}
-
+/*
 	public static ArrayList<Card> getElectedCard(){
 		ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
 		Random rand = new Random();
@@ -211,10 +204,9 @@ public class Card extends CardModel{
 		//System.out.println("random move  x:"+x+"  y:"+y);
 		return movedMass;
 	}
+	*/
 
 	public static void init(Window window) {
-		resetFlags();
-
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
 		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));

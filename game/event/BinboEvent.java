@@ -5,33 +5,52 @@ import java.util.Random;
 
 import lifegame.game.event.search.Searcher;
 import lifegame.game.object.Binbo;
+import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.Window;
 
 public abstract class BinboEvent{
-	//binboクラス初期化
+	//binboクラス初期
 	public static void initBinbo() {
 		Binbo.setName("ボンビー");
-		initBinbo(Player.players.get(0));//初期でボンビーを憑けさせるなら
+		//initBinbo(Player.players.get(0));
 	}
 
-	private static void initBinbo(Player player) {
-		Binbo.setPlayerBinbo(player);//初期でボンビーを憑けさせるなら
+	public static void initIsBinbo() {
+		Binbo.setName("ボンビー");
+		Binbo.setPlayerBinbo(Player.players.get(0));//初期でボンビーを憑けさせるなら
+	}
+
+	public static void addSameMassPlayer() {
+		int turn = Player.player.getID();
+		Player player;
+		while(true) {
+			turn++;
+			if(turn==Player.players.size()) {
+				turn=0;
+			}
+			if(ContainsEvent.id(turn)) {
+				break;
+			}
+			player = Player.players.get(turn);
+			if(ContainsEvent.coor(Player.player,player)){
+				Binbo.addSameMassPlayer(player);
+			}
+		}
 	}
 
 	//binboのターンメソッド
 	public static void start(Window window) {
-		//System.out.println(name + "のターン");
-		//System.out.println(this.binboplayer.getName());
-		window.bonbyPlayer();
-		randomBinboEvent();
-		//System.out.println(name +"のターン終了");
+		String action = randomBinboEvent();
+		if(action=="変身") {
+			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),Binbo.getName(),"に変化した");
+		}else {
+			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),Binbo.getName(),"Event");
+		}
 	}
 
 	//ボンビー終了メソッド
 	public static void turnFinish() {
-		//スタブメソッド
-		//System.out.print("ボンビーターン終了");
 		Binbo.binboFinish();
 	}
 
@@ -40,7 +59,7 @@ public abstract class BinboEvent{
 		if(ContainsEvent.isTogether()) {
 			Binbo.sameMassPlayersClear();
 		}
-		Binbo.addSameMassPlayer();
+		BinboEvent.addSameMassPlayer();
 	}
 
 	//ボンビー入れ替えメソッド
@@ -131,32 +150,150 @@ public abstract class BinboEvent{
 		Binbo.setPlayerBinbo(Player.players.get(nextbonbyplayer));
 	}
 
-	//ランダムイベント
-	private static void randomBinboEvent() {
+	public static int randomBinbo() {
 		Random rand = new Random();
-		int result = rand.nextInt(100);
-		if(result<10) {//debug用なのだとしたらメモを書いておくように！！！
-			Makeover();
+		int result = rand.nextInt(8);
+		return result;
+	}
+
+	//ランダムイベント
+	private static String randomBinboEvent() {
+		int result = randomBinbo();
+		String event;
+		binboCardbuy();
+		if(ContainsEvent.binboNameBaby()) {
+			if(result<6) {
+				babyMoney();
+				event= "お金とる";
+			}else {
+				makeOver();
+				event= "変身";
+			}
+		}else if(ContainsEvent.binboNameHappy()){
+			if(result<6) {
+				luckyMoney();
+				event= "お金もらう";
+			}else {
+				makeOver();
+				event= "変身";
+			}
+		}else if(ContainsEvent.binboNameTyphoon()){
+			if(result<6) {
+				typhoon();
+				event= "物件飛ばす";
+			}else {
+				makeOver();
+				event= "変身";
+			}
+		}else if(ContainsEvent.binboNameKing()){
+			if(result==0) {
+				kingCardbuy();
+				event= "カード増やす";
+			}else if(result==1) {
+				kingProperty();
+				event= "物件";
+			}else if(result==2) {
+				kingDice();
+				event= "さいころ降らす";
+			}else if(result==3) {
+				kingCardSell();
+				event= "カードなくす";
+			}else if(result==4) {
+				kingMovePlayer();
+				event= "プレイヤー移動系";
+			}else{
+				makeOver();
+				event= "変身";
+			}
 		}else {
-			Makeover();
+			if(result==0) {
+				binboCardbuy();
+				event= "カード増やす";
+			}else if(result==1) {
+				binboProperty();
+				event= "物件";
+			}else if(result==2) {
+				binboDice();
+				event= "さいころ降らす";
+			}else if(result==3) {
+				binboCardSell();
+				event= "カードなくす";
+			}else if(result==4) {
+				binboMovePlayer();
+				event= "プレイヤー移動系";
+			}else{
+				makeOver();
+				event= "変身";
+			}
 		}
+		return event;
 	}
 
 	//ボンビーが成るメソッド
-	private static void Makeover() {
-		Random rand = new Random();
-		double result = rand.nextDouble();
+	public static void makeOver() {
 		String name;
-		if(result<0.3) {
-			name = "赤ちゃんボンビー";
-		}else if(result<0.5) {
-			name = "タイフーンボンビー";
-		}else if(result<0.7) {
-			name = "幸せボンビー";
-		}else{
-			name = "キングボンビー";
+		if(Binbo.isMakeBinbo()) {
+			name = "ボンビー";
+		}else {
+			Random rand = new Random();
+			double result = rand.nextDouble();
+			if(result<0.3) {
+				name = "赤ちゃんボンビー";
+			}else if(result<0.5) {
+				name = "タイフーンボンビー";
+			}else if(result<0.7) {
+				name = "幸せボンビー";
+			}else{
+				name = "キングボンビー";
+			}
 		}
+		Binbo.binboMakeover();
 		Binbo.setName(name);
 	}
+	public static void binboCardbuy() {
+		String cardname;
+		cardname = "徳政令カード";
+		for(Card card : Card.getCardList()) {
+			if(ContainsEvent.name(card,cardname)) {
+				Player.player.addCard(card);
+				Player.player.addMoney(-card.getBuyPrice()*2);
+			}
+		}
+	}
+	public static void binboProperty() {
 
+	}
+	public static void binboDice() {
+
+	}
+	public static void binboCardSell() {
+
+	}
+	public static void binboMovePlayer() {
+
+	}
+	public static void kingCardbuy() {
+
+	}
+	public static void kingProperty() {
+
+	}
+	public static void kingDice() {
+
+	}
+	public static void kingCardSell() {
+
+	}
+	public static void kingMovePlayer() {
+
+	}
+	public static void babyMoney() {
+
+	}
+	public static void luckyMoney() {
+
+	}
+	public static void typhoon() {
+
+	}
 }

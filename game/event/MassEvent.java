@@ -120,7 +120,7 @@ public abstract class MassEvent {
 
 	//店マスイベント
 	private static void shopEvent(Window window) {
-		window.printShop(Card.getElectedCard());
+		window.printShop(CardEvent.getElectedCard());
 	}
 
 }

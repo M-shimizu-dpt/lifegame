@@ -16,7 +16,7 @@ public abstract class ClosingEvent {
 
 	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
 	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
-	private static ArrayList<Integer[]> rank = new ArrayList<>();
+	private static ArrayList<Integer[]> rank = new ArrayList<Integer[]>();
 
 	public static ArrayList<Integer[]> getProfitList(){
 		return ClosingEvent.allProfitList;
@@ -112,7 +112,7 @@ public abstract class ClosingEvent {
 		}
 		return null;
 	}
-	
+
 	public static void closed() {
 		closingEndFlag=true;
 	}

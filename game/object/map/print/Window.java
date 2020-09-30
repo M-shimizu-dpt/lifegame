@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import lifegame.game.event.BinboEvent;
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.ClosingEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.MassEvent;
@@ -84,11 +85,12 @@ public class Window implements ActionListener{
 
 	}
 
+
 	//メイン画面でのメニューボタンを有効
 	public void ableMenu() {
 		saikoro.setEnabled(true);
 		company.setEnabled(true);
-		if(!Card.isUsed()) {
+		if(!ContainsEvent.isUsedCard()) {
 			cardB.setEnabled(true);
 		}
 		minimap.setEnabled(true);
@@ -182,53 +184,14 @@ public class Window implements ActionListener{
 			}
 		}
 
-		for(int i=0;i<Card.getCardListSize();i++) {
-			if(cmd.equals(Card.getCard(i).getName())) {//カードを使う
-				Card.getCard(i).useAbilitys(this);
-				if(ContainsEvent.id(Card.getCard(i),2)){
-					moveMaps();
-					try {
-						Thread.sleep(2000);
-					}catch(InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				ableMenu();
-				closeCard();
-				break;
-			}else if(cmd.equals(Card.getCard(i).getName()+"t")) {//カードを捨てる
-				Player.player.removeCard(Card.getCard(i));
-				closeErrorFrame();
-				break;
-			}else if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
-				Player.player.addCard(Card.getCard(i));
-				closeDubbing();
-				break;
-			}
-		}
-
-		if(Card.isUsedRandom() || Card.isUsedOthers()) {
-			Card.resetFlags();
-			ableMenu();
-			if(playFrame.isVisible()) {
-				App.turnEnd();
-			}
-		}
+		CardEvent.UseCard(cmd,this);
 
 		String pre[] = cmd.split(":");
+		CardEvent.sellCard(pre,this);
+
+		CardEvent.buyCard(pre,this);
+
 		if(pre.length==2) {
-			for(Card card:Player.player.getCards()) {
-				if(pre[0].equals(card.getName()) && pre[1].equals("s")) {//カード売却
-					sellCard(card);
-					break;
-				}
-			}
-			for(Card card:Card.getCardList()) {
-				if(pre[0].equals(card.getName()) && pre[1].equals("b")) {//カード購入
-					buyCard(card);
-					break;
-				}
-			}
 			for(int i=0;i<Japan.getStationSize();i++) {
 				if(pre[0].equals(Japan.getStationName(Japan.getStationCoor(i))+"b")) {//物件を購入
 					buyPropertys(pre[0].substring(0, pre[0].length()-1),Integer.parseInt(pre[1]));
@@ -242,6 +205,17 @@ public class Window implements ActionListener{
 				}
 			}
 		}
+	}
+	public boolean playFrameVisible() {
+		return playFrame.isVisible();
+	}
+	public void cardFrame() {
+		ableMenu();
+		closeCard();
+	}
+	public void shopFrameVisible(){
+		shopFrame.setVisible(false);
+		shopFrame.removeAll();
 	}
 
 	public void addPlayFrame(JLabel label) {
@@ -439,7 +413,7 @@ public class Window implements ActionListener{
 		shopFrontFrame.setVisible(true);
 	}
 
-	public void bonbyPlayer() {
+	public void bonbyPlayer(String st1,String st2,String st3) {
 		/*
 		for(int i = 0;i<4;i++) {
 			System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
@@ -454,7 +428,7 @@ public class Window implements ActionListener{
 		//icon.createImageIcon("./img/days_res.png",");
 		JLabel text1=new JLabel();
 		JLabel text2=new JLabel();
-		//JLabel text3=new JLabel(icon);
+		JLabel text3=new JLabel();
 		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
 		closeButton.setActionCommand("貧乏神イベントを閉じる");
 		if(!Player.player.isPlayer()) {
@@ -463,18 +437,16 @@ public class Window implements ActionListener{
 		binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		binboFrame.setName("ボンビーのターン");
 
-		text1 = createText(10,10,600,100,20,"テストボンビー1");
-		text2 = createText(10,110,600,100,20,"テストボンビー２");
-		//text3 = createText(10,210,600,100,20,"テストボンビー3");
+		text1 = createText(10,10,600,100,20,st1);
+		text2 = createText(10,110,600,100,20,st2);
+		text3 = createText(10,210,600,100,20,st3);
 
 		text1.setHorizontalAlignment(SwingConstants.LEFT);
 		binbo.add(text1);
 		text2.setHorizontalAlignment(SwingConstants.LEFT);
 		binbo.add(text2);
-		//text3.setHorizontalTextPosition(SwingConstants.LEFT);
-		//binbo.add(text3);
-		//System.out.println(icon.getIconWidth());
-		//System.out.println(icon.getIconHeight());
+		text3.setHorizontalAlignment(SwingConstants.LEFT);
+		binbo.add(text3);
 		binboFrame.setVisible(true);
 
 		setCloseFrame(5);
@@ -940,8 +912,7 @@ public class Window implements ActionListener{
 		}
 		closeMenu();
 		Dice.clear();
-		Card.resetUsed();
-		Card.resetUsedFixed();
+		CardEvent.resetUsedCard();
 		closeDice();
 	}
 
@@ -1334,7 +1305,7 @@ public class Window implements ActionListener{
 			MoveEvent.clearTrajectory();
 			Dice.clear();
 			BinboEvent.clearBefore();
-			if(!Card.isUsedRandom()) {
+			if(!ContainsEvent.isUsedRandomCard() ) {
 				massEvent();
 			}
 		}
@@ -1645,7 +1616,7 @@ public class Window implements ActionListener{
 	}
 
 	//カードショップの売却画面
-	private void printSellShop() {
+	public void printSellShop() {
 		shopFrontFrame.setVisible(false);
 		shopFrame = new JFrame("売却");
 		JLayeredPane shopSell = shopFrame.getLayeredPane();

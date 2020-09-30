@@ -66,7 +66,7 @@ public abstract class CardModel {
 		return this.rarity;
 	}
 
-	public int getRarity(int index) {
+	public static int getRarity(int index) {
 		return cardList.get(index).getRarity();
 	}
 
@@ -178,12 +178,5 @@ public abstract class CardModel {
 
 	public static boolean isUsedOthers() {
 		return usedOthersCard;
-	}
-
-	public static void resetFlags() {
-		usedCard=false;
-		usedFixedCard=false;
-		usedRandomCard=false;
-		usedOthersCard=false;
 	}
 }

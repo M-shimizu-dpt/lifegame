@@ -2,6 +2,7 @@ package lifegame.game.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import lifegame.game.main.App;
 import lifegame.game.object.Binbo;
@@ -526,5 +527,28 @@ public abstract class ContainsEvent {
 	}
 	public static boolean isEnd(int endYear) {
 		return App.year>endYear;
+	}
+
+	public static boolean isRandomEvent() {
+		Random rand = new Random();
+		int result = rand.nextInt(100);
+		if(result<5) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public static boolean isUsedCard() {
+		return Card.isUsed();
+	}
+	public static boolean isUsedFixedCard() {
+		return Card.isUsedFixed();
+	}
+	public static boolean isUsedRandomCard() {
+		return Card.isUsedRandom();
+	}
+	public static boolean isUsedOthersCard() {
+		return Card.isUsedOthers();
 	}
 }
