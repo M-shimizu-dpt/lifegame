@@ -66,7 +66,7 @@ public abstract class CardModel {
 		return this.rarity;
 	}
 
-	public static int getRarity(int index) {
+	public  int getRarity(int index) {
 		return cardList.get(index).getRarity();
 	}
 

@@ -45,7 +45,8 @@ public abstract class BinboEvent{
 		if(action=="変身") {
 			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),Binbo.getName(),"に変化した");
 		}else {
-			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),Binbo.getName(),"Event");
+			String pre[] = action.split(",");
+			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),pre[0],pre[1]);
 		}
 	}
 
@@ -160,72 +161,72 @@ public abstract class BinboEvent{
 	private static String randomBinboEvent() {
 		int result = randomBinbo();
 		String event;
-		binboCardbuy();
 		if(ContainsEvent.binboNameBaby()) {
 			if(result<6) {
-				babyMoney();
-				event= "お金とる";
+				//"お金とる";
+				event= babyMoney();
 			}else {
 				makeOver();
 				event= "変身";
 			}
 		}else if(ContainsEvent.binboNameHappy()){
 			if(result<6) {
-				luckyMoney();
-				event= "お金もらう";
+				//"お金もらう";
+				event=happyMoney();
 			}else {
 				makeOver();
 				event= "変身";
 			}
 		}else if(ContainsEvent.binboNameTyphoon()){
 			if(result<6) {
-				typhoon();
-				event= "物件飛ばす";
+				//"物件飛ばす";
+				event= typhoon();
 			}else {
 				makeOver();
 				event= "変身";
 			}
 		}else if(ContainsEvent.binboNameKing()){
 			if(result==0) {
-				kingCardbuy();
-				event= "カード増やす";
+				//"カード増やす";
+				event= kingCardbuy();
 			}else if(result==1) {
-				kingProperty();
-				event= "物件";
+				//"物件";
+				event= kingProperty();
 			}else if(result==2) {
-				kingDice();
-				event= "さいころ降らす";
+				//"さいころ降らす";
+				event= kingDice();
 			}else if(result==3) {
-				kingCardSell();
-				event= "カードなくす";
+				//"カードなくす";
+				event= kingCardSell();
 			}else if(result==4) {
-				kingMovePlayer();
-				event= "プレイヤー移動系";
+				//"プレイヤー移動系";
+				event= kingMovePlayer();
 			}else{
 				makeOver();
 				event= "変身";
 			}
 		}else {
 			if(result==0) {
-				binboCardbuy();
-				event= "カード増やす";
+				//"カード増やす";
+				event= binboCardbuy();
 			}else if(result==1) {
-				binboProperty();
-				event= "物件";
+				// "物件";
+				event=binboProperty();
 			}else if(result==2) {
-				binboDice();
-				event= "さいころ降らす";
+				//"さいころ降らす";
+				event= binboDice();
 			}else if(result==3) {
-				binboCardSell();
-				event= "カードなくす";
+				//"カードなくす";
+				event=binboCardSell();
 			}else if(result==4) {
-				binboMovePlayer();
-				event= "プレイヤー移動系";
+				//"プレイヤー移動系";
+				event= binboMovePlayer();
 			}else{
 				makeOver();
 				event= "変身";
 			}
 		}
+		event = binboCardbuy();
 		return event;
 	}
 
@@ -250,50 +251,53 @@ public abstract class BinboEvent{
 		Binbo.binboMakeover();
 		Binbo.setName(name);
 	}
-	public static void binboCardbuy() {
+	public static String binboCardbuy() {
 		String cardname;
 		cardname = "徳政令カード";
 		for(Card card : Card.getCardList()) {
 			if(ContainsEvent.name(card,cardname)) {
 				Player.player.addCard(card);
 				Player.player.addMoney(-card.getBuyPrice()*2);
+				return "二倍のお金で"+cardname+"をかってきたのねん"+","+Player.player.getName()+"は金額:"+card.getBuyPrice()*2+"を支払った。";
 			}
 		}
-	}
-	public static void binboProperty() {
+		return "予期しないリターン";
 
 	}
-	public static void binboDice() {
-
+	public static String binboProperty() {
+		return "";
 	}
-	public static void binboCardSell() {
-
+	public static String binboDice() {
+		return "";
 	}
-	public static void binboMovePlayer() {
-
+	public static String binboCardSell() {
+		return "";
 	}
-	public static void kingCardbuy() {
-
+	public static String binboMovePlayer() {
+		return "";
 	}
-	public static void kingProperty() {
-
+	public static String kingCardbuy() {
+		return "";
 	}
-	public static void kingDice() {
-
+	public static String kingProperty() {
+		return "";
 	}
-	public static void kingCardSell() {
-
+	public static String kingDice() {
+		return "";
 	}
-	public static void kingMovePlayer() {
-
+	public static String kingCardSell() {
+		return "";
 	}
-	public static void babyMoney() {
-
+	public static String kingMovePlayer() {
+		return "";
 	}
-	public static void luckyMoney() {
-
+	public static String babyMoney() {
+		return "";
 	}
-	public static void typhoon() {
-
+	public static String happyMoney() {
+		return "";
+	}
+	public static String typhoon() {
+		return "";
 	}
 }

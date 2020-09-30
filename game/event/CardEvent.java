@@ -130,7 +130,7 @@ public class CardEvent{
 						get=true;
 					}
 					rarity++;
-				}while(rarity<Card.getRarity(index));
+				}while(rarity<Card.getCard(index).getRarity());
 			}while(!get);
 			canBuyCardlist.add(Card.getCard(index));
 		}
