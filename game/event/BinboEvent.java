@@ -307,7 +307,7 @@ public abstract class BinboEvent{
 		return "さいころふるゲームをじっそうしたいにょろ。,でもまだ実装できてないにょろ~~";
 	}
 	public static String binboCardLost() {
-		if(!ContainsEvent.isHaveCard()) {
+		if(ContainsEvent.isHaveCard()) {
 			Random rand = new Random();
 			int result=rand.nextInt(Player.player.getCardSize()-1);
 			Player.player.removeCard(Player.player.getCard(result));

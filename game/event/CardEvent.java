@@ -12,10 +12,6 @@ import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
 
 public class CardEvent{
-	public static void init() {
-		CardEvent.resetFlags();
-		Card.init();
-	}
 	public static void raritySort(ArrayList<Card> cards){
 		Collections.sort(cards,new Comparator<Card>() {
         	public int compare(Card card1, Card card2) {

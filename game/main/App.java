@@ -13,6 +13,7 @@ import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
+import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
@@ -85,6 +86,9 @@ public class App {
 
   		while(true) {
   			monthUpdate(first);
+  			if(ContainsEvent.isOwners()) {
+  				FrameEvent.openRandom2();
+  			}
 	  		if(ContainsEvent.isEnd(endYear)) {
 		  		break;
 		  	}
@@ -114,6 +118,7 @@ public class App {
 				bonbyTurnEnd.join();
 			}
 			Thread.sleep(1000);
+			CardEvent.resetFlags();
 			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
   		assert endYear < year;
@@ -132,7 +137,7 @@ public class App {
     	assert(yearLimit>0 && yearLimit<=100);
 
 
-    	CardEvent.init();
+    	Card.init();
 
     	Dice.init();
 

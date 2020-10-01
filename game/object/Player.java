@@ -178,15 +178,16 @@ public class Player {
 		if(diceFlag) {
 			//処理を待たないと一瞬表示されるだけになる
 			FrameEvent.openDice();
-			Thread.sleep(500);
 			DiceEvent.shuffleDice();
 			Thread.sleep(500);
 			FrameEvent.closeDice();
 
+			/*
 			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
 			waitthread.start();
 			waitthread.join();
 
+*/
 			if(Searcher.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuaddTrajectory();
 			}else {//目的地を超えてしまう場合
@@ -306,7 +307,7 @@ public class Player {
 	}
 
 	public int getCardSize() {
-		return cards.size();
+		return this.cards.size();
 	}
 
 	public JLabel getColt() {

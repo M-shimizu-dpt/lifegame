@@ -292,15 +292,6 @@ public abstract class FrameEvent{
 
 	//月が替わった時に何月か表示
 	public static void printMonthFrame() {//ConfirmationFrameにする
-		if(!play.isShowing()) {
-			while(!play.isShowing()) {
-				try {
-    				Thread.sleep(100);
-    			}catch(InterruptedException e) {
-    				e.printStackTrace();
-    			}
-			}
-		}
 		play.close();
 		confirmation.open(App.month + "月", App.month + "月",100, 3000);
 		try {
@@ -310,14 +301,12 @@ public abstract class FrameEvent{
 		}
 		confirmation.close();
 		play.open();
-		if(ContainsEvent.isOwners()) {
-			openRandom2();
-		}
+
 	}
 
-	public static void openRandom1() {
+	public static void openRandom1(double rand) {
 		play.close();
-		random.open(1);
+		random.open(1,rand);
 	}
 
 	public static void openRandom2() {

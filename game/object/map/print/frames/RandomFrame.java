@@ -25,17 +25,21 @@ public class RandomFrame extends FrameModel{
 		id=-1;
 	}
 
-	public void open(int id) {
+	public void open(int id,double rand) {
 		this.id=id;
 		if(id==1) {
-			open1();
-		}else if(id==2){
+			open1(rand);
+		}
+	}
+
+	public void open(int id) {
+		this.id=id;
+		if(id==2){
 			open2();
 		}
 	}
 
-	private void open1() {
-		Random rndm = new Random();
+	private void open1(double rand) {
 		JLayeredPane random = this.getLayeredPane();
 		JLabel text1=new JLabel();
 		JLabel text2=new JLabel();
@@ -45,8 +49,6 @@ public class RandomFrame extends FrameModel{
 			closeButton.setEnabled(false);
 		}
 		random.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-
-		double rand = RandomEvent.randomEvent();
 
 		if(rand < 0.1) {
 			this.setName("スリの銀一");
@@ -93,7 +95,7 @@ public class RandomFrame extends FrameModel{
 			this.setName("偉い人");
 			text1 = createText(10,10,600,100,20,"偉い人が現れた！");
 			text2 = createText(10,110,600,100,20,"山形の開発工事を行いたいを思っているので所持金全部投資してください");
-			if(rndm.nextInt(100) < 50) {
+			if(new Random().nextInt(100) < 50) {
 				text3 = createText(10,210,600,100,20,"事業が成功し、所持金が倍になります");
 			}else {
 				text3 = createText(10,210,600,100,20,"事業が失敗し、所持金が無くなります");
@@ -198,9 +200,7 @@ public class RandomFrame extends FrameModel{
     		closeButton .setActionCommand("閉じる2");
     		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
     		this.setVisible(true);
-    		if(!Player.player.isPlayer()) {
-	    		setCloseFrame();
-    		}
+	    	setCloseFrame();
 		}
 	}
 
@@ -219,7 +219,7 @@ public class RandomFrame extends FrameModel{
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						FrameEvent.closeRandom();
+						FrameEvent.closeRandom2();
 					}
 				}, 1000);
 			}

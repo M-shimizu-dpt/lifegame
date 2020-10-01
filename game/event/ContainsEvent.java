@@ -556,7 +556,7 @@ public abstract class ContainsEvent {
 		return pt.getAmount()<Player.player.getMoney();
 	}
 	public static boolean isHaveCard() {
-		return Player.player.getCards().isEmpty();
+		return !Player.player.getCards().isEmpty();
 	}
 	public static boolean isHaveCard(Player player) {
 		return player.getCards().isEmpty();

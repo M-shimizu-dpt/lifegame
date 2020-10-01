@@ -33,8 +33,9 @@ public abstract class MassEvent {
 		}else{
 			if(ContainsEvent.goal(massName)) {
 				FrameEvent.openGoal();
+			}else {
+				FrameEvent.printPropertys(massName,2);
 			}
-			FrameEvent.printPropertys(massName,2);
 		}
 	}
 

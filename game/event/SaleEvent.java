@@ -45,7 +45,6 @@ public abstract class SaleEvent {
 
 	public static void buyPropertys(String name, int index) {
 		Property property=Japan.getStaInProperty(name,index);
-		property.setOwner(Player.player.getName());
 		Player.player.addProperty(property);
 		Player.player.addMoney(-property.getAmount());
 		if(!ContainsEvent.isOwner(property)) {
@@ -54,6 +53,7 @@ public abstract class SaleEvent {
 		}else {
 			property.setLevel(property.getLevel()+1);
 		}
+		property.setOwner(Player.player.getName());
 		Japan.alreadys.add(property.getName()+index);
 	}
 	public static void buyPropertys(Player player,String name, int index) {
