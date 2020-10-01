@@ -5,15 +5,17 @@
 
 package lifegame.game.main;
 
+import java.util.ArrayList;
+
 import lifegame.game.event.BinboEvent;
 import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.FrameEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
-import lifegame.game.event.search.Searcher;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
-import lifegame.game.object.map.print.Window;
 
 public class App {
 	public static int turn=0;//現在のターン
@@ -49,39 +51,64 @@ public class App {
   		App.turnEndFlag=true;
   	}
 
+  	public void monthUpdate(boolean first) {
+  		if(first) {
+  			FrameEvent.printMonthFrame();
+  		}else {
+	    		if(App.turn==3) {
+	    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
+	    			for(Player player:Player.players.values()) {
+	    				moneyList.add(player.getMoney());
+	    			}
+	    			if(App.month==3) {
+	    				FrameEvent.closing();
+		    			App.year++;
+					}
+	    			App.month++;
+	    			if(App.month==13) {
+	    				App.month=1;
+	    			}
+	    			FrameEvent.printMonthFrame();
+	    			App.turn=0;
+	    		}else {
+	    			App.turn++;
+	    		}
+  		}
+  	}
+
   	 //プレイ中の動作
-  	private void play(Window window,int endYear) throws InterruptedException{
+  	private void play(int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
   		//BinboEvent.initBinbo();初期でボンビーを憑けないなら
   		BinboEvent.initIsBinbo();//初期でボンビーを憑けさせるなら//debug
 
   		while(true) {
-  			window.monthUpdate(first);
+  			monthUpdate(first);
 	  		if(ContainsEvent.isEnd(endYear)) {
 		  		break;
 		  	}
 		  	first=false;
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
-		  	window.waitButtonUpdate();
-		  	Searcher.searchShortestRoute(window,Player.player);//目的地までの最短経路を探索
+		  	FrameEvent.waitButtonUpdate();
+		  	Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
 		  	WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
 		  	waitthred.start();
 		  	waitthred.join();
 		  	Japan.saveGoal();
-		  	window.moveMaps();//画面遷移が少し遅い
-		  	window.reloadInfo();//画面上部に表示している情報を更新
+		  	FrameEvent.moveMaps();//画面遷移が少し遅い
+		  	FrameEvent.reloadInfo();//画面上部に表示している情報を更新
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!Player.player.isPlayer()) {//cpu操作
-		  		Player.player.cpu(window);
+		  		Player.player.cpu();
 		  	}else {
-		  		window.printMenu();
+		  		FrameEvent.printMenu();
 		  	}
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
 			if(ContainsEvent.binboPlayer()) {
-				BinboEvent.start(window);
+				BinboEvent.start();
 				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
 				bonbyTurnEnd.start();
 				bonbyTurnEnd.join();
@@ -90,15 +117,14 @@ public class App {
 			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
   		assert endYear < year;
-  		window.finish();
+  		FrameEvent.finish();
 		System.out.println("終わり");
 	}
 
     private void run() {
     	Japan.init();
-    	Window window = new Window();
 
-    	int[] result = window.printStart();
+    	int[] result = FrameEvent.openStartFrame();
 
     	int playerCount = result[0];
     	int yearLimit = result[1];
@@ -106,12 +132,13 @@ public class App {
     	assert(yearLimit>0 && yearLimit<=100);
 
 
-    	CardEvent.init(window);
+    	CardEvent.init();
+
     	Dice.init();
 
-    	window.initWindow(yearLimit,playerCount);
+    	FrameEvent.init(playerCount);
     	try {
-        	play(window,yearLimit);
+        	play(yearLimit);
         }catch(InterruptedException e) {
         	e.printStackTrace();
         }

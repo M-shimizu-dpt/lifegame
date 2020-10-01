@@ -8,7 +8,6 @@ import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Property;
-import lifegame.game.object.map.print.Window;
 
 public abstract class BinboEvent{
 	//binboクラス初期
@@ -41,15 +40,15 @@ public abstract class BinboEvent{
 	}
 
 	//binboのターンメソッド
-	public static void start(Window window) {
+	public static void start() {
 		String action = randomBinboEvent();
 		//String action = binboCardLost();//debug
 		if(action=="変身") {
 			Binbo.clearTurnCount();
-			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),Binbo.getName(),"に変化した",Binbo.getName());
+			FrameEvent.openBinbo();//Binbo.getBinboPlayer().getName(),Binbo.getName(),"に変化した",Binbo.getName());
 		}else {
-			String pre[] = action.split(",");
-			window.bonbyPlayer(Binbo.getBinboPlayer().getName(),pre[0],pre[1],Binbo.getName());
+			//String pre[] = action.split(",");
+			FrameEvent.openBinbo();//Binbo.getBinboPlayer().getName(),pre[0],pre[1],Binbo.getName());
 		}
 	}
 
@@ -150,7 +149,11 @@ public abstract class BinboEvent{
 				nextbonbylist.add(i);
 			}
 		}
-		nextbonbyplayer = nextbonbylist.get(rand.nextInt(nextbonbylist.size()-1));//同じ距離にいた場合ランダム
+		if(nextbonbylist.size()>1) {
+			nextbonbyplayer = nextbonbylist.get(rand.nextInt(nextbonbylist.size()-1));//同じ距離にいた場合ランダム
+		}else {
+			nextbonbyplayer = nextbonbylist.get(0);
+		}
 		Binbo.setPlayerBinbo(Player.players.get(nextbonbyplayer));
 	}
 

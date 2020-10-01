@@ -6,18 +6,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
-import lifegame.game.event.search.Searcher;
-import lifegame.game.main.App;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
-import lifegame.game.object.map.print.Window;
 
 public class CardEvent{
-	public static void init(Window window) {
+	public static void init() {
 		CardEvent.resetFlags();
-		Card.init(window);
+		Card.init();
 	}
 	public static void raritySort(ArrayList<Card> cards){
 		Collections.sort(cards,new Comparator<Card>() {
@@ -40,71 +37,43 @@ public class CardEvent{
 		Card.resetUsedFixed();
 	}
 	public static void resetFlags() {
-		Card.resetUsed();
-		Card.resetUsedFixed();
-		Card.resetUsedRandom();
-		Card.resetUsedOthers();
+		Card.resetFlags();
 	}
 
-	public static void sellCard(String pre[],Window window) {
-		if(pre.length==2) {
-			for(Card card:Player.player.getCards()) {
-				if(pre[0].equals(card.getName()) && pre[1].equals("s")) {//カード売却
-					SaleEvent.sellCard(card);
-					window.shopFrameVisible();
-					window.printSellShop();
-					break;
-				}
-			}
-		}
-	}
-	public static void buyCard(String pre[],Window window) {
-		if(pre.length==2) {
-			for(Card card:Card.getCardList()) {
-				if(pre[0].equals(card.getName()) && pre[1].equals("b")) {//カード購入
-					SaleEvent.buyCard(card);
-					window.shopFrameVisible();
-					window.printBuyShop();
-					break;
-				}
-			}
-		}
-	}
-
-	public static void UseCard(String cmd,Window window) {
+	public static void UseCard(String cmd) {
 		for(int i=0;i<Card.getCardListSize();i++) {
 			if(cmd.equals(Card.getCard(i).getName())) {//カードを使う
-				CardEvent.useAbilitys(i,window);//Card.getCard(i).useAbilitys(this);
+				CardEvent.useAbilitys(i);//Card.getCard(i).useAbilitys(this);
 				if(ContainsEvent.id(Card.getCard(i),2)){
-					window.moveMaps();
+					FrameEvent.moveMaps();
 					try {
 						Thread.sleep(2000);
 					}catch(InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				window.cardFrame();
 				break;
-			}else if(cmd.equals(Card.getCard(i).getName()+"t")) {//カードを捨てる
-				Player.player.removeCard(Card.getCard(i));
-				window.closeErrorFrame();
-				break;
-			}else if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
-				Player.player.addCard(Card.getCard(i));
-				window.closeDubbing();
-				break;
-			}
-		}
-
-		if(ContainsEvent.isUsedRandomCard() || ContainsEvent.isUsedOthersCard()) {
-			CardEvent.resetFlags();
-			window.ableMenu();
-			if(window.playFrameVisible()) {
-				App.turnEnd();
 			}
 		}
 	}
 
+	public static void throwCard(String cmd) {
+		for(int i=0;i<Card.getCardListSize();i++) {
+			if(cmd.equals(Card.getCard(i).getName()+"t")) {//カードを捨てる
+				Player.player.removeCard(Card.getCard(i));
+				break;
+			}
+		}
+	}
+
+	public static void dubbingCard(String cmd) {
+		for(int i=0;i<Card.getCardListSize();i++) {
+			if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
+				Player.player.addCard(Card.getCard(i));
+				break;
+			}
+		}
+	}
 
 	public static ArrayList<Card> getElectedCard(){
 		ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
@@ -137,20 +106,15 @@ public class CardEvent{
 		return canBuyCardlist;
 	}
 
-	//0,1
+	//2,3,4,5
 	private static void useAbility(Card card) {
+		Random rand = new Random();
 		if(card.getID()==0) {
 			Dice.setNum(card.getAbility());
 		}else if(card.getID() == 1) {
 			Card.usedFixed();
 			Dice.setResult(card.getAbility());
-		}
-	}
-
-	//2,3,4,5
-	private static void useAbility(Card card,Window window) {
-		Random rand = new Random();
-		if(card.getID()==2) {
+		}else if(card.getID()==2) {
 			Coordinates coor = new Coordinates();
 			//誰に影響を与えるのか
 			Card.usedRandom();
@@ -158,7 +122,7 @@ public class CardEvent{
 				coor.setValue(Player.player.getNowMass());
 				for(int roop=0;roop<4;roop++) {
 					if(ContainsEvent.isTurn(roop))continue;
-					window.moveMaps(Player.players.get(roop),coor);
+					FrameEvent.moveMaps(Player.players.get(roop),coor);
 				}
 			}else if(card.getName().equals("北へ！カード")) {
 				do {
@@ -167,7 +131,7 @@ public class CardEvent{
 			}else if(card.getName().equals("ピッタリカード")){
 				coor.setValue(Player.player.getAnotherPlayer().getNowMass());
 			}else if(card.getName().equals("最寄り駅カード")){
-				Searcher.searchNearestStation(window,Player.player);
+				Searcher.searchNearestStation(Player.player);
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -177,7 +141,7 @@ public class CardEvent{
 				}
 				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
 			}else if(card.getName().equals("星に願いをカード")){
-				Searcher.searchNearestShop(window,Player.player);
+				Searcher.searchNearestShop(Player.player);
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -189,7 +153,7 @@ public class CardEvent{
 			}else {
 				coor = useRandomAbility();
 			}
-			window.moveMaps(Player.player,coor);
+			FrameEvent.moveMaps(Player.player,coor);
 			Player.player.getNowMass().setValue(coor);
 
 		}else if(card.getID()==3) {
@@ -226,23 +190,22 @@ public class CardEvent{
 					int randcard = rand.nextInt(Card.getCardListSize());
 					Player.player.addCard(Card.getCard(randcard));
 					if(Player.player.getCardSize()>8) {
-						window.cardFull();
+						FrameEvent.openError();
+						//window.cardFull();
 					}
 					count++;
 				}while(rand.nextInt(100)<50 && count<5);
 			}else if(card.getName().equals("ダビングカード")) {
-				window.printDubbing();
+				FrameEvent.openDubbing();
 			}
 		}
 	}
 
-	public static void useAbilitys(int i,Window window) {
+	public static void useAbilitys(int i) {
 		Card card = Card.getCard(i);
-		if(card.getID()==0 || card.getID()==1) {
-			useAbility(card);
-		}else if(card.getID()==2 || card.getID()==3 || card.getID()==4 || card.getID()==5){
-			useAbility(card,window);
-		}
+
+		useAbility(card);
+
 		if(!Player.player.isPlayer()) System.out.println("Use Card!  "+card.getName()+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊

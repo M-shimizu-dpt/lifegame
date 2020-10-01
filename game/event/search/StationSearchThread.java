@@ -3,25 +3,23 @@ package lifegame.game.event.search;
 import java.util.ArrayList;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
-import lifegame.game.object.map.print.Window;
 
 public class StationSearchThread extends SearchThreadModel{
 	//start
-	public StationSearchThread(Window window) {
+	public StationSearchThread() {
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=100;
-		super.setWindow(window);
 		super.initSearchTime();
 	}
 
 	//start
-	public StationSearchThread(Window window,int searchtime) {
+	public StationSearchThread(int searchtime) {
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=100;
-		super.setWindow(window);
 		super.initSearchTime(searchtime);
 	}
 
@@ -87,7 +85,6 @@ public class StationSearchThread extends SearchThreadModel{
 	}
 
 	private void threadCopy(StationSearchThread original) {
-		this.setWindow(original.window);
 		this.setCount(original.count);
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}

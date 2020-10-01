@@ -13,7 +13,6 @@
 
 package lifegame.game.object;
 
-import lifegame.game.object.map.print.Window;
 import lifegame.game.object.model.CardModel;
 
 public class Card extends CardModel{
@@ -70,20 +69,14 @@ public class Card extends CardModel{
 		return canBuyCardlist;
 	}
 
-	//0,1
-	private void useAbility() {
+	public void useAbilitys() {
+		Random rand = new Random();
 		if(this.id==0) {
 			Dice.setNum(this.ability);
 		}else if(this.id == 1) {
 			Card.usedFixed();
 			Dice.setResult(this.ability);
-		}
-	}
-
-	//2,3,4,5
-	private void useAbility(Window window) {
-		Random rand = new Random();
-		if(this.id==2) {
+		}else if(this.id==2) {
 			Coordinates coor = new Coordinates();
 			//誰に影響を与えるのか
 			Card.usedRandom();
@@ -91,7 +84,7 @@ public class Card extends CardModel{
 				coor.setValue(Player.player.getNowMass());
 				for(int roop=0;roop<4;roop++) {
 					if(ContainsEvent.isTurn(roop))continue;
-					window.moveMaps(Player.players.get(roop),coor);
+					FrameEvent.moveMaps(Player.players.get(roop),coor);
 				}
 			}else if(name.equals("北へ！カード")) {
 				do {
@@ -100,7 +93,7 @@ public class Card extends CardModel{
 			}else if(name.equals("ピッタリカード")){
 				coor.setValue(Player.player.getAnotherPlayer().getNowMass());
 			}else if(name.equals("最寄り駅カード")){
-				Searcher.searchNearestStation(window,Player.player);
+				Searcher.searchNearestStation(Player.player);
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -110,7 +103,7 @@ public class Card extends CardModel{
 				}
 				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
 			}else if(name.equals("星に願いをカード")){
-				Searcher.searchNearestShop(window,Player.player);
+				Searcher.searchNearestShop(Player.player);
 				Thread thread = new Thread(new WaitThread(2));
 				thread.start();
 				try {
@@ -122,7 +115,7 @@ public class Card extends CardModel{
 			}else {
 				coor = this.useRandomAbility();
 			}
-			window.moveMaps(Player.player,coor);
+			FrameEvent.moveMaps(Player.player,coor);
 			Player.player.getNowMass().setValue(coor);
 
 		}else if(this.id==3) {
@@ -158,23 +151,16 @@ public class Card extends CardModel{
 				do {
 					int randcard = rand.nextInt(Card.cardList.size());
 					Player.player.addCard(Card.getCard(randcard));
-					if(Player.player.getCardSize()>8) {
-						window.cardFull();
+					if(ContainsEvent.isMaxCard()) {
+						FrameEvent.openError();
 					}
 					count++;
 				}while(rand.nextInt(100)<50 && count<5);
 			}else if(name.equals("ダビングカード")) {
-				window.printDubbing();
+				FrameEvent.openDubbing();
 			}
 		}
-	}
 
-	public void useAbilitys(Window window) {
-		if(id==0 || id==1) {
-			useAbility();
-		}else if(id==2 || id==3 || id==4 || id==5){
-			useAbility(window);
-		}
 		if(!Player.player.isPlayer()) System.out.println("Use Card!  "+name+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊
@@ -206,7 +192,8 @@ public class Card extends CardModel{
 	}
 	*/
 
-	public static void init(Window window) {
+	public static void init() {
+		resetFlags();
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
 		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));

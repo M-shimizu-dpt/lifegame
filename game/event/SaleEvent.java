@@ -7,6 +7,15 @@ import lifegame.game.object.map.information.Property;
 
 public abstract class SaleEvent {
 
+	public static void buyCard(String cardName) {
+		for(Card card:Card.getCardList()) {
+			if(cardName.equals(card.getName())) {
+				Player.player.addCard(card);
+				Player.player.addMoney(-card.getBuyPrice());
+				break;
+			}
+		}
+	}
 	public static void buyCard(Card card) {
 		Player.player.addCard(card);
 		Player.player.addMoney(-card.getBuyPrice());
@@ -16,6 +25,15 @@ public abstract class SaleEvent {
 		player.addMoney(-card.getBuyPrice());
 	}
 
+	public static void sellCard(String cardName) {
+		for(Card card:Player.player.getCards()) {
+			if(cardName.equals(card.getName())) {
+				Player.player.removeCard(card);
+				Player.player.addMoney(card.getSellPrice());
+				break;
+			}
+		}
+	}
 	public static void sellCard(Card card) {
 		Player.player.removeCard(card);
 		Player.player.addMoney(card.getSellPrice());

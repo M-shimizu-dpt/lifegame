@@ -3,20 +3,24 @@
  * 探索する必要のある処理を記述
  */
 
-package lifegame.game.event.search;
+package lifegame.game.event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import lifegame.game.event.ContainsEvent;
-import lifegame.game.event.WaitThread;
+import lifegame.game.event.search.MassSearchThread;
+import lifegame.game.event.search.NearestSearchThread;
+import lifegame.game.event.search.OnlyDistanceSearchThread;
+import lifegame.game.event.search.SearchThread;
+import lifegame.game.event.search.ShopSearchThread;
+import lifegame.game.event.search.StationSearchThread;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
-import lifegame.game.object.map.print.Window;
 
 public class Searcher{
+	//Eventに情報をため込むのは望ましくない
 	public static Map<Integer,ArrayList<ArrayList<Coordinates>>> nearestTrajectoryList = new HashMap<Integer,ArrayList<ArrayList<Coordinates>>>();//目的地までの移動の軌跡
 	public static Map<Coordinates,ArrayList<ArrayList<Coordinates>>> canMoveTrajectoryList = new HashMap<Coordinates,ArrayList<ArrayList<Coordinates>>>();//行くことが出来るマスとそれまでの移動の軌跡
 	public static ArrayList<Coordinates> nearestStationList = new ArrayList<Coordinates>();//最寄り駅のリスト(複数存在する場合、その中からランダムに選択)
@@ -27,9 +31,9 @@ public class Searcher{
 	public static long time;//マルチスレッド開始からの経過時間
 
 	//行くことが出来るマスを探索
-	public static int searchCanMoveMass(Window window,Player player) {
+	public static int searchCanMoveMass(Player player) {
 		canMoveTrajectoryList.clear();
-		MassSearchThread thread = new MassSearchThread(window,player.getMove());
+		MassSearchThread thread = new MassSearchThread(player.getMove());
 		thread.setMass(player.getNowMass());
 		thread.setDaemon(true);
 		thread.start();
@@ -69,9 +73,9 @@ public class Searcher{
 	}
 
 	//最寄り駅を探索
-	public static void searchNearestStation(Window window,Player player) {
+	public static void searchNearestStation(Player player) {
 		nearestStationList.clear();
-		StationSearchThread thread = new StationSearchThread(window);
+		StationSearchThread thread = new StationSearchThread();
 		thread.setMass(player.getNowMass());
 		thread.setDaemon(true);
 		thread.start();
@@ -96,9 +100,9 @@ public class Searcher{
 	}
 
 	//最寄り店を探索
-	public static void searchNearestShop(Window window,Player player) {
+	public static void searchNearestShop(Player player) {
 		nearestShopList.clear();
-		ShopSearchThread thread = new ShopSearchThread(window);
+		ShopSearchThread thread = new ShopSearchThread();
 		thread.setMass(player.getNowMass());
 		thread.setDaemon(true);
 		thread.start();
@@ -123,14 +127,14 @@ public class Searcher{
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得
-	public static int searchShortestRoute(Window window,Player player) {
+	public static int searchShortestRoute(Player player) {
 		//再探索は10回まで(1回で出てほしい…)
 		int againtime=0;
 		do{
 			nearestTrajectoryList.clear();
 			Japan.allClose();
 			//Threadを立ち上げる
-			SearchThread thread = new SearchThread(window,player.getNowMass(),SearchThread.searchTime+againtime);
+			SearchThread thread = new SearchThread(player.getNowMass(),SearchThread.searchTime+againtime);
 			thread.setMass(player.getNowMass());
 			Japan.getCoordinates(player.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);

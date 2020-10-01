@@ -23,7 +23,7 @@ public abstract class RandomEvent {
 		return random2EndFlag;
 	}
 
-	public static double randomEvent() {
+	public static double randomEvent() {//playFrameの変化を追記
 		Random rand = new Random();
 		double randomNum = rand.nextDouble();
 		if(randomNum < 0.1) {

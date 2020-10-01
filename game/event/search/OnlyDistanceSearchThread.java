@@ -1,6 +1,7 @@
 package lifegame.game.event.search;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.object.Player;
 
 
