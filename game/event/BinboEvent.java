@@ -3,10 +3,8 @@ package lifegame.game.event;
 import java.util.ArrayList;
 import java.util.Random;
 
-import lifegame.game.event.search.Searcher;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
-import lifegame.game.object.map.print.Window;
 
 public abstract class BinboEvent{
 	//binboクラス初期化
@@ -20,10 +18,10 @@ public abstract class BinboEvent{
 	}
 
 	//binboのターンメソッド
-	public static void start(Window window) {
+	public static void start() {
 		//System.out.println(name + "のターン");
 		//System.out.println(this.binboplayer.getName());
-		window.bonbyPlayer();
+		FrameEvent.openBinbo();//逆じゃない?
 		randomBinboEvent();
 		//System.out.println(name +"のターン終了");
 	}

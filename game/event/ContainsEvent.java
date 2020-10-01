@@ -512,7 +512,7 @@ public abstract class ContainsEvent {
 	public static boolean isDefaultGoalDistance(Player player) {
 		return player.getGoalDistance()==500;
 	}
-	public static boolean isMaxCard() {
+	public static boolean isMaxCard() {//maxをoverに改名
 		return Player.player.getCardSize()>8;
 	}
 	public static boolean isMaxCard(Player player) {
@@ -526,5 +526,11 @@ public abstract class ContainsEvent {
 	}
 	public static boolean isEnd(int endYear) {
 		return App.year>endYear;
+	}
+	public static boolean isPlayShowing() {
+		return FrameEvent.isPlayShowing();
+	}
+	public static boolean isThrowed() {
+		return FrameEvent.isThrowed();
 	}
 }

@@ -15,11 +15,9 @@ package lifegame.game.event;
 
 import lifegame.game.event.search.OnlyDistanceSearchThread;
 import lifegame.game.event.search.SearchThread;
-import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.object.Binbo;
 import lifegame.game.object.Player;
-import lifegame.game.object.map.print.Window;
 
 public class WaitThread extends Thread{
 	private int id;
@@ -140,14 +138,14 @@ public class WaitThread extends Thread{
 			RandomEvent.initEndFlag();;
 			break;
 		case 9:
-			while(!Window.isThrowed()) {
+			while(!ContainsEvent.isThrowed()) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			Window.initThrowFlag();
+			FrameEvent.initThrowFlag();
 			break;
 		case 10:
 			while(!App.isStarted()) {

@@ -3,16 +3,15 @@ package lifegame.game.event.search;
 import java.util.ArrayList;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
-import lifegame.game.object.map.print.Window;
 
 public class MassSearchThread extends SearchThreadModel{
 	//start
-	public MassSearchThread(Window window,int count) {
+	public MassSearchThread(int count) {
 		Searcher.time = System.currentTimeMillis();
-		this.setWindow(window);
 		this.setCount(count);
 	}
 
@@ -69,7 +68,6 @@ public class MassSearchThread extends SearchThreadModel{
 	}
 
 	private void threadCopy(MassSearchThread original) {
-		this.setWindow(original.window);
 		this.setCount(original.count);
 		this.moveTrajectory.addAll(original.moveTrajectory);
 	}

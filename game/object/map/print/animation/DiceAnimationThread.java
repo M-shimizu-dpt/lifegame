@@ -5,17 +5,17 @@ import java.awt.CardLayout;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
-import lifegame.game.object.map.print.Window;
 import lifegame.game.object.map.print.animation.model.AnimationThreadModel;
+import lifegame.game.object.map.print.frames.DiceFrame;
 
 //未完成
 public class DiceAnimationThread extends AnimationThreadModel{
 	CardLayout dicelist = new CardLayout();
 	JLayeredPane panel;
-	public DiceAnimationThread(Window window,JLayeredPane panel) {
+	public DiceAnimationThread(DiceFrame frame,JLayeredPane panel) {
 		panel.setLayout(dicelist);
 		for(int i=1;i<=6;i++) {
-			JLabel dice = window.createText(50,50,300,300,100,String.valueOf(i));
+			JLabel dice = frame.createText(50,50,300,300,100,String.valueOf(i));
 			panel.add(dice);
 			dicelist.addLayoutComponent(dice,dice.getText());
 		}

@@ -8,7 +8,6 @@ package lifegame.game.event.search.model;
 import java.util.ArrayList;
 
 import lifegame.game.object.map.information.Coordinates;
-import lifegame.game.object.map.print.Window;
 
 public abstract class SearchThreadModel extends Thread{
 	protected ArrayList<Coordinates> moveTrajectory = new ArrayList<Coordinates>();//移動の軌跡
@@ -19,7 +18,6 @@ public abstract class SearchThreadModel extends Thread{
 	public static int searchTime;
 	protected int count=0;
 	protected Coordinates nowMass=new Coordinates();
-	protected Window window;
 	protected ArrayList<Coordinates> goals = new ArrayList<Coordinates>();
 
 	public static void initSearchTime() {
@@ -40,10 +38,6 @@ public abstract class SearchThreadModel extends Thread{
 
 	public void setMass(Coordinates coor) {
 		this.nowMass.setValue(coor);
-	}
-
-	public void setWindow(Window window) {
-		this.window=window;
 	}
 
 	public void setCount(int count) {

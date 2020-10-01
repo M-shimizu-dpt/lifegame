@@ -3,32 +3,27 @@ package lifegame.game.event.search;
 import java.util.ArrayList;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
-import lifegame.game.object.map.print.Window;
 
 public class NearestSearchThread extends SearchThreadModel{
 	public static int nearestCount = 100;//目的地から移動可能マスまでの最短距離
-	public NearestSearchThread() {
-
-	}
 
 	//start
-	public NearestSearchThread(Window window) {
+	public NearestSearchThread() {
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=100;
 		NearestSearchThread.nearestCount=100;
-		this.setWindow(window);
 		NearestSearchThread.initSearchTime();
 	}
 
 	//start
-	public NearestSearchThread(Window window,int searchTime) {
+	public NearestSearchThread(int searchTime) {
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=100;
 		NearestSearchThread.nearestCount=100;
-		this.setWindow(window);
 		NearestSearchThread.initSearchTime(searchTime);
 	}
 
@@ -97,7 +92,6 @@ public class NearestSearchThread extends SearchThreadModel{
 	}
 
 	private void threadCopy(NearestSearchThread original) {
-		this.setWindow(original.window);
 		this.setCount(original.count);
 		this.moveTrajectory.addAll(original.moveTrajectory);
 		this.goals.addAll(original.goals);
