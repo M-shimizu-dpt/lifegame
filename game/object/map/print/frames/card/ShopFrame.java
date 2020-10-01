@@ -15,6 +15,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class ShopFrame extends FrameModel{
 	private ArrayList<Card> canBuyCardList = new ArrayList<Card>();//店の購入可能カードリスト
+	private int id=-1;
 	public ShopFrame() {
 		this.setSize(600, 600);
 	}
@@ -35,11 +36,7 @@ public class ShopFrame extends FrameModel{
 	}
 	private void reopen() {
 		close();
-		open();
-	}
-
-	public void open() {
-		this.setVisible(true);
+		open(this.id);
 	}
 
 	public void setCardList(ArrayList<Card> cardList) {
@@ -54,6 +51,7 @@ public class ShopFrame extends FrameModel{
 		}else if(id==1) {
 			openSellShop();
 		}
+		this.id=id;
 		this.setVisible(true);
 	}
 
