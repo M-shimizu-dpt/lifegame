@@ -149,7 +149,6 @@ public class Player {
 
 	//CPU操作
 	public void cpu() throws InterruptedException{
-		FrameEvent.closeMoveButton();
 		Thread.sleep(500);
 		if(Player.isStop()) {
 			WaitThread wait = new WaitThread(7);
@@ -161,9 +160,8 @@ public class Player {
 			//確率でカードを使用
 			int rand = new Random().nextInt(this.getCardSize()*2);
 			if(rand < this.getCardSize()) {
-				boolean movedflag = this.getCard(rand).getID()==2;
 				CardEvent.useAbilitys(rand);
-				if(movedflag) {
+				if(this.getCard(rand).getID()==2) {
 					FrameEvent.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
 				}
@@ -179,15 +177,14 @@ public class Player {
 			//処理を待たないと一瞬表示されるだけになる
 			FrameEvent.openDice();
 			DiceEvent.shuffleDice();
-			Thread.sleep(500);
 			FrameEvent.closeDice();
 
 			/*
 			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
 			waitthread.start();
 			waitthread.join();
+			*/
 
-*/
 			if(Searcher.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuaddTrajectory();
 			}else {//目的地を超えてしまう場合

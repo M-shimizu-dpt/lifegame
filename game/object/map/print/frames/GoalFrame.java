@@ -21,7 +21,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 public class GoalFrame extends FrameModel{
 
 	public GoalFrame() {
-
+		this.setSize(500,300);
 	}
 
 	public void open() {

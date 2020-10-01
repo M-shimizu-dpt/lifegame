@@ -1,4 +1,4 @@
-package lifegame.game.object.map.print.frames.closingframe;
+package lifegame.game.object.map.print.frames.closing;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

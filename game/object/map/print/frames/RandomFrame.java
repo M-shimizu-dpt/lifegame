@@ -214,14 +214,14 @@ public class RandomFrame extends FrameModel{
 					public void run() {
 						FrameEvent.closeRandom();
 					}
-				}, 1000);
+				}, 3000);
 			}else if(id==2) {
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
 						FrameEvent.closeRandom2();
 					}
-				}, 1000);
+				}, 3000);
 			}
 		}
 	}
