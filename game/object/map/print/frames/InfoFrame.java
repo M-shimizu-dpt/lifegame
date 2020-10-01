@@ -15,7 +15,6 @@ public class InfoFrame extends FrameModel{
 		this.setTitle("会社情報");
 	}
 
-	@Override
 	public void open() {
 		//会社情報の表示
 		Container info = this.getContentPane();

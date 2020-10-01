@@ -22,7 +22,7 @@ public abstract class ClosingEvent {
 	public static ArrayList<Integer[]> getProfitList(){
 		return ClosingEvent.allProfitList;
 	}
-
+	
 	public static Integer[] getProfitList(int index){
 		return ClosingEvent.allProfitList.get(index);
 	}

@@ -23,7 +23,6 @@ public class GoalFrame extends FrameModel{
 
 	}
 
-	@Override
 	public void open() {
 		this.setTitle(FrameEvent.getNowMassName());
 		JLayeredPane goal = this.getLayeredPane();

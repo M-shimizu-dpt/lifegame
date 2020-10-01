@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.FrameEvent;
 import lifegame.game.event.SaleEvent;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
@@ -35,6 +36,10 @@ public class ShopFrame extends FrameModel{
 	private void reopen() {
 		close();
 		open();
+	}
+
+	public void open() {
+		this.setVisible(true);
 	}
 
 	public void addCardList(ArrayList<Card> cardList) {
@@ -101,7 +106,7 @@ public class ShopFrame extends FrameModel{
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("戻る")) {
-			close();
+			FrameEvent.closeShop();
 		}
 		String pre[] = cmd.split(":");
 		if(pre.length==2) {

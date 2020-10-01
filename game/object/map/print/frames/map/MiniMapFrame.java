@@ -80,7 +80,6 @@ public class MiniMapFrame extends FrameModel{
 		}
 	}
 
-	@Override
 	public void open() {
 		JLayeredPane maps = this.getLayeredPane();
 		int distance=70;

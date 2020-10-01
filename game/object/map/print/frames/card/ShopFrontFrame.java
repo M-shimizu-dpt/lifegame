@@ -22,6 +22,10 @@ public class ShopFrontFrame extends FrameModel{
 		this.setSize(300,400);
 	}
 
+	public void open() {
+		this.setVisible(true);
+	}
+
 	public void open(ArrayList<Card> cardList) {
 		JLayeredPane shop = this.getLayeredPane();
 
@@ -71,7 +75,7 @@ public class ShopFrontFrame extends FrameModel{
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("出る")) {
-			close();
+			FrameEvent.closeShopFront();
 		}else if(cmd.equals("買う")) {
 			FrameEvent.openBuyShop(canBuyCardList);
 		}else if(cmd.equals("売る")) {

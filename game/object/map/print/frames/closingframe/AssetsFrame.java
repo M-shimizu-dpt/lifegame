@@ -2,6 +2,8 @@ package lifegame.game.object.map.print.frames.closingframe;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -9,7 +11,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import lifegame.game.event.ClosingEvent;
-import lifegame.game.event.WaitThread;
+import lifegame.game.event.FrameEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
@@ -19,7 +21,6 @@ public class AssetsFrame extends FrameModel{
 		this.setTitle("総資産");
 	}
 
-	@Override
 	public void open() {
 		JLayeredPane Assets = this.getLayeredPane();
 		//System.out.println("x="+getProfitList(Size());
@@ -125,34 +126,34 @@ public class AssetsFrame extends FrameModel{
 		Assets.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 
 		this.setVisible(true);
-
-		if(Player.player.isPlayer()) {//FrameEventに移動
-			WaitThread thread = new WaitThread(3);
-			thread.setDaemon(true);
-			thread.start();
-			try {
-				thread.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-		}else {
-			try {
-				Thread.sleep(3000);
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		this.setVisible(false);
-		Assets.removeAll();
+		setCloseFrame();
 		//ここまで総資産
 	}
 
+	//指定のFrameを1秒後に閉じる
+	public void setCloseFrame() {
+		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+			Timer timer = new Timer(false);
+			timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					FrameEvent.closeAssets();
+				}
+			}, 3000);
+		}
+	}
+
+	@Override
+	public void close() {
+		this.setVisible(false);
+		this.getLayeredPane().removeAll();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("閉じる")) {
-			close();
+			FrameEvent.closeAssets();
 		}
 
 	}

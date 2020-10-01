@@ -39,6 +39,10 @@ public class DiceFrame extends FrameModel{
 		this.setVisible(false);
 	}
 
+	public void open() {
+		this.setVisible(true);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
