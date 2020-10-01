@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.FrameEvent;
 import lifegame.game.event.SaleEvent;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
@@ -107,7 +108,7 @@ public class ShopFrame extends FrameModel{
 		String cmd = e.getActionCommand();
 		String pre[] = cmd.split(":");
 		if(cmd.equals("戻る")) {
-			close();
+			FrameEvent.closeShop();
 		}else if(ContainsEvent.isCard(pre[0])) {//カード名かどうか判定
 			if(pre[1].equals("s")) {
 				sellCard(pre[0]);
