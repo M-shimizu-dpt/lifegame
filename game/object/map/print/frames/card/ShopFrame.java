@@ -87,7 +87,6 @@ public class ShopFrame extends FrameModel{
 		this.setTitle("売却");
 		JLayeredPane shopSell = this.getLayeredPane();
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
-		closeButton.setActionCommand("カード売却を終える");
 		shopSell.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		for(int i=1; i<=Player.player.getCardSize(); i++) {
 			JButton sellButton = createButton(500,i*50,70,50,10,"売却");
