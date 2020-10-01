@@ -54,7 +54,7 @@ public class App {
   		Boolean first=true;
   		Player.setStopFlag(false);
   		//BinboEvent.initBinbo();初期でボンビーを憑けないなら
-  		BinboEvent.initIsBinbo();//初期でボンビーを憑けさせるなら
+  		BinboEvent.initIsBinbo();//初期でボンビーを憑けさせるなら//debug
 
   		while(true) {
   			window.monthUpdate(first);

@@ -67,8 +67,16 @@ public abstract class SaleEvent {
 	}
 	public static void buyPropertysCPU(String name) {
 		for(int index = 0;index<Japan.getStaInPropertySize(name);index++) {
-			SaleEvent.buyPropertys(name, index);
+			if(ContainsEvent.isBuyProperty(Japan.getStaInProperty(name,index))) {
+				SaleEvent.buyPropertys(name, index);
+			}
 			//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		}
+	}
+	public static void lostPropertys(Property property) {
+		property.setOwner("");
+		Player.player.removeProperty(property);
+		property.setLevel(0);
+		Japan.updateStationMono(property);
 	}
 }

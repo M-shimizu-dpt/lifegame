@@ -551,4 +551,14 @@ public abstract class ContainsEvent {
 	public static boolean isUsedOthersCard() {
 		return Card.isUsedOthers();
 	}
+
+	public static boolean isBuyProperty(Property pt) {
+		return pt.getAmount()<Player.player.getMoney();
+	}
+	public static boolean isHaveCard() {
+		return Player.player.getCards().isEmpty();
+	}
+	public static boolean isHaveCard(Player player) {
+		return player.getCards().isEmpty();
+	}
 }

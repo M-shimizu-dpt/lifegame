@@ -413,7 +413,7 @@ public class Window implements ActionListener{
 		shopFrontFrame.setVisible(true);
 	}
 
-	public void bonbyPlayer(String st1,String st2,String st3) {
+	public void bonbyPlayer(String st1,String st2,String st3,String st4) {
 		/*
 		for(int i = 0;i<4;i++) {
 			System.out.println(Player.players.get(i).isBonby());//bonbyフラグTEST用
@@ -437,7 +437,7 @@ public class Window implements ActionListener{
 		binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		binboFrame.setName("ボンビーのターン");
 
-		text1 = createText(10,10,600,100,20,st1);
+		text1 = createText(10,10,600,100,20,"プレイヤー名:"+st1+"ボンビー名:"+st4);
 		text2 = createText(10,110,600,100,20,st2);
 		text3 = createText(10,210,600,100,20,st3);
 
@@ -947,9 +947,9 @@ public class Window implements ActionListener{
 			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 		}
 	}
-
 	//ゴール画面を表示
 	public void goal() {
+		Searcher.searchShortestRouteAllPlayers();
 		JLayeredPane goal = goalFrame.getLayeredPane();
 		int goalMoney;
 		Random rand = new Random();
@@ -968,11 +968,11 @@ public class Window implements ActionListener{
 		goal.add(closeButton);
 		goal.add(label);
 		goalFrame.setVisible(true);
-
 		setCloseFrame(3);
 
-		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 
+		playFrame.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
+		BinboEvent.binboPossessPlayer();
 		Japan.changeGoal();
 		if(!Player.player.isPlayer()) {
 			createPopUp("目的地","次の目的地は"+Japan.getGoalName()+"です！",3000);
@@ -981,7 +981,6 @@ public class Window implements ActionListener{
 		}
 		setGoalColor();
 
-		BinboEvent.binboPossessPlayer();
 	}
 
 	//会社情報を表示
@@ -1608,10 +1607,11 @@ public class Window implements ActionListener{
 		}
 		propertys.add(closeButton);
 		propertyFrame.setVisible(true);
-
+		System.out.println(Player.player.getMoney() + "        プレイヤーの所持金first");
 		if(!Player.player.isPlayer()) {
 			SaleEvent.buyPropertysCPU(name);
 		}
+		System.out.println(Player.player.getMoney() + "        プレイヤーの所持金end");
 		setCloseFrame(2);
 	}
 

@@ -11,6 +11,7 @@ public abstract class Binbo{
 	private static boolean bonbyFlag = false;//ボンビーかそうじゃないか
 	private static String name;
 	private static Player binboplayer;
+	private static int turncount = 0;
 	private static ArrayList<Player> together = new ArrayList<Player>();
 	private static ArrayList<Player> before = new ArrayList<Player>();
 	//private ArrayList<Coordinates> allplayernowMass = new ArrayList<Coordinates>();//将来的に全員にbufさせるために全員の位置を取得する
@@ -28,9 +29,18 @@ public abstract class Binbo{
 		if(Binbo.isMakeBinbo()) {
 			Binbo.bonbyFlag=false;
 		}else{
-
 			Binbo.bonbyFlag=true;
 		}
+	}
+
+	public static void clearTurnCount() {
+		turncount = 0;
+	}
+	public static void addTurnCount() {
+		turncount +=1;
+	}
+	public static int getTurnCount() {
+		return turncount;
 	}
 
 	//ボンビーが前回憑いていた人を初期化
