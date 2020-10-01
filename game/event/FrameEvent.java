@@ -256,8 +256,11 @@ public abstract class FrameEvent{
 	}
 
 	public static void openShopFront() {
+		ArrayList<Card> cardList = Card.getElectedCard();
 		play.close();
-		shopFront.open(Card.getElectedCard());
+		shopFront.setCardList(cardList);
+		shop.setCardList(cardList);
+		shopFront.open();
 	}
 
 	public static void closeShopFront() {
@@ -272,9 +275,8 @@ public abstract class FrameEvent{
 		play.open();
 	}
 
-	public static void openBuyShop(ArrayList<Card> cardList) {
+	public static void openBuyShop() {
 		shopFront.close();
-		shop.addCardList(cardList);
 		shop.open(0);
 	}
 

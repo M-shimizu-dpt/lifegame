@@ -23,10 +23,6 @@ public class ShopFrontFrame extends FrameModel{
 	}
 
 	public void open() {
-		this.setVisible(true);
-	}
-
-	public void open(ArrayList<Card> cardList) {
 		JLayeredPane shop = this.getLayeredPane();
 
 		JButton closeButton = createButton(100,210,100,50,10,"出る");
@@ -42,7 +38,6 @@ public class ShopFrontFrame extends FrameModel{
 			buyButton.setEnabled(false);
 			sellButton.setEnabled(false);
 		}
-		canBuyCardList.addAll(cardList);
 		shop.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 		this.setVisible(true);
 		setCloseFrame();
@@ -52,6 +47,10 @@ public class ShopFrontFrame extends FrameModel{
 	public void close() {
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
+	}
+
+	public void setCardList(ArrayList<Card> cardList) {
+		canBuyCardList.addAll(cardList);
 	}
 
 	public void clearCardList() {
@@ -77,7 +76,7 @@ public class ShopFrontFrame extends FrameModel{
 		if(cmd.equals("出る")) {
 			FrameEvent.closeShopFront();
 		}else if(cmd.equals("買う")) {
-			FrameEvent.openBuyShop(canBuyCardList);
+			FrameEvent.openBuyShop();
 		}else if(cmd.equals("売る")) {
 			FrameEvent.openSellShop();
 		}
