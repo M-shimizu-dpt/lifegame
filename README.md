@@ -9,22 +9,36 @@
 # object
 > objectにはアプリで管理すべきオブジェクトが入っています。<br>
 > * model
+>> * CardModel.java →　Card.javaの親クラスでCardが出来る基本機能を持っている
 > * map
+>> * print
+>>> * diceImage
+>>>> * サイコロ画面で表示する予定のサイコロの写真が入っている
+>>> * animation
+>>>> * 今後実装予定のアニメーション処理をする為のThreadを格納する
+>>> * frames
+>> * information
 > * Binbo.java　→　ボンビー情報を管理する
 > * Player.java　→　プレイヤー情報を管理する
 > * Buff.java　→　そのプレイヤーに付いているバフを管理する
 > * Card.java　→　カード情報を管理する
 > * Dice.java　→　サイコロ情報を管理する
-## model
-> * CardModel.java →　Card.javaの親クラスでCardが出来る基本機能を持っている
-## map
-> * print
-> * information
-### print
-> * diceImage
-> * Window.java　→　画面表示を管理する
-#### diceImage
-> * サイコロ画面で表示する予定のサイコロの写真が入っている
+
+
+#### frames
+> * card
+> * closing
+> * map
+> * model
+> * property
+> * BinboFrame.java → ボンビーイベントの結果表示用フレーム
+> * ConfirmationFrame.java → ポップアップ表示用フレーム
+> * DiceFrame.java → サイコロ画面表示用フレーム
+> * GoalFrame.java → ゴール画面表示用フレーム
+> * InfoFrame.java → 会社情報表示用フレーム
+> * RandomFrame.java → randomイベントの結果表示用フレーム
+> * StartFrame.java → 初期画面表示用フレーム
+##### card
 ### information
 > * Japan.java　→　マップ全体の情報を管理する
 > * Station.java　→　駅情報を管理する
@@ -39,7 +53,9 @@
 > * MoveEvent.java　→　マスを移動する時の処理をする
 > * RandomEvent.java　→　ランダムイベント処理をする
 > * SaleEvent.java →　購入・売却処理をする
+> * Searcher.java　→　これらのThreadを使って探索させる
 > * WaitThread.java　→　各処理が終わるまでメインスレッドを待たせる処理をする
+> * FrameEvent.java　→　画面表示を管理する
 ## search
 > * model
 > * MassSearchThread.java　→　現在の移動可能数で行ける全てのマスを探索する
@@ -48,7 +64,6 @@
 > * SearchThread.java　→　目的地までの最短経路を探索する
 > * ShopSearchThread.java　→　最寄りの店を探索する
 > * StationSearchThread.java　→　最寄り駅を探索する
-> * Searcher.java　→　これらのThreadを使って探索させる
 ### model
 > * SearchThreadModel.java　→　search以下のThreadすべての親クラスでSearchThreadが出来る基本機能を持っている
 
