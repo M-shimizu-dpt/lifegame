@@ -106,7 +106,7 @@ public class CardEvent{
 		return canBuyCardlist;
 	}
 
-	//2,3,4,5
+	//0,1,2,3,4,5
 	private static void useAbility(Card card) {
 		Random rand = new Random();
 		if(card.getID()==0) {
