@@ -20,17 +20,6 @@ public class DubbingFrame extends FrameModel{
 		this.setSize(700,500);
 	}
 
-	//指定のFrameを1秒後に閉じる
-	public void setCloseFrame() {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
-			Timer timer = new Timer(false);
-			TimerTask task = new CPUDubbingTimerTask(this);
-			timer.schedule(task, 1000);
-		}
-	}
-
-
-	@Override
 	public void open() {
 		JLayeredPane dubbing = this.getLayeredPane();
 		JLabel titleName = createText(150,10,100,40,30,"名前");
@@ -57,12 +46,25 @@ public class DubbingFrame extends FrameModel{
 	        setCloseFrame();
         }
 	}
+	//指定のFrameを1秒後に閉じる
+	public void setCloseFrame() {
+		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+			Timer timer = new Timer(false);
+			timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					FrameEvent.closeDubbing();
+				}
+			}, 3000);
+		}
+	}
 
 	@Override
 	public void close() {
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
 	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
@@ -70,17 +72,3 @@ public class DubbingFrame extends FrameModel{
 		FrameEvent.closeDubbing();
 	}
 }
-
-//id=0→randomイベントを閉じる,id=1→店フレームを閉じる,id=2→物件購入を閉じる,id=3→ゴール画面を閉じる
-class CPUDubbingTimerTask extends TimerTask{
-	private DubbingFrame dubbingFrame;
-	public CPUDubbingTimerTask(DubbingFrame dubbingFrame) {
-		this.dubbingFrame=dubbingFrame;
-	}
-
-	@Override
-	public void run() {
-		dubbingFrame.close();
-	}
-}
-

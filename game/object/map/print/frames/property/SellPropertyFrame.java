@@ -17,7 +17,6 @@ public class SellPropertyFrame extends FrameModel{
 		this.setTitle("売却");
 	}
 
-	@Override
 	public void open() {
 		int takeProCount=0;
 		int i=0;

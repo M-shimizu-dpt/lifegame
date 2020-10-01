@@ -569,7 +569,7 @@ public abstract class ContainsEvent {
 		return FrameEvent.isThrowed();
 	}
 	public static boolean isCard(String pre) {
-		for(Card card:Player.player.getCards()) {
+		for(Card card:Card.getCardList()) {
 			if(pre.equals(card.getName())) {
 				return true;
 			}

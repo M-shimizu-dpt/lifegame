@@ -24,7 +24,6 @@ public class GoalFrame extends FrameModel{
 
 	}
 
-	@Override
 	public void open() {
 		Searcher.searchShortestRouteAllPlayers();
 		this.setTitle(FrameEvent.getNowMassName());

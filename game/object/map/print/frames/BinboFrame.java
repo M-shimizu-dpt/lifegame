@@ -21,7 +21,6 @@ public class BinboFrame extends FrameModel{
 
 	}
 
-	@Override
 	public void open() {
 		this.setTitle(Binbo.getName()+"のターン");
 		JLayeredPane binbo = this.getLayeredPane();

@@ -38,6 +38,10 @@ public class ShopFrame extends FrameModel{
 		open();
 	}
 
+	public void open() {
+		this.setVisible(true);
+	}
+
 	public void addCardList(ArrayList<Card> cardList) {
 		canBuyCardList.addAll(cardList);
 	}

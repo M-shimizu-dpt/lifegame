@@ -55,24 +55,24 @@ public class App {
   		if(first) {
   			FrameEvent.printMonthFrame();
   		}else {
-	    		if(App.turn==3) {
-	    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
-	    			for(Player player:Player.players.values()) {
-	    				moneyList.add(player.getMoney());
-	    			}
-	    			if(App.month==3) {
-	    				FrameEvent.closing();
-		    			App.year++;
-					}
-	    			App.month++;
-	    			if(App.month==13) {
-	    				App.month=1;
-	    			}
-	    			FrameEvent.printMonthFrame();
-	    			App.turn=0;
-	    		}else {
-	    			App.turn++;
-	    		}
+    		if(App.turn==3) {
+    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
+    			for(Player player:Player.players.values()) {
+    				moneyList.add(player.getMoney());
+    			}
+    			if(App.month==3) {
+    				FrameEvent.openClosing();
+	    			App.year++;
+				}
+    			App.month++;
+    			if(App.month==13) {
+    				App.month=1;
+    			}
+    			FrameEvent.printMonthFrame();
+    			App.turn=0;
+    		}else {
+    			App.turn++;
+    		}
   		}
   	}
 

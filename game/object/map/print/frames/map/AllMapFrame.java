@@ -34,7 +34,6 @@ public class AllMapFrame extends FrameModel{
 		}
 	}
 
-	@Override
 	public void open() {
 		JLayeredPane maps = this.getLayeredPane();
 		int distance=30;

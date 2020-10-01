@@ -20,7 +20,6 @@ public class CardFrame extends FrameModel{
 		this.setSize(700,500);
 	}
 
-	@Override
 	public void open() {
 		JLayeredPane card = this.getLayeredPane();
 		JButton closeButton = createButton(570,400,100,40,10,"戻る");

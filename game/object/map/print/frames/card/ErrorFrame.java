@@ -36,7 +36,6 @@ public class ErrorFrame extends FrameModel{
 		open();
 	}
 
-	@Override
 	public void open() {
 		JLayeredPane error = this.getLayeredPane();
 		JLabel titleName = createText(170,10,100,40,30,"名前");

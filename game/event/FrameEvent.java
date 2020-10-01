@@ -54,16 +54,29 @@ public abstract class FrameEvent{
 	private static ShopFrontFrame shopFront = new ShopFrontFrame();
 	private static StartFrame start = new StartFrame();
 
-	public static void closing() {//ConfirmationFrameにする
+	public static void openClosing() {
+		play.close();
 		confirmation.open("決算","決算",100,3000);
-
 		ClosingEvent.closing();
+		try {//スムーズに決算処理に移れない可能性がある為、書き変える必要がある
+			Thread.sleep(3000);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public static void openRevenue() {
 		revenue.open();
+	}
 
-		//待ち
-
+	public static void closeRevenue() {
+		revenue.close();
 		assets.open();
+	}
+
+	public static void closeAssets() {
+		assets.close();
+		play.open();//すぐに非表示にする為、必要ない。
 	}
 
 	public static void createPopUp(String title,String article) {
@@ -146,8 +159,6 @@ public abstract class FrameEvent{
 		property.open(Japan.getSaveGoalName(),2);
 	}
 
-
-
 	public static void openError() {//errorをcardFullに改名
 		play.close();
 		error.open();
@@ -209,7 +220,6 @@ public abstract class FrameEvent{
 	public static void closeSellProperty() {
 		sellStation.close();
 		if(new Random().nextInt(100) < 3) {
-			RandomEvent.randomEvent();
 		}else {
 			App.turnEnd();
 		}
@@ -376,7 +386,7 @@ public abstract class FrameEvent{
 
 	//最終結果表示
 	public static void finish() {//ConfirmationFrame
-		closing();
+		openClosing();
 		String name = ClosingEvent.finish();
 		if(!Player.player.isPlayer()) {
 			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",3000);
