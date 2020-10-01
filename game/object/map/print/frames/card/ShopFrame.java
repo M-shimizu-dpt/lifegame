@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.SaleEvent;
 import lifegame.game.object.Card;
@@ -26,12 +27,12 @@ public class ShopFrame extends FrameModel{
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
 	}
-	private void buyCard(Card card) {
-		SaleEvent.buyCard(card);
+	private void buyCard(String pre) {
+		SaleEvent.buyCard(pre);
 		reopen();
 	}
-	private void sellCard(Card card) {
-		SaleEvent.sellCard(card);
+	private void sellCard(String pre) {
+		SaleEvent.sellCard(pre);
 		reopen();
 	}
 	private void reopen() {
@@ -102,22 +103,14 @@ public class ShopFrame extends FrameModel{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
+		String pre[] = cmd.split(":");
 		if(cmd.equals("戻る")) {
 			FrameEvent.closeShop();
-		}
-		String pre[] = cmd.split(":");
-		if(pre.length==2) {
-			for(Card card:Player.player.getCards()) {
-				if(pre[0].equals(card.getName()) && pre[1].equals("s")) {//カード売却
-					sellCard(card);
-					break;
-				}
-			}
-			for(Card card:Card.getCardList()) {
-				if(pre[0].equals(card.getName()) && pre[1].equals("b")) {//カード購入
-					buyCard(card);
-					break;
-				}
+		}else if(ContainsEvent.isCard(pre[0])) {//カード名かどうか判定
+			if(pre[1].equals("s")) {
+				sellCard(pre[0]);
+			}else if(pre[1].equals("b")) {
+				buyCard(pre[0]);
 			}
 		}
 	}

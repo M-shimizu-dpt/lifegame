@@ -17,7 +17,6 @@ import lifegame.game.event.MoveEvent;
 import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
-import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
@@ -97,7 +96,9 @@ public class PlayFrame extends FrameModel{
 
 	public void ableMenu() {
 		back.setEnabled(true);
-
+		if(ContainsEvent.isUsedCard()) {
+			cardB.setEnabled(false);
+		}
 	}
 
 	private void massEvent() {
@@ -259,7 +260,7 @@ public class PlayFrame extends FrameModel{
 			MoveEvent.clearTrajectory();
 			Dice.clear();
 			BinboEvent.clearBefore();
-			if(!Card.isUsedRandom()) {
+			if(!ContainsEvent.isUsedRandomCard()) {
 				massEvent();
 			}
 		}

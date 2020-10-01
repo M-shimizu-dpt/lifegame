@@ -9,8 +9,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.FrameEvent;
-import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
@@ -68,12 +68,7 @@ public class DubbingFrame extends FrameModel{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		for(int i=0;i<Card.getCardListSize();i++) {
-			if(cmd.equals(Card.getCard(i).getName()+"d")) {//カードを複製
-				Player.player.addCard(Card.getCard(i));
-				FrameEvent.closeDubbing();
-				break;
-			}
-		}
+		CardEvent.dubbingCard(cmd);
+		FrameEvent.closeDubbing();
 	}
 }

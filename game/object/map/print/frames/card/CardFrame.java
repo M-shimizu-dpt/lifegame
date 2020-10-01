@@ -7,10 +7,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.main.App;
-import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
@@ -58,26 +58,14 @@ public class CardFrame extends FrameModel{
 		if(cmd.equals("戻る")) {
 			FrameEvent.closeCard();
 			return;
-		}
-		for(int i=0;i<Card.getCardListSize();i++) {
-			if(cmd.equals(Card.getCard(i).getName())) {//カードを使う
-				Card.getCard(i).useAbilitys();
-				if(ContainsEvent.id(Card.getCard(i),2)){
-					FrameEvent.moveMaps();
-					try {
-						Thread.sleep(2000);
-					}catch(InterruptedException exception) {
-						exception.printStackTrace();
-					}
+		}else {
+			CardEvent.UseCard(cmd);
+			FrameEvent.closeCard();
+			if(ContainsEvent.isUsedRandomCard() || ContainsEvent.isUsedOthersCard()) {
+				CardEvent.resetFlags();
+				if(ContainsEvent.isPlayShowing()) {
+					App.turnEnd();
 				}
-				FrameEvent.closeCard();
-				break;
-			}
-		}
-		if(Card.isUsedRandom() || Card.isUsedOthers()) {
-			Card.resetFlags();
-			if(ContainsEvent.isPlayShowing()) {
-				App.turnEnd();
 			}
 		}
 	}

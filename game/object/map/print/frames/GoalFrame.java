@@ -12,6 +12,7 @@ import javax.swing.JLayeredPane;
 
 import lifegame.game.event.BinboEvent;
 import lifegame.game.event.FrameEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
@@ -24,6 +25,7 @@ public class GoalFrame extends FrameModel{
 	}
 
 	public void open() {
+		Searcher.searchShortestRouteAllPlayers();
 		this.setTitle(FrameEvent.getNowMassName());
 		JLayeredPane goal = this.getLayeredPane();
 		int goalMoney;

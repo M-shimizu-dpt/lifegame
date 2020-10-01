@@ -7,13 +7,15 @@ package lifegame.game.object;
 
 import java.util.Random;
 
+import lifegame.game.event.ContainsEvent;
+
 public abstract class Dice {
 	private static int result=0;
 	private static int num=1;
 
 	public static int shuffle(Player player) {
 		for(int i=0;i<Dice.num;i++) {//サイコロの数だけサイコロを回わす；
-			if(Card.isUsedFixed())break;//初めからresultが入力されていれば
+			if(ContainsEvent.isUsedFixedCard())break;//初めからresultが入力されていれば
 			Random rand = new Random();
 			Dice.result += rand.nextInt(6)+1+player.getEffect();
 			if(Dice.result<=0) {

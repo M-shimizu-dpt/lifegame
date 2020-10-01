@@ -8,11 +8,11 @@ package lifegame.game.main;
 import java.util.ArrayList;
 
 import lifegame.game.event.BinboEvent;
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
-import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
@@ -80,7 +80,8 @@ public class App {
   	private void play(int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		BinboEvent.initBinbo();
+  		//BinboEvent.initBinbo();初期でボンビーを憑けないなら
+  		BinboEvent.initIsBinbo();//初期でボンビーを憑けさせるなら//debug
 
   		while(true) {
   			monthUpdate(first);
@@ -97,7 +98,7 @@ public class App {
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadInfo();//画面上部に表示している情報を更新
-		  	Card.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
+		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!Player.player.isPlayer()) {//cpu操作
 		  		Player.player.cpu();
 		  	}else {
@@ -131,7 +132,8 @@ public class App {
     	assert(yearLimit>0 && yearLimit<=100);
 
 
-    	Card.init();
+    	CardEvent.init();
+
     	Dice.init();
 
     	FrameEvent.init(playerCount);

@@ -68,7 +68,6 @@ public class StartFrame extends JFrame implements ActionListener{
     	return list;
   	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("始める")) {

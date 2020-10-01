@@ -2,6 +2,7 @@ package lifegame.game.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import lifegame.game.main.App;
 import lifegame.game.object.Binbo;
@@ -527,10 +528,52 @@ public abstract class ContainsEvent {
 	public static boolean isEnd(int endYear) {
 		return App.year>endYear;
 	}
+
+	public static boolean isRandomEvent() {
+		Random rand = new Random();
+		int result = rand.nextInt(100);
+		if(result<5) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public static boolean isUsedCard() {
+		return Card.isUsed();
+	}
+	public static boolean isUsedFixedCard() {
+		return Card.isUsedFixed();
+	}
+	public static boolean isUsedRandomCard() {
+		return Card.isUsedRandom();
+	}
+	public static boolean isUsedOthersCard() {
+		return Card.isUsedOthers();
+	}
+
+	public static boolean isBuyProperty(Property pt) {
+		return pt.getAmount()<Player.player.getMoney();
+	}
+	public static boolean isHaveCard() {
+		return Player.player.getCards().isEmpty();
+	}
+	public static boolean isHaveCard(Player player) {
+		return player.getCards().isEmpty();
+	}
+
 	public static boolean isPlayShowing() {
 		return FrameEvent.isPlayShowing();
 	}
 	public static boolean isThrowed() {
 		return FrameEvent.isThrowed();
+	}
+	public static boolean isCard(String pre) {
+		for(Card card:Card.getCardList()) {
+			if(pre.equals(card.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

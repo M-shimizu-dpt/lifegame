@@ -162,7 +162,6 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		return mass;
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 
 	}

@@ -1,6 +1,5 @@
 package lifegame.game.event;
 
-import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.animation.DiceAnimationThread;
@@ -21,7 +20,6 @@ public abstract class DiceEvent {
 		}
 		FrameEvent.closeMenu();
 		Dice.clear();
-		Card.resetUsed();
-		Card.resetUsedFixed();
+		CardEvent.resetUsedCard();
 	}
 }

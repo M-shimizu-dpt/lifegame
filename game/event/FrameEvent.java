@@ -256,7 +256,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openShopFront() {
-		ArrayList<Card> cardList = Card.getElectedCard();
+		ArrayList<Card> cardList = CardEvent.getElectedCard();
 		play.close();
 		shopFront.setCardList(cardList);
 		shop.setCardList(cardList);

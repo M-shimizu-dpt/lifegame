@@ -16,6 +16,7 @@ import java.util.Random;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.DiceEvent;
 import lifegame.game.event.FrameEvent;
@@ -129,10 +130,18 @@ public class Player {
 		do{
 			this.removeCard(this.getCard(0));
 			//System.out.println("remove:"+this.getCard(0).getName());
-			Card.priceSort(this.getCards());
+			priceSort(this.getCards());
 		}while(this.getCardSize()>8);
 		FrameEvent.throwEnd();
 	}
+
+	public static void priceSort(ArrayList<Card> cards){
+        Collections.sort(cards,new Comparator<Card>() {
+        	public int compare(Card card1, Card card2) {
+				return Integer.compare(card1.getBuyPrice(), card2.getBuyPrice());
+			}
+        });
+    }
 
 	public void clearMove() {
 		this.move=0;
@@ -153,13 +162,13 @@ public class Player {
 			int rand = new Random().nextInt(this.getCardSize()*2);
 			if(rand < this.getCardSize()) {
 				boolean movedflag = this.getCard(rand).getID()==2;
-				this.getCard(rand).useAbilitys();
+				CardEvent.useAbilitys(rand);
 				if(movedflag) {
 					FrameEvent.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
 				}
-				if(Card.isUsedRandom() || Card.isUsedOthers()) {
-					Card.resetFlags();
+				if(ContainsEvent.isUsedRandomCard() || ContainsEvent.isUsedOthersCard()) {
+					CardEvent.resetFlags();
 					FrameEvent.ableMenu();
 					diceFlag=false;
 					App.turnEnd();

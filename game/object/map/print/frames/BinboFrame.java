@@ -73,3 +73,39 @@ public class BinboFrame extends FrameModel{
 		}
 	}
 }
+
+/*
+ * 	public void bonbyPlayer(String st1,String st2,String st3,String st4) {
+		playFrame.setVisible(false);
+		binboFrame = new JFrame();
+		JLayeredPane binbo = binboFrame.getLayeredPane();
+		binboFrame.setSize(800,600);
+		binboFrame.setLocationRelativeTo(null);
+		//ImageIcon icon =  new ImageIcon("./img/days_res.png");
+		//icon.createImageIcon("./img/days_res.png",");
+		JLabel text1=new JLabel();
+		JLabel text2=new JLabel();
+		JLabel text3=new JLabel();
+		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
+		closeButton.setActionCommand("貧乏神イベントを閉じる");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
+		binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		binboFrame.setName("ボンビーのターン");
+
+		text1 = createText(10,10,600,100,20,"プレイヤー名:"+st1+"ボンビー名:"+st4);
+		text2 = createText(10,110,600,100,20,st2);
+		text3 = createText(10,210,600,100,20,st3);
+
+		text1.setHorizontalAlignment(SwingConstants.LEFT);
+		binbo.add(text1);
+		text2.setHorizontalAlignment(SwingConstants.LEFT);
+		binbo.add(text2);
+		text3.setHorizontalAlignment(SwingConstants.LEFT);
+		binbo.add(text3);
+		binboFrame.setVisible(true);
+
+		setCloseFrame(5);
+
+	}*/
