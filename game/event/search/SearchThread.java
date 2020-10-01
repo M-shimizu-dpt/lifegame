@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.event.search.model.SearchThreadModel;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
-import lifegame.game.object.map.print.Window;
 
 public class SearchThread extends SearchThreadModel{
 	protected Coordinates start = new Coordinates();
@@ -18,8 +18,7 @@ public class SearchThread extends SearchThreadModel{
 	}
 
 	//start
-	public SearchThread(Window window,Coordinates start) {
-		super.setWindow(window);
+	public SearchThread(Coordinates start) {
 		this.start.setValue(start);
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=500;
@@ -27,8 +26,7 @@ public class SearchThread extends SearchThreadModel{
 	}
 
 	//start
-	public SearchThread(Window window,Coordinates start,int searchTime) {
-		super.setWindow(window);
+	public SearchThread(Coordinates start,int searchTime) {
 		this.start.setValue(start);
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=500;
@@ -118,7 +116,6 @@ public class SearchThread extends SearchThreadModel{
 	}
 
 	protected void threadCopy(SearchThread original) {
-		super.setWindow(original.window);
 		super.setCount(original.count);
 		this.setStart(original.start);
 		super.moveTrajectory.addAll(original.moveTrajectory);

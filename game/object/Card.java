@@ -13,14 +13,6 @@
 
 package lifegame.game.object;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import lifegame.game.event.ContainsEvent;
-import lifegame.game.event.WaitThread;
-import lifegame.game.event.search.Searcher;
-import lifegame.game.object.map.information.Coordinates;
-import lifegame.game.object.map.print.Window;
 import lifegame.game.object.model.CardModel;
 
 public class Card extends CardModel{
@@ -46,175 +38,8 @@ public class Card extends CardModel{
 		super.setID(id);
 	}
 
-	public static ArrayList<Card> getElectedCard(){
-		ArrayList<Card> canBuyCardlist = new ArrayList<Card>();//店の購入可能カードリスト
-		Random rand = new Random();
-		boolean get=false;
-		int index=0;
-		for(int i = 0;i<8;i++) {//表示するカード8枚を選出
-			do {
-				get=false;
-				boolean flag;
-				do {//今まで選出したカードと今回選出したカードが被った場合は再選
-					flag=true;
-					index = rand.nextInt(Card.cardList.size());
-					for(Card card : canBuyCardlist) {
-						if(ContainsEvent.name(card, Card.cardList.get(index))) {
-							flag=false;
-						}
-					}
-				}while(!flag);
-				int rarity=0;
-				do {
-					if(rand.nextInt(10)<3) {
-						get=true;
-					}
-					rarity++;
-				}while(rarity<Card.cardList.get(index).getRarity());
-			}while(!get);
-			canBuyCardlist.add(Card.cardList.get(index));
-		}
-		return canBuyCardlist;
-	}
-
-	//0,1
-	private void useAbility() {
-		if(this.id==0) {
-			Dice.setNum(this.ability);
-		}else if(this.id == 1) {
-			Card.usedFixed();
-			Dice.setResult(this.ability);
-		}
-	}
-
-	//2,3,4,5
-	private void useAbility(Window window) {
-		Random rand = new Random();
-		if(this.id==2) {
-			Coordinates coor = new Coordinates();
-			//誰に影響を与えるのか
-			Card.usedRandom();
-			if(name.equals("サミットカード")) {
-				coor.setValue(Player.player.getNowMass());
-				for(int roop=0;roop<4;roop++) {
-					if(ContainsEvent.isTurn(roop))continue;
-					window.moveMaps(Player.players.get(roop),coor);
-				}
-			}else if(name.equals("北へ！カード")) {
-				do {
-					coor = this.useRandomAbility();
-				}while(Player.player.getNowMass().getY()<coor.getY());
-			}else if(name.equals("ピッタリカード")){
-				coor.setValue(Player.player.getAnotherPlayer().getNowMass());
-			}else if(name.equals("最寄り駅カード")){
-				Searcher.searchNearestStation(window,Player.player);
-				Thread thread = new Thread(new WaitThread(2));
-				thread.start();
-				try {
-					thread.join();
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
-			}else if(name.equals("星に願いをカード")){
-				Searcher.searchNearestShop(window,Player.player);
-				Thread thread = new Thread(new WaitThread(2));
-				thread.start();
-				try {
-					thread.join();
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-				coor.setValue(Searcher.nearestShopList.get(rand.nextInt(Searcher.nearestShopList.size())));
-			}else {
-				coor = this.useRandomAbility();
-			}
-			window.moveMaps(Player.player,coor);
-			Player.player.getNowMass().setValue(coor);
-
-		}else if(this.id==3) {
-			int period;
-			do {
-				period = rand.nextInt(5);
-			}while(period <= 1);
-			Player.player.getAnotherPlayer().addBuff(this.ability, period);
-		}else if(this.id==4) {
-			Card.usedOthers();
-			if(name.equals("一頭地を抜くカード")) {
-				int maxMoney=0;
-				for(Player player:Player.players.values()) {
-					if(ContainsEvent.money(player, maxMoney)>0) {
-						maxMoney=player.getMoney();
-					}
-				}
-				Player.player.addMoney(maxMoney);
-			}else if(name.equals("起死回生カード")) {
-				if(ContainsEvent.money(0)<0) {
-					Player.player.addMoney(-Player.player.getMoney()*2);
-				}
-			}else if(name.equals("徳政令カード")) {
-				for(int player=0;player<4;player++) {
-					if(ContainsEvent.money(Player.players.get(player), 0)<0) {
-						Player.players.get(player).addMoney(-Player.players.get(player).getMoney());
-					}
-				}
-			}
-		}else if(this.id==5) {
-			if(name.equals("福袋カード")) {
-				int count=0;
-				do {
-					int randcard = rand.nextInt(Card.cardList.size());
-					Player.player.addCard(Card.getCard(randcard));
-					if(Player.player.getCardSize()>8) {
-						window.cardFull();
-					}
-					count++;
-				}while(rand.nextInt(100)<50 && count<5);
-			}else if(name.equals("ダビングカード")) {
-				window.printDubbing();
-			}
-		}
-	}
-
-	public void useAbilitys(Window window) {
-		if(id==0 || id==1) {
-			useAbility();
-		}else if(id==2 || id==3 || id==4 || id==5){
-			useAbility(window);
-		}
-		if(!Player.player.isPlayer()) System.out.println("Use Card!  "+name+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
-
-		//周遊カードの場合は確率でカードを破壊
-		if(name.split("周遊").length==2) {
-			this.setCount(this.getCount()+1);
-			if(new Random().nextInt(100)<30 || this.getCount()>5) {
-				Player.player.removeCard(this);
-			}
-		}else {
-			Player.player.removeCard(this);
-		}
-
-		if(!name.equals("徳政令カード")) {
-			Card.used();//カードを使ったことにする
-		}
-	}
-
-	public Coordinates useRandomAbility() {
-		Random rand = new Random();
-		Coordinates movedMass=new Coordinates();
-		int x,y;
-		do {
-			x=rand.nextInt(17);
-			y=rand.nextInt(17);
-		}while(!ContainsEvent.isMass(x, y));
-		movedMass.setValue(x, y);
-		//System.out.println("random move  x:"+x+"  y:"+y);
-		return movedMass;
-	}
-
-	public static void init(Window window) {
+	public static void init() {
 		resetFlags();
-
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
 		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));
@@ -239,6 +64,8 @@ public class Card extends CardModel{
 		cardList.add(new Card("北へ！カード",10000,1,"北に移動することが出来る",2));
 		cardList.add(new Card("ピッタリカード",14000,2,"誰かと同じマスに移動することが出来る",2));
 		cardList.add(new Card("サミットカード",16000,3,"他の人を呼び寄せることが出来る",2));
+
+		//どこかへ移動した後にMassEvent
 		cardList.add(new Card("最寄り駅カード",10000,2,"最寄り駅に移動することが出来る",2));
 		cardList.add(new Card("星に願いをカード",40000,2,"最寄りのカードショップに移動することが出来る",2));
 

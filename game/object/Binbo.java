@@ -6,36 +6,41 @@
 package lifegame.game.object;
 import java.util.ArrayList;
 
-import lifegame.game.event.ContainsEvent;
-
 public abstract class Binbo{
 	private static boolean bonbyTurnEndFlag = false;//ボンビー終了フラグ
+	private static boolean bonbyFlag = false;//ボンビーかそうじゃないか
 	private static String name;
 	private static Player binboplayer;
+	private static int turncount = 0;
 	private static ArrayList<Player> together = new ArrayList<Player>();
 	private static ArrayList<Player> before = new ArrayList<Player>();
 	//private ArrayList<Coordinates> allplayernowMass = new ArrayList<Coordinates>();//将来的に全員にbufさせるために全員の位置を取得する
 
 	//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)
-	public static void addSameMassPlayer() {
-		int turn = Player.player.getID();
-		while(true) {
-			turn++;
-			if(turn==Player.players.size()) {
-				turn=0;
-			}
-			if(ContainsEvent.id(turn)) {
-				break;
-			}
-			if(ContainsEvent.coor(binboplayer,Player.players.get(turn))){
-				together.add(Player.players.get(turn));
-			}
-		}
+	public static void addSameMassPlayer(Player player) {
+		together.add(player);
 	}
 
 	//binboターン終了
 	public static void binboFinish() {
 		Binbo.bonbyTurnEndFlag=true;
+	}
+	public static void binboMakeover() {
+		if(Binbo.isMakeBinbo()) {
+			Binbo.bonbyFlag=false;
+		}else{
+			Binbo.bonbyFlag=true;
+		}
+	}
+
+	public static void clearTurnCount() {
+		turncount = 0;
+	}
+	public static void addTurnCount() {
+		turncount +=1;
+	}
+	public static int getTurnCount() {
+		return turncount;
 	}
 
 	//ボンビーが前回憑いていた人を初期化
@@ -109,22 +114,12 @@ public abstract class Binbo{
 		return Binbo.bonbyTurnEndFlag;
 	}
 
-/*将来必要
- 	//全てのプレイヤーの現在地set
-	public static void setAllPlayersNowMass() {
-		for(int player=0;player<Player.players.size();player++) {
-				allplayernowMass.add(Player.players.get(player).getNowMass());
-		}
+	public static void initBinboMakeFlag() {
+		Binbo.bonbyFlag=false;
 	}
 
-	//全てのプレイヤーの現在地取得
-	public static ArrayList<Coordinates> getAllPlayersNowMass() {
-		return	allplayernowMass;
+	//bonbyTurnEndFlagを返す
+	public static boolean isMakeBinbo() {
+		return Binbo.bonbyFlag;
 	}
-
-	//全てのプレイヤーの現在地clear
-	public static void clearAllPlayersNowMass() {
-		allplayernowMass.clear();
-	}
-*/
 }

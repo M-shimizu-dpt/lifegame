@@ -14,16 +14,21 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 
+import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.DiceEvent;
+import lifegame.game.event.FrameEvent;
+import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.NearestSearchThread;
-import lifegame.game.event.search.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
-import lifegame.game.object.map.print.Window;
+import lifegame.game.object.map.print.frames.map.PlayFrame;
+import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
 
 public class Player {
 	public static Map<Integer,Player> players = new HashMap<Integer,Player>();//プレイヤー情報
@@ -63,17 +68,17 @@ public class Player {
 		return Player.players.get(index);
 	}
 
-	public static void initPlayers(Window window,int playerCount) {
+	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
   			if(playerCount>i) {//プレイヤー
 	  			Player.players.put(i,new Player("player"+(i+1),1000,i,true));
 	  		}else {//CPU
   				Player.players.put(i,new Player("CPU"+(i+1-playerCount),1000,i,false));
   			}
-  			Player.players.get(i).setColt(window.createText(401+400,301+900,20,20,10,Player.players.get(i).getName()));
+  			Player.players.get(i).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(i).getName()));
   	  		Player.players.get(i).getColt().setBackground(Color.BLACK);
   	  		Player.players.get(i).getColt().setName(Player.players.get(i).getName());
-  	  		window.addPlayFrame(Player.players.get(i).getColt());
+  	  		playFrame.getLayeredPane().add(Player.players.get(i).getColt(),JLayeredPane.PALETTE_LAYER,0);
   		}
 	}
 
@@ -125,18 +130,25 @@ public class Player {
 		do{
 			this.removeCard(this.getCard(0));
 			//System.out.println("remove:"+this.getCard(0).getName());
-			Card.priceSort(this.getCards());
+			priceSort(this.getCards());
 		}while(this.getCardSize()>8);
-		Window.throwEnd();
+		FrameEvent.throwEnd();
 	}
+
+	public static void priceSort(ArrayList<Card> cards){
+        Collections.sort(cards,new Comparator<Card>() {
+        	public int compare(Card card1, Card card2) {
+				return Integer.compare(card1.getBuyPrice(), card2.getBuyPrice());
+			}
+        });
+    }
 
 	public void clearMove() {
 		this.move=0;
 	}
 
 	//CPU操作
-	public void cpu(Window window) throws InterruptedException{
-		window.closeMoveButton();
+	public void cpu() throws InterruptedException{
 		Thread.sleep(500);
 		if(Player.isStop()) {
 			WaitThread wait = new WaitThread(7);
@@ -148,37 +160,42 @@ public class Player {
 			//確率でカードを使用
 			int rand = new Random().nextInt(this.getCardSize()*2);
 			if(rand < this.getCardSize()) {
-				boolean movedflag = this.getCard(rand).getID()==2;
-				this.getCard(rand).useAbilitys(window);
-				if(movedflag) {
-					window.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
+				CardEvent.useAbilitys(rand);
+				if(this.getCard(rand).getID()==2) {
+					FrameEvent.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
 				}
-				if(Card.isUsedRandom() || Card.isUsedOthers()) {
-					Card.resetFlags();
-					window.ableMenu();
+				if(ContainsEvent.isUsedRandomCard() || ContainsEvent.isUsedOthersCard()) {
+					CardEvent.resetFlags();
+					FrameEvent.ableMenu();
 					diceFlag=false;
 					App.turnEnd();
 				}
 			}
 		}
 		if(diceFlag) {
-			window.shuffleDice();//サイコロを回す
+			//処理を待たないと一瞬表示されるだけになる
+			FrameEvent.openDice();
+			DiceEvent.shuffleDice();
+			FrameEvent.closeDice();
+
+			/*
 			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
 			waitthread.start();
 			waitthread.join();
+			*/
 
 			if(Searcher.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
-				cpuaddTrajectory(window);
+				cpuaddTrajectory();
 			}else {//目的地を超えてしまう場合
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
 				//行くことが出来るマス取得
-				NearestSearchThread searchthread = new NearestSearchThread(window);
+				NearestSearchThread searchthread = new NearestSearchThread();
 				searchthread.setMass(Japan.getGoalCoor());//探索開始位置をゴールに設定
 				for(Coordinates coor : Searcher.canMoveTrajectoryList.keySet()) {
 					if(ContainsEvent.isGoal(coor)) {//目的地に行ける場合
-						cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(coor).get(0));
+						cpuMoveMaps(Searcher.canMoveTrajectoryList.get(coor).get(0));
 						flag=true;
 						break;
 					}
@@ -192,7 +209,7 @@ public class Player {
 					wt.join();
 
 					//ゴールから最短にある移動可能マスを格納
-					cpuMoveMaps(window,Searcher.canMoveTrajectoryList.get(Searcher.nearestMassToGoalList.get(0)).get(0));
+					cpuMoveMaps(Searcher.canMoveTrajectoryList.get(Searcher.nearestMassToGoalList.get(0)).get(0));
 				}
 			}
 			//System.out.println("player.move:"+this.getMove()+"       終わりました");
@@ -208,7 +225,7 @@ public class Player {
 	}
 
 	//cpuの移動操作(目的地までの最短経路で移動)
-	public void cpuaddTrajectory(Window window) throws InterruptedException{
+	public void cpuaddTrajectory() throws InterruptedException{
 		if(Searcher.nearestTrajectoryList.get(Searcher.count).size()>0) {
 			ArrayList<Coordinates> list = Searcher.nearestTrajectoryList.get(Searcher.count).get(0);
 			for(Coordinates coor : list) {
@@ -221,15 +238,15 @@ public class Player {
 				int y = this.getNowMass().getY()-coor.getY();
 				if(x==0) {
 					if(y<0) {//下
-						window.moveMaps(0,-130);
+						FrameEvent.moveMaps(0,-130);
 					}else if(y>0) {//上
-						window.moveMaps(0,130);
+						FrameEvent.moveMaps(0,130);
 					}
 				}else if(y==0) {
 					if(x>0) {//左
-						window.moveMaps(130,0);
+						FrameEvent.moveMaps(130,0);
 					}else if(x<0) {//右
-						window.moveMaps(-130,0);
+						FrameEvent.moveMaps(-130,0);
 					}
 				}
 				Thread.sleep(300);
@@ -239,7 +256,7 @@ public class Player {
 	}
 
 	//cpuの移動操作(指定された経路で移動)
-	public void cpuMoveMaps(Window window, ArrayList<Coordinates> list) throws InterruptedException{
+	public void cpuMoveMaps(ArrayList<Coordinates> list) throws InterruptedException{
 		for(Coordinates coor : list) {
 			if(Player.isStop()) {
 				WaitThread wait = new WaitThread(7);
@@ -250,15 +267,15 @@ public class Player {
 			int y = this.getNowMass().getY()-coor.getY();
 			if(x==0) {
 				if(y<0) {//下
-					window.moveMaps(0,-130);
+					FrameEvent.moveMaps(0,-130);
 				}else if(y>0) {//上
-					window.moveMaps(0,130);
+					FrameEvent.moveMaps(0,130);
 				}
 			}else if(y==0) {
 				if(x>0) {//左
-					window.moveMaps(130,0);
+					FrameEvent.moveMaps(130,0);
 				}else if(x<0) {//右
-					window.moveMaps(-130,0);
+					FrameEvent.moveMaps(-130,0);
 				}
 			}
 			Thread.sleep(300);
@@ -287,7 +304,7 @@ public class Player {
 	}
 
 	public int getCardSize() {
-		return cards.size();
+		return this.cards.size();
 	}
 
 	public JLabel getColt() {
@@ -358,9 +375,9 @@ public class Player {
 		cards.remove(card);
 	}
 
-	public void sellPropertyCPU(Window window) {
+	public void sellPropertyCPU(SellPropertyFrame sellPropertyFrame) {
 		Player.sortProperty(this.getPropertys());
-		window.sellPropertys(this.getProperty(0));
+		sellPropertyFrame.sellPropertys(this.getProperty(0));
 	}
 
 	public void setColt(JLabel colt) {

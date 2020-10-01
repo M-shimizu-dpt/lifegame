@@ -23,7 +23,7 @@ public abstract class RandomEvent {
 		return random2EndFlag;
 	}
 
-	public static double randomEvent() {
+	public static void randomEvent() {//playFrameの変化を追記
 		Random rand = new Random();
 		double randomNum = rand.nextDouble();
 		if(randomNum < 0.1) {
@@ -63,7 +63,7 @@ public abstract class RandomEvent {
 		}else {
 			Player.player.addMoney(-5000);
 		}
-		return randomNum;
+		FrameEvent.openRandom1(randomNum);
 	}
 
 	public static void random2Event(Property property,int rndnum) {
