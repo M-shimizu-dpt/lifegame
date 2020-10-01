@@ -149,11 +149,7 @@ public abstract class BinboEvent{
 				nextbonbylist.add(i);
 			}
 		}
-		if(nextbonbylist.size()>1) {
-			nextbonbyplayer = nextbonbylist.get(rand.nextInt(nextbonbylist.size()-1));//同じ距離にいた場合ランダム
-		}else {
-			nextbonbyplayer = nextbonbylist.get(0);
-		}
+		nextbonbyplayer = nextbonbylist.get(rand.nextInt(100)%nextbonbylist.size());//同じ距離にいた場合ランダム
 		Binbo.setPlayerBinbo(Player.players.get(nextbonbyplayer));
 	}
 
@@ -253,7 +249,7 @@ public abstract class BinboEvent{
 			}
 			Binbo.addTurnCount();
 		}
-		//event = binboCardbuy();
+		//event = binboCardLost();
 		return event;
 	}
 
@@ -307,11 +303,13 @@ public abstract class BinboEvent{
 		return "さいころふるゲームをじっそうしたいにょろ。,でもまだ実装できてないにょろ~~";
 	}
 	public static String binboCardLost() {
+		Card card;
 		if(ContainsEvent.isHaveCard()) {
 			Random rand = new Random();
-			int result=rand.nextInt(Player.player.getCardSize()-1);
+			int result=rand.nextInt(100)%Player.player.getCardSize();
+			card = Player.player.getCard(result);
 			Player.player.removeCard(Player.player.getCard(result));
-			return "やっぱり最強のプレイヤーはカードいらないと思うのねん,"+Player.player.getName()+"の"+Player.player.getCard(result)+"が処分されてしまった。";
+			return "やっぱり最強のプレイヤーはカードいらないと思うのねん,"+Player.player.getName()+"の"+card.getName()+"が処分されてしまった。";
 		}else {
 			return "やっぱり最強のプレイヤーはカードいらないと思うのねん,捨てるカードないにょろ!?もう最強のプレイヤーにょろ!。"+Player.player.getName()+"はカードを捨てられなくて済んだ。";
 		}
@@ -361,7 +359,7 @@ public abstract class BinboEvent{
 			Random rand = new Random();
 			ArrayList<Property> playersproperty = Player.player.getPropertys();
 			String keepsellproperty = "";
-			int result = rand.nextInt(playersproperty.size()-1);
+			int result = rand.nextInt(100)%playersproperty.size();
 			int i = 0;
 			if(result<2) {
 				i = 0;

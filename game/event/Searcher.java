@@ -200,7 +200,7 @@ public class Searcher{
 	}
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
-	public static int searchShortestRouteAllPlayers() {
+	public static void searchShortestRouteAllPlayers() {
 		//再探索は10回まで(1回で出てほしい…)
 		for(Player selectedPlayer:Player.players.values()) {
 			int againtime=0;
@@ -229,6 +229,6 @@ public class Searcher{
 				if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
 			}while(!endflag && againtime<1000);
 		}
-		return 0;
+		//eturn 0;
 	}
 }
