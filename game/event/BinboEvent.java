@@ -11,14 +11,13 @@ import lifegame.game.object.map.information.Property;
 
 public abstract class BinboEvent{
 	//binboクラス初期
-	public static void initBinbo() {
-		Binbo.setName("ボンビー");
-		//initBinbo(Player.players.get(0));
-	}
-
-	public static void initIsBinbo() {
-		Binbo.setName("ボンビー");
-		Binbo.setPlayerBinbo(Player.players.get(0));//初期でボンビーを憑けさせるなら
+	public static void initBinbo(boolean debug) {
+		if(debug) {
+			Binbo.setName("ボンビー");
+			Binbo.setPlayerBinbo(Player.players.get(0));//初期でボンビーを憑けさせるなら
+		}else {
+			Binbo.setName("ボンビー");
+		}
 	}
 
 	public static void addSameMassPlayer() {
@@ -45,10 +44,9 @@ public abstract class BinboEvent{
 		//String action = binboCardLost();//debug
 		if(action=="変身") {
 			Binbo.clearTurnCount();
-			FrameEvent.openBinbo();//Binbo.getBinboPlayer().getName(),Binbo.getName(),"に変化した",Binbo.getName());
+			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),Binbo.getName()+"に変化した",Binbo.getName());
 		}else {
-			//String pre[] = action.split(",");
-			FrameEvent.openBinbo();//Binbo.getBinboPlayer().getName(),pre[0],pre[1],Binbo.getName());
+			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),action,Binbo.getName());
 		}
 	}
 
@@ -129,14 +127,6 @@ public abstract class BinboEvent{
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int nextbonbyplayer;
-		//Searcher.searchShortestRouteAllPlayers();//うまく動くときと動かないときがある。
-   		WaitThread waitthred  = new WaitThread(11);
-		waitthred.start();
-		try {
-			waitthred.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		for(int i=0;i<Player.players.size();i++) {
 			System.out.println(Player.players.get(i).getGoalDistance()+"最長距離"+i);
 			if(ContainsEvent.goalDistance(Player.players.get(i),maxdistance)==1) {

@@ -13,7 +13,10 @@
  */
 package lifegame.game.event;
 
-import lifegame.game.event.search.OnlyDistanceSearchThread;
+import lifegame.game.event.search.OnlyDistanceSearchThread1;
+import lifegame.game.event.search.OnlyDistanceSearchThread2;
+import lifegame.game.event.search.OnlyDistanceSearchThread3;
+import lifegame.game.event.search.OnlyDistanceSearchThread4;
 import lifegame.game.event.search.SearchThread;
 import lifegame.game.main.App;
 import lifegame.game.object.Binbo;
@@ -26,15 +29,18 @@ public class WaitThread extends Thread{
 	private int againtime;
 
 	public WaitThread(int id) {
+		this.setDaemon(true);
 		this.id=id;
 		this.againtime=0;
 	}
 	public WaitThread(int id,int againtime) {
+		this.setDaemon(true);
 		this.id=id;
 		this.againtime=againtime;
 	}
 
 	public WaitThread(int id,int money,int size) {
+		this.setDaemon(true);
 		this.id=id;
 		this.money=money;
 		this.size=size;
@@ -157,14 +163,20 @@ public class WaitThread extends Thread{
 	    	}
 			break;
 		case 11:
-			while(System.currentTimeMillis()-Searcher.time <= OnlyDistanceSearchThread.searchTime+againtime) {
+			while(System.currentTimeMillis()-OnlyDistanceSearchThread1.time <= OnlyDistanceSearchThread1.searchTime+againtime
+			|| System.currentTimeMillis()-OnlyDistanceSearchThread2.time <= OnlyDistanceSearchThread2.searchTime+againtime
+			|| System.currentTimeMillis()-OnlyDistanceSearchThread3.time <= OnlyDistanceSearchThread3.searchTime+againtime
+			|| System.currentTimeMillis()-OnlyDistanceSearchThread4.time <= OnlyDistanceSearchThread4.searchTime+againtime) {
 				try {
 					Thread.sleep(100);
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			OnlyDistanceSearchThread.initSearchTime();
+			OnlyDistanceSearchThread1.initSearchTime();
+			OnlyDistanceSearchThread2.initSearchTime();
+			OnlyDistanceSearchThread3.initSearchTime();
+			OnlyDistanceSearchThread4.initSearchTime();
 			break;
 		default:
 			break;

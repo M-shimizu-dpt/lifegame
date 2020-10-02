@@ -20,6 +20,10 @@ public abstract class SearchThreadModel extends Thread{
 	protected Coordinates nowMass=new Coordinates();
 	protected ArrayList<Coordinates> goals = new ArrayList<Coordinates>();
 
+	public SearchThreadModel() {
+		this.setDaemon(true);
+	}
+
 	public static void initSearchTime() {
 		searchTime=500;
 	}

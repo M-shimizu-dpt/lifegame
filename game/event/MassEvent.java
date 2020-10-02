@@ -32,11 +32,16 @@ public abstract class MassEvent {
 			shopEvent();
 		}else{
 			if(ContainsEvent.goal(massName)) {
-				FrameEvent.openGoal();
+				goal();
 			}else {
 				FrameEvent.printPropertys(massName,2);
 			}
 		}
+	}
+
+	private static void goal() {
+		Searcher.searchShortestRouteAllPlayers();
+		FrameEvent.openGoal();
 	}
 
 	//青マスイベント

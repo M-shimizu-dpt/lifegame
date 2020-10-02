@@ -11,7 +11,10 @@ import java.util.Map;
 
 import lifegame.game.event.search.MassSearchThread;
 import lifegame.game.event.search.NearestSearchThread;
-import lifegame.game.event.search.OnlyDistanceSearchThread;
+import lifegame.game.event.search.OnlyDistanceSearchThread1;
+import lifegame.game.event.search.OnlyDistanceSearchThread2;
+import lifegame.game.event.search.OnlyDistanceSearchThread3;
+import lifegame.game.event.search.OnlyDistanceSearchThread4;
 import lifegame.game.event.search.SearchThread;
 import lifegame.game.event.search.ShopSearchThread;
 import lifegame.game.event.search.StationSearchThread;
@@ -35,10 +38,8 @@ public class Searcher{
 		canMoveTrajectoryList.clear();
 		MassSearchThread thread = new MassSearchThread(player.getMove());
 		thread.setMass(player.getNowMass());
-		thread.setDaemon(true);
 		thread.start();
 		WaitThread waitthread = new WaitThread(4);
-		waitthread.setDaemon(true);
 		waitthread.start();
 		try {
 			thread.join();
@@ -77,7 +78,6 @@ public class Searcher{
 		nearestStationList.clear();
 		StationSearchThread thread = new StationSearchThread();
 		thread.setMass(player.getNowMass());
-		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -104,7 +104,6 @@ public class Searcher{
 		nearestShopList.clear();
 		ShopSearchThread thread = new ShopSearchThread();
 		thread.setMass(player.getNowMass());
-		thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -138,11 +137,9 @@ public class Searcher{
 			thread.setMass(player.getNowMass());
 			Japan.getCoordinates(player.getNowMass()).open(0);
 			thread.setPriority(Thread.MAX_PRIORITY);
-			thread.setDaemon(true);
 			thread.start();
 
 			WaitThread wt = new WaitThread(2);
-			wt.setDaemon(true);
 			wt.start();
 			try {
 				wt.join();
@@ -168,6 +165,7 @@ public class Searcher{
 		}
 	}
 
+	/*
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
 	public static int searchShortestRouteSelectPlayer(Player selectedPlayer) {
 		//再探索は10回まで(1回で出てほしい…)
@@ -176,15 +174,16 @@ public class Searcher{
 		do{
 			Japan.allClose();
 			//Threadを立ち上げる
-			OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
-			thread.setMass(selectedPlayer.getNowMass());
-			Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
-			thread.setPriority(Thread.MAX_PRIORITY);
-			thread.setDaemon(true);
-			thread.start();
+			OnlyDistanceSearchThread1 thread1 = new OnlyDistanceSearchThread1(OnlyDistanceSearchThread1.searchTime+againtime);
+			thread1.start();
+			OnlyDistanceSearchThread2 thread2 = new OnlyDistanceSearchThread2(OnlyDistanceSearchThread2.searchTime+againtime);
+			thread2.start();
+			OnlyDistanceSearchThread3 thread3 = new OnlyDistanceSearchThread3(OnlyDistanceSearchThread3.searchTime+againtime);
+			thread3.start();
+			OnlyDistanceSearchThread4 thread4 = new OnlyDistanceSearchThread4(OnlyDistanceSearchThread4.searchTime+againtime);
+			thread4.start();
 
-			WaitThread wt = new WaitThread(2,againtime);
-			wt.setDaemon(true);
+			WaitThread wt = new WaitThread(11,againtime);
 			wt.start();
 			try {
 				wt.join();
@@ -198,37 +197,71 @@ public class Searcher{
 		}while(!endflag && againtime<1000);
 		return 0;
 	}
+	*/
 
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
 	public static void searchShortestRouteAllPlayers() {
 		//再探索は10回まで(1回で出てほしい…)
-		for(Player selectedPlayer:Player.players.values()) {
-			int againtime=0;
-			boolean endflag;
-			do{
-				Japan.allClose();
-				//Threadを立ち上げる
-				OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread(selectedPlayer,OnlyDistanceSearchThread.searchTime+againtime);
-				thread.setMass(selectedPlayer.getNowMass());
-				Japan.getCoordinates(selectedPlayer.getNowMass()).open(0);
-				thread.setPriority(Thread.MAX_PRIORITY);
-				thread.setDaemon(true);
-				thread.start();
-
-				WaitThread wt = new WaitThread(2,againtime);
-				wt.setDaemon(true);
-				wt.start();
-				try {
-					wt.join();
-				}catch(InterruptedException e) {
-					e.printStackTrace();
-				}
-				againtime+=100;
-				System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
-				endflag = true;
-				if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
-			}while(!endflag && againtime<1000);
-		}
-		//eturn 0;
+		int againtime=0;
+		boolean endflag1=false,endflag2=false,endflag3=false,endflag4=false;
+		OnlyDistanceSearchThread1 thread1 = new OnlyDistanceSearchThread1();
+		OnlyDistanceSearchThread2 thread2 = new OnlyDistanceSearchThread2();
+		OnlyDistanceSearchThread3 thread3 = new OnlyDistanceSearchThread3();
+		OnlyDistanceSearchThread4 thread4 = new OnlyDistanceSearchThread4();
+		do{
+			//Threadを立ち上げる
+			if(!endflag1) {
+				thread1 = new OnlyDistanceSearchThread1(OnlyDistanceSearchThread1.searchTime+againtime);
+				thread1.start();
+			}
+			if(!endflag2) {
+				thread2 = new OnlyDistanceSearchThread2(OnlyDistanceSearchThread2.searchTime+againtime);
+				thread2.start();
+			}
+			if(!endflag3) {
+				thread3 = new OnlyDistanceSearchThread3(OnlyDistanceSearchThread3.searchTime+againtime);
+				thread3.start();
+			}
+			if(!endflag4) {
+				thread4 = new OnlyDistanceSearchThread4(OnlyDistanceSearchThread4.searchTime+againtime);
+				thread4.start();
+			}
+			WaitThread wt = new WaitThread(11,againtime);
+			wt.start();
+			try {
+				wt.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+			againtime+=100;
+			if(!ContainsEvent.isDefaultGoalDistance(Player.getPlayer(0))) {
+				System.out.println("thread1:end");
+				endflag1=true;
+			}
+			if(!endflag1) {
+				System.out.println("again:"+(againtime/100)+"     thread1");
+			}
+			if(!ContainsEvent.isDefaultGoalDistance(Player.getPlayer(1))) {
+				System.out.println("thread2:end");
+				endflag2=true;
+			}
+			if(!endflag2) {
+				System.out.println("again:"+(againtime/100)+"     thread2");
+			}
+			if(!ContainsEvent.isDefaultGoalDistance(Player.getPlayer(2))) {
+				System.out.println("thread3:end");
+				endflag3=true;
+			}
+			if(!endflag3) {
+				System.out.println("again:"+(againtime/100)+"     thread3");
+			}
+			if(!ContainsEvent.isDefaultGoalDistance(Player.getPlayer(3))) {
+				System.out.println("thread4:end");
+				endflag4=true;
+			}
+			if(!endflag4) {
+				System.out.println("again:"+(againtime/100)+"     thread4");
+			}
+		}while(!(endflag1 && endflag2 && endflag3 && endflag4) && againtime<500);
 	}
 }

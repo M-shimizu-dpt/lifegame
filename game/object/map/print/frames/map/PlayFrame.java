@@ -64,8 +64,6 @@ public class PlayFrame extends FrameModel{
 		Player.initPlayers(this, playerCount);
 		Player.initNowPlayer();
 
-
-
   	    Japan.initGoal();
   	    setGoalColor();
 
@@ -76,8 +74,6 @@ public class PlayFrame extends FrameModel{
     	moveLabel.setName("moves");
     	play.setBackground(Color.ORANGE);
     	closeMoveButton();
-
-
 	}
 
     public void open() {

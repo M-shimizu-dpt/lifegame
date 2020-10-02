@@ -1,13 +1,8 @@
 package lifegame.game.object.map.print.frames;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -27,30 +22,9 @@ public class ConfirmationFrame extends FrameModel{
 	public void open(String title,String article) {
 		this.setTitle(title);
 		JLayeredPane confirmation = this.getLayeredPane();
-		List<String> articles = new ArrayList<String>();
 
-		if(article.length()>35) {
-			List<String> list = new ArrayList<String>();
-			if(article.contains("\n")) {//改行文字毎に改行
-				list.addAll(Arrays.asList(article.split("\n")));
-			}else {
-				list.add(article);
-			}
-			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
-				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
-				while (m.find()) {
-					articles.add(m.group());
-				}
-			}
-		}else {
-			articles.add(article);
-		}
-		if(articles.size()>13) System.out.println("はみ出ています");
-		String artresult="<html><body>";
-		for(String art : articles) {
-			artresult = artresult + art + "<br />";
-		}
-		artresult=artresult+"</body></html>";
+		String artresult = FrameEvent.adjustText(article);
+
 		JLabel art = createText(0,0,800,600,20,artresult);
 		art.setHorizontalAlignment(SwingConstants.LEFT);
 		art.setVerticalAlignment(SwingConstants.TOP);
@@ -62,30 +36,7 @@ public class ConfirmationFrame extends FrameModel{
 	public void open(String title,String article,int time) {
 		this.setTitle(title);
 		JLayeredPane confirmation = this.getLayeredPane();
-		List<String> articles = new ArrayList<String>();
-
-		if(article.length()>35) {
-			List<String> list = new ArrayList<String>();
-			if(article.contains("\n")) {//改行文字毎に改行
-				list.addAll(Arrays.asList(article.split("\n")));
-			}else {
-				list.add(article);
-			}
-			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
-				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
-				while (m.find()) {
-					articles.add(m.group());
-				}
-			}
-		}else {
-			articles.add(article);
-		}
-		if(articles.size()>13) System.out.println("はみ出ています");
-		String artresult="<html><body>";
-		for(String art : articles) {
-			artresult = artresult + art + "<br />";
-		}
-		artresult=artresult+"</body></html>";
+		String artresult = FrameEvent.adjustText(article);
 		JLabel art = createText(0,0,800,600,20,artresult);
 		art.setHorizontalAlignment(SwingConstants.LEFT);
 		art.setVerticalAlignment(SwingConstants.TOP);
