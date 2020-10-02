@@ -147,9 +147,6 @@ public abstract class ContainsEvent {
 	public static boolean money(Card card,int price) {
 		return card.getBuyPrice()==price;
 	}
-	public static boolean propertySize() {
-		return Player.player.getPropertys().size() > 0;
-	}
 	public static boolean propertySize(ArrayList<Property> propertys) {
 		return Player.player.getPropertys().size() > propertys.size();
 	}
@@ -367,8 +364,8 @@ public abstract class ContainsEvent {
 		Player player = Binbo.getBinboPlayer();
 		return player!=null;
 	}
-	public static boolean isBonbyBefore() {
-		return !Binbo.getBonbyBefore().isEmpty();
+	public static boolean isBonbyPredecessor() {
+		return !Binbo.getBonbyPredecessor().isEmpty();
 	}
 	public static boolean isEffect() {
 		if(Player.player.getEffect() != 0) {
@@ -519,8 +516,8 @@ public abstract class ContainsEvent {
 	public static boolean isMaxCard(Player player) {
 		return player.getCardSize()>8;
 	}
-	public static boolean isBonbyLastBefore() {
-		return ContainsEvent.isBinboPlayer(Binbo.getBonbyLastBefore(), Binbo.getSameMassPlayers());
+	public static boolean isBonbyLastPredecessor() {
+		return ContainsEvent.isBinboPlayer(Binbo.getBonbyLastPredecessor(), Binbo.getSameMassPlayers());
 	}
 	public static boolean isTurn(int num) {
 		return App.turn==num;
@@ -555,6 +552,12 @@ public abstract class ContainsEvent {
 
 	public static boolean isBuyProperty(Property pt) {
 		return pt.getAmount()<Player.player.getMoney();
+	}
+	public static boolean isHaveProperty() {
+		return !Player.player.getPropertys().isEmpty();
+	}
+	public static boolean isHaveProperty(Player player) {
+		return !player.getPropertys().isEmpty();
 	}
 	public static boolean isHaveCard() {
 		return !Player.player.getCards().isEmpty();

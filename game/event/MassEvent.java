@@ -45,7 +45,7 @@ public abstract class MassEvent {
 			shopEvent();
 		}else{
 			if(ContainsEvent.goal(massName)) {
-				FrameEvent.openGoal();
+				goal();
 			}else {
 				FrameEvent.printPropertys(massName,2);
 			}
@@ -53,6 +53,11 @@ public abstract class MassEvent {
 		//massEventEnd();
 	}
 
+
+	private static void goal() {
+		Searcher.searchShortestRouteAllPlayers();
+		FrameEvent.openGoal();
+	}
 
 	//青マスイベント
 	private static void blueEvent() {
@@ -83,7 +88,7 @@ public abstract class MassEvent {
 		result -= result%100;
 		System.out.println(-result);
 		Player.player.addMoney(-result);
-		if(ContainsEvent.money(0) < 0 && ContainsEvent.propertySize()) {
+		if(ContainsEvent.money(0) < 0 && ContainsEvent.isHaveProperty()) {
 			FrameEvent.openSellProperty();
 		}else{
 			if(rand.nextInt(100) < 3) {

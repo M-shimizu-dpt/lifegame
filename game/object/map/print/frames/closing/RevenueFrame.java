@@ -124,6 +124,9 @@ public class RevenueFrame extends FrameModel{
 		}
 
 		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		revenue.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		this.setVisible(true);
 		setCloseFrame();

@@ -23,10 +23,16 @@ public class CardFrame extends FrameModel{
 	public void open() {
 		JLayeredPane card = this.getLayeredPane();
 		JButton closeButton = createButton(570,400,100,40,10,"戻る");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
         JLabel titleName = createText(150,10,100,40,30,"名前");
         JLabel titleText = createText(420,10,100,40,30,"説明");
         for(int i=0;i<Player.player.getCardSize();i++) {
         	JButton useButton = createButton(10,35*(i+1)+30,70,30,10,"使用");
+        	if(!Player.player.isPlayer()) {
+    			useButton.setEnabled(false);
+    		}
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
         	JLabel labelName = createText(100,35*(i+1)+30,180,30,10,Player.player.getCardName(i));
         	JLabel labelText = createText(300,35*(i+1)+30,350,30,10,Player.player.getCardText(i));

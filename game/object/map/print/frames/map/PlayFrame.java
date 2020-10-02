@@ -14,7 +14,6 @@ import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.MoveEvent;
 import lifegame.game.event.Searcher;
-import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
@@ -63,8 +62,6 @@ public class PlayFrame extends FrameModel{
 		Player.initPlayers(this, playerCount);
 		Player.initNowPlayer();
 
-
-
   	    Japan.initGoal();
   	    setGoalColor();
 
@@ -75,11 +72,12 @@ public class PlayFrame extends FrameModel{
     	moveLabel.setName("moves");
     	play.setBackground(Color.ORANGE);
     	closeMoveButton();
-
-
 	}
 
     public void open() {
+    	if(!Player.player.isPlayer()) {
+			enableMenu();
+		}
     	this.setVisible(true);
     }
 
@@ -259,7 +257,7 @@ public class PlayFrame extends FrameModel{
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
 			Dice.clear();
-			BinboEvent.clearBefore();
+			BinboEvent.clearPredecessor();
 			if(!ContainsEvent.isUsedRandomCard()) {
 				massEvent();
 			}
@@ -287,11 +285,6 @@ public class PlayFrame extends FrameModel{
 
 	//メイン画面でのメニューボタンを表示
 	public void printMenu() {
-		saikoro.setVisible(true);
-		company.setVisible(true);
-		cardB.setVisible(true);
-		minimap.setVisible(true);
-		allmap.setVisible(true);
 		back.setVisible(true);
 	}
 
@@ -329,19 +322,10 @@ public class PlayFrame extends FrameModel{
 			closeMoveButton();
 		}else {
 			Searcher.searchShortestRoute(Player.player);
-			WaitThread thread = new WaitThread(2);
-			thread.setDaemon(true);
-			thread.start();
-			try {
-				thread.join();
-			}catch(InterruptedException e) {
-				e.printStackTrace();
-			}
+			moveLabel.setText("残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
+			moveLabel.setVisible(true);
+			this.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 		}
-
-		moveLabel.setText("残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
-		moveLabel.setVisible(true);
-		this.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 	}
 
 	public void waitButtonUpdate() {

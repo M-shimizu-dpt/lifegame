@@ -61,6 +61,9 @@ public class ShopFrame extends FrameModel{
 		JLayeredPane buyShop = this.getLayeredPane();
 
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		buyShop.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		JLabel myMoney = createText(10,5,400,40,10,"所持金"+Player.player.getMoney());
 		buyShop.add(myMoney);
@@ -68,7 +71,7 @@ public class ShopFrame extends FrameModel{
 		for(int i=1; i<=canBuyCardList.size(); i++) {
 			JButton buyButton = createButton(500,i*50,70,50,10,"購入");
 			buyButton.setActionCommand(canBuyCardList.get(i-1).getName()+":b");
-			if(canBuyCardList.get(i-1).getBuyPrice() > Player.player.getMoney() || Player.player.getCardSize() > 7) {
+			if(canBuyCardList.get(i-1).getBuyPrice() > Player.player.getMoney() || Player.player.getCardSize() > 7 || !Player.player.isPlayer()) {
 				buyButton.setEnabled(false);
 			}
 			buyShop.add(buyButton,JLayeredPane.PALETTE_LAYER,0);
@@ -88,9 +91,15 @@ public class ShopFrame extends FrameModel{
 		this.setTitle("売却");
 		JLayeredPane shopSell = this.getLayeredPane();
 		JButton closeButton = createButton(500,500,70,50,10,"戻る");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		shopSell.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		for(int i=1; i<=Player.player.getCardSize(); i++) {
 			JButton sellButton = createButton(500,i*50,70,50,10,"売却");
+			if(!Player.player.isPlayer()) {
+				sellButton.setEnabled(false);
+			}
 			sellButton.setActionCommand(Player.player.getCardName(i-1)+":s");
 			shopSell.add(sellButton,JLayeredPane.PALETTE_LAYER,0);
 			JLabel name = createText(10,i*50,300,50,10,Player.player.getCardName(i-1));

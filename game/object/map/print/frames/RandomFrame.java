@@ -13,7 +13,6 @@ import javax.swing.SwingConstants;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.RandomEvent;
-import lifegame.game.main.App;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
@@ -32,10 +31,10 @@ public class RandomFrame extends FrameModel{
 		}
 	}
 
-	public void open(int id) {
+	public void open(int id,int rand) {
 		this.id=id;
 		if(id==2){
-			open2();
+			open2(rand);
 		}
 	}
 
@@ -141,67 +140,64 @@ public class RandomFrame extends FrameModel{
 	 * 流れに合う箇所に記述する
 	 *
 	 */
-	private void open2() {
-		int rndnum;
-		rndnum = new Random().nextInt(11)+1;
+	private void open2(int rndnum) {
+
 		//System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
 
-		if(App.month==rndnum) {
-    		this.setTitle("トピックス");
-			JLayeredPane Random2 = this.getLayeredPane();
+		this.setTitle("トピックス");
+		JLayeredPane Random2 = this.getLayeredPane();
 
-    		JLabel text1=new JLabel();
-    		JLabel text2=new JLabel();
-    		JLabel text3=new JLabel();
-    		JLabel text4=new JLabel();
+		JLabel text1=new JLabel();
+		JLabel text2=new JLabel();
+		JLabel text3=new JLabel();
+		JLabel text4=new JLabel();
 
-    		text1 = createText(10,10,600,100,20,"トピックスです");
-        	text2 = createText(10,110,600,100,20,"全国の放送局で特集が放送されました！");
-    		text3 = createText(10,210,600,100,20,"テレビの影響はすごく,大きな収入が出ています。");
-    		//System.out.println("所持金");
-    		/*
-    		for(int i=0;i<4;i++) {
-    			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
-    		}
-    		*/
-
-    		//物件の情報を取得
-    		for(Property property : Japan.getPropertys()) {
-    			//オーナーの有無の判断
-    			if(ContainsEvent.isOwner(property)) {
-    				//物件が1かどうか判断
-    				if(property.getGroup()==1) {
-    					//物件の選出
-    					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
-    					//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
-    					//臨時収入を追加
-    					RandomEvent.random2Event(property,rndnum);
-    					break;
-    				}
-    			}
-        	}
-    		//System.out.println("所持金");
-    		/*
-    		for(int i=0;i<4;i++) {
-    			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
-    		}
-    		*/
-
-    		text1.setHorizontalAlignment(SwingConstants.LEFT);//左に寄せたいができない
-    		Random2.add(text1);
-    		text2.setHorizontalAlignment(SwingConstants.LEFT);
-    		Random2.add(text2);
-    		text3.setHorizontalAlignment(SwingConstants.LEFT);
-    		Random2.add(text3);
-    		text4.setHorizontalAlignment(SwingConstants.LEFT);
-    		Random2.add(text4);
-
-    		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
-    		closeButton .setActionCommand("閉じる2");
-    		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-    		this.setVisible(true);
-	    	setCloseFrame();
+		text1 = createText(10,10,600,100,20,"トピックスです");
+    	text2 = createText(10,110,600,100,20,"全国の放送局で特集が放送されました！");
+		text3 = createText(10,210,600,100,20,"テレビの影響はすごく,大きな収入が出ています。");
+		//System.out.println("所持金");
+		/*
+		for(int i=0;i<4;i++) {
+			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
 		}
+		*/
+
+		//物件の情報を取得
+		for(Property property : Japan.getPropertys()) {
+			//オーナーの有無の判断
+			if(ContainsEvent.isOwner(property)) {
+				//物件が1かどうか判断
+				if(property.getGroup()==1) {
+					//物件の選出
+					text4 = createText(10,310,600,100,20,"臨時収入が入ります(" + property.getOwner() + "の" + property.getName() + ")");
+					//System.out.println("臨時収入:"+property.getOwner()+"の"+ property.getName());
+					//臨時収入を追加
+					RandomEvent.random2Event(property,rndnum);
+					break;
+				}
+			}
+    	}
+		//System.out.println("所持金");
+		/*
+		for(int i=0;i<4;i++) {
+			System.out.println(Player.players.get(i).getName()+":"+Player.players.get(i).getMoney());
+		}
+		*/
+
+		text1.setHorizontalAlignment(SwingConstants.LEFT);//左に寄せたいができない
+		Random2.add(text1);
+		text2.setHorizontalAlignment(SwingConstants.LEFT);
+		Random2.add(text2);
+		text3.setHorizontalAlignment(SwingConstants.LEFT);
+		Random2.add(text3);
+		text4.setHorizontalAlignment(SwingConstants.LEFT);
+		Random2.add(text4);
+
+		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
+		closeButton .setActionCommand("閉じる2");
+		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
+		this.setVisible(true);
+    	setCloseFrame();
 	}
 
 	//指定のFrameを1秒後に閉じる

@@ -5,7 +5,11 @@
 package lifegame.game.event;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lifegame.game.main.App;
 import lifegame.game.object.Card;
@@ -89,6 +93,7 @@ public abstract class FrameEvent{
 
 	public static void closePopUp() {
 		confirmation.close();
+		play.open();
 	}
 
 	public static void setGoalColor() {
@@ -134,9 +139,37 @@ public abstract class FrameEvent{
 		play.open();
 	}
 
-	public static void openBinbo() {
+	public static String adjustText(String article){
+		List<String> articles = new ArrayList<String>();
+
+		if(article.length()>35) {
+			List<String> list = new ArrayList<String>();
+			if(article.contains("\n")) {//改行文字毎に改行
+				list.addAll(Arrays.asList(article.split("\n")));
+			}else {
+				list.add(article);
+			}
+			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
+				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
+				while (m.find()) {
+					articles.add(m.group());
+				}
+			}
+		}else {
+			articles.add(article);
+		}
+		if(articles.size()>13) System.out.println("はみ出ています");
+		String artresult="<html><body>";
+		for(String art : articles) {
+			artresult = artresult + art + "<br />";
+		}
+		artresult=artresult+"</body></html>";
+		return artresult;
+	}
+
+	public static void openBinbo(String playerName, String action, String binboName) {
 		play.close();
-		binbo.open();
+		binbo.open(playerName,action,binboName);
 	}
 
 	public static void closeBinbo() {
@@ -220,6 +253,7 @@ public abstract class FrameEvent{
 	public static void closeSellProperty() {
 		sellStation.close();
 		if(new Random().nextInt(100) < 3) {
+			RandomEvent.randomEvent();
 		}else {
 			MassEvent.massEventEnd();
 		}
@@ -313,8 +347,13 @@ public abstract class FrameEvent{
 	}
 
 	public static void openRandom2() {
-		play.close();
-		random.open(2);
+		if(ContainsEvent.isOwners()) {
+			int rndnum = new Random().nextInt(11)+1;
+			if(App.month==rndnum) {
+				play.close();
+				random.open(2,rndnum);
+			}
+		}
 	}
 
 	public static void closeRandom() {

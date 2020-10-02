@@ -27,6 +27,7 @@ import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
+import lifegame.game.object.map.print.frames.StartFrame;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
 import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
 
@@ -70,12 +71,8 @@ public class Player {
 
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
-  			if(playerCount>i) {//プレイヤー
-	  			Player.players.put(i,new Player("player"+(i+1),1000,i,true));
-	  		}else {//CPU
-  				Player.players.put(i,new Player("CPU"+(i+1-playerCount),1000,i,false));
-  			}
-  			Player.players.get(i).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(i).getName()));
+			Player.players.put(i,new Player(StartFrame.setNames.get(i),1000,i,true));
+			Player.players.get(i).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(i).getName()));
   	  		Player.players.get(i).getColt().setBackground(Color.BLACK);
   	  		Player.players.get(i).getColt().setName(Player.players.get(i).getName());
   	  		playFrame.getLayeredPane().add(Player.players.get(i).getColt(),JLayeredPane.PALETTE_LAYER,0);
