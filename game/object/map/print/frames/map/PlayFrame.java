@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import lifegame.game.event.BinboEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
-import lifegame.game.event.MassEvent;
 import lifegame.game.event.MoveEvent;
 import lifegame.game.event.Searcher;
 import lifegame.game.main.App;
@@ -101,7 +100,8 @@ public class PlayFrame extends FrameModel{
 
 	private void massEvent() {
 		closeMoveButton();
-		MassEvent.massEvent(this.getLayeredPane().getComponentAt(400, 300).getName());
+		App.turnEnd();
+		//MassEvent.massEvent(this.getLayeredPane().getComponentAt(400, 300).getName());
 		ableMenu();
 	}
 
@@ -275,6 +275,12 @@ public class PlayFrame extends FrameModel{
 			}
 		}
 		MoveEvent.moveTo(player, to);
+	}
+
+	//プレイマップの画面遷移処理//カード処理後MassEvent
+	public void moveMapsEvent() {
+		//CardEvent.resetFlags();
+		massEvent();
 	}
 
 	//メイン画面でのメニューボタンを表示

@@ -178,6 +178,16 @@ public class WaitThread extends Thread{
 			OnlyDistanceSearchThread3.initSearchTime();
 			OnlyDistanceSearchThread4.initSearchTime();
 			break;
+		case 12:
+			while(!MassEvent.isMassEventEnd()) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			MassEvent.initMassEvent();
+			break;
 		default:
 			assert null==null : "null";
 			break;

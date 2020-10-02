@@ -35,12 +35,15 @@ public class CardEvent{
 	public static void resetFlags() {
 		Card.resetFlags();
 	}
+	public static void resetUsedRandom(){
+		Card.resetUsedRandom();
+	}
 
-	public static void UseCard(String cmd) {
-		for(int i=0;i<Card.getCardListSize();i++) {
-			if(cmd.equals(Card.getCard(i).getName())) {//カードを使う
-				CardEvent.useAbilitys(i);//Card.getCard(i).useAbilitys(this);
-				if(ContainsEvent.id(Card.getCard(i),2)){
+	public static void useCard(String cmd) {
+		for(Card card : Card.getCardList()) {
+			if(cmd.equals(card.getName())) {
+				CardEvent.useAbilitys(card);
+				if(ContainsEvent.id(card,2)){
 					FrameEvent.moveMaps();
 					try {
 						Thread.sleep(2000);
@@ -104,102 +107,63 @@ public class CardEvent{
 
 	//0,1,2,3,4,5
 	private static void useAbility(Card card) {
-		Random rand = new Random();
 		if(card.getID()==0) {
 			Dice.setNum(card.getAbility());
 		}else if(card.getID() == 1) {
 			Card.usedFixed();
 			Dice.setResult(card.getAbility());
-		}else if(card.getID()==2) {
-			Coordinates coor = new Coordinates();
-			//誰に影響を与えるのか
+		}else {
 			Card.usedRandom();
-			if(card.getName().equals("サミットカード")) {
-				coor.setValue(Player.player.getNowMass());
-				for(int roop=0;roop<4;roop++) {
-					if(ContainsEvent.isTurn(roop))continue;
-					FrameEvent.moveMaps(Player.players.get(roop),coor);
-				}
-			}else if(card.getName().equals("北へ！カード")) {
-				do {
+			if(card.getID()==2) {
+				Coordinates coor = new Coordinates();
+				if(card.getName().equals("サミットカード")) {
+					coor = CardEvent.summit();
+					Card.usedCardAfterNotEvent();
+				}else if(card.getName().equals("北へ！カード")) {
+					coor = CardEvent.north();
+					Card.usedCardAfterNotEvent();
+				}else if(card.getName().equals("ピッタリカード")){
+					coor = CardEvent.just();
+					Card.usedCardAfterNotEvent();
+				}else if(card.getName().equals("足踏みカード")) {
+					coor = CardEvent.stayMass();
+				}else if(card.getName().equals("最寄り駅カード")){
+					coor = CardEvent.nearestStation();
+				}else if(card.getName().equals("星に願いをカード")){
+					coor = CardEvent.starsHope();
+				}else {//ぶっ飛び用
 					coor = useRandomAbility();
-				}while(Player.player.getNowMass().getY()<coor.getY());
-			}else if(card.getName().equals("ピッタリカード")){
-				coor.setValue(Player.player.getAnotherPlayer().getNowMass());
-			}else if(card.getName().equals("最寄り駅カード")){
-				Searcher.searchNearestStation(Player.player);
-				Thread thread = new Thread(new WaitThread(2));
-				thread.start();
-				try {
-					thread.join();
-				}catch(InterruptedException e) {
-					e.printStackTrace();
 				}
-				coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
-			}else if(card.getName().equals("星に願いをカード")){
-				Searcher.searchNearestShop(Player.player);
-				Thread thread = new Thread(new WaitThread(2));
-				thread.start();
-				try {
-					thread.join();
-				}catch(InterruptedException e) {
-					e.printStackTrace();
+				FrameEvent.moveMaps(Player.player,coor);
+				//Player.player.getNowMass().setValue(coor);
+			}else if(card.getID()==3) {
+				CardEvent.stepCow(card);
+				Card.usedCardAfterNotEvent();
+			}else if(card.getID()==4) {
+				if(card.getName().equals("一頭地を抜くカード")) {
+					CardEvent.richest();
+					Card.usedCardAfterNotEvent();
+				}else if(card.getName().equals("起死回生カード")) {
+					CardEvent.reDeath();
+					Card.usedCardAfterNotEvent();
+				}else if(card.getName().equals("徳政令カード")) {
+					CardEvent.decreeOfVirtue();
+					Card.resetUsedRandom();
 				}
-				coor.setValue(Searcher.nearestShopList.get(rand.nextInt(Searcher.nearestShopList.size())));
-			}else {
-				coor = useRandomAbility();
-			}
-			FrameEvent.moveMaps(Player.player,coor);
-			Player.player.getNowMass().setValue(coor);
-
-		}else if(card.getID()==3) {
-			int period;
-			do {
-				period = rand.nextInt(5);
-			}while(period <= 1);
-			Player.player.getAnotherPlayer().addBuff(card.getAbility(), period);
-		}else if(card.getID()==4) {
-			Card.usedOthers();
-			if(card.getName().equals("一頭地を抜くカード")) {
-				int maxMoney=0;
-				for(Player player:Player.players.values()) {
-					if(ContainsEvent.money(player, maxMoney)>0) {
-						maxMoney=player.getMoney();
-					}
+			}else if(card.getID()==5) {
+				if(card.getName().equals("福袋カード")) {
+					CardEvent.bags();
+					Card.resetUsedRandom();
+				}else if(card.getName().equals("ダビングカード")) {
+					CardEvent.dubbing();
+					Card.resetUsedRandom();
 				}
-				Player.player.addMoney(maxMoney);
-			}else if(card.getName().equals("起死回生カード")) {
-				if(ContainsEvent.money(0)<0) {
-					Player.player.addMoney(-Player.player.getMoney()*2);
-				}
-			}else if(card.getName().equals("徳政令カード")) {
-				for(int player=0;player<4;player++) {
-					if(ContainsEvent.money(Player.players.get(player), 0)<0) {
-						Player.players.get(player).addMoney(-Player.players.get(player).getMoney());
-					}
-				}
-			}
-		}else if(card.getID()==5) {
-			if(card.getName().equals("福袋カード")) {
-				int count=0;
-				do {
-					int randcard = rand.nextInt(Card.getCardListSize());
-					Player.player.addCard(Card.getCard(randcard));
-					if(Player.player.getCardSize()>8) {
-						FrameEvent.openError();
-						//window.cardFull();
-					}
-					count++;
-				}while(rand.nextInt(100)<50 && count<5);
-			}else if(card.getName().equals("ダビングカード")) {
-				FrameEvent.openDubbing();
 			}
 		}
 	}
 
-	public static void useAbilitys(int i) {
-		Card card = Card.getCard(i);
-
+	public static void useAbilitys(Card card) {
+		Card.used();
 		useAbility(card);
 
 		if(!Player.player.isPlayer()) System.out.println("Use Card!  "+card.getName()+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
@@ -212,10 +176,6 @@ public class CardEvent{
 			}
 		}else {
 			Player.player.removeCard(card);
-		}
-
-		if(!card.getName().equals("徳政令カード")) {
-			Card.used();//カードを使ったことにする
 		}
 	}
 
@@ -232,5 +192,104 @@ public class CardEvent{
 		return movedMass;
 	}
 
-
+	private static Coordinates stayMass() {
+		Coordinates coor = new Coordinates();
+		coor.setValue(Player.player.getNowMass());
+		return coor;
+	}
+	private static Coordinates summit() {
+		Coordinates coor = new Coordinates();
+		coor.setValue(Player.player.getNowMass());
+		for(int roop=0;roop<4;roop++) {
+			if(ContainsEvent.isTurn(roop))continue;
+			FrameEvent.moveMaps(Player.players.get(roop),coor);
+		}
+		return coor;
+	}
+	private static Coordinates north() {
+		Coordinates coor = new Coordinates();
+		do {
+			coor = useRandomAbility();
+		}while(Player.player.getNowMass().getY()<coor.getY());
+		return coor;
+	}
+	private static Coordinates just() {
+		Coordinates coor = new Coordinates();
+		coor.setValue(Player.player.getAnotherPlayer().getNowMass());
+		return coor;
+	}
+	private static Coordinates nearestStation() {
+		Coordinates coor = new Coordinates();
+		Random rand  = new Random();
+		Searcher.searchNearestStation(Player.player);
+		Thread thread = new Thread(new WaitThread(2));
+		thread.start();
+		try {
+			thread.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		coor.setValue(Searcher.nearestStationList.get(rand.nextInt(Searcher.nearestStationList.size())));
+		Card.resetUsedRandom();
+		return coor;
+	}
+	private static Coordinates starsHope() {
+		Coordinates coor = new Coordinates();
+		Random rand = new Random();
+		Searcher.searchNearestShop(Player.player);
+		Thread thread = new Thread(new WaitThread(2));
+		thread.start();
+		try {
+			thread.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		coor.setValue(Searcher.nearestShopList.get(rand.nextInt(Searcher.nearestShopList.size())));
+		Card.resetUsedRandom();
+		return coor;
+	}
+	private static void stepCow(Card card) {
+		Random rand = new Random();
+		int period;
+		do {
+			period = rand.nextInt(5);
+		}while(period <= 1);
+		Player.player.getAnotherPlayer().addBuff(card.getAbility(), period);
+	}
+	private static void richest() {
+		int maxMoney=0;
+		for(Player player:Player.players.values()) {
+			if(ContainsEvent.money(player, maxMoney)>0) {
+				maxMoney=player.getMoney();
+			}
+		}
+		Player.player.addMoney(maxMoney);
+	}
+	private static void reDeath() {
+		if(ContainsEvent.money(0)<0) {
+			Player.player.addMoney(-Player.player.getMoney()*2);
+		}
+	}
+	private static void decreeOfVirtue() {
+		for(int player=0;player<4;player++) {
+			if(ContainsEvent.money(Player.players.get(player), 0)<0) {
+				Player.players.get(player).addMoney(-Player.players.get(player).getMoney());
+			}
+		}
+	}
+	private static void bags() {
+		Random rand = new Random();
+		int count=0;
+		do {
+			int randcard = rand.nextInt(Card.getCardListSize());
+			Player.player.addCard(Card.getCard(randcard));
+			if(Player.player.getCardSize()>8) {
+				FrameEvent.openError();
+			}
+			count++;
+		}while(rand.nextInt(100)<50 && count<5);
+	}
+	private static void dubbing() {
+		FrameEvent.openDubbing();
+	}
 }

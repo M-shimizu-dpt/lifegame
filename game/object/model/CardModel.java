@@ -19,7 +19,7 @@ public abstract class CardModel {
 	protected static boolean usedCard;
 	protected static boolean usedFixedCard;
 	protected static boolean usedRandomCard;
-	protected static boolean usedOthersCard;
+	protected static boolean usedCardAfterNotEvent;
 
 
 	public int getAbility() {
@@ -168,21 +168,21 @@ public abstract class CardModel {
 		return usedRandomCard;
 	}
 
-	public static void resetUsedOthers() {
-		usedOthersCard=false;
+	public static void resetUsedCardAfterNotEvent() {
+		usedCardAfterNotEvent=false;
 	}
 
-	public static void usedOthers() {
-		usedOthersCard=true;
+	public static void usedCardAfterNotEvent() {
+		usedCardAfterNotEvent=true;
 	}
 
-	public static boolean isUsedOthers() {
-		return usedOthersCard;
+	public static boolean isUsedCardAfterNotEvent() {
+		return usedCardAfterNotEvent;
 	}
 	public static void resetFlags() {
 		usedCard=false;
 		usedFixedCard=false;
 		usedRandomCard=false;
-		usedOthersCard=false;
+		usedCardAfterNotEvent=false;
 	}
 }

@@ -182,6 +182,7 @@ public abstract class BinboEvent{
 					event= "変身";
 				}
 			}else if(ContainsEvent.binboNameKing()){
+				result += Binbo.getTurnCount();
 				if(result==0) {
 					//"カード増やす";
 					event= kingCardbuy();
@@ -308,7 +309,7 @@ public abstract class BinboEvent{
 		return "プレイヤーをどかしたいのねん。,でもまだ実装できてないにょろ~~";
 	}
 	public static String kingCardbuy() {
-		return "キングボンビーでデビルカードたちを呼びたい。,でもまだ実装できてないにょろ~~";
+		return "キングボンビーでデビルカードたちを呼びたい。,でもまだ実装できてないにょろ~~";//(カード自体がないにょろ)
 	}
 	public static String kingProperty() {
 		return "キングボンビーで物件を処分したい。,でもまだ実装できてないにょろ~~";
@@ -317,7 +318,17 @@ public abstract class BinboEvent{
 		return "キングボンビーでさいころ回してお金とりたい。,でもまだ実装できてないにょろ~~";
 	}
 	public static String kingCardSell() {
-		return "キングボンビーでカードを処分したい。,でもまだ実装できてないにょろ~~";
+		if(ContainsEvent.isHaveProperty()) {
+			ArrayList<Property> playersproperty = Player.player.getPropertys();
+			for(Property property : playersproperty) {
+				SaleEvent.lostPropertys(property);
+				System.out.print(property.getName());
+			}
+			return "キ~ングボンビー!!物件なんぞ集めてなにになる！,"+Player.player.getName()+"の全ての物件が処分された。";
+		}else {
+			return "キ~ングボンビー!!物件なんぞ集めてなにになる,なに!?処分する物件がないだと!?処分されずに済んだ";
+		}
+		//return "キングボンビーでカードを処分したい。,でもまだ実装できてないにょろ~~";
 	}
 	public static String kingMovePlayer() {
 		return "キングボンビーでプレイヤーをどかしたい。,でもまだ実装できてないにょろ~~";

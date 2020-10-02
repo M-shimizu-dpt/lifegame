@@ -255,7 +255,7 @@ public abstract class FrameEvent{
 		if(new Random().nextInt(100) < 3) {
 			RandomEvent.randomEvent();
 		}else {
-			App.turnEnd();
+			MassEvent.massEventEnd();
 		}
 		play.open();
 	}
@@ -274,6 +274,9 @@ public abstract class FrameEvent{
 
 	public static void moveMaps(Player player,Coordinates to) {
 		play.moveMaps(player, to);
+	}
+	public static void moveMapsEvent() {
+		play.moveMapsEvent();
 	}
 
 
@@ -304,7 +307,7 @@ public abstract class FrameEvent{
 		if(new Random().nextInt(100) < 3) {
 			RandomEvent.randomEvent();
 		}else {
-			App.turnEnd();
+			MassEvent.massEventEnd();
 		}
 		play.open();
 	}
@@ -355,7 +358,7 @@ public abstract class FrameEvent{
 
 	public static void closeRandom() {
 		random.close();
-		App.turnEnd();
+		MassEvent.massEventEnd();
 		play.open();
 	}
 	public static void closeRandom2() {
@@ -384,9 +387,9 @@ public abstract class FrameEvent{
 			if(new Random().nextInt(100) < 3) {
 				RandomEvent.randomEvent();
 			}else {
-				App.turnEnd();
+				MassEvent.massEventEnd();
+				play.open();
 			}
-			play.open();
 		}
 	}
 

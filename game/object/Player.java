@@ -161,12 +161,13 @@ public class Player {
 			//確率でカードを使用
 			int rand = new Random().nextInt(this.getCardSize()*2);
 			if(rand < this.getCardSize()) {
-				CardEvent.useAbilitys(rand);
-				if(this.getCard(rand).getID()==2) {
+				Card playercard = this.getCard(rand);
+				CardEvent.useAbilitys(playercard);
+				if(playercard.getID()==2) {
 					FrameEvent.moveMaps();//移動した人を一番真ん中に表示する。(カードの使用者がどこに移動したか分かるように)
 					Thread.sleep(2000);
 				}
-				if(ContainsEvent.isUsedRandomCard() || ContainsEvent.isUsedOthersCard()) {
+				if(ContainsEvent.isUsedRandomCard()) {
 					CardEvent.resetFlags();
 					FrameEvent.ableMenu();
 					diceFlag=false;
