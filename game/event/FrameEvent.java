@@ -59,7 +59,7 @@ public abstract class FrameEvent{
 	private static StartFrame start = new StartFrame();
 
 	public static void openClosing() {
-		play.close("closing");
+		play.close();
 		confirmation.open("決算","決算",100,3000);
 		ClosingEvent.closing();
 		try {//スムーズに決算処理に移れない可能性がある為、書き変える必要がある
@@ -110,7 +110,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openMiniMap() {
-		play.close("minimap");
+		play.close();
 		miniMap.open();
 	}
 
@@ -120,7 +120,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openAllMap() {
-		play.close("allMap");
+		play.close();
 		allMap.open();
 	}
 
@@ -130,7 +130,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openDice() {
-		play.close("dice");
+		play.close();
 		dice.open();
 	}
 
@@ -168,7 +168,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openBinbo(String playerName, String action, String binboName) {
-		play.close("binbo");
+		play.close();
 		binbo.open(playerName,action,binboName);
 	}
 
@@ -178,7 +178,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openGoal() {
-		play.close("goal");
+		play.close();
 		goal.open();
 	}
 
@@ -193,7 +193,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openError() {//errorをcardFullに改名
-		play.close("error");
+		play.close();
 		error.open();
 	}
 
@@ -211,7 +211,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openDubbing() {
-		play.close("dubbing");
+		play.close();
 		dubbing.open();
 	}
 
@@ -226,7 +226,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openInfo() {
-		play.close("info");
+		play.close();
 		info.open();
 	}
 
@@ -236,7 +236,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openCard() {
-		play.close("card");
+		play.close();
 		card.open();
 	}
 
@@ -246,7 +246,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openSellProperty() {
-		play.close("sell property");
+		play.close();
 		sellStation.open();
 	}
 
@@ -291,7 +291,7 @@ public abstract class FrameEvent{
 
 	public static void openShopFront() {
 		ArrayList<Card> cardList = CardEvent.getElectedCard();
-		play.close("shop");
+		play.close();
 		shopFront.setCardList(cardList);
 		shop.setCardList(cardList);
 		shopFront.open();
@@ -326,7 +326,7 @@ public abstract class FrameEvent{
 
 	//月が替わった時に何月か表示
 	public static void printMonthFrame() {//ConfirmationFrameにする
-		play.close("month");
+		play.close();
 		confirmation.open(App.month + "月", App.month + "月",100, 3000);
 		try {
 			Thread.sleep(3000);
@@ -339,7 +339,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openRandom1(double rand) {
-		play.close("random");
+		play.close();
 		random.open(1,rand);
 	}
 
@@ -347,7 +347,7 @@ public abstract class FrameEvent{
 		if(ContainsEvent.isOwners()) {
 			int rndnum = new Random().nextInt(11)+1;
 			if(App.month==rndnum) {
-				play.close("random2");
+				play.close();
 				random.open(2,rndnum);
 			}
 		}
@@ -370,7 +370,7 @@ public abstract class FrameEvent{
 		}else if(id==1) {
 			allMap.close();
 		}else if(id==2) {
-			play.close("station");
+			play.close();
 		}
 	}
 

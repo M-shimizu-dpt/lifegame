@@ -82,11 +82,6 @@ public class PlayFrame extends FrameModel{
     	this.setVisible(true);
     }
 
-    public void close(String event) {
-    	System.out.println("play close: "+event);
-    	this.setVisible(false);
-    }
-
 	//メイン画面でのメニューボタンを非表示
 	public void closeMenu() {
 		back.setVisible(false);
