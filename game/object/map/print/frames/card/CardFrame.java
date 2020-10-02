@@ -59,13 +59,16 @@ public class CardFrame extends FrameModel{
 			FrameEvent.closeCard();
 			return;
 		}else {
-			CardEvent.UseCard(cmd);
+			CardEvent.useCard(cmd);
 			FrameEvent.closeCard();
-			if(ContainsEvent.isUsedRandomCard() || ContainsEvent.isUsedOthersCard()) {
-				CardEvent.resetFlags();
+			if(ContainsEvent.isUsedRandomCard()) {
+				CardEvent.resetUsedRandom();
+				App.turnEnd();
+				/*
 				if(ContainsEvent.isPlayShowing()) {
 					App.turnEnd();
 				}
+				*/
 			}
 		}
 	}

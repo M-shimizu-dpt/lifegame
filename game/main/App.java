@@ -11,6 +11,7 @@ import lifegame.game.event.BinboEvent;
 import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
+import lifegame.game.event.MassEvent;
 import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
 import lifegame.game.object.Card;
@@ -111,6 +112,16 @@ public class App {
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
+
+			//MassEvent(Player.player.NowMass());
+			if(!ContainsEvent.isUsedCardAfterNotEvent())  {
+				MassEvent.massEvent(FrameEvent.getNowMassName());
+				//MassEvent用のWaitthread
+				WaitThread masseventfalg  = new WaitThread(12);//ターン終了まで待機
+				masseventfalg.start();
+				masseventfalg.join();
+			}
+
 			if(ContainsEvent.binboPlayer()) {
 				BinboEvent.start();
 				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機

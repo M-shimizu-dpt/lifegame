@@ -9,6 +9,19 @@ import lifegame.game.object.map.information.Japan;
 
 public abstract class MassEvent {
 	//マスに到着した時のマスのイベント処理
+	private static boolean massEventFlag=false;//MassEventフラグ
+
+  	public static void massEventEnd() {
+  		massEventFlag=true;
+  	}
+
+  	public static boolean isMassEventEnd() {
+  		return massEventFlag;
+  	}
+  	public static void initMassEvent() {
+  		massEventFlag=false;
+  	}
+
 	public static void massEvent(String massName) {
 		if(Player.isStop()) {
 			WaitThread wait = new WaitThread(7);
@@ -37,7 +50,9 @@ public abstract class MassEvent {
 				FrameEvent.printPropertys(massName,2);
 			}
 		}
+		//massEventEnd();
 	}
+
 
 	//青マスイベント
 	private static void blueEvent() {
@@ -53,7 +68,7 @@ public abstract class MassEvent {
 		if(rand.nextInt(100) < 3) {
 			RandomEvent.randomEvent();
 		}else {
-			App.turnEnd();
+			massEventEnd();
 		}
 	}
 
@@ -74,7 +89,7 @@ public abstract class MassEvent {
 			if(rand.nextInt(100) < 3) {
 				RandomEvent.randomEvent();
 			}else {
-				App.turnEnd();
+				massEventEnd();
 			}
 		}
 	}
@@ -113,7 +128,7 @@ public abstract class MassEvent {
 		if(rand.nextInt(100) < 3) {
 			RandomEvent.randomEvent();
 		}else {
-			App.turnEnd();
+			massEventEnd();
 		}
 	}
 

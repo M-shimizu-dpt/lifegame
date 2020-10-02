@@ -166,6 +166,16 @@ public class WaitThread extends Thread{
 			}
 			OnlyDistanceSearchThread.initSearchTime();
 			break;
+		case 12:
+			while(!MassEvent.isMassEventEnd()) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			MassEvent.initMassEvent();
+			break;
 		default:
 			break;
 

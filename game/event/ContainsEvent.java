@@ -545,11 +545,12 @@ public abstract class ContainsEvent {
 	public static boolean isUsedFixedCard() {
 		return Card.isUsedFixed();
 	}
+
 	public static boolean isUsedRandomCard() {
 		return Card.isUsedRandom();
 	}
-	public static boolean isUsedOthersCard() {
-		return Card.isUsedOthers();
+	public static boolean isUsedCardAfterNotEvent() {
+		return Card.isUsedCardAfterNotEvent();
 	}
 
 	public static boolean isBuyProperty(Property pt) {
