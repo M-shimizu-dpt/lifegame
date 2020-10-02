@@ -26,6 +26,8 @@ public class App {
 	private static boolean startFlag = false;//スタート画面が終わるまで待つためのフラグ
 	private static boolean turnEndFlag=false;//ターン交代するためのフラグ
 
+	public static boolean debugMode=true;//debug用(未使用)
+
 
     public static void main(String[] args) {
         App app = new App();
@@ -81,9 +83,7 @@ public class App {
   	private void play(int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		//BinboEvent.initBinbo();初期でボンビーを憑けないなら
-  		BinboEvent.initIsBinbo();//初期でボンビーを憑けさせるなら//debug
-
+  		BinboEvent.initBinbo(true);//debugモード→true
   		while(true) {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {
