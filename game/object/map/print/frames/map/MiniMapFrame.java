@@ -16,7 +16,11 @@ import lifegame.game.object.map.information.Station;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class MiniMapFrame extends FrameModel{
-
+	private JLabel p1 = new JLabel();
+	private JLabel p2 = new JLabel();
+	private JLabel p3 = new JLabel();
+	private JLabel p4 = new JLabel();
+	int x,y;
 	public MiniMapFrame() {
 		this.setTitle("詳細マップ");
 		JLayeredPane maps = this.getLayeredPane();
@@ -37,7 +41,8 @@ public class MiniMapFrame extends FrameModel{
 		maps.add(left,JLayeredPane.PALETTE_LAYER,0);
 		maps.add(top,JLayeredPane.PALETTE_LAYER,0);
 		maps.add(bottom,JLayeredPane.PALETTE_LAYER,0);
-
+		x=0;
+		y=0;
 		for(Coordinates coor : Japan.getAllCoordinates()) {
 			if(ContainsEvent.isStation(coor)) {//駅の座標が来たら
 				JButton button = createButton(coor.getX()*distance-20,coor.getY()*distance-5,60,30,8,Japan.getStationName(coor));
@@ -58,18 +63,22 @@ public class MiniMapFrame extends FrameModel{
 			}
 			if(maps.getComponent(i).getX() < 0 && cmd.equals("←")) {//左にフレームアウトしているコンポーネントが存在しない場合それ以上左に行けないようにする
 				x=50;
+				this.x+=50;
 				break;
 			}
 			if(maps.getComponent(i).getX() > 670 && cmd.equals("→")) {//右にフレームアウトしているコンポーネントが存在しない場合それ以上右に行けないようにする
 				x=-50;
+				this.x-=50;
 				break;
 			}
 			if(maps.getComponent(i).getY() < 0 && cmd.equals("↑")) {//上にフレームアウトしているコンポーネントが存在しない場合それ以上上に行けないようにする
 				y=50;
+				this.y+=50;
 				break;
 			}
 			if(maps.getComponent(i).getY() > 470 && cmd.equals("↓")) {//下にフレームアウトしているコンポーネントが存在しない場合それ以上下に行けないようにする
 				y=-50;
+				this.y-=50;
 				break;
 			}
 		}
@@ -83,13 +92,13 @@ public class MiniMapFrame extends FrameModel{
 	public void open() {
 		JLayeredPane maps = this.getLayeredPane();
 		int distance=70;
-		JLabel p1 = createText(Player.players.get(0).getNowMass().getX()*distance-15, Player.players.get(0).getNowMass().getY()*distance-5, 20, 10, 10, "1");
+		p1 = createText(Player.players.get(0).getNowMass().getX()*distance-15+x, Player.players.get(0).getNowMass().getY()*distance-5+y, 20, 10, 10, "1");
 		p1.setBackground(Color.BLACK);
-		JLabel p2 = createText(Player.players.get(1).getNowMass().getX()*distance+15, Player.players.get(1).getNowMass().getY()*distance-5, 20, 10, 10, "2");
+		p2 = createText(Player.players.get(1).getNowMass().getX()*distance+15+x, Player.players.get(1).getNowMass().getY()*distance-5+y, 20, 10, 10, "2");
 		p2.setBackground(Color.BLACK);
-		JLabel p3 = createText(Player.players.get(2).getNowMass().getX()*distance-15, Player.players.get(2).getNowMass().getY()*distance+15, 20, 10, 10, "3");
+		p3 = createText(Player.players.get(2).getNowMass().getX()*distance-15+x, Player.players.get(2).getNowMass().getY()*distance+15+y, 20, 10, 10, "3");
 		p3.setBackground(Color.BLACK);
-		JLabel p4 = createText(Player.players.get(3).getNowMass().getX()*distance+15, Player.players.get(3).getNowMass().getY()*distance+15, 20, 10, 10, "4");
+		p4 = createText(Player.players.get(3).getNowMass().getX()*distance+15+x, Player.players.get(3).getNowMass().getY()*distance+15+y, 20, 10, 10, "4");
 		p4.setBackground(Color.BLACK);
 		maps.add(p1,JLayeredPane.PALETTE_LAYER,-1);
 		maps.add(p2,JLayeredPane.PALETTE_LAYER,-1);
@@ -103,6 +112,15 @@ public class MiniMapFrame extends FrameModel{
 		*/
 		this.setVisible(true);
 	}
+
+	public void close() {
+		this.setVisible(false);
+		this.getLayeredPane().remove(p1);
+		this.getLayeredPane().remove(p2);
+		this.getLayeredPane().remove(p3);
+		this.getLayeredPane().remove(p4);
+	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

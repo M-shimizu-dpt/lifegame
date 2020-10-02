@@ -41,7 +41,7 @@ public abstract class BinboEvent{
 	//binboのターンメソッド
 	public static void start() {
 		String action = randomBinboEvent();
-		//String action = binboCardLost();//debug
+		//String action = cardLost();//debug
 		if(action=="変身") {
 			Binbo.clearTurnCount();
 			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),Binbo.getName()+"に変化した",Binbo.getName());
@@ -73,9 +73,9 @@ public abstract class BinboEvent{
 		*/
 	}
 
-	public static void clearBefore() {
-		if(ContainsEvent.isBonbyBefore()) {
-			Binbo.clearBonbyBefore();
+	public static void clearPredecessor() {
+		if(ContainsEvent.isBonbyPredecessor()) {
+			Binbo.clearBonbyPredecessor();
 		}
 	}
 
@@ -88,12 +88,12 @@ public abstract class BinboEvent{
 			 sameMassPlayerEvent();
 			if(ContainsEvent.binboPlayer()) {//ボンビーと一緒に移動していたら
 				if(ContainsEvent.isTogether()) {
-					Binbo.setBonbyBefore(binboplayer);//だれについていたかlist
+					Binbo.setBonbyPredecessor(binboplayer);//だれについていたかlist
 					BinboEvent.changeBonby(Binbo.getSameMassPlayer());//ボンビーつく人
 				}
 			}else {
 				if(ContainsEvent.coor(binboplayer,Player.player)) {
-					Binbo.setBonbyBefore(binboplayer);
+					Binbo.setBonbyPredecessor(binboplayer);
 					BinboEvent.changeBonby(Player.player);
 				}
 			}
@@ -103,15 +103,15 @@ public abstract class BinboEvent{
 	//ボンビー擦り付けメソッド--戻った際
 	public static void passingBackBonby() {
 		if(ContainsEvent.isBinboPlayer()){
-			if(ContainsEvent.isBonbyBefore()) {
-				Player bonbylastplayer = Binbo.getBonbyLastBefore();
+			if(ContainsEvent.isBonbyPredecessor()) {
+				Player bonbylastplayer = Binbo.getBonbyLastPredecessor();
 				if(ContainsEvent.isTogether()) {
 					if(ContainsEvent.id(bonbylastplayer,Player.player)) {//動いている人が前回のbinbo所持者だったら
-						Binbo.clearBonbyLastBefore();//リスト一番上消す
+						Binbo.clearBonbyLastPredecessor();//リスト一番上消す
 						BinboEvent.changeBonby(Player.player);
 					}else {//前回binbo所持者が止まっていたら
-						if(ContainsEvent.isBonbyLastBefore()) {
-							Binbo.clearBonbyLastBefore();//リスト一番上消す
+						if(ContainsEvent.isBonbyLastPredecessor()) {
+							Binbo.clearBonbyLastPredecessor();//リスト一番上消す
 							BinboEvent.changeBonby(bonbylastplayer);
 						}
 					}
@@ -211,19 +211,19 @@ public abstract class BinboEvent{
 			if(changeresult<10) {
 				if(result==0) {
 					//"カード増やす";
-					event= binboCardbuy();
+					event= cardBuy();
 				}else if(result==1) {
-					// "物件";
-					event=binboProperty();
+					// "物件";d
+					event=property();
 				}else if(result==2) {
 					//"さいころ降らす";
-					event= binboDice();
+					event= dice();
 				}else if(result==3) {
 					//"カードなくす";
-					event=binboCardLost();
+					event=cardLost();
 				}else if(result==4) {
 					//"プレイヤー移動系";
-					event= binboMovePlayer();
+					event= movePlayer();
 				}else if(result == 5){
 					event = "まだなにするかきめてないにょろ~~,案があればほしいにょろ~~。「"+result+"」";
 				}else if(result == 6){
@@ -239,7 +239,7 @@ public abstract class BinboEvent{
 			}
 			Binbo.addTurnCount();
 		}
-		//event = binboCardLost();
+		//event = cardLost();
 		return event;
 	}
 
@@ -264,7 +264,7 @@ public abstract class BinboEvent{
 		Binbo.binboMakeover();
 		Binbo.setName(name);
 	}
-	public static String binboCardbuy() {
+	public static String cardBuy() {
 		String cardname;
 		cardname = "徳政令カード";
 		for(Card card : Card.getCardList()) {
@@ -277,8 +277,8 @@ public abstract class BinboEvent{
 		return "予期しない,リターン";
 
 	}
-	public static String binboProperty() {
-		if(ContainsEvent.propertySize()) {
+	public static String property() {
+		if(ContainsEvent.isHaveProperty()) {
 			Random rand = new Random();
 			ArrayList<Property> playersproperty = Player.player.getPropertys();
 			int result = rand.nextInt(playersproperty.size()-1);
@@ -289,10 +289,10 @@ public abstract class BinboEvent{
 			return "お金にこまってそうなのねん。だから物件売ろうと思うのねん。でも売れる物件ないにょろ～,"+Player.player.getName()+"は物件を売られなくて済んだ。";
 		}
 	}
-	public static String binboDice() {
+	public static String dice() {
 		return "さいころふるゲームをじっそうしたいにょろ。,でもまだ実装できてないにょろ~~";
 	}
-	public static String binboCardLost() {
+	public static String cardLost() {
 		Card card;
 		if(ContainsEvent.isHaveCard()) {
 			Random rand = new Random();
@@ -304,7 +304,7 @@ public abstract class BinboEvent{
 			return "やっぱり最強のプレイヤーはカードいらないと思うのねん,捨てるカードないにょろ!?もう最強のプレイヤーにょろ!。"+Player.player.getName()+"はカードを捨てられなくて済んだ。";
 		}
 	}
-	public static String binboMovePlayer() {
+	public static String movePlayer() {
 		return "プレイヤーをどかしたいのねん。,でもまだ実装できてないにょろ~~";
 	}
 	public static String kingCardbuy() {
@@ -329,8 +329,8 @@ public abstract class BinboEvent{
 		result += result+(App.year/10)+50;
 		Player.player.addMoney(-result);
 		return "お小遣いほちいのねん"+","+Player.player.getName()+"は金額:"+result+"万円を支払った。";
-
 	}
+
 	public static String happyMoney() {
 		Random rand = new Random();
 		int result=0;
@@ -342,10 +342,10 @@ public abstract class BinboEvent{
 		System.out.println(result);
 		Player.player.addMoney(result);
 		return "貧乏なあなたにさしあげましょう"+","+Player.player.getName()+"は金額:"+result+"万円をもらった。";
-
 	}
+
 	public static String typhoon() {
-		if(ContainsEvent.propertySize()) {
+		if(ContainsEvent.isHaveProperty()) {
 			Random rand = new Random();
 			ArrayList<Property> playersproperty = Player.player.getPropertys();
 			String keepsellproperty = "";

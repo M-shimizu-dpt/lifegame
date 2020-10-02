@@ -93,6 +93,7 @@ public abstract class FrameEvent{
 
 	public static void closePopUp() {
 		confirmation.close();
+		play.open();
 	}
 
 	public static void setGoalColor() {
@@ -252,6 +253,7 @@ public abstract class FrameEvent{
 	public static void closeSellProperty() {
 		sellStation.close();
 		if(new Random().nextInt(100) < 3) {
+			RandomEvent.randomEvent();
 		}else {
 			App.turnEnd();
 		}
@@ -342,8 +344,13 @@ public abstract class FrameEvent{
 	}
 
 	public static void openRandom2() {
-		play.close();
-		random.open(2);
+		if(ContainsEvent.isOwners()) {
+			int rndnum = new Random().nextInt(11)+1;
+			if(App.month==rndnum) {
+				play.close();
+				random.open(2,rndnum);
+			}
+		}
 	}
 
 	public static void closeRandom() {

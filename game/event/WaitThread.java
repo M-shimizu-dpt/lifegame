@@ -141,7 +141,7 @@ public class WaitThread extends Thread{
 
 				}
 			}
-			RandomEvent.initEndFlag();;
+			RandomEvent.initEndFlag();
 			break;
 		case 9:
 			while(!ContainsEvent.isThrowed()) {
@@ -179,6 +179,7 @@ public class WaitThread extends Thread{
 			OnlyDistanceSearchThread4.initSearchTime();
 			break;
 		default:
+			assert null==null : "null";
 			break;
 
 		}

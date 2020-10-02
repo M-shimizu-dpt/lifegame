@@ -16,6 +16,10 @@ import lifegame.game.object.map.information.Station;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class AllMapFrame extends FrameModel{
+	private JLabel p1 = new JLabel();
+	private JLabel p2 = new JLabel();
+	private JLabel p3 = new JLabel();
+	private JLabel p4 = new JLabel();
 	public AllMapFrame() {
 		this.setTitle("全体マップ");
 		JLayeredPane maps = this.getLayeredPane();
@@ -37,13 +41,13 @@ public class AllMapFrame extends FrameModel{
 	public void open() {
 		JLayeredPane maps = this.getLayeredPane();
 		int distance=30;
-		JLabel p1 = createText(Player.players.get(0).getNowMass().getX()*distance-5, Player.players.get(0).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "1");
+		p1 = createText(Player.players.get(0).getNowMass().getX()*distance-5, Player.players.get(0).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "1");
 		p1.setBackground(Color.BLACK);
-		JLabel p2 = createText(Player.players.get(1).getNowMass().getX()*distance+5, Player.players.get(1).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "2");
+		p2 = createText(Player.players.get(1).getNowMass().getX()*distance+5, Player.players.get(1).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "2");
 		p2.setBackground(Color.BLACK);
-		JLabel p3 = createText(Player.players.get(2).getNowMass().getX()*distance-5, Player.players.get(2).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "3");
+		p3 = createText(Player.players.get(2).getNowMass().getX()*distance-5, Player.players.get(2).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "3");
 		p3.setBackground(Color.BLACK);
-		JLabel p4 = createText(Player.players.get(3).getNowMass().getX()*distance+5, Player.players.get(3).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "4");
+		p4 = createText(Player.players.get(3).getNowMass().getX()*distance+5, Player.players.get(3).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "4");
 		p4.setBackground(Color.BLACK);
 		maps.add(p1,JLayeredPane.PALETTE_LAYER,-1);
 		maps.add(p2,JLayeredPane.PALETTE_LAYER,-1);
@@ -56,6 +60,14 @@ public class AllMapFrame extends FrameModel{
 		component.setBackground(Color.MAGENTA);
 		*/
 		this.setVisible(true);
+	}
+
+	public void close() {
+		this.setVisible(false);
+		this.getLayeredPane().remove(p1);
+		this.getLayeredPane().remove(p2);
+		this.getLayeredPane().remove(p3);
+		this.getLayeredPane().remove(p4);
 	}
 
 	@Override

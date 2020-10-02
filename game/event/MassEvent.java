@@ -73,7 +73,7 @@ public abstract class MassEvent {
 		result -= result%100;
 		System.out.println(-result);
 		Player.player.addMoney(-result);
-		if(ContainsEvent.money(0) < 0 && ContainsEvent.propertySize()) {
+		if(ContainsEvent.money(0) < 0 && ContainsEvent.isHaveProperty()) {
 			FrameEvent.openSellProperty();
 		}else{
 			if(rand.nextInt(100) < 3) {
