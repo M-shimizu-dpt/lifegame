@@ -96,9 +96,6 @@ public class App {
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
 		  	Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
-		  	WaitThread waitthred  = new WaitThread(2);//再探索に対応していない為、3回程再探索を行っていた場合reloadInfoで正しく更新されない可能性がある。
-		  	waitthred.start();
-		  	waitthred.join();
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadInfo();//画面上部に表示している情報を更新

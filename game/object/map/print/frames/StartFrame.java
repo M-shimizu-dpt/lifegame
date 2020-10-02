@@ -52,7 +52,6 @@ public class StartFrame extends JFrame implements ActionListener{
     	this.setVisible(true);
 
     	WaitThread wait = new WaitThread(10);
-    	wait.setDaemon(true);
     	wait.start();
     	try {
     		wait.join();

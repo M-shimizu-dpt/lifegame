@@ -13,7 +13,7 @@ public abstract class Binbo{
 	private static Player binboplayer;
 	private static int turncount = 0;
 	private static ArrayList<Player> together = new ArrayList<Player>();
-	private static ArrayList<Player> before = new ArrayList<Player>();
+	private static ArrayList<Player> predecessor = new ArrayList<Player>();
 	//private ArrayList<Coordinates> allplayernowMass = new ArrayList<Coordinates>();//将来的に全員にbufさせるために全員の位置を取得する
 
 	//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)
@@ -44,13 +44,13 @@ public abstract class Binbo{
 	}
 
 	//ボンビーが前回憑いていた人を初期化
-	public static void clearBonbyBefore() {
-		before.clear();
+	public static void clearBonbyPredecessor() {
+		predecessor.clear();
 	}
 
 	//ボンビーが前回憑いていた人を直近のプレイヤーをListから削除
-	public static void clearBonbyLastBefore() {
-		before.remove(before.size()-1);
+	public static void clearBonbyLastPredecessor() {
+		predecessor.remove(predecessor.size()-1);
 	}
 
 	//ボンビーの名前取得メソッド
@@ -79,13 +79,13 @@ public abstract class Binbo{
 	}
 
 	//ボンビーが前回憑いていた人を取得
-	public static ArrayList<Player> getBonbyBefore() {
-		return before;
+	public static ArrayList<Player> getBonbyPredecessor() {
+		return predecessor;
 	}
 
 	//ボンビーが前回憑いていた人を直近でだれからもらったか取得
-	public static Player getBonbyLastBefore() {
-		return before.get(before.size()-1);
+	public static Player getBonbyLastPredecessor() {
+		return predecessor.get(predecessor.size()-1);
 	}
 
 	//ボンビーが憑くプレイヤーをセット
@@ -99,8 +99,8 @@ public abstract class Binbo{
 	}
 
 	//ボンビーが前回憑いていた人を記憶
-	public static void setBonbyBefore(Player beforeplayer) {
-		before.add(beforeplayer);
+	public static void setBonbyPredecessor(Player predecessorplayer) {
+		predecessor.add(predecessorplayer);
 	}
 
 

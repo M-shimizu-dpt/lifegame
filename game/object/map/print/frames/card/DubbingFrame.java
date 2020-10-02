@@ -26,6 +26,9 @@ public class DubbingFrame extends FrameModel{
         JLabel titleText = createText(420,10,100,40,30,"説明");
         for(int roop=0;roop<Player.player.getCardSize();roop++) {
         	JButton useButton = createButton(10,35*(roop+1)+30,70,30,10,"複製");
+        	if(!Player.player.isPlayer()) {
+    			useButton.setEnabled(false);
+    		}
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
         	JLabel labelName = createText(100,35*(roop+1)+30,180,30,10,Player.player.getCardName(roop));
         	JLabel labelText = createText(300,35*(roop+1)+30,350,30,10,Player.player.getCardText(roop));

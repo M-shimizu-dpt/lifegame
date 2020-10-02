@@ -13,15 +13,13 @@ import lifegame.game.object.map.information.Japan;
 public class SearchThread extends SearchThreadModel{
 	protected Coordinates start = new Coordinates();
 
-	public SearchThread() {
-
-	}
-
 	//start
 	public SearchThread(Coordinates start) {
 		this.start.setValue(start);
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=500;
+		this.setMass(start);
+		this.setPriority(MAX_PRIORITY);
 		SearchThread.initSearchTime();
 	}
 
@@ -30,6 +28,8 @@ public class SearchThread extends SearchThreadModel{
 		this.start.setValue(start);
 		Searcher.time = System.currentTimeMillis();
 		Searcher.count=500;
+		this.setMass(start);
+		this.setPriority(MAX_PRIORITY);
 		SearchThread.initSearchTime(searchTime);
 	}
 

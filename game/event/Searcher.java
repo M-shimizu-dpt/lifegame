@@ -131,12 +131,8 @@ public class Searcher{
 		int againtime=0;
 		do{
 			nearestTrajectoryList.clear();
-			Japan.allClose();
 			//Threadを立ち上げる
 			SearchThread thread = new SearchThread(player.getNowMass(),SearchThread.searchTime+againtime);
-			thread.setMass(player.getNowMass());
-			Japan.getCoordinates(player.getNowMass()).open(0);
-			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.start();
 
 			WaitThread wt = new WaitThread(2);

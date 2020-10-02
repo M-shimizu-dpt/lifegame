@@ -123,6 +123,9 @@ public class AssetsFrame extends FrameModel{
 			Assets.add(playerAssetsLabel,JLayeredPane.DEFAULT_LAYER,0);
 		}
 		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
+		if(!Player.player.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		Assets.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 
 		this.setVisible(true);

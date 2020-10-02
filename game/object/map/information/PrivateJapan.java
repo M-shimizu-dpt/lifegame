@@ -516,7 +516,6 @@ public class PrivateJapan {
 				return list.get(i);
 			}
 		}
-
 		return null;
 	}
 
