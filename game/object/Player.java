@@ -71,7 +71,11 @@ public class Player {
 
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
-			Player.players.put(i,new Player(StartFrame.setNames.get(i),1000,i,true));
+			if(playerCount>i) {//プレイヤー
+	  			Player.players.put(i,new Player(StartFrame.setNames.get(i),1000,i,true));
+	  		}else {//CPU
+  				Player.players.put(i,new Player(StartFrame.setNames.get(i),1000,i,false));
+  			}
 			Player.players.get(i).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(i).getName()));
   	  		Player.players.get(i).getColt().setBackground(Color.BLACK);
   	  		Player.players.get(i).getColt().setName(Player.players.get(i).getName());
