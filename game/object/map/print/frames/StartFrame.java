@@ -28,9 +28,9 @@ public class StartFrame extends JFrame implements ActionListener{
 	}
 
 	public static ArrayList<String> setNames = new ArrayList<String>();
-	public static int playerOrder;
+	ButtonGroup Order;
+	public int playerorder;
 	public static ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
-	private ButtonGroup Order;
 
 	public int[] open() {
   		JLayeredPane start = this.getLayeredPane();
@@ -160,14 +160,14 @@ public class StartFrame extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		String str = Order.getSelection().getActionCommand();
-		playerOrder=Integer.valueOf(str);
+		playerorder=Integer.valueOf(str);
 		if(PlayerOrder.size()!=0) {
 			PlayerOrder.clear();
 		}
 		for(int i=0;i<4;i++) {
 			PlayerOrder.add(i);
 		}
-		if(playerOrder==0) {
+		if(playerorder==0) {
 			Collections.shuffle(PlayerOrder);//順番のシャッフル
 			//System.out.println(PlayerOrder);
 		}else {
@@ -180,5 +180,11 @@ public class StartFrame extends JFrame implements ActionListener{
     	}
 	}
 
+	public int getPlayerOrder(int index) {
+		return PlayerOrder.get(index);
+	}
 
+	public String getPlayerName(int index) {
+		return setNames.get(index);
+	}
 }
