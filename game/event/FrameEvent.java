@@ -96,19 +96,6 @@ public abstract class FrameEvent{
 		play.open();
 	}
 
-	public static void setGoalColor() {
-		play.setGoalColor();
-	}
-
-	public static void resetGoalColor() {
-		play.resetGoalColor();
-	}
-
-	public static void init(int playerCount){
-		play.init(playerCount);
-        play.open();
-	}
-
 	public static void openMiniMap() {
 		play.close();
 		miniMap.open();
@@ -137,34 +124,6 @@ public abstract class FrameEvent{
 	public static void closeDice() {
 		dice.close();
 		play.open();
-	}
-
-	public static String adjustText(String article){
-		List<String> articles = new ArrayList<String>();
-
-		if(article.length()>35) {
-			List<String> list = new ArrayList<String>();
-			if(article.contains("\n")) {//改行文字毎に改行
-				list.addAll(Arrays.asList(article.split("\n")));
-			}else {
-				list.add(article);
-			}
-			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
-				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
-				while (m.find()) {
-					articles.add(m.group());
-				}
-			}
-		}else {
-			articles.add(article);
-		}
-		if(articles.size()>13) System.out.println("はみ出ています");
-		String artresult="<html><body>";
-		for(String art : articles) {
-			artresult = artresult + art + "<br />";
-		}
-		artresult=artresult+"</body></html>";
-		return artresult;
 	}
 
 	public static void openBinbo(String playerName, String action, String binboName) {
@@ -200,14 +159,6 @@ public abstract class FrameEvent{
 	public static void closeError() {
 		cardFull.close();
 		play.open();
-	}
-
-	public static boolean isThrowed() {
-		return cardFull.isThrowed();
-	}
-
-	public static void initThrowFlag() {
-		cardFull.initThrowFlag();
 	}
 
 	public static void openDubbing() {
@@ -260,34 +211,6 @@ public abstract class FrameEvent{
 		play.open();
 	}
 
-	public static void waitButtonUpdate() {
-  		play.waitButtonUpdate();
-	}
-
-	public static void moveMaps() {
-		play.moveMaps();
-	}
-
-	public static void moveMaps(int x,int y) {
-		play.moveMaps(x,y);
-	}
-
-	public static void moveMaps(Player player,Coordinates to) {
-		play.moveMaps(player, to);
-	}
-	public static void moveMapsEvent() {
-		play.moveMapsEvent();
-	}
-
-
-	public static void reloadInfo() {
-		play.reloadInfo();
-	}
-
-	public static void printMenu() {
-		play.printMenu();
-	}
-
 	public static int[] openStartFrame() {
 		return start.open();
 	}
@@ -328,7 +251,7 @@ public abstract class FrameEvent{
 	}
 
 	//月が替わった時に何月か表示
-	public static void printMonthFrame() {//ConfirmationFrameにする
+	public static void openMonthFrame() {//ConfirmationFrameにする
 		play.close();
 		confirmation.open(App.month + "月", App.month + "月",100, 3000);
 		try {
@@ -361,6 +284,7 @@ public abstract class FrameEvent{
 		MassEvent.massEventEnd();
 		play.open();
 	}
+
 	public static void closeRandom2() {
 		random.close();
 		play.open();
@@ -397,6 +321,12 @@ public abstract class FrameEvent{
 		play.closeMoveButton();
 	}
 
+
+
+	public static void printMenu() {
+		play.printMenu();
+	}
+
 	public static void ableMenu() {
 		play.ableMenu();
 	}
@@ -417,6 +347,43 @@ public abstract class FrameEvent{
 		play.closeMenu();
 	}
 
+	public static void setGoalColor() {
+		play.setGoalColor();
+	}
+
+	public static void resetGoalColor() {
+		play.resetGoalColor();
+	}
+
+	public static void init(int playerCount){
+		play.init(playerCount);
+        play.open();
+	}
+
+	public static void waitButtonUpdate() {
+  		play.waitButtonUpdate();
+	}
+
+	public static void moveMaps() {
+		play.moveMaps();
+	}
+
+	public static void moveMaps(int x,int y) {
+		play.moveMaps(x,y);
+	}
+
+	public static void moveMaps(Player player,Coordinates to) {
+		play.moveMaps(player, to);
+	}
+
+	public static void moveMapsEvent() {
+		play.moveMapsEvent();
+	}
+
+	public static void reloadInfo() {
+		play.reloadInfo();
+	}
+
 	//最終結果表示
 	public static void finish() {//ConfirmationFrame
 		openClosing();
@@ -430,5 +397,41 @@ public abstract class FrameEvent{
 
 	public static boolean isPlayShowing() {
 		return play.isShowing();
+	}
+
+	public static boolean isThrowed() {
+		return cardFull.isThrowed();
+	}
+
+	public static void initThrowFlag() {
+		cardFull.initThrowFlag();
+	}
+
+	public static String adjustText(String article){
+		List<String> articles = new ArrayList<String>();
+
+		if(article.length()>35) {
+			List<String> list = new ArrayList<String>();
+			if(article.contains("\n")) {//改行文字毎に改行
+				list.addAll(Arrays.asList(article.split("\n")));
+			}else {
+				list.add(article);
+			}
+			for(String longart:list) {//改行しても35文字を超える場合は超えたところで改行
+				Matcher m = Pattern.compile("[\\s\\S]{1,35}").matcher(longart);
+				while (m.find()) {
+					articles.add(m.group());
+				}
+			}
+		}else {
+			articles.add(article);
+		}
+		if(articles.size()>13) System.out.println("はみ出ています");
+		String artresult="<html><body>";
+		for(String art : articles) {
+			artresult = artresult + art + "<br />";
+		}
+		artresult=artresult+"</body></html>";
+		return artresult;
 	}
 }
