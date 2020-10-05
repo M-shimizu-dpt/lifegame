@@ -71,24 +71,24 @@ public class Player {
 
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
-			if(StartFrame.playerOrder==0) {//順番入れ替え
+			if(FrameEvent.getOrder()==0) {//順番入れ替え
 				if(playerCount>i) {//player
-					Player.players.put(StartFrame.PlayerOrder.get(i),new Player(StartFrame.setNames.get(i),1000,StartFrame.PlayerOrder.get(i),true));
+					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {	//CPU
-					Player.players.put(StartFrame.PlayerOrder.get(i),new Player(StartFrame.setNames.get(i),1000,StartFrame.PlayerOrder.get(i),false));
+					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}else {//順番初期値
 				if(playerCount>i) {//player
-					Player.players.put(i,new Player(StartFrame.setNames.get(i),1000,StartFrame.PlayerOrder.get(i),true));
+					Player.players.put(i,new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {//CPU
-					Player.players.put(i,new Player(StartFrame.setNames.get(i),1000,StartFrame.PlayerOrder.get(i),false));
+					Player.players.put(i,new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}
 			
-			Player.players.get(StartFrame.PlayerOrder.get(i)).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(StartFrame.PlayerOrder.get(i)).getName()));
-  	  		Player.players.get(StartFrame.PlayerOrder.get(i)).getColt().setBackground(Color.BLACK);
-  	  		Player.players.get(StartFrame.PlayerOrder.get(i)).getColt().setName(Player.players.get(StartFrame.PlayerOrder.get(i)).getName());
-  	  		playFrame.getLayeredPane().add(Player.players.get(StartFrame.PlayerOrder.get(i)).getColt(),JLayeredPane.PALETTE_LAYER,0);
+			Player.players.get(FrameEvent.getPlayerOrder(i)).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(FrameEvent.getPlayerOrder(i)).getName()));
+  	  		Player.players.get(FrameEvent.getPlayerOrder(i)).getColt().setBackground(Color.BLACK);
+  	  		Player.players.get(FrameEvent.getPlayerOrder(i)).getColt().setName(Player.players.get(FrameEvent.getPlayerOrder(i)).getName());
+  	  		playFrame.getLayeredPane().add(Player.players.get(FrameEvent.getPlayerOrder(i)).getColt(),JLayeredPane.PALETTE_LAYER,0);
   		}
 	}
 
