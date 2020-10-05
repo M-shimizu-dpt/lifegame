@@ -144,9 +144,7 @@ public class App {
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
-
     	Card.init();
-
     	Dice.init();
 
     	FrameEvent.init(playerCount);
