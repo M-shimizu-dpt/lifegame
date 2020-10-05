@@ -434,4 +434,14 @@ public abstract class FrameEvent{
 		artresult=artresult+"</body></html>";
 		return artresult;
 	}
+	
+	public static int getPlayerOrder(int index) {
+		return start.getPlayerOrder(index);
+	}
+	public static String getPlayerName(int index) {
+		return start.getPlayerName(index);
+	}
+	public static int getOrder() {
+		return start.playerorder;
+	}
 }
