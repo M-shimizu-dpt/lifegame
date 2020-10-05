@@ -78,7 +78,7 @@ public class AllMapFrame extends FrameModel{
 		}
 		for(Station sta:Japan.getStationList()) {
 			if(cmd.equals(sta.getName())) {
-				FrameEvent.printPropertys(cmd,1);
+				FrameEvent.openPropertys(cmd,1);
 			}
 		}
 	}

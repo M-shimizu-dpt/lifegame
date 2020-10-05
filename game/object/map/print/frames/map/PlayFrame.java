@@ -26,11 +26,7 @@ public class PlayFrame extends FrameModel{
 	private JButton playLeft;//プレイマップでの移動ボタン
 	private JButton playTop;//プレイマップでの移動ボタン
 	private JButton playBottom;//プレイマップでの移動ボタン
-	private JButton saikoro;//プレイマップでのサイコロボタン
     private JButton cardB;//プレイマップでのカード一覧表示ボタン
-    private JButton company;//プレイマップでのプレイヤー情報一覧表示ボタン
-    private JButton minimap;//プレイマップでの詳細マップ表示ボタン
-    private JButton allmap;//プレイマップでの全体マップ表示ボタン
     private JButton waitButton;//CPU操作中にプレーヤーが一時停止するためのボタン
     private JPanel back = new JPanel();//メニューボタンの背景
     private JLabel mainInfo;//プレイマップで上に表示されるプレイヤー情報を表示するラベル
@@ -39,6 +35,7 @@ public class PlayFrame extends FrameModel{
     public PlayFrame() {
 
     }
+
     public void init(int playerCount) {
     	this.setTitle("桃大郎電鉄");
 
@@ -75,10 +72,17 @@ public class PlayFrame extends FrameModel{
 	}
 
     public void open() {
-    	if(!Player.player.isPlayer()) {
+    	if(Player.player.isPlayer()) {
+			ableMenu();
+		}else {
 			enableMenu();
 		}
     	this.setVisible(true);
+    }
+
+    @Override
+    public void close() {
+    	this.setVisible(false);
     }
 
 	//メイン画面でのメニューボタンを非表示
@@ -107,10 +111,6 @@ public class PlayFrame extends FrameModel{
 
 	//メイン画面での移動ボタンを非表示
 	public void closeMoveButton() {
-		playLeft.setBackground(Color.WHITE);
-		playRight.setBackground(Color.WHITE);
-		playTop.setBackground(Color.WHITE);
-		playBottom.setBackground(Color.WHITE);
 		playRight.setVisible(false);
 		playLeft.setVisible(false);
 		playTop.setVisible(false);
@@ -157,7 +157,6 @@ public class PlayFrame extends FrameModel{
 		this.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 	}
 
-
 	//プレイマップの中央位置を初期位置(大阪)に設定
 	private void initMaps() {
 		JLayeredPane play = this.getLayeredPane();
@@ -174,18 +173,14 @@ public class PlayFrame extends FrameModel{
 		mainInfo.setBackground(Color.BLUE);
 		mainInfo.setName(Player.player.getName()+Player.player.getMoney());
 		play.add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
-		playRight = createButton(730,250,50,40,10,"→");//プレイマップでの移動ボタン
-  		playLeft = createButton(10,250,50,40,10,"←");//プレイマップでの移動ボタン
-  		playTop = createButton(380,40,50,40,10,"↑");//プレイマップでの移動ボタン
-  		playBottom = createButton(380,510,50,40,10,"↓");//プレイマップでの移動ボタン
-  		playRight.setActionCommand("右");
-		playLeft.setActionCommand("左");
-		playTop.setActionCommand("上");
-		playBottom.setActionCommand("下");
-		playRight.setName("右");
-		playLeft.setName("左");
-		playTop.setName("上");
-		playBottom.setName("下");
+		playRight = createButton(730,250,50,40,10,"右");//プレイマップでの移動ボタン
+  		playLeft = createButton(10,250,50,40,10,"左");//プレイマップでの移動ボタン
+  		playTop = createButton(380,40,50,40,10,"上");//プレイマップでの移動ボタン
+  		playBottom = createButton(380,510,50,40,10,"下");//プレイマップでの移動ボタン
+		playRight.setText("→");
+		playLeft.setText("←");
+		playTop.setText("↑");
+		playBottom.setText("↓");
 		playRight.setVisible(false);
 		playLeft.setVisible(false);
 		playTop.setVisible(false);
@@ -194,16 +189,12 @@ public class PlayFrame extends FrameModel{
 		play.add(playLeft,JLayeredPane.PALETTE_LAYER,0);
 		play.add(playTop,JLayeredPane.PALETTE_LAYER,0);
 		play.add(playBottom,JLayeredPane.PALETTE_LAYER,0);
-		saikoro = createButton(650, 360, 90, 30,10, "サイコロ");//プレイマップでのサイコロボタン
-  	    cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
-  	    company = createButton(650, 440, 90, 30,10, "会社情報");//プレイマップでのプレイヤー情報一覧表示ボタン
-  	    minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
-  	    allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
-  	    back.add(saikoro);//プレイマップでのサイコロボタン
+		cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
+  	    back.add(createButton(650, 360, 90, 30,10, "サイコロ"));//プレイマップでのサイコロボタン
   		back.add(cardB);//プレイマップでのカード一覧表示ボタン
-  		back.add(company);//プレイマップでのプレイヤー情報一覧表示ボタン
-  		back.add(minimap);//プレイマップでの詳細マップ表示ボタン
-  		back.add(allmap);//プレイマップでの全体マップ表示ボタン
+  		back.add(createButton(650, 440, 90, 30,10, "会社情報"));//プレイマップでのプレイヤー情報一覧表示ボタン
+  		back.add(createButton(650, 480, 90, 30,10, "詳細マップ"));//プレイマップでの詳細マップ表示ボタン
+  		back.add(createButton(650, 520, 90, 30,10, "全体マップ"));//プレイマップでの全体マップ表示ボタン
   		back.setBackground(Color.CYAN);
   		back.setBounds(640,400,110,150);
   		back.setName("ボタン背景");

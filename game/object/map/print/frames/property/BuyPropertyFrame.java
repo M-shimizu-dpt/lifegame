@@ -8,11 +8,13 @@ import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.SaleEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Japan;
+import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class BuyPropertyFrame extends FrameModel{
@@ -64,46 +66,54 @@ public class BuyPropertyFrame extends FrameModel{
 		JButton closeButton = createButton(580,35*Japan.getStaInPropertySize(name)+50,180,50,10,"閉じる");
 		closeButton.setActionCommand("物件情報を閉じる");
 
-		propertys.add(createText(150,10,200,40,20,"物件名"));
-		propertys.add(createText(400,10,150,40,20,"値段"));
-		propertys.add(createText(550,10,100,40,20,"利益率"));
-		propertys.add(createText(650,10,100,40,20,"所有者"));
+		JPanel info = new JPanel();
+		info.setBounds(10, 10, 780, 40);
+		info.setLayout(null);
+		info.add(createText(150,10,200,40,20,"物件名"));
+		info.add(createText(400,10,150,40,20,"値段"));
+		info.add(createText(550,10,100,40,20,"利益率"));
+		info.add(createText(650,10,100,40,20,"所有者"));
 		if(Japan.getStation(name).isMono()) {
 			JLabel label = createText(750,10,30,40,20,"独");
 			label.setBackground(Color.RED);
-			propertys.add(label);
+			info.add(label);
 		}
+		propertys.add(info);
 		for(int i=0;i<Japan.getStaInPropertySize(name);i++) {
-			String property = Japan.getStaInProperty(name,i).getName();//名前
-			String owner = Japan.getStaInProperty(name,i).getOwner();//管理者
-			int money = Japan.getStaInProperty(name,i).getAmount();//購入金額
+			//JPanel property = new JPanel();
+			//property.setBounds(10, 15+(i+1)*35, 40, 15);
+			//property.setLayout(null);
+			Property property = Japan.getStaInProperty(name,i);
 			JButton buyButton = createButton(20,15+(i+1)*35,80,30,10,"購入");
 
-			if(Japan.getStaInProperty(name,i).getLevel()>=2
-					|| (!owner.equals("") && !owner.equals(Player.player.getName())) || Player.player.getMoney()<Japan.getStaInProperty(name,i).getAmount() || id!=2) {
+			if(property.getLevel()>=2 || (!property.getOwner().equals("") && !property.getOwner().equals(Player.player.getName()))
+					|| Player.player.getMoney()<property.getAmount() || id!=2) {
 				buyButton.setEnabled(false);
 			}
 
-			for(String already:Japan.alreadys) {
-				if(already.equals(Japan.getStaInProperty(name,i).getName()+i)) {
-					buyButton.setEnabled(false);
-					//sellButton.setEnabled(false);
-					break;
+			if(Japan.alreadys.contains(property.getName()+i)) {
+				for(String already:Japan.alreadys) {
+					if(already.equals(property.getName()+i)) {
+						buyButton.setEnabled(false);
+						break;
+					}
 				}
 			}
 			buyButton.setActionCommand(name+"b:"+i);
 			propertys.add(buyButton);
-			int rate = Japan.getStaInProperty(name,i).getRate();//利益率(3段階)
-			propertys.add(createText(150,10+(i+1)*35,200,40,15,property));
-			if(money<10000) {
-				propertys.add(createText(400,10+(i+1)*35,150,40,15,money+"万円"));
-			}else if(money%10000==0){
-				propertys.add(createText(400,10+(i+1)*35,150,40,15,money/10000+"億円"));
+			int rate = property.getRate();//利益率(3段階)
+			propertys.add(createText(150,10+(i+1)*35,200,40,15,property.getName()));
+			if(property.getAmount()<10000) {
+				propertys.add(createText(400,10+(i+1)*35,150,40,15,property.getAmount()+"万円"));
+			}else if(property.getAmount()%10000==0){
+				propertys.add(createText(400,10+(i+1)*35,150,40,15,property.getAmount()/10000+"億円"));
 			}else {//今登録している物件では呼ばれないかも
-				propertys.add(createText(400,10+(i+1)*35,150,40,15,money/10000+"億"+money%10000+"万円"));
+				propertys.add(createText(400,10+(i+1)*35,150,40,15,property.getAmount()/10000+"億"+property.getAmount()%10000+"万円"));
 			}
 			propertys.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
-			propertys.add(createText(650,10+(i+1)*35,100,40,15,owner));
+			propertys.add(createText(650,10+(i+1)*35,100,40,15,property.getOwner()));
+			//property.setVisible(true);
+			//propertys.add(property);
 		}
 		propertys.add(closeButton);
 

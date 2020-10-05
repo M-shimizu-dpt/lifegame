@@ -57,7 +57,7 @@ public class App {
 
   	public void monthUpdate(boolean first) {
   		if(first) {
-  			FrameEvent.printMonthFrame();
+  			FrameEvent.openMonthFrame();
   		}else {
     		if(App.turn==3) {
     			ArrayList<Integer> moneyList = new ArrayList<Integer>();
@@ -72,7 +72,7 @@ public class App {
     			if(App.month==13) {
     				App.month=1;
     			}
-    			FrameEvent.printMonthFrame();
+    			FrameEvent.openMonthFrame();
     			App.turn=0;
     		}else {
     			App.turn++;
@@ -144,9 +144,7 @@ public class App {
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
-
     	Card.init();
-
     	Dice.init();
 
     	FrameEvent.init(playerCount);

@@ -13,10 +13,10 @@ import lifegame.game.event.FrameEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
-public class ErrorFrame extends FrameModel{
+public class FullCardFrame extends FrameModel{
 	private static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
 
-	public ErrorFrame() {
+	public FullCardFrame() {
 		this.setSize(400,500);
 	}
 
@@ -37,7 +37,7 @@ public class ErrorFrame extends FrameModel{
 	}
 
 	public void open() {
-		JLayeredPane error = this.getLayeredPane();
+		JLayeredPane cardFull = this.getLayeredPane();
 		JLabel titleName = createText(170,10,100,40,30,"名前");
 		for(int i=0;i<Player.player.getCardSize();i++) {
         	JButton throwButton = createButton(10,35*(i+1)+30,70,30,10,"捨てる");
@@ -47,11 +47,11 @@ public class ErrorFrame extends FrameModel{
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
         	JLabel label = createText(100,35*(i+1)+30,200,30,10,Player.player.getCardName(i));
         	label.setBackground(Color.LIGHT_GRAY);
-        	error.add(label);
+        	cardFull.add(label);
         	throwButton.setActionCommand(Player.player.getCardName(i)+"t");
-        	error.add(throwButton);
+        	cardFull.add(throwButton);
         }
-		error.add(titleName);
+		cardFull.add(titleName);
 
 		this.setVisible(true);
 
@@ -63,7 +63,7 @@ public class ErrorFrame extends FrameModel{
 
 	@Override
 	public void close() {
-		ErrorFrame.throwFlag=true;
+		FullCardFrame.throwFlag=true;
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
 	}

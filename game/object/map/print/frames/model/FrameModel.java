@@ -26,9 +26,9 @@ public abstract class FrameModel extends JFrame implements ActionListener{
         super.setLocationRelativeTo(null);
         super.setLayout(null);
 	}
-	public void close() {
-		super.setVisible(false);
-	}
+
+	public abstract void close();
+
 	//ボタンを作成
 	protected JButton createButton(int x,int y,int w,int h,int size,String name) {
 		JButton button = new JButton(name);
