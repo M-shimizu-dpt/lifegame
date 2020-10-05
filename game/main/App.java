@@ -89,6 +89,7 @@ public class App {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {
   				FrameEvent.openRandom2();
+  				Thread.sleep(3000);
   			}
 	  		if(ContainsEvent.isEnd(endYear)) {
 		  		break;
@@ -99,18 +100,15 @@ public class App {
 		  	Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
-		  	FrameEvent.reloadInfo();//画面上部に表示している情報を更新
+		  	FrameEvent.reloadMain();
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!ContainsEvent.isPlayer()) {//cpu操作
 		  		Player.player.cpu();
-		  	}else {
-		  		FrameEvent.printMenu();
 		  	}
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
 
-			//MassEvent(Player.player.NowMass());
 			if(!ContainsEvent.isUsedCardAfterNotEvent())  {
 				MassEvent.massEvent(FrameEvent.getNowMassName());
 				//MassEvent用のWaitthread

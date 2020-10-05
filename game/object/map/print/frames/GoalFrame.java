@@ -30,6 +30,9 @@ public class GoalFrame extends FrameModel{
 		int goalMoney;
 		Random rand = new Random();
 		JButton closeButton = createButton(380,180,100,50,10,"閉じる");
+		if(!ContainsEvent.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		goalMoney=10000*App.year;
 		goalMoney+=rand.nextInt(10000);
 		goalMoney-=goalMoney%100;
@@ -46,6 +49,9 @@ public class GoalFrame extends FrameModel{
 		this.setTitle("次の目的地");
 		JLayeredPane goal = this.getLayeredPane();
 		JButton closeButton = createButton(380,180,100,50,10,"閉じる");
+		if(!ContainsEvent.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		closeButton.setActionCommand("次");
 
 		//探索が終わっていなければここで止める

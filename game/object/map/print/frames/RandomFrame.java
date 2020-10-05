@@ -194,6 +194,9 @@ public class RandomFrame extends FrameModel{
 		Random2.add(text4);
 
 		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
+		if(!ContainsEvent.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		closeButton .setActionCommand("閉じる2");
 		Random2.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		this.setVisible(true);

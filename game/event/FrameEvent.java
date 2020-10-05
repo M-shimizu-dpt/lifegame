@@ -91,9 +91,12 @@ public abstract class FrameEvent{
 		confirmation.open(title, article, time);
 	}
 
+	public static void createPopUp(String title,String article,int size,int time) {
+		confirmation.open(title, article, size, time);
+	}
+
 	public static void closePopUp() {
 		confirmation.close();
-		play.open();
 	}
 
 	public static void openMiniMap() {
@@ -270,8 +273,6 @@ public abstract class FrameEvent{
 			e.printStackTrace();
 		}
 		confirmation.close();
-		play.open();
-
 	}
 
 	public static void openRandom1(double rand) {
@@ -283,7 +284,6 @@ public abstract class FrameEvent{
 		if(ContainsEvent.isOwners()) {
 			int rndnum = new Random().nextInt(11)+1;
 			if(App.month==rndnum) {
-				play.close();
 				random.open(2,rndnum);
 			}
 		}
@@ -297,7 +297,6 @@ public abstract class FrameEvent{
 
 	public static void closeRandom2() {
 		random.close();
-		play.open();
 	}
 
 	public static void openPropertys(String massName,int id) {
@@ -327,11 +326,11 @@ public abstract class FrameEvent{
 		}
 	}
 
+
+
 	public static void closeMoveButton() {
 		play.closeMoveButton();
 	}
-
-
 
 	public static void printMenu() {
 		play.printMenu();
@@ -367,7 +366,6 @@ public abstract class FrameEvent{
 
 	public static void init(int playerCount){
 		play.init(playerCount);
-        play.open();
 	}
 
 	public static void waitButtonUpdate() {
@@ -396,6 +394,8 @@ public abstract class FrameEvent{
 
 	public static void reloadMain() {
 		play.close();
+		play.reloadInfo();
+		play.printMenu();
 		play.open();
 	}
 
@@ -449,7 +449,7 @@ public abstract class FrameEvent{
 		artresult=artresult+"</body></html>";
 		return artresult;
 	}
-	
+
 	public static int getPlayerOrder(int index) {
 		return start.getPlayerOrder(index);
 	}
