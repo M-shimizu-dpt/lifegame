@@ -72,7 +72,7 @@ public class PlayFrame extends FrameModel{
 	}
 
     public void open() {
-    	if(Player.player.isPlayer()) {
+    	if(ContainsEvent.isPlayer()) {
 			ableMenu();
 		}else {
 			enableMenu();
@@ -320,7 +320,7 @@ public class PlayFrame extends FrameModel{
 	}
 
 	public void waitButtonUpdate() {
-  		if(Player.player.isPlayer()) {
+  		if(ContainsEvent.isPlayer()) {
   			waitButton.setVisible(false);
   		}else {
   			waitButton.setVisible(true);

@@ -101,7 +101,7 @@ public class App {
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadInfo();//画面上部に表示している情報を更新
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
-		  	if(!Player.player.isPlayer()) {//cpu操作
+		  	if(!ContainsEvent.isPlayer()) {//cpu操作
 		  		Player.player.cpu();
 		  	}else {
 		  		FrameEvent.printMenu();

@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,7 +31,7 @@ public class StartFrame extends JFrame implements ActionListener{
 	ButtonGroup Order;
 	public int playerorder;
 	public static ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
-	
+
 	public int[] open() {
   		JLayeredPane start = this.getLayeredPane();
     	JLabel labelTitle = new JLabel("桃大郎電鉄");
@@ -73,7 +74,7 @@ public class StartFrame extends JFrame implements ActionListener{
     	JLabel labelPlayerName = new JLabel("名前を変更する場合は下に入力してください");
     	labelPlayerName.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	labelPlayerName.setBounds(20, 300, 400, 50);
-    	
+
     	JLabel player1 = new JLabel("1番目");
     	player1.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	player1.setBounds(50, 350, 150, 50);
@@ -82,7 +83,7 @@ public class StartFrame extends JFrame implements ActionListener{
     	textplayer1.setHorizontalAlignment(JTextField.CENTER);
     	textplayer1.setFont(new Font("SansSerif",Font.BOLD,20));
     	textplayer1.setBounds(50, 410, 150, 50);
-    	
+
     	JLabel player2 = new JLabel("2番目");
     	player2.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	player2.setBounds(225, 350, 150, 50);
@@ -148,12 +149,12 @@ public class StartFrame extends JFrame implements ActionListener{
     	int[] list= {0,0};
     	list[0] = Integer.parseInt((String) textPlayerCount.getText());
     	list[1] = Integer.parseInt((String)textYear.getText());
-    	
+
     	setNames.add(textplayer1.getText());
     	setNames.add(textplayer2.getText());
     	setNames.add(textplayer3.getText());
     	setNames.add(textplayer4.getText());
-    	
+
     	return list;
   	}
 
@@ -178,13 +179,12 @@ public class StartFrame extends JFrame implements ActionListener{
     		App.start();
     	}
 	}
-	
+
 	public int getPlayerOrder(int index) {
 		return PlayerOrder.get(index);
 	}
-	
+
 	public String getPlayerName(int index) {
 		return setNames.get(index);
 	}
-	
 }

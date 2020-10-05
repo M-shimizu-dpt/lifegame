@@ -151,14 +151,24 @@ public abstract class FrameEvent{
 		property.open(Japan.getSaveGoalName(),2);
 	}
 
-	public static void openError() {
+	public static void openFullCardFromPlay() {
 		play.close();
-		cardFull.open();
+		cardFull.open(0);
 	}
 
-	public static void closeError() {
+	public static void closeFullCardFromPlay() {
 		cardFull.close();
 		play.open();
+	}
+
+	public static void openFullCardFromRandom() {
+		random.closeSave();
+		cardFull.open(1);
+	}
+
+	public static void closeFullCardFromRandom() {
+		cardFull.close();
+		random.openSave();
 	}
 
 	public static void openDubbing() {
@@ -384,11 +394,16 @@ public abstract class FrameEvent{
 		play.reloadInfo();
 	}
 
+	public static void reloadMain() {
+		play.close();
+		play.open();
+	}
+
 	//最終結果表示
 	public static void finish() {//ConfirmationFrame
 		openClosing();
 		String name = ClosingEvent.finish();
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",3000);
 		}else {
 			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",5000);

@@ -11,6 +11,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import lifegame.game.event.ClosingEvent;
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
@@ -123,7 +124,7 @@ public class AssetsFrame extends FrameModel{
 			Assets.add(playerAssetsLabel,JLayeredPane.DEFAULT_LAYER,0);
 		}
 		JButton closeButton = createButton(700,500,80,50,10,"閉じる");
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			closeButton.setEnabled(false);
 		}
 		Assets.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
@@ -135,7 +136,7 @@ public class AssetsFrame extends FrameModel{
 
 	//指定のFrameを1秒後に閉じる
 	public void setCloseFrame() {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			timer.schedule(new TimerTask() {
 				@Override

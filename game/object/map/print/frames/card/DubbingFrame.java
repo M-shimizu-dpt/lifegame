@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 import lifegame.game.event.CardEvent;
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
@@ -26,7 +27,7 @@ public class DubbingFrame extends FrameModel{
         JLabel titleText = createText(420,10,100,40,30,"説明");
         for(int roop=0;roop<Player.player.getCardSize();roop++) {
         	JButton useButton = createButton(10,35*(roop+1)+30,70,30,10,"複製");
-        	if(!Player.player.isPlayer()) {
+        	if(!ContainsEvent.isPlayer()) {
     			useButton.setEnabled(false);
     		}
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
@@ -44,14 +45,14 @@ public class DubbingFrame extends FrameModel{
 
         this.setVisible(true);
 
-        if(!Player.player.isPlayer()) {
+        if(!ContainsEvent.isPlayer()) {
 	        Player.player.addCard(Player.player.getCard(0));//無いも考えず一番上のカードを複製
 	        setCloseFrame();
         }
 	}
 	//指定のFrameを1秒後に閉じる
 	public void setCloseFrame() {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			timer.schedule(new TimerTask() {
 				@Override

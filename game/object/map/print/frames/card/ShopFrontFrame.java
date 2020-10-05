@@ -8,6 +8,7 @@ import java.util.TimerTask;
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
@@ -33,7 +34,7 @@ public class ShopFrontFrame extends FrameModel{
 		if(Player.player.getCardSize()==0) {
 			sellButton.setEnabled(false);
 		}
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			closeButton.setEnabled(false);
 			buyButton.setEnabled(false);
 			sellButton.setEnabled(false);
@@ -58,7 +59,7 @@ public class ShopFrontFrame extends FrameModel{
 	}
 
 	public void setCloseFrame() {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			timer.schedule(new TimerTask() {
 				@Override

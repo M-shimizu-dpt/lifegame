@@ -44,7 +44,7 @@ public class RandomFrame extends FrameModel{
 		JLabel text2=new JLabel();
 		JLabel text3=new JLabel();
 		JButton closeButton = createButton(580,500,180,50,10,"閉じる");
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			closeButton.setEnabled(false);
 		}
 		random.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
@@ -202,7 +202,7 @@ public class RandomFrame extends FrameModel{
 
 	//指定のFrameを1秒後に閉じる
 	private void setCloseFrame() {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			if(id==1) {
 				timer.schedule(new TimerTask() {
@@ -226,6 +226,14 @@ public class RandomFrame extends FrameModel{
 	public void close() {
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
+	}
+
+	public void openSave() {
+		this.setVisible(true);
+	}
+
+	public void closeSave() {
+		this.setVisible(false);
 	}
 
 	@Override

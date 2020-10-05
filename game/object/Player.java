@@ -27,7 +27,6 @@ import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
-import lifegame.game.object.map.print.frames.StartFrame;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
 import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
 
@@ -48,7 +47,7 @@ public class Player {
 	private int money;//所持金
 	private int move;//進めるマス
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
-		
+
 	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
 		this.move=0;
@@ -84,7 +83,6 @@ public class Player {
 					Player.players.put(i,new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}
-			
 			Player.players.get(FrameEvent.getPlayerOrder(i)).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(FrameEvent.getPlayerOrder(i)).getName()));
   	  		Player.players.get(FrameEvent.getPlayerOrder(i)).getColt().setBackground(Color.BLACK);
   	  		Player.players.get(FrameEvent.getPlayerOrder(i)).getColt().setName(Player.players.get(FrameEvent.getPlayerOrder(i)).getName());
@@ -186,9 +184,9 @@ public class Player {
 		}
 		if(diceFlag) {
 			//処理を待たないと一瞬表示されるだけになる
-			FrameEvent.openDice();
+			//FrameEvent.openDice();
 			DiceEvent.shuffleDice();
-			FrameEvent.closeDice();
+			//FrameEvent.closeDice();
 
 			/*
 			WaitThread waitthread = new WaitThread(4);//行くことが出来るマスの探索待ち
