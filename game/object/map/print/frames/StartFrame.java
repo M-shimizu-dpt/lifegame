@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -29,7 +28,7 @@ public class StartFrame extends JFrame implements ActionListener{
 
 	public static ArrayList<String> setNames = new ArrayList<String>();
 	ButtonGroup Order;
-	public static int playerOrder;
+	public int playerorder;
 	public static ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
 	
 	public int[] open() {
@@ -160,14 +159,14 @@ public class StartFrame extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		String str = Order.getSelection().getActionCommand();
-		playerOrder=Integer.valueOf(str);
+		playerorder=Integer.valueOf(str);
 		if(PlayerOrder.size()!=0) {
 			PlayerOrder.clear();
 		}
 		for(int i=0;i<4;i++) {
 			PlayerOrder.add(i);
 		}
-		if(playerOrder==0) {
+		if(playerorder==0) {
 			Collections.shuffle(PlayerOrder);//順番のシャッフル
 			//System.out.println(PlayerOrder);
 		}else {
@@ -180,5 +179,12 @@ public class StartFrame extends JFrame implements ActionListener{
     	}
 	}
 	
+	public int getPlayerOrder(int index) {
+		return PlayerOrder.get(index);
+	}
+	
+	public String getPlayerName(int index) {
+		return setNames.get(index);
+	}
 	
 }
