@@ -64,6 +64,9 @@ public abstract class RandomEvent {
 			Player.player.addMoney(-5000);
 		}
 		FrameEvent.openRandom1(randomNum);
+		if(Player.player.getCardSize()>8) {
+			FrameEvent.openFullCardFromRandom();
+		}
 	}
 
 	public static void random2Event(Property property,int rndnum) {

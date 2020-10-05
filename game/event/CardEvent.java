@@ -284,7 +284,7 @@ public class CardEvent{
 			int randcard = rand.nextInt(Card.getCardListSize());
 			Player.player.addCard(Card.getCard(randcard));
 			if(Player.player.getCardSize()>8) {
-				FrameEvent.openError();
+				FrameEvent.openFullCardFromPlay();
 			}
 			count++;
 		}while(rand.nextInt(100)<50 && count<5);

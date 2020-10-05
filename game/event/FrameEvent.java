@@ -151,14 +151,24 @@ public abstract class FrameEvent{
 		property.open(Japan.getSaveGoalName(),2);
 	}
 
-	public static void openError() {
+	public static void openFullCardFromPlay() {
 		play.close();
-		cardFull.open();
+		cardFull.open(0);
 	}
 
-	public static void closeError() {
+	public static void closeFullCardFromPlay() {
 		cardFull.close();
 		play.open();
+	}
+
+	public static void openFullCardFromRandom() {
+		random.closeSave();
+		cardFull.open(1);
+	}
+
+	public static void closeFullCardFromRandom() {
+		cardFull.close();
+		random.openSave();
 	}
 
 	public static void openDubbing() {
@@ -382,6 +392,11 @@ public abstract class FrameEvent{
 
 	public static void reloadInfo() {
 		play.reloadInfo();
+	}
+
+	public static void reloadMain() {
+		play.close();
+		play.open();
 	}
 
 	//最終結果表示

@@ -228,6 +228,14 @@ public class RandomFrame extends FrameModel{
 		this.getLayeredPane().removeAll();
 	}
 
+	public void openSave() {
+		this.setVisible(true);
+	}
+
+	public void closeSave() {
+		this.setVisible(false);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();

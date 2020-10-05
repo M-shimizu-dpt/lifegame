@@ -121,7 +121,7 @@ public abstract class MassEvent {
 		Player.player.addCard(Card.getCard(index));
 		System.out.println("Card Get! name:"+Card.getCard(index).getName()+"  rarity"+Card.getCard(index).getRarity());
 		if(ContainsEvent.isMaxCard()) {
-			FrameEvent.openError();
+			FrameEvent.openFullCardFromPlay();
 			WaitThread wait = new WaitThread(9);
 			wait.start();
 			try {

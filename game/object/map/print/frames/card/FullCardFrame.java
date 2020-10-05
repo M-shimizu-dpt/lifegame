@@ -15,6 +15,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class FullCardFrame extends FrameModel{
 	private static boolean throwFlag=false;//カードを捨てるまで待つためのフラグ
+	private int id=-1;
 
 	public FullCardFrame() {
 		this.setSize(400,500);
@@ -33,10 +34,11 @@ public class FullCardFrame extends FrameModel{
 	private void reopen() {
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
-		open();
+		open(id);
 	}
 
-	public void open() {
+	public void open(int id) {
+		this.id=id;
 		JLayeredPane cardFull = this.getLayeredPane();
 		JLabel titleName = createText(170,10,100,40,30,"名前");
 		for(int i=0;i<Player.player.getCardSize();i++) {
@@ -75,7 +77,11 @@ public class FullCardFrame extends FrameModel{
 		if(ContainsEvent.isMaxCard()) {
 			reopen();
 		}else {
-			FrameEvent.closeError();
+			if(this.id==0) {
+				FrameEvent.closeFullCardFromPlay();
+			}else if(this.id==1) {
+				FrameEvent.closeFullCardFromRandom();
+			}
 		}
 	}
 }
