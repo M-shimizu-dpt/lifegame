@@ -9,8 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingConstants;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
-import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class ConfirmationFrame extends FrameModel{
@@ -58,7 +58,7 @@ public class ConfirmationFrame extends FrameModel{
 	}
 
 	public void setCloseFrame(int time) {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			timer.schedule(new TimerTask() {
 				@Override

@@ -403,7 +403,7 @@ public abstract class FrameEvent{
 	public static void finish() {//ConfirmationFrame
 		openClosing();
 		String name = ClosingEvent.finish();
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",3000);
 		}else {
 			createPopUp("最終結果","優勝は"+name+"です！\nおめでとうございます！",5000);

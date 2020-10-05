@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.SaleEvent;
 import lifegame.game.object.Player;
@@ -49,7 +50,7 @@ public class SellPropertyFrame extends FrameModel{
 
 		this.setVisible(true);
 
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			Player.player.sellPropertyCPU(this);
 		}
 	}

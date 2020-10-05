@@ -16,7 +16,7 @@ public abstract class DiceEvent {
 			//MassEvent.massEvent(FrameEvent.getNowMassName());
 		}else {
 			MoveEvent.addTrajectory(FrameEvent.getNowMassName());
-			if(Player.player.isPlayer()) {
+			if(ContainsEvent.isPlayer()) {
 				FrameEvent.printMoveButton();
 			}
 		}

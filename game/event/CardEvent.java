@@ -166,7 +166,7 @@ public class CardEvent{
 		Card.used();
 		useAbility(card);
 
-		if(!Player.player.isPlayer()) System.out.println("Use Card!  "+card.getName()+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
+		if(!ContainsEvent.isPlayer()) System.out.println("Use Card!  "+card.getName()+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊
 		if(card.getName().split("周遊").length==2) {

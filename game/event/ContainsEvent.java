@@ -580,4 +580,10 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
+	public static boolean isPlayer() {
+		return Player.player.isPlayer();
+	}
+	public static boolean isPlayer(Player player) {
+		return player.isPlayer();
+	}
 }

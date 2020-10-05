@@ -43,7 +43,7 @@ public class FullCardFrame extends FrameModel{
 		JLabel titleName = createText(170,10,100,40,30,"名前");
 		for(int i=0;i<Player.player.getCardSize();i++) {
         	JButton throwButton = createButton(10,35*(i+1)+30,70,30,10,"捨てる");
-        	if(!Player.player.isPlayer()) {
+        	if(!ContainsEvent.isPlayer()) {
     			throwButton.setEnabled(false);
     		}
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
@@ -57,7 +57,7 @@ public class FullCardFrame extends FrameModel{
 
 		this.setVisible(true);
 
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			Player.player.cardFullCPU();
 			this.setVisible(false);
 		}

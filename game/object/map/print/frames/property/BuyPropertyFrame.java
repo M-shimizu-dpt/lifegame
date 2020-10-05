@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.SaleEvent;
 import lifegame.game.object.Player;
@@ -45,7 +46,7 @@ public class BuyPropertyFrame extends FrameModel{
 
 	//指定のFrameを1秒後に閉じる
 	public void setCloseFrame() {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			timer.schedule(new TimerTask(){
 				@Override
@@ -117,7 +118,7 @@ public class BuyPropertyFrame extends FrameModel{
 		}
 		propertys.add(closeButton);
 
-		if(!Player.player.isPlayer()) {
+		if(!ContainsEvent.isPlayer()) {
 			SaleEvent.buyPropertysCPU(name);
 		}
 		setCloseFrame();

@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 import lifegame.game.event.BinboEvent;
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.main.App;
 import lifegame.game.object.Player;
@@ -65,7 +66,7 @@ public class GoalFrame extends FrameModel{
 
 	//指定のFrameを1秒後に閉じる
 	public void setCloseFrame(int id) {
-		if(!Player.player.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
+		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
 			Timer timer = new Timer(false);
 			if(id==0) {
 				timer.schedule(new TimerTask() {
