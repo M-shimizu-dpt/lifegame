@@ -30,6 +30,9 @@ public class ConfirmationFrame extends FrameModel{
 		art.setVerticalAlignment(SwingConstants.TOP);
 		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
 		JButton closeButton =createButton(700,500,70,50,10,"閉じる");
+		if(!ContainsEvent.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 		confirmation.add(closeButton,JLayeredPane.PALETTE_LAYER);
 	}
 

@@ -66,6 +66,9 @@ public class BuyPropertyFrame extends FrameModel{
 		Container propertys = this.getContentPane();
 		JButton closeButton = createButton(580,35*Japan.getStaInPropertySize(name)+50,180,50,10,"閉じる");
 		closeButton.setActionCommand("物件情報を閉じる");
+		if(!ContainsEvent.isPlayer()) {
+			closeButton.setEnabled(false);
+		}
 
 		JPanel info = new JPanel();
 		info.setBounds(10, 10, 780, 40);
@@ -88,7 +91,7 @@ public class BuyPropertyFrame extends FrameModel{
 			JButton buyButton = createButton(20,15+(i+1)*35,80,30,10,"購入");
 
 			if(property.getLevel()>=2 || (!property.getOwner().equals("") && !property.getOwner().equals(Player.player.getName()))
-					|| Player.player.getMoney()<property.getAmount() || id!=2) {
+					|| Player.player.getMoney()<property.getAmount() || !ContainsEvent.isPlayer() || id!=2) {
 				buyButton.setEnabled(false);
 			}
 

@@ -157,6 +157,7 @@ public class Player {
 
 	//CPU操作
 	public void cpu() throws InterruptedException{
+		FrameEvent.reloadMain();
 		Thread.sleep(500);
 		if(Player.isStop()) {
 			WaitThread wait = new WaitThread(7);
@@ -186,6 +187,7 @@ public class Player {
 			//処理を待たないと一瞬表示されるだけになる
 			//FrameEvent.openDice();
 			DiceEvent.shuffleDice();
+			Thread.sleep(500);
 			//FrameEvent.closeDice();
 
 			/*

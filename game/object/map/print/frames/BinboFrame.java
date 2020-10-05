@@ -29,7 +29,7 @@ public class BinboFrame extends FrameModel{
 			closeButton.setEnabled(false);
 		}
 		binbo.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-		text = createText(10,10,600,100,20,FrameEvent.adjustText(action));
+		text = createText(10,10,600,400,20,FrameEvent.adjustText(action));
 
 		text.setHorizontalAlignment(SwingConstants.LEFT);
 		binbo.add(text);

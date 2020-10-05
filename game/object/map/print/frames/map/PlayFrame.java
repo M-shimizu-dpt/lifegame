@@ -26,7 +26,11 @@ public class PlayFrame extends FrameModel{
 	private JButton playLeft;//プレイマップでの移動ボタン
 	private JButton playTop;//プレイマップでの移動ボタン
 	private JButton playBottom;//プレイマップでの移動ボタン
+	private JButton saikoro;//プレイマップでのサイコロボタン
     private JButton cardB;//プレイマップでのカード一覧表示ボタン
+    private JButton company;//プレイマップでのプレイヤー情報一覧表示ボタン
+    private JButton minimap;//プレイマップでの詳細マップ表示ボタン
+    private JButton allmap;//プレイマップでの全体マップ表示ボタン
     private JButton waitButton;//CPU操作中にプレーヤーが一時停止するためのボタン
     private JPanel back = new JPanel();//メニューボタンの背景
     private JLabel mainInfo;//プレイマップで上に表示されるプレイヤー情報を表示するラベル
@@ -64,6 +68,7 @@ public class PlayFrame extends FrameModel{
 
   	    initMaps();
   	    initMenu();
+  	    enableMenu();
 
   	    moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
     	moveLabel.setName("moves");
@@ -71,6 +76,7 @@ public class PlayFrame extends FrameModel{
     	closeMoveButton();
 	}
 
+    //CPU操作時のmenuを無効化したいが1ターン目のmenuが普通に表示され、その後は無効化ではなく非表示になっている
     public void open() {
     	if(ContainsEvent.isPlayer()) {
 			ableMenu();
@@ -92,14 +98,30 @@ public class PlayFrame extends FrameModel{
 
 	//メイン画面でのメニューボタンを無効
 	public void enableMenu() {
-		back.setEnabled(false);
+		saikoro.setEnabled(false);
+	    cardB.setEnabled(false);
+	    company.setEnabled(false);
+	    minimap.setEnabled(false);
+	    allmap.setEnabled(false);
 	}
 
 	public void ableMenu() {
-		back.setEnabled(true);
+		if(ContainsEvent.isPlayer()) {
+			able();
+		}else {
+			enableMenu();
+		}
 		if(ContainsEvent.isUsedCard()) {
 			cardB.setEnabled(false);
 		}
+	}
+
+	private void able() {
+		saikoro.setEnabled(true);
+	    cardB.setEnabled(true);
+	    company.setEnabled(true);
+	    minimap.setEnabled(true);
+	    allmap.setEnabled(true);
 	}
 
 	private void massEvent() {
@@ -189,12 +211,16 @@ public class PlayFrame extends FrameModel{
 		play.add(playLeft,JLayeredPane.PALETTE_LAYER,0);
 		play.add(playTop,JLayeredPane.PALETTE_LAYER,0);
 		play.add(playBottom,JLayeredPane.PALETTE_LAYER,0);
-		cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
-  	    back.add(createButton(650, 360, 90, 30,10, "サイコロ"));//プレイマップでのサイコロボタン
-  		back.add(cardB);//プレイマップでのカード一覧表示ボタン
-  		back.add(createButton(650, 440, 90, 30,10, "会社情報"));//プレイマップでのプレイヤー情報一覧表示ボタン
-  		back.add(createButton(650, 480, 90, 30,10, "詳細マップ"));//プレイマップでの詳細マップ表示ボタン
-  		back.add(createButton(650, 520, 90, 30,10, "全体マップ"));//プレイマップでの全体マップ表示ボタン
+		saikoro = createButton(650, 360, 90, 30,10, "サイコロ");//プレイマップでのサイコロボタン
+  	    cardB = createButton(650, 400, 90, 30,10, "カード");//プレイマップでのカード一覧表示ボタン
+  	    company = createButton(650, 440, 90, 30,10, "会社情報");//プレイマップでのプレイヤー情報一覧表示ボタン
+  	    minimap = createButton(650, 480, 90, 30,10, "詳細マップ");//プレイマップでの詳細マップ表示ボタン
+  	    allmap = createButton(650, 520, 90, 30,10, "全体マップ");//プレイマップでの全体マップ表示ボタン
+  	    back.add(saikoro);//プレイマップでのサイコロボタン
+		back.add(cardB);//プレイマップでのカード一覧表示ボタン
+		back.add(company);//プレイマップでのプレイヤー情報一覧表示ボタン
+		back.add(minimap);//プレイマップでの詳細マップ表示ボタン
+		back.add(allmap);//プレイマップでの全体マップ表示ボタン
   		back.setBackground(Color.CYAN);
   		back.setBounds(640,400,110,150);
   		back.setName("ボタン背景");

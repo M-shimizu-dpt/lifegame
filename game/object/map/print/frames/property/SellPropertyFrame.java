@@ -30,6 +30,9 @@ public class SellPropertyFrame extends FrameModel{
 			takeProCount++;
 			JButton sellButton = createButton(80,15+(takeProCount+1)*35,60,30,10,"売却");
 			sellButton.setActionCommand(property.getName()+"s:"+i);
+			if(!ContainsEvent.isPlayer()) {
+				sellButton.setEnabled(false);
+			}
 
 			sellStation.add(sellButton);
 			int rate = property.getRate();//利益率(3段階)
