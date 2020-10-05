@@ -132,7 +132,7 @@ public class MiniMapFrame extends FrameModel{
 		}
 		for(Station sta:Japan.getStationList()) {
 			if(cmd.equals(sta.getName())) {
-				FrameEvent.printPropertys(cmd,0);
+				FrameEvent.openPropertys(cmd,0);
 			}
 		}
 	}

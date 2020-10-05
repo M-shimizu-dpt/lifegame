@@ -81,6 +81,11 @@ public class PlayFrame extends FrameModel{
     	this.setVisible(true);
     }
 
+    @Override
+    public void close() {
+    	this.setVisible(false);
+    }
+
 	//メイン画面でのメニューボタンを非表示
 	public void closeMenu() {
 		back.setVisible(false);

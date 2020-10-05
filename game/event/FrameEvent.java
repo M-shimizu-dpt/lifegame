@@ -25,7 +25,7 @@ import lifegame.game.object.map.print.frames.RandomFrame;
 import lifegame.game.object.map.print.frames.StartFrame;
 import lifegame.game.object.map.print.frames.card.CardFrame;
 import lifegame.game.object.map.print.frames.card.DubbingFrame;
-import lifegame.game.object.map.print.frames.card.ErrorFrame;
+import lifegame.game.object.map.print.frames.card.FullCardFrame;
 import lifegame.game.object.map.print.frames.card.ShopFrame;
 import lifegame.game.object.map.print.frames.card.ShopFrontFrame;
 import lifegame.game.object.map.print.frames.closing.AssetsFrame;
@@ -45,7 +45,7 @@ public abstract class FrameEvent{
 	private static ConfirmationFrame confirmation = new ConfirmationFrame();
 	private static DiceFrame dice = new DiceFrame();//サイコロ用フレーム
 	private static DubbingFrame dubbing = new DubbingFrame();
-	private static ErrorFrame error = new ErrorFrame();
+	private static FullCardFrame cardFull = new FullCardFrame();
 	private static GoalFrame goal = new GoalFrame();
 	private static InfoFrame info = new InfoFrame();
 	private static MiniMapFrame miniMap = new MiniMapFrame();
@@ -192,22 +192,22 @@ public abstract class FrameEvent{
 		property.open(Japan.getSaveGoalName(),2);
 	}
 
-	public static void openError() {//errorをcardFullに改名
+	public static void openError() {
 		play.close();
-		error.open();
+		cardFull.open();
 	}
 
 	public static void closeError() {
-		error.close();
+		cardFull.close();
 		play.open();
 	}
 
 	public static boolean isThrowed() {
-		return error.isThrowed();
+		return cardFull.isThrowed();
 	}
 
 	public static void initThrowFlag() {
-		error.initThrowFlag();
+		cardFull.initThrowFlag();
 	}
 
 	public static void openDubbing() {
@@ -366,7 +366,7 @@ public abstract class FrameEvent{
 		play.open();
 	}
 
-	public static void printPropertys(String massName,int id) {
+	public static void openPropertys(String massName,int id) {
 		property.open(massName,id);
 		if(id==0) {
 			miniMap.close();
@@ -402,7 +402,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void throwEnd() {
-		error.throwEnd();
+		cardFull.throwEnd();
 	}
 
 	public static void printMoveButton() {
