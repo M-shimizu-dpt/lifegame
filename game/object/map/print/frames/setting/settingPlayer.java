@@ -63,7 +63,7 @@ public class settingPlayer extends JFrame implements ActionListener {
     	count4.setActionCommand("4");
     	count4.setFont(new Font("SansSerif", Font.ITALIC, 15));
     	count4.setBounds(500, 200, 150, 50);
-    	JRadioButton count0 = new JRadioButton("人間:0 VS CPU:4");
+    	JRadioButton count0 = new JRadioButton("人間:0 VS CPU:4");//
     	count0.addActionListener(this);
     	count0.setActionCommand("0");
     	count0.setFont(new Font("SansSerif", Font.ITALIC, 15));
