@@ -84,7 +84,7 @@ public class App {
   	private void play(int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		BinboEvent.initBinbo(true);//debugモード→true
+  		BinboEvent.initBinbo(false);//debugモード→true
   		while(true) {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {
@@ -117,11 +117,13 @@ public class App {
 				masseventfalg.join();
 			}
 
-			if(ContainsEvent.binboPlayer()) {
-				BinboEvent.start();
-				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
-				bonbyTurnEnd.start();
-				bonbyTurnEnd.join();
+			if(ContainsEvent.isBinboPlayer()) {
+				if(ContainsEvent.binboPlayer()) {
+					BinboEvent.start();
+					WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
+					bonbyTurnEnd.start();
+					bonbyTurnEnd.join();
+				}
 			}
 			Thread.sleep(1000);
 			CardEvent.resetFlags();
