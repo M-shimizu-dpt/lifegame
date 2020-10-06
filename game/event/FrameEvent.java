@@ -23,6 +23,7 @@ import lifegame.game.object.map.print.frames.GoalFrame;
 import lifegame.game.object.map.print.frames.InfoFrame;
 import lifegame.game.object.map.print.frames.RandomFrame;
 import lifegame.game.object.map.print.frames.StartFrame;
+import lifegame.game.object.map.print.frames.Title;
 import lifegame.game.object.map.print.frames.card.CardFrame;
 import lifegame.game.object.map.print.frames.card.DubbingFrame;
 import lifegame.game.object.map.print.frames.card.FullCardFrame;
@@ -35,6 +36,9 @@ import lifegame.game.object.map.print.frames.map.MiniMapFrame;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
 import lifegame.game.object.map.print.frames.property.BuyPropertyFrame;
 import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
+import lifegame.game.object.map.print.frames.setting.CheckFrame;
+import lifegame.game.object.map.print.frames.setting.settingPlayer;
+import lifegame.game.object.map.print.frames.setting.settingYear;
 
 //FrameEventにする。
 public abstract class FrameEvent{
@@ -57,6 +61,10 @@ public abstract class FrameEvent{
 	private static ShopFrame shop = new ShopFrame();
 	private static ShopFrontFrame shopFront = new ShopFrontFrame();
 	private static StartFrame start = new StartFrame();
+	private static Title title = new Title();
+	private static settingPlayer settingPlayer = new settingPlayer();
+	private static settingYear settingYear = new settingYear();
+	private static CheckFrame check = new CheckFrame();
 
 	public static void openClosing() {
 		play.close();
@@ -449,14 +457,39 @@ public abstract class FrameEvent{
 		artresult=artresult+"</body></html>";
 		return artresult;
 	}
-
+	
+	public static int[] openTitle() {
+		return title.open();
+	}
+	
+	public static int openSettingPlayer() {
+		return settingPlayer.open();
+	}
+	
+	public static int getCount() {
+		return settingPlayer.count;
+	}
+	
+	public static String getName(int index) {
+		return settingPlayer.getName(index);
+	}
+	
 	public static int getPlayerOrder(int index) {
-		return start.getPlayerOrder(index);
+		return settingPlayer.getPlayerOrder(index);
 	}
-	public static String getPlayerName(int index) {
-		return start.getPlayerName(index);
-	}
+	
 	public static int getOrder() {
-		return start.playerorder;
+		return settingPlayer.playerorder;
+	}
+	
+	public static int openSettingYear() {
+		return settingYear.open();
+	}
+
+	public static int getYear() {
+		return settingYear.year;
+	}
+	public static void openCheckFrame() {
+		check.open();
 	}
 }

@@ -71,16 +71,16 @@ public class Player {
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
 			if(FrameEvent.getOrder()==0) {//順番入れ替え
-				if(playerCount>i) {//player
-					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),true));
+				if(FrameEvent.getCount()>i) {//player
+					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {	//CPU
-					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),false));
+					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}else {//順番初期値
-				if(playerCount>i) {//player
-					Player.players.put(i,new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),true));
+				if(FrameEvent.getCount()>i) {//player
+					Player.players.put(i,new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {//CPU
-					Player.players.put(i,new Player(FrameEvent.getPlayerName(i),1000,FrameEvent.getPlayerOrder(i),false));
+					Player.players.put(i,new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}
 			Player.players.get(FrameEvent.getPlayerOrder(i)).setColt(playFrame.createText(401+400,301+900,20,20,10,Player.players.get(FrameEvent.getPlayerOrder(i)).getName()));

@@ -135,10 +135,10 @@ public class App {
     private void run() {
     	Japan.init();
 
-    	int[] result = FrameEvent.openStartFrame();
+    	int[] result = FrameEvent.openTitle();
 
-    	int playerCount = result[0];
-    	int yearLimit = result[1];
+    	int playerCount = result[1];
+    	int yearLimit = result[0];
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
