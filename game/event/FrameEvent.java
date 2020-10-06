@@ -489,7 +489,5 @@ public abstract class FrameEvent{
 	public static int getYear() {
 		return settingYear.year;
 	}
-	public static void openCheckFrame() {
-		check.open();
-	}
+	
 }
