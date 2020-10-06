@@ -137,8 +137,8 @@ public class App {
 
     	int[] result = FrameEvent.openTitle();
 
-    	int playerCount = result[1];
     	int yearLimit = result[0];
+	int playerCount = result[1];
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
