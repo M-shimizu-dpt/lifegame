@@ -1,5 +1,6 @@
 package lifegame.game.object.map.print.frames;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,11 +9,14 @@ import java.util.Collections;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import lifegame.game.event.WaitThread;
 import lifegame.game.main.App;
@@ -29,6 +33,8 @@ public class StartFrame extends JFrame implements ActionListener{
 
 	public static ArrayList<String> setNames = new ArrayList<String>();
 	ButtonGroup Order;
+	ButtonGroup Count;
+	public int count;
 	public int playerorder;
 	public static ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
 
@@ -36,23 +42,61 @@ public class StartFrame extends JFrame implements ActionListener{
   		JLayeredPane start = this.getLayeredPane();
     	JLabel labelTitle = new JLabel("桃大郎電鉄");
     	labelTitle.setFont(new Font("SansSerif", Font.ITALIC, 50));
-    	labelTitle.setBounds(280, 10, 400, 60);
+    	labelTitle.setBounds(250, 10, 400, 60);
     	//年数設定
-    	JLabel labelYear = new JLabel("何年プレイしますか？");
+    	JLabel labelYear = new JLabel("何年プレイしますか？(１～１００年)");
     	labelYear.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	labelYear.setBounds(20, 100, 200, 50);
-    	JTextField textYear = new JTextField("3");
-    	textYear.setHorizontalAlignment(JTextField.CENTER);
-    	textYear.setFont(new Font("SansSerif",Font.BOLD,20));
-    	textYear.setBounds(330, 100, 200, 50);
+    	labelYear.setBounds(20, 100, 400, 50);
+    	JLabel text =new JLabel("年");
+    	text.setFont(new Font("SansSerif", Font.ITALIC, 20));
+    	text.setBounds(490, 100, 50, 50);
+    	
+    	JSpinner spinnerYear = new JSpinner(new SpinnerNumberModel(3,1,100,1));
+    	spinnerYear.setFont(new Font("SansSerif",Font.BOLD,20));
+    	spinnerYear.setBounds(430, 100, 55, 50);
+    	JSpinner.NumberEditor model = new JSpinner.NumberEditor(spinnerYear);
+    	spinnerYear.setEditor(model);
+    	JFormattedTextField textYear = model.getTextField();
+    	textYear.setEditable(false);
+    	textYear.setBackground(Color.white);
+    	
     	//プレイヤーの人数設定
     	JLabel labelPlayers = new JLabel("プレイヤーの人数は何人ですか？");
     	labelPlayers.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	labelPlayers.setBounds(20, 180, 300, 50);
-    	JTextField textPlayerCount = new JTextField("1");
-    	textPlayerCount.setHorizontalAlignment(JTextField.CENTER);
-    	textPlayerCount.setFont(new Font("SansSerif",Font.BOLD,20));
-    	textPlayerCount.setBounds(330, 180, 200, 50);
+    	
+    	JRadioButton count1 = new JRadioButton("人間:1 VS CPU:3",true);
+    	count1.addActionListener(this);
+    	count1.setActionCommand("1");
+    	count1.setFont(new Font("SansSerif", Font.ITALIC, 15));
+    	count1.setBounds(350, 150, 150, 50);
+    	JRadioButton count2 = new JRadioButton("人間:2 VS CPU:2");
+    	count2.addActionListener(this);
+    	count2.setActionCommand("2");
+    	count2.setFont(new Font("SansSerif", Font.ITALIC, 15));
+    	count2.setBounds(500, 150, 150, 50);
+    	JRadioButton count3 = new JRadioButton("人間:3 VS CPU:1");
+    	count3.addActionListener(this);
+    	count3.setActionCommand("3");
+    	count3.setFont(new Font("SansSerif", Font.ITALIC, 15));
+    	count3.setBounds(350, 200, 150, 50);
+    	JRadioButton count4 = new JRadioButton("人間:4 VS CPU:0");
+    	count4.addActionListener(this);
+    	count4.setActionCommand("4");
+    	count4.setFont(new Font("SansSerif", Font.ITALIC, 15));
+    	count4.setBounds(500, 200, 150, 50);
+    	JRadioButton count0 = new JRadioButton("人間:0 VS CPU:4");
+    	count0.addActionListener(this);
+    	count0.setActionCommand("0");
+    	count0.setFont(new Font("SansSerif", Font.ITALIC, 15));
+    	count0.setBounds(650, 200, 150, 50);
+    	Count = new ButtonGroup();
+    	Count.add(count0);
+    	Count.add(count1);
+    	Count.add(count2);
+    	Count.add(count3);
+    	Count.add(count4);
+    	
     	//順番の設定
     	JLabel labelOrder = new JLabel("順番をランダムに入れ替えますか？");
     	labelOrder.setBounds(20, 250, 350, 50);
@@ -70,12 +114,13 @@ public class StartFrame extends JFrame implements ActionListener{
     	Order = new ButtonGroup();
     	Order.add(order1);
     	Order.add(order2);
+    	
     	//名前の変更設定
     	JLabel labelPlayerName = new JLabel("名前を変更する場合は下に入力してください");
     	labelPlayerName.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	labelPlayerName.setBounds(20, 300, 400, 50);
 
-    	JLabel player1 = new JLabel("1番目");
+    	JLabel player1 = new JLabel("1人目");
     	player1.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	player1.setBounds(50, 350, 150, 50);
     	JTextField textplayer1 = new JTextField("p1");
@@ -84,7 +129,7 @@ public class StartFrame extends JFrame implements ActionListener{
     	textplayer1.setFont(new Font("SansSerif",Font.BOLD,20));
     	textplayer1.setBounds(50, 410, 150, 50);
 
-    	JLabel player2 = new JLabel("2番目");
+    	JLabel player2 = new JLabel("2人目");
     	player2.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	player2.setBounds(225, 350, 150, 50);
     	JTextField textplayer2 = new JTextField("p2");
@@ -93,7 +138,7 @@ public class StartFrame extends JFrame implements ActionListener{
     	textplayer2.setFont(new Font("SansSerif",Font.BOLD,20));
     	textplayer2.setBounds(225, 410, 150, 50);
 
-    	JLabel player3 = new JLabel("3番目");
+    	JLabel player3 = new JLabel("3人目");
     	player3.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	player3.setBounds(400, 350, 150, 50);
     	JTextField textplayer3 = new JTextField("p3");
@@ -102,7 +147,7 @@ public class StartFrame extends JFrame implements ActionListener{
     	textplayer3.setFont(new Font("SansSerif",Font.BOLD,20));
     	textplayer3.setBounds(400, 410, 150, 50);
 
-    	JLabel player4 = new JLabel("4番目");
+    	JLabel player4 = new JLabel("4人目");
     	player4.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	player4.setBounds(575, 350, 150, 50);
     	JTextField textplayer4 = new JTextField("p4");
@@ -117,9 +162,14 @@ public class StartFrame extends JFrame implements ActionListener{
     	startButton.addActionListener(this);
     	start.add(labelTitle);
     	start.add(labelYear);
-    	start.add(textYear);
+    	start.add(spinnerYear);
+    	start.add(text);
     	start.add(labelPlayers);
-    	start.add(textPlayerCount);
+    	start.add(count1);
+    	start.add(count2);
+    	start.add(count3);
+    	start.add(count4);
+    	start.add(count0);
     	start.add(labelPlayerName);
     	start.add(player1);
     	start.add(textplayer1);
@@ -147,7 +197,7 @@ public class StartFrame extends JFrame implements ActionListener{
     	this.setVisible(false);
 
     	int[] list= {0,0};
-    	list[0] = Integer.parseInt((String) textPlayerCount.getText());
+    	list[0] = count;
     	list[1] = Integer.parseInt((String)textYear.getText());
 
     	setNames.add(textplayer1.getText());
@@ -159,8 +209,13 @@ public class StartFrame extends JFrame implements ActionListener{
   	}
 
 	public void actionPerformed(ActionEvent e) {
-		String str = Order.getSelection().getActionCommand();
-		playerorder=Integer.valueOf(str);
+		//プレイ人数決め
+		String cnt = Count.getSelection().getActionCommand();
+		count = Integer.valueOf(cnt);
+		
+		//順番決め
+		String odr = Order.getSelection().getActionCommand();
+		playerorder=Integer.valueOf(odr);
 		if(PlayerOrder.size()!=0) {
 			PlayerOrder.clear();
 		}
@@ -174,6 +229,7 @@ public class StartFrame extends JFrame implements ActionListener{
 			Collections.sort(PlayerOrder);//初期設定値
 			//System.out.println(PlayerOrder);
 		}
+		//ゲーム開始
 		String cmd = e.getActionCommand();
 		if(cmd.equals("始める")) {
     		App.start();
