@@ -39,7 +39,7 @@ public class MassSearchThread extends SearchThreadModel{
 				break;
 			}
 			synchronized(MassSearchThread.lock1) {
-				list = Japan.getMovePossibles(this.nowMass);
+				list = Japan.getLinks(this.nowMass);
 			}
 
 			for(Coordinates coor:list) {

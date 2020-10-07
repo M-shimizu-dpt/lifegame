@@ -44,7 +44,7 @@ public class ShopSearchThread extends SearchThreadModel{
 
 			count++;
 			synchronized(ShopSearchThread.lock1) {
-				list = Japan.getMovePossibles(this.nowMass);
+				list = Japan.getLinks(this.nowMass);
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
 

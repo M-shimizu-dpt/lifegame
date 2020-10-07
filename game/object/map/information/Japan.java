@@ -22,7 +22,6 @@ public abstract class Japan{
 	private static ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
 	private static ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
 	private static Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
-	private static Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
 	private static Station goal;//目的地
 	private static Station saveGoal;//ゴール保存用
 	public static ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
@@ -656,7 +655,6 @@ public abstract class Japan{
 							stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 						}
 					}
-					railMapping.put(stations.get(getIndexOfStation(from)).getCoordinates(),stations.get(getIndexOfStation(from)).getCoordinates().getLinks());
 				}
 				if(ContainsEvent.isBlue(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(3)) ||
@@ -683,7 +681,6 @@ public abstract class Japan{
 							blue.get(getIndexOfBlue(from)).addLinks(to);
 						}
 					}
-					railMapping.put(blue.get(getIndexOfBlue(from)),blue.get(getIndexOfBlue(from)).getLinks());
 				}
 				if(ContainsEvent.isRed(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from))).get(3)) ||
@@ -710,7 +707,6 @@ public abstract class Japan{
 							red.get(getIndexOfRed(from)).addLinks(to);
 						}
 					}
-					railMapping.put(red.get(getIndexOfRed(from)),red.get(getIndexOfRed(from)).getLinks());
 				}
 				if(ContainsEvent.isYellow(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(3)) ||
@@ -737,7 +733,6 @@ public abstract class Japan{
 							yellow.get(getIndexOfYellow(from)).addLinks(to);
 						}
 					}
-					railMapping.put(yellow.get(getIndexOfYellow(from)),yellow.get(getIndexOfYellow(from)).getLinks());
 				}
 				if(ContainsEvent.isShop(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(3)) ||
@@ -764,7 +759,6 @@ public abstract class Japan{
 							shop.get(getIndexOfShop(from)).addLinks(to);
 						}
 					}
-					railMapping.put(shop.get(getIndexOfShop(from)),shop.get(getIndexOfShop(from)).getLinks());
 				}
 			}
 		}
@@ -1317,36 +1311,11 @@ public abstract class Japan{
 	}
 
 	//指定した座標から移動可能な座標一覧を取得
-	public static ArrayList<Coordinates> getMovePossibles(int x,int y) {
-		if(ContainsEvent.isStation(x,y)) {
-			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
-		}else if(ContainsEvent.isBlue(x,y)) {
-			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
-		}else if(ContainsEvent.isRed(x,y)) {
-			return railMapping.get(red.get(getIndexOfRed(x,y)));
-		}else if(ContainsEvent.isYellow(x,y)) {
-			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
-		}else if(ContainsEvent.isShop(x,y)) {
-			return railMapping.get(shop.get(getIndexOfShop(x,y)));
-		}else {
-			return null;
-		}
+	public static ArrayList<Coordinates> getLinks(int x,int y) {
+		return getCoordinates(x,y).getLinks();
 	}
-	public static ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
-		if(ContainsEvent.isStation(coor)) {
-			return railMapping.get(stations.get(getIndexOfStation(coor)).getCoordinates());
-		}else if(ContainsEvent.isBlue(coor)) {
-			return railMapping.get(blue.get(getIndexOfBlue(coor)));
-		}else if(ContainsEvent.isRed(coor)) {
-			return railMapping.get(red.get(getIndexOfRed(coor)));
-		}else if(ContainsEvent.isYellow(coor)) {
-			return railMapping.get(yellow.get(getIndexOfYellow(coor)));
-		}else if(ContainsEvent.isShop(coor)) {
-			return railMapping.get(shop.get(getIndexOfShop(coor)));
-		}else {
-
-			return null;
-		}
+	public static ArrayList<Coordinates> getLinks(Coordinates coor) {
+		return getCoordinates(coor).getLinks();
 	}
 
 }
