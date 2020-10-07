@@ -159,18 +159,16 @@ public class GingaFrame extends FrameModel{
 		ArrayList<Boolean> vector = new ArrayList<Boolean>();
 		vector = Ginga.getVector(Ginga.getCoordinates(Player.player.getNowMass()),1);
 		closeMoveButton();
-		if(Searcher.nearestTrajectoryList.containsKey(Searcher.count)) {
-			for(Coordinates coor:Ginga.getLinks(Player.player.getNowMass())) {
-				if(Ginga.getGoalDistance(coor)>Ginga.getGoalDistance())continue;
-				if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
-					gingaLeft.setBackground(Color.MAGENTA);
-				}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY())) {
-					gingaRight.setBackground(Color.MAGENTA);
-				}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1)) {
-					gingaTop.setBackground(Color.MAGENTA);
-				}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1)) {
-					gingaBottom.setBackground(Color.MAGENTA);
-				}
+		for(Coordinates coor:Ginga.getLinks(Player.player.getNowMass())) {
+			if(Ginga.getGoalDistance(coor)>Ginga.getGoalDistance())continue;
+			if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
+				gingaLeft.setBackground(Color.MAGENTA);
+			}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY())) {
+				gingaRight.setBackground(Color.MAGENTA);
+			}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1)) {
+				gingaTop.setBackground(Color.MAGENTA);
+			}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1)) {
+				gingaBottom.setBackground(Color.MAGENTA);
 			}
 		}
 		gingaLeft.setVisible(vector.get(0));

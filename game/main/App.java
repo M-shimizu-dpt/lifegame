@@ -99,17 +99,16 @@ public class App {
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
 		  	if(ContainsEvent.isNormalMap()) {
-		  		Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
+		  		Player.player.setGoalDistance();//目的地までの最短経路を探索
 		  	}
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!ContainsEvent.isPlayer()) {//cpu操作
+		  		Searcher.searchShortestRoute(Player.player);
 		  		Player.player.cpu();
 		  	}
-		  	Player.player.addCard(Card.getCard(0));//debug
-		  	Player.player.addCard(Card.getCard(1));//debug
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
@@ -146,7 +145,7 @@ public class App {
     	int[] result = FrameEvent.openTitle();
 
     	int yearLimit = result[0];
-	int playerCount = result[1];
+    	int playerCount = result[1];
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 

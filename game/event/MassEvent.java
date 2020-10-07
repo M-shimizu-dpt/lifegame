@@ -60,7 +60,7 @@ public abstract class MassEvent {
 	}
 
 	private static void goal() {
-		Searcher.searchShortestRouteAllPlayers();
+		//Searcher.searchShortestRouteAllPlayers();
 		FrameEvent.openGoal();
 	}
 

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
+import lifegame.game.event.Searcher;
 
 public abstract class Japan{
 	private static ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
@@ -776,6 +777,28 @@ public abstract class Japan{
 		}
 	}
 
+	public static void resetGoalDistance() {
+		for(Coordinates coor:getAllCoordinates()) {
+			coor.setGoalDistance(100);
+		}
+	}
+
+	public static void setGoalDistance() {
+		resetGoalDistance();
+		Searcher.searchGoalDistance();
+	}
+
+	public static void setGoalDistance(Coordinates coor,int distance) {
+		getCoordinates(coor).setGoalDistance(distance);
+	}
+
+	public static int getGoalDistance(Coordinates coor) {
+		return getCoordinates(coor).getGoalDistance();
+	}
+	public static int getGoalDistance(int x,int y) {
+		return getCoordinates(x,y).getGoalDistance();
+	}
+
 	//ゴールの座標を取得
 	public static Coordinates getGoalCoor() {
 		return goal.getCoordinates();
@@ -1066,6 +1089,8 @@ public abstract class Japan{
 		}
 		goal = getStation(x,y);
 		FrameEvent.setMapGoalColor();
+
+  		Japan.setGoalDistance();
 	}
 
 	//ゴールマスを変更
@@ -1083,6 +1108,8 @@ public abstract class Japan{
 		FrameEvent.resetMapGoalColor();
 		goal = getStation(x,y);
 		FrameEvent.setMapGoalColor();
+
+  		Japan.setGoalDistance();
 	}
 
 	//指定の座標のマスの配列番号を取得

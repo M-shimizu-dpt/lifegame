@@ -11,6 +11,7 @@ import java.util.Map;
 
 import lifegame.game.event.search.MassSearchThread;
 import lifegame.game.event.search.NearestSearchThread;
+import lifegame.game.event.search.OnlyDistanceSearchThread;
 import lifegame.game.event.search.OnlyDistanceSearchThread1;
 import lifegame.game.event.search.OnlyDistanceSearchThread2;
 import lifegame.game.event.search.OnlyDistanceSearchThread3;
@@ -32,6 +33,12 @@ public class Searcher{
 
 	public static int count;//目的のマスまでの最短距離
 	public static long time;//マルチスレッド開始からの経過時間
+
+
+	public static void searchGoalDistance() {
+		OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread();
+		thread.start();
+	}
 
 	//行くことが出来るマスを探索
 	public static int searchCanMoveMass(Player player) {

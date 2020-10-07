@@ -282,6 +282,7 @@ public class Player {
 						FrameEvent.moveMaps(-130,0);
 					}
 				}
+				FrameEvent.reloadInfo();
 				Thread.sleep(300);
 				if(this.getMove()<=0)break;
 			}
@@ -311,6 +312,7 @@ public class Player {
 					FrameEvent.moveMaps(-130,0);
 				}
 			}
+			FrameEvent.reloadInfo();
 			Thread.sleep(300);
 			if(this.getMove()<=0)break;
 		}
@@ -427,7 +429,10 @@ public class Player {
 
 	public void setGoalDistance(int distance) {//最短距離をセット
 		this.goaldistance = distance;
-		//System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
+	}
+
+	public void setGoalDistance() {//最短距離をセット
+		this.goaldistance = Japan.getCoordinates(nowMass).getGoalDistance();
 	}
 
 	private void setMapID(int id) {
