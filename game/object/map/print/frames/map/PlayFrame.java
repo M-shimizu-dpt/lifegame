@@ -48,15 +48,15 @@ public class PlayFrame extends FrameModel{
 		int distance=130;
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				if(!ContainsEvent.isMass(j, i))continue;
+				if(!ContainsEvent.isMassInJapan(j, i))continue;
 				if(ContainsEvent.isStation(j,i)) {
 					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,Japan.getStationName(j, i));
 					pre.setBackground(Color.WHITE);
 					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
 				}else {
-					play.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
+					play.add(createMassInJapan(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
 				}
-				drawLine(this.getLayeredPane(),j,i,distance,20);
+				drawLineInJapan(this.getLayeredPane(),j,i,distance,20);
 			}
 		}
 
@@ -133,6 +133,10 @@ public class PlayFrame extends FrameModel{
 
 	//メイン画面での移動ボタンを非表示
 	public void closeMoveButton() {
+		playRight.setBackground(Color.WHITE);
+		playLeft.setBackground(Color.WHITE);
+		playTop.setBackground(Color.WHITE);
+		playBottom.setBackground(Color.WHITE);
 		playRight.setVisible(false);
 		playLeft.setVisible(false);
 		playTop.setVisible(false);
@@ -177,6 +181,13 @@ public class PlayFrame extends FrameModel{
 
 	public void resetGoalColor() {
 		this.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
+	}
+
+	public void addPlayer(Player player) {
+		this.getLayeredPane().add(player.getColt(),JLayeredPane.PALETTE_LAYER);
+	}
+	public void removePlayer(Player player) {
+		this.getLayeredPane().remove(player.getColt());
 	}
 
 	//プレイマップの中央位置を初期位置(大阪)に設定
@@ -255,7 +266,7 @@ public class PlayFrame extends FrameModel{
 		String name;//if文が長すぎる為
 		JLayeredPane play = this.getLayeredPane();
 
-		Coordinates coor = MoveEvent.movePlayer(x, y);
+		Coordinates coor = MoveEvent.movePlayerInJapan(x, y);
 
 		for(int i=0;i<play.getComponentCount();i++) {
 			name=play.getComponent(i).getName();
@@ -282,7 +293,7 @@ public class PlayFrame extends FrameModel{
 	}
 
 	//プレイマップの画面遷移処理
-	public void moveMaps(Player player,Coordinates to) {
+	public void moveMaps(Player player,Coordinates to) {//playerのcoltの座標を変えるだけでできるかも
 		JLayeredPane play = this.getLayeredPane();
 		int x=(to.getX()-player.getNowMass().getX())*130;
 		int y=(to.getY()-player.getNowMass().getY())*130;

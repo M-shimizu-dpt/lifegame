@@ -70,6 +70,12 @@ public class Coordinates {
 		return links;
 	}
 
+	public void removeLinks(Coordinates coor) {
+		if(links.contains(coor)) {
+			links.remove(coor);
+		}
+	}
+
 	public void setValue(int x,int y) {
 		this.x=x;
 		this.y=y;

@@ -38,7 +38,7 @@ public class Player {
 
 	private Buff buff;//一定期間の持続効果
 	private ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
-	private JLabel colt;//プレイヤーの駒
+	private JLabel colt=new JLabel();//プレイヤーの駒
 	private boolean cpuflag;
 	private int goaldistance;
 	private int id;//識別番号
@@ -47,6 +47,7 @@ public class Player {
 	private int money;//所持金
 	private int move;//進めるマス
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
+	private int mapID;
 
 	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
@@ -55,6 +56,7 @@ public class Player {
 		this.cards = new ArrayList<Card>();
 		this.propertys = new ArrayList<Property>();
 		this.id=id;
+		this.mapID=0;
 		this.cpuflag=cpuflag;
 		setName(name);
 		addMoney(money);
@@ -66,6 +68,26 @@ public class Player {
 
 	public static Player getPlayer(int index) {
 		return Player.players.get(index);
+	}
+
+	public static Player getNextPlayer() {
+		if(Player.player.getID()==3) {
+			return Player.getPlayer(0);
+		}else {
+			return Player.getPlayer(Player.player.getID()+1);
+		}
+	}
+
+	public static Player getNormalPlayer() {
+		int id=Player.player.getID();
+		for(int i=id;i>-1;i--) {
+
+			if(ContainsEvent.isNormalMap(Player.getPlayer(i)))return Player.getPlayer(i);
+			if(i==0) {
+				i=4;
+			}
+		}
+		return null;
 	}
 
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
@@ -391,8 +413,16 @@ public class Player {
 		sellPropertyFrame.sellPropertys(this.getProperty(0));
 	}
 
+	public void setBonbirasMap() {
+		setMapID(2);
+	}
+
 	public void setColt(JLabel colt) {
 		this.colt = colt;
+	}
+
+	public void setGingaMap() {
+		setMapID(1);
 	}
 
 	public void setGoalDistance(int distance) {//最短距離をセット
@@ -400,8 +430,19 @@ public class Player {
 		//System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
 	}
 
+	private void setMapID(int id) {
+		this.mapID=id;
+	}
+
+	public int getMapID() {
+		return this.mapID;
+	}
+
 	public void setMass(int x,int y) {
 		this.nowMass.setValue(x, y);
+	}
+	public void setMass(Coordinates coor) {
+		this.nowMass.setValue(coor);
 	}
 
 	public void setMove(int move) {
@@ -410,6 +451,10 @@ public class Player {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setNormalMap() {
+		setMapID(0);
 	}
 
 	public void addBuff(int ability,int period) {

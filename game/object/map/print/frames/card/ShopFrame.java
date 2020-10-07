@@ -97,7 +97,7 @@ public class ShopFrame extends FrameModel{
 		shopSell.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		for(int i=1; i<=Player.player.getCardSize(); i++) {
 			JButton sellButton = createButton(500,i*50,70,50,10,"売却");
-			if(!ContainsEvent.isPlayer()) {
+			if(!ContainsEvent.isPlayer() || Player.player.getCardName(i).equals("銀河鉄道カード")) {
 				sellButton.setEnabled(false);
 			}
 			sellButton.setActionCommand(Player.player.getCardName(i-1)+":s");

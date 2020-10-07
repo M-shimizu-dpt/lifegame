@@ -17,6 +17,7 @@ import lifegame.game.event.WaitThread;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 
 public class App {
@@ -97,7 +98,9 @@ public class App {
 		  	first=false;
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
-		  	Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
+		  	if(ContainsEvent.isNormalMap()) {
+		  		Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
+		  	}
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();
@@ -105,6 +108,8 @@ public class App {
 		  	if(!ContainsEvent.isPlayer()) {//cpu操作
 		  		Player.player.cpu();
 		  	}
+		  	Player.player.addCard(Card.getCard(0));//debug
+		  	Player.player.addCard(Card.getCard(1));//debug
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
 			turnEnd.start();
 			turnEnd.join();
@@ -123,7 +128,7 @@ public class App {
 				bonbyTurnEnd.start();
 				bonbyTurnEnd.join();
 			}
-			Thread.sleep(1000);
+			FrameEvent.closeMain();
 			CardEvent.resetFlags();
 			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
@@ -134,6 +139,7 @@ public class App {
 
     private void run() {
     	Japan.init();
+    	Ginga.init();
 
     	int[] result = FrameEvent.openStartFrame();
 
