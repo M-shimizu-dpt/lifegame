@@ -64,17 +64,17 @@ public class settingPlayer extends JFrame implements ActionListener {
     	count4.setActionCommand("4");
     	count4.setFont(new Font("SansSerif", Font.ITALIC, 15));
     	count4.setBounds(500, 200, 150, 50);
-    	JRadioButton count0 = new JRadioButton("人間:0 VS CPU:4");//
-    	count0.addActionListener(this);
-    	count0.setActionCommand("0");
-    	count0.setFont(new Font("SansSerif", Font.ITALIC, 15));
-    	count0.setBounds(650, 200, 150, 50);
+    	//JRadioButton count0 = new JRadioButton("人間:0 VS CPU:4");//
+    	//count0.addActionListener(this);
+    	//count0.setActionCommand("0");
+    	//count0.setFont(new Font("SansSerif", Font.ITALIC, 15));
+    	//count0.setBounds(650, 200, 150, 50);
     	Count = new ButtonGroup();
     	Count.add(count0);
     	Count.add(count1);
     	Count.add(count2);
     	Count.add(count3);
-    	Count.add(count4);
+    	//Count.add(count4);
     	
     	//順番の設定
     	JLabel labelOrder = new JLabel("順番をランダムに入れ替えますか？");
@@ -135,7 +135,7 @@ public class settingPlayer extends JFrame implements ActionListener {
     	textplayer4.setFont(new Font("SansSerif",Font.BOLD,20));
     	textplayer4.setBounds(575, 410, 150, 50);
 		
-		JButton startButton = new JButton("OK");
+	JButton startButton = new JButton("OK");
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	startButton.setBounds(600,490,180,60);
     	startButton.addActionListener(this);
@@ -146,7 +146,7 @@ public class settingPlayer extends JFrame implements ActionListener {
     	start.add(count2);
     	start.add(count3);
     	start.add(count4);
-    	start.add(count0);
+    	//start.add(count0);
     	start.add(labelPlayerName);
     	start.add(player1);
     	start.add(textplayer1);
