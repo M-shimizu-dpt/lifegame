@@ -16,6 +16,7 @@ import javax.swing.SwingConstants;
 
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 
 public abstract class FrameModel extends JFrame implements ActionListener{
@@ -71,7 +72,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 	}
 
 
-	protected void drawLine(JLayeredPane lines,int x,int y,int size,int somethig) {
+	protected void drawLineInJapan(JLayeredPane lines,int x,int y,int size,int somethig) {
 		ArrayList<Coordinates> list = Japan.getMovePossibles(x, y);
 		for(Coordinates coor : list) {
 			JPanel line = new JPanel();
@@ -92,7 +93,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 		}
 	}
-	protected void drawLine(JLayeredPane lines,Coordinates coor,int size,int somethig) {
+	protected void drawLineInJapan(JLayeredPane lines,Coordinates coor,int size,int somethig) {
 		ArrayList<Coordinates> list = Japan.getMovePossibles(coor);
 		for(Coordinates coordinates : list) {
 			JPanel line = new JPanel();
@@ -113,9 +114,8 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
 		}
 	}
-
 	//駅以外のマスを作成
-	protected JPanel createMass(int j,int i,int distance) {
+	protected JPanel createMassInJapan(int j,int i,int distance) {
 		JPanel mass = new JPanel();
 		if(ContainsEvent.isBlue(j,i)) {
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
@@ -136,9 +136,8 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		}
 		return mass;
 	}
-
 	//駅以外のマスを作成
-	protected JPanel createMass(Coordinates coor,int distance) {
+	protected JPanel createMassInJapan(Coordinates coor,int distance) {
 		JPanel mass = new JPanel();
 		int j=coor.getX();
 		int i=coor.getY();
@@ -158,6 +157,93 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.GRAY);
 			mass.setName("S"+Japan.getIndexOfShop(j, i));
+		}
+		return mass;
+	}
+
+	protected void drawLineInGinga(JLayeredPane lines,int x,int y,int size,int somethig) {
+		ArrayList<Coordinates> list = Ginga.getMovePossibles(x, y);
+		for(Coordinates coor : list) {
+			JPanel line = new JPanel();
+			line.setBackground(Color.BLACK);
+			if(x>coor.getX()) {
+				line.setLocation(x*size+somethig-size, y*size+somethig);
+				line.setSize(size,2);
+			}else if(x<coor.getX()) {
+				line.setLocation(x*size+somethig, y*size+somethig);
+				line.setSize(size,2);
+			}else if(y>coor.getY()) {
+				line.setLocation(x*size+somethig, y*size+somethig-size);
+				line.setSize(2,size);
+			}else if(y<coor.getY()) {
+				line.setLocation(x*size+somethig, y*size+somethig);
+				line.setSize(2,size);
+			}
+			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
+		}
+	}
+	protected void drawLineInGinga(JLayeredPane lines,Coordinates coor,int size,int somethig) {
+		ArrayList<Coordinates> list = Ginga.getMovePossibles(coor);
+		for(Coordinates coordinates : list) {
+			JPanel line = new JPanel();
+			line.setBackground(Color.BLACK);
+			if(coor.getX()>coordinates.getX()) {
+				line.setLocation(coor.getX()*size+somethig-size, coor.getY()*size+somethig);
+				line.setSize(size,2);
+			}else if(coor.getX()<coordinates.getX()) {
+				line.setLocation(coor.getX()*size+somethig, coor.getY()*size+somethig);
+				line.setSize(size,2);
+			}else if(coor.getY()>coordinates.getY()) {
+				line.setLocation(coor.getX()*size+somethig, coor.getY()*size+somethig-size);
+				line.setSize(2,size);
+			}else if(coor.getY()<coordinates.getY()) {
+				line.setLocation(coor.getX()*size+somethig, coor.getY()*size+somethig);
+				line.setSize(2,size);
+			}
+			lines.add(line,JLayeredPane.DEFAULT_LAYER,-1);
+		}
+	}
+	protected JPanel createMassInGinga(int j,int i,int distance) {
+		JPanel mass = new JPanel();
+		if(ContainsEvent.isBlueInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.BLUE);
+			mass.setName("B"+Ginga.getIndexOfBlue(j, i));
+		}else if(ContainsEvent.isYellowInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.YELLOW);
+			mass.setName("Y"+Ginga.getIndexOfYellow(j, i));
+		}else if(ContainsEvent.isStartInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.WHITE);
+			mass.setName("S0");
+		}else if(ContainsEvent.isGoalInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.GRAY);
+			mass.setName("G0");
+		}
+		return mass;
+	}
+	protected JPanel createMassInGinga(Coordinates coor,int distance) {
+		JPanel mass = new JPanel();
+		int j=coor.getX();
+		int i=coor.getY();
+		if(ContainsEvent.isBlueInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.BLUE);
+			mass.setName("B"+Ginga.getIndexOfBlue(j, i));
+		}else if(ContainsEvent.isYellowInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.YELLOW);
+			mass.setName("Y"+Ginga.getIndexOfYellow(j, i));
+		}else if(ContainsEvent.isStartInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.WHITE);
+			mass.setName("S0");
+		}else if(ContainsEvent.isGoalInGinga(j,i)) {
+			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
+			mass.setBackground(Color.GRAY);
+			mass.setName("G0");
 		}
 		return mass;
 	}

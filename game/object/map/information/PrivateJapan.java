@@ -316,19 +316,19 @@ public class PrivateJapan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else {
@@ -343,19 +343,19 @@ public class PrivateJapan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else {
@@ -370,19 +370,19 @@ public class PrivateJapan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else {
@@ -397,19 +397,19 @@ public class PrivateJapan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else {
@@ -424,19 +424,19 @@ public class PrivateJapan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else {

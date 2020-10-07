@@ -13,7 +13,6 @@ import lifegame.game.event.BinboEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.MoveEvent;
-import lifegame.game.event.Searcher;
 import lifegame.game.main.App;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
@@ -48,15 +47,15 @@ public class PlayFrame extends FrameModel{
 		int distance=130;
 		for(int i=1;i<=17;i++) {
 			for(int j=1;j<=17;j++) {
-				if(!ContainsEvent.isMass(j, i))continue;
+				if(!ContainsEvent.isMassInJapan(j, i))continue;
 				if(ContainsEvent.isStation(j,i)) {
 					JLabel pre = createText(j*distance-20,i*distance-5,80,60,15,Japan.getStationName(j, i));
 					pre.setBackground(Color.WHITE);
 					play.add(pre,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
 				}else {
-					play.add(createMass(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
+					play.add(createMassInJapan(j,i,distance),JLayeredPane.DEFAULT_LAYER,0);
 				}
-				drawLine(this.getLayeredPane(),j,i,distance,20);
+				drawLineInJapan(this.getLayeredPane(),j,i,distance,20);
 			}
 		}
 
@@ -66,11 +65,20 @@ public class PlayFrame extends FrameModel{
   	    Japan.initGoal();
   	    setGoalColor();
 
+  	    try {
+			Thread.sleep(1000);
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+
+  	    for(Player player:Player.players.values()) {
+  	    	player.setGoalDistance();
+  	    }
   	    initMaps();
   	    initMenu();
   	    enableMenu();
 
-  	    moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
+  	    moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Player.player.getGoalDistance());
     	moveLabel.setName("moves");
     	play.setBackground(Color.ORANGE);
     	closeMoveButton();
@@ -133,6 +141,10 @@ public class PlayFrame extends FrameModel{
 
 	//メイン画面での移動ボタンを非表示
 	public void closeMoveButton() {
+		playRight.setBackground(Color.WHITE);
+		playLeft.setBackground(Color.WHITE);
+		playTop.setBackground(Color.WHITE);
+		playBottom.setBackground(Color.WHITE);
 		playRight.setVisible(false);
 		playLeft.setVisible(false);
 		playTop.setVisible(false);
@@ -145,19 +157,19 @@ public class PlayFrame extends FrameModel{
 		mainInfo.setVisible(false);
 		if(ContainsEvent.isEffect()){
 			if(Player.player.getMoney()<10000) {
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
 			}else if(Player.player.getMoney()%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
 			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス　効果発動中("+Player.player.getEffect()+")");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
 			}
 		}else {
 			if(Player.player.getMoney()<10000) {
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス");
 			}else if(Player.player.getMoney()%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス");
 			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Searcher.count+"マス");
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス");
 			}
 		}
 		mainInfo.setVisible(true);
@@ -179,6 +191,13 @@ public class PlayFrame extends FrameModel{
 		this.getLayeredPane().getComponentAt(400, 300).setBackground(Color.WHITE);
 	}
 
+	public void addPlayer(Player player) {
+		this.getLayeredPane().add(player.getColt(),JLayeredPane.PALETTE_LAYER);
+	}
+	public void removePlayer(Player player) {
+		this.getLayeredPane().remove(player.getColt());
+	}
+
 	//プレイマップの中央位置を初期位置(大阪)に設定
 	private void initMaps() {
 		JLayeredPane play = this.getLayeredPane();
@@ -191,7 +210,7 @@ public class PlayFrame extends FrameModel{
 
 	private void initMenu() {
 		JLayeredPane play = this.getLayeredPane();
-		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count+"マス");
+		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"までの最短距離:"+Player.player.getGoalDistance()+"マス");
 		mainInfo.setBackground(Color.BLUE);
 		mainInfo.setName(Player.player.getName()+Player.player.getMoney());
 		play.add(mainInfo,JLayeredPane.PALETTE_LAYER,0);
@@ -255,7 +274,7 @@ public class PlayFrame extends FrameModel{
 		String name;//if文が長すぎる為
 		JLayeredPane play = this.getLayeredPane();
 
-		Coordinates coor = MoveEvent.movePlayer(x, y);
+		Coordinates coor = MoveEvent.movePlayerInJapan(x, y);
 
 		for(int i=0;i<play.getComponentCount();i++) {
 			name=play.getComponent(i).getName();
@@ -271,6 +290,8 @@ public class PlayFrame extends FrameModel{
 
 		MoveEvent.updateTrajectory(play.getComponentAt(400, 300).getName());
 
+		Player.player.setGoalDistance();
+
 		if(Player.player.getMove()<=0) {
 			MoveEvent.clearTrajectory();
 			Dice.clear();
@@ -282,7 +303,7 @@ public class PlayFrame extends FrameModel{
 	}
 
 	//プレイマップの画面遷移処理
-	public void moveMaps(Player player,Coordinates to) {
+	public void moveMaps(Player player,Coordinates to) {//playerのcoltの座標を変えるだけでできるかも
 		JLayeredPane play = this.getLayeredPane();
 		int x=(to.getX()-player.getNowMass().getX())*130;
 		int y=(to.getY()-player.getNowMass().getY())*130;
@@ -314,21 +335,16 @@ public class PlayFrame extends FrameModel{
 		ArrayList<Boolean> vector = new ArrayList<Boolean>();
 		vector = Japan.getVector(Player.player.getNowMass(),1);
 		closeMoveButton();
-		if(Searcher.nearestTrajectoryList.containsKey(Searcher.count)) {
-			for(ArrayList<Coordinates> list:Searcher.nearestTrajectoryList.get(Searcher.count)) {
-				for(Coordinates coor:list) {
-					for(int i=0;i<4;i++) {
-						if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
-							playLeft.setBackground(Color.MAGENTA);
-						}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY())) {
-							playRight.setBackground(Color.MAGENTA);
-						}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1)) {
-							playTop.setBackground(Color.MAGENTA);
-						}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1)) {
-							playBottom.setBackground(Color.MAGENTA);
-						}
-					}
-				}
+		for(Coordinates coor:Japan.getMovePossibles(Player.player.getNowMass())) {
+			if(ContainsEvent.goalDistance(Player.player, Japan.getGoalDistance(coor))!=1)continue;
+			if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
+				playLeft.setBackground(Color.MAGENTA);
+			}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY())) {
+				playRight.setBackground(Color.MAGENTA);
+			}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1)) {
+				playTop.setBackground(Color.MAGENTA);
+			}else if(ContainsEvent.coor(coor, Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1)) {
+				playBottom.setBackground(Color.MAGENTA);
 			}
 		}
 		playLeft.setVisible(vector.get(0));
@@ -338,8 +354,7 @@ public class PlayFrame extends FrameModel{
 		if(Player.player.getMove() <= 0) {
 			closeMoveButton();
 		}else {
-			Searcher.searchShortestRoute(Player.player);
-			moveLabel.setText("残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
+			moveLabel.setText("残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Player.player.getGoalDistance());
 			moveLabel.setVisible(true);
 			this.getLayeredPane().add(moveLabel,JLayeredPane.PALETTE_LAYER,0);
 		}

@@ -12,6 +12,7 @@ public class Coordinates {
 	private int y;
 	private int cost=0;
 	private ArrayList<Coordinates> links = new ArrayList<Coordinates>();
+	private int goalDistance;
 
 	public Coordinates(int x,int y) {
 		this.x=x;
@@ -38,6 +39,14 @@ public class Coordinates {
 
 	public void close() {
 		cost = 0;
+	}
+
+	public void setGoalDistance(int distance) {
+		this.goalDistance=distance;
+	}
+
+	public int getGoalDistance() {
+		return this.goalDistance;
 	}
 
 	private int getVirtualCost() {
@@ -68,6 +77,12 @@ public class Coordinates {
 
 	public ArrayList<Coordinates> getLinks(){
 		return links;
+	}
+
+	public void removeLinks(Coordinates coor) {
+		if(links.contains(coor)) {
+			links.remove(coor);
+		}
 	}
 
 	public void setValue(int x,int y) {

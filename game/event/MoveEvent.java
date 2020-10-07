@@ -40,7 +40,7 @@ public abstract class MoveEvent {
 		}
 	}
 
-	public static Coordinates movePlayer(int x,int y) {
+	public static Coordinates movePlayerInJapan(int x,int y) {
 		Coordinates coor = new Coordinates(x,y);
 		do {
 			//移動
@@ -54,10 +54,70 @@ public abstract class MoveEvent {
 			}else if(y>0) {
 				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1);
 			}
-			if(!ContainsEvent.isMass(Player.player.getNowMass())) {//2マス開いている場合
+			if(!ContainsEvent.isMassInJapan(Player.player.getNowMass())) {//2マス開いている場合
 				coor.setValue(coor.getX()*2, coor.getY()*2);
 			}
-		}while(!ContainsEvent.isMass(Player.player.getNowMass()));
+		}while(!ContainsEvent.isMassInJapan(Player.player.getNowMass()));
+		return coor;
+	}
+	public static Coordinates movePlayerInJapan(Coordinates coordinates) {
+		Coordinates coor = new Coordinates(coordinates);
+		do {
+			//移動
+			if(coordinates.getX()<0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY());
+			}else if(coordinates.getX()>0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY());
+			}
+			if(coordinates.getY()<0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1);
+			}else if(coordinates.getY()>0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1);
+			}
+			if(!ContainsEvent.isMassInJapan(Player.player.getNowMass())) {//2マス開いている場合
+				coor.setValue(coor.getX()*2, coor.getY()*2);
+			}
+		}while(!ContainsEvent.isMassInJapan(Player.player.getNowMass()));
+		return coor;
+	}
+	public static Coordinates movePlayerInGinga(int x,int y) {
+		Coordinates coor = new Coordinates(x,y);
+		do {
+			//移動
+			if(x<0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY());
+			}else if(x>0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY());
+			}
+			if(y<0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1);
+			}else if(y>0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1);
+			}
+			if(!ContainsEvent.isMassInGinga(Player.player.getNowMass())) {//2マス開いている場合
+				coor.setValue(coor.getX()*2, coor.getY()*2);
+			}
+		}while(!ContainsEvent.isMassInGinga(Player.player.getNowMass()));
+		return coor;
+	}
+	public static Coordinates movePlayerInGinga(Coordinates coordinates) {
+		Coordinates coor = new Coordinates(coordinates);
+		do {
+			//移動
+			if(coordinates.getX()<0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX()+1,Player.player.getNowMass().getY());
+			}else if(coordinates.getX()>0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY());
+			}
+			if(coordinates.getY()<0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()+1);
+			}else if(coordinates.getY()>0) {
+				Player.player.getNowMass().setValue(Player.player.getNowMass().getX(),Player.player.getNowMass().getY()-1);
+			}
+			if(!ContainsEvent.isMassInGinga(Player.player.getNowMass())) {//2マス開いている場合
+				coor.setValue(coor.getX()*2, coor.getY()*2);
+			}
+		}while(!ContainsEvent.isMassInGinga(Player.player.getNowMass()));
 		return coor;
 	}
 

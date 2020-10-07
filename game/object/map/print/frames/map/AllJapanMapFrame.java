@@ -15,51 +15,75 @@ import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Station;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
-public class AllMapFrame extends FrameModel{
+public class AllJapanMapFrame extends FrameModel{
 	private JLabel p1 = new JLabel();
 	private JLabel p2 = new JLabel();
 	private JLabel p3 = new JLabel();
 	private JLabel p4 = new JLabel();
-	public AllMapFrame() {
+	private int distance=30;
+	public AllJapanMapFrame() {
 		this.setTitle("全体マップ");
 		JLayeredPane maps = this.getLayeredPane();
 		JButton closeButton = createButton(580,500,180,50,10,"戻る");
-		int distance=30;
-		this.getContentPane().setBackground(Color.ORANGE);
+		this.getLayeredPane().setBackground(Color.ORANGE);
 		maps.add(closeButton);
 		for(Coordinates coor : Japan.getAllCoordinates()) {
 			if(ContainsEvent.isStation(coor)) {//駅の座標が来たら
 				JButton button=createButton(coor.getX()*distance,coor.getY()*distance,distance/3,distance/3,6,Japan.getStationName(coor));
 				maps.add(button,JLayeredPane.DEFAULT_LAYER,0);//駅の名前を出力するためにMapの構成を考え直す
 			}else {
-				maps.add(createMass(coor,distance),JLayeredPane.DEFAULT_LAYER,0);
+				maps.add(createMassInJapan(coor,distance),JLayeredPane.DEFAULT_LAYER,0);
 			}
-			drawLine(this.getLayeredPane(),coor,distance,5);
+			drawLineInJapan(this.getLayeredPane(),coor,distance,5);
 		}
 	}
 
 	public void open() {
 		JLayeredPane maps = this.getLayeredPane();
-		int distance=30;
-		p1 = createText(Player.players.get(0).getNowMass().getX()*distance-5, Player.players.get(0).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "1");
-		p1.setBackground(Color.BLACK);
-		p2 = createText(Player.players.get(1).getNowMass().getX()*distance+5, Player.players.get(1).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "2");
-		p2.setBackground(Color.BLACK);
-		p3 = createText(Player.players.get(2).getNowMass().getX()*distance-5, Player.players.get(2).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "3");
-		p3.setBackground(Color.BLACK);
-		p4 = createText(Player.players.get(3).getNowMass().getX()*distance+5, Player.players.get(3).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "4");
-		p4.setBackground(Color.BLACK);
+		if(ContainsEvent.isNormalMap(Player.getPlayer(0))) {
+			p1 = createText(Player.getPlayer(0).getNowMass().getX()*distance-5, Player.getPlayer(0).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "1");
+			p1.setBackground(Color.BLACK);
+		}
+		if(ContainsEvent.isNormalMap(Player.getPlayer(1))) {
+			p2 = createText(Player.getPlayer(1).getNowMass().getX()*distance+5, Player.getPlayer(1).getNowMass().getY()*distance-5, distance/3, distance/3, 5, "2");
+			p2.setBackground(Color.BLACK);
+		}
+		if(ContainsEvent.isNormalMap(Player.getPlayer(2))) {
+			p3 = createText(Player.getPlayer(2).getNowMass().getX()*distance-5, Player.getPlayer(2).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "3");
+			p3.setBackground(Color.BLACK);
+		}
+		if(ContainsEvent.isNormalMap(Player.getPlayer(3))) {
+			p4 = createText(Player.getPlayer(3).getNowMass().getX()*distance+5, Player.getPlayer(3).getNowMass().getY()*distance+5, distance/3, distance/3, 5, "4");
+			p4.setBackground(Color.BLACK);
+		}
 		maps.add(p1,JLayeredPane.PALETTE_LAYER,-1);
 		maps.add(p2,JLayeredPane.PALETTE_LAYER,-1);
 		maps.add(p3,JLayeredPane.PALETTE_LAYER,-1);
 		maps.add(p4,JLayeredPane.PALETTE_LAYER,-1);
-		/*
-		//ゴール地点の色塗り
-		Coordinates coor = Japan.getGoalCoor();
-		Component component = maps.getComponentAt(coor.getX()*distance, coor.getY()*distance);
-		component.setBackground(Color.MAGENTA);
-		*/
+
 		this.setVisible(true);
+	}
+
+	public void setGoalColor() {
+		JLayeredPane maps = this.getLayeredPane();
+		for(int i=0;i<maps.getComponentCount();i++) {
+			if(maps.getComponent(i).getName()==null)continue;
+			if(maps.getComponent(i).getName().equals(Japan.getGoalName())) {
+				maps.getComponent(i).setBackground(Color.MAGENTA);
+				break;
+			}
+		}
+	}
+
+	public void resetGoalColor() {
+		JLayeredPane maps = this.getLayeredPane();
+		for(int i=0;i<maps.getComponentCount();i++) {
+			if(maps.getComponent(i).getName()==null)continue;
+			if(maps.getComponent(i).getName().equals(Japan.getGoalName())) {
+				maps.getComponent(i).setBackground(Color.WHITE);
+				break;
+			}
+		}
 	}
 
 	public void close() {
