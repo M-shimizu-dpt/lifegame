@@ -40,6 +40,7 @@ public abstract class BinboEvent{
 
 	//binboのターンメソッド
 	public static void start() {
+		System.out.println("binbo");
 		String action = randomBinboEvent();
 		//String action = cardLost();//debug
 		if(action=="変身") {
@@ -153,86 +154,76 @@ public abstract class BinboEvent{
 	private static String randomBinboEvent() {
 		int result = randomBinbo();
 		String event;
-		if(!ContainsEvent.binboNameNormal()) {
-			if(ContainsEvent.binboNameBaby()) {
-				result += Binbo.getTurnCount();
-				if(result<8) {
-					//"お金とる";
-					event= babyMoney();
-				}else {
-					makeOver();
-					event= "変身";
-				}
-			}else if(ContainsEvent.binboNameHappy()){
-				result += Binbo.getTurnCount();
-				if(result<8) {
-					//"お金もらう";
-					event=happyMoney();
-				}else {
-					makeOver();
-					event= "変身";
-				}
-			}else if(ContainsEvent.binboNameTyphoon()){
-				result += Binbo.getTurnCount();
-				if(result<9) {
-					//"物件飛ばす";
-					event= typhoon();
-				}else {
-					makeOver();
-					event= "変身";
-				}
-			}else if(ContainsEvent.binboNameKing()){
-				result += Binbo.getTurnCount();
-				if(result==0) {
-					//"カード増やす";
-					event= kingCardbuy();
-				}else if(result==1) {
-					//"物件";
-					event= kingProperty();
-				}else if(result==2) {
-					//"さいころ降らす";
-					event= kingDice();
-				}else if(result==3) {
-					//"カードなくす";
-					event= kingCardSell();
-				}else if(result==4) {
-					//"プレイヤー移動系";
-					event= kingMovePlayer();
-				}else{
-					makeOver();
-					event= "変身";
-				}
+		if(ContainsEvent.binboNameBaby()) {
+			result += Binbo.getTurnCount();
+			if(result<8) {
+				//"お金とる";
+				event= babyMoney();
 			}else {
-				//入らない
-				event = "まだなにするかきめてないにょろ~~,案があればほしいにょろ~~。「"+result+"」";
+				makeOver();
+				event= "変身";
 			}
-			Binbo.addTurnCount();
+		}else if(ContainsEvent.binboNameHappy()){
+			result += Binbo.getTurnCount();
+			if(result<8) {
+				//"お金もらう";
+				event=happyMoney();
+			}else {
+				makeOver();
+				event= "変身";
+			}
+		}else if(ContainsEvent.binboNameTyphoon()){
+			result += Binbo.getTurnCount();
+			if(result<9) {
+				//"物件飛ばす";
+				event= typhoon();
+			}else {
+				makeOver();
+				event= "変身";
+			}
+		}else if(ContainsEvent.binboNameKing()){
+			result += Binbo.getTurnCount();
+			if(result<1) {
+				//"カード増やす";
+				event= kingCardbuy();
+			}else if(result<3) {
+				//"物件";
+				event= kingProperty();
+			}else if(result<5) {
+				//"さいころ降らす";
+				event= kingDice();
+			}else if(result<7) {
+				//"カードなくす";
+				event= kingCardSell();
+			}else if(result==8) {
+				//"プレイヤー移動系";
+				event= kingMovePlayer();
+			}else{
+				//"ボンビラス";
+				event= kingMoveBonbiras();
+			}
+			if(result + Binbo.getTurnCount()>9) {
+				makeOver();
+				event= "変身";
+			}
 		}else {
 			int changeresult = result + Binbo.getTurnCount();
 			if(changeresult<10) {
-				if(result==0) {
+				if(result<2) {
 					//"カード増やす";
 					event= cardBuy();
-				}else if(result==1) {
+				}else if(result<4) {
 					// "物件";d
 					event=property();
-				}else if(result==2) {
+				}else if(result<5) {
 					//"さいころ降らす";
 					event= dice();
-				}else if(result==3) {
+				}else if(result<7) {
 					//"カードなくす";
 					event=cardLost();
-				}else if(result==4) {
+				}else{
 					//"プレイヤー移動系";
 					event= movePlayer();
-				}else if(result == 5){
-					event = "まだなにするかきめてないにょろ~~,案があればほしいにょろ~~。「"+result+"」";
-				}else if(result == 6){
-					event = "まだなにするかきめてないにょろ~~,案があればほしいにょろ~~。「"+result+"」";
-				}else if(result == 7){
-					event = "まだなにするかきめてないにょろ~~,案があればほしいにょろ~~。「"+result+"」";
-				}else {
-					event = "まだなにするかきめてないにょろ~~,案があればほしいにょろ~~。「"+result+"」";
 				}
 			}else {
 				makeOver();
@@ -240,7 +231,7 @@ public abstract class BinboEvent{
 			}
 			Binbo.addTurnCount();
 		}
-		//event = cardLost();
+		//event = cardLost();//debug
 		return event;
 	}
 
@@ -276,7 +267,6 @@ public abstract class BinboEvent{
 			}
 		}
 		return "予期しない,リターン";
-
 	}
 	public static String property() {
 		if(ContainsEvent.isHaveProperty()) {
@@ -290,9 +280,16 @@ public abstract class BinboEvent{
 			return "お金にこまってそうなのねん。だから物件売ろうと思うのねん。でも売れる物件ないにょろ～,"+Player.player.getName()+"は物件を売られなくて済んだ。";
 		}
 	}
+
+
+
 	public static String dice() {
+		//FrameEvent.openDice();
 		return "さいころふるゲームをじっそうしたいにょろ。,でもまだ実装できてないにょろ~~";
 	}
+
+
+
 	public static String cardLost() {
 		Card card;
 		if(ContainsEvent.isHaveCard()) {
@@ -305,6 +302,9 @@ public abstract class BinboEvent{
 			return "やっぱり最強のプレイヤーはカードいらないと思うのねん,捨てるカードないにょろ!?もう最強のプレイヤーにょろ!。"+Player.player.getName()+"はカードを捨てられなくて済んだ。";
 		}
 	}
+
+
+
 	public static String movePlayer() {
 		return "プレイヤーをどかしたいのねん。,でもまだ実装できてないにょろ~~";
 	}
@@ -317,6 +317,10 @@ public abstract class BinboEvent{
 	public static String kingDice() {
 		return "キングボンビーでさいころ回してお金とりたい。,でもまだ実装できてないにょろ~~";
 	}
+
+
+
+
 	public static String kingCardSell() {
 		if(ContainsEvent.isHaveProperty()) {
 			ArrayList<Property> playersproperty = Player.player.getPropertys();
@@ -328,11 +332,14 @@ public abstract class BinboEvent{
 		}else {
 			return "キ~ングボンビー!!物件なんぞ集めてなにになる,なに!?処分する物件がないだと!?処分されずに済んだ";
 		}
-		//return "キングボンビーでカードを処分したい。,でもまだ実装できてないにょろ~~";
 	}
+
+
 	public static String kingMovePlayer() {
 		return "キングボンビーでプレイヤーをどかしたい。,でもまだ実装できてないにょろ~~";
 	}
+
+
 	public static String babyMoney() {
 		Random rand = new Random();
 		int result=0;
@@ -383,5 +390,12 @@ public abstract class BinboEvent{
 		}else {
 			return "吹っ飛ばす物件がなかった。,助かった~~~。";
 		}
+	}
+
+
+
+
+	public static String kingMoveBonbiras() {
+		return  "マップが出来ていないのでまだボンビラス星には飛ばせない";
 	}
 }

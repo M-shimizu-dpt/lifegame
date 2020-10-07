@@ -145,7 +145,7 @@ public class CardEvent{
 					CardEvent.richest();
 					Card.usedCardAfterNotEvent();
 				}else if(card.getName().equals("起死回生カード")) {
-					CardEvent.reDeath();
+					CardEvent.resuscitation();
 					Card.usedCardAfterNotEvent();
 				}else if(card.getName().equals("徳政令カード")) {
 					CardEvent.decreeOfVirtue();
@@ -271,7 +271,7 @@ public class CardEvent{
 		}
 		Player.player.addMoney(maxMoney);
 	}
-	private static void reDeath() {
+	private static void resuscitation() {
 		if(ContainsEvent.money(0)<0) {
 			Player.player.addMoney(-Player.player.getMoney()*2);
 		}

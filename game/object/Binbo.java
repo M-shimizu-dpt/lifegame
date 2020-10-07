@@ -16,6 +16,18 @@ public abstract class Binbo{
 	private static ArrayList<Player> predecessor = new ArrayList<Player>();
 	//private ArrayList<Coordinates> allplayernowMass = new ArrayList<Coordinates>();//将来的に全員にbufさせるために全員の位置を取得する
 
+	private static boolean diceflag = false;//BinboEventによるさいころ振る処理に入るかどうかのTF
+
+	public static boolean isDiceFlag() {
+		return diceflag;
+	}
+	public static void setDiceFlag() {
+		diceflag = true;
+	}
+	public static void clearDiceFlag() {
+		diceflag = false;
+	}
+
 	//動いている人が進んだマスにだれがいるかを保持するリスト(進んでいる人以外)
 	public static void addSameMassPlayer(Player player) {
 		together.add(player);

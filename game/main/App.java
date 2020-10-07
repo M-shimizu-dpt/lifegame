@@ -85,7 +85,7 @@ public class App {
   	private void play(int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		BinboEvent.initBinbo(true);//debugモード→true
+  		BinboEvent.initBinbo(false);//debugモード→true
   		while(true) {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {
@@ -122,11 +122,13 @@ public class App {
 				masseventfalg.join();
 			}
 
-			if(ContainsEvent.binboPlayer()) {
-				BinboEvent.start();
-				WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
-				bonbyTurnEnd.start();
-				bonbyTurnEnd.join();
+			if(ContainsEvent.isBinboPlayer()) {
+				if(ContainsEvent.binboPlayer()) {
+					BinboEvent.start();
+					WaitThread bonbyTurnEnd  = new WaitThread(5);//ターン終了まで待機
+					bonbyTurnEnd.start();
+					bonbyTurnEnd.join();
+				}
 			}
 			FrameEvent.closeMain();
 			CardEvent.resetFlags();
@@ -141,10 +143,10 @@ public class App {
     	Japan.init();
     	Ginga.init();
 
-    	int[] result = FrameEvent.openStartFrame();
+    	int[] result = FrameEvent.openTitle();
 
-    	int playerCount = result[0];
-    	int yearLimit = result[1];
+    	int yearLimit = result[0];
+	int playerCount = result[1];
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
