@@ -34,11 +34,13 @@ public class FullCardFrame extends FrameModel{
 	private void reopen() {
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
-		open(id);
+		open();
 	}
 
-	public void open(int id) {
+	public void setID(int id) {
 		this.id=id;
+	}
+	public void open() {
 		JLayeredPane cardFull = this.getLayeredPane();
 		JLabel titleName = createText(170,10,100,40,30,"名前");
 		for(int i=0;i<Player.player.getCardSize();i++) {

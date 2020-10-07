@@ -28,6 +28,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
         super.setLayout(null);
 	}
 
+	public abstract void open();
 	public abstract void close();
 
 	//ボタンを作成

@@ -37,7 +37,7 @@ public class ShopFrame extends FrameModel{
 	}
 	private void reopen() {
 		close();
-		open(this.id);
+		open();
 	}
 
 	public void setCardList(ArrayList<Card> cardList) {
@@ -46,13 +46,15 @@ public class ShopFrame extends FrameModel{
 	public void clearCardList() {
 		canBuyCardList.clear();
 	}
-	public void open(int id) {
+	public void setID(int id) {
+		this.id=id;
+	}
+	public void open() {
 		if(id==0) {
 			openBuyShop();
 		}else if(id==1) {
 			openSellShop();
 		}
-		this.id=id;
 		this.setVisible(true);
 	}
 

@@ -45,9 +45,9 @@ public abstract class BinboEvent{
 		//String action = cardLost();//debug
 		if(action=="変身") {
 			Binbo.clearTurnCount();
-			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),Binbo.getName()+"に変化した",Binbo.getName());
+			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),Binbo.getName()+"に変化した");
 		}else {
-			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),action,Binbo.getName());
+			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),action);
 		}
 	}
 

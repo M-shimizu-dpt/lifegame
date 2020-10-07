@@ -15,12 +15,27 @@ import lifegame.game.event.FrameEvent;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class BinboFrame extends FrameModel{
+	private String playerName;
+	private String binboName;
+	private String action;
 
 	public BinboFrame() {
 
 	}
 
-	public void open(String playerName, String action, String binboName) {
+	public void setPlayerName(String name) {
+		this.playerName=name;
+	}
+
+	public void setBinboName(String name) {
+		this.binboName=name;
+	}
+
+	public void setAction(String action) {
+		this.action=action;
+	}
+
+	public void open() {
 		this.setTitle(binboName+"のターン");
 		JLayeredPane binbo = this.getLayeredPane();
 		JLabel text=new JLabel();

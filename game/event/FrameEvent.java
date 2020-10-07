@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lifegame.game.main.App;
+import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
@@ -96,7 +97,9 @@ public abstract class FrameEvent{
 	}
 
 	public static void createPopUp(String title,String article) {
-		confirmation.open(title,article);
+		confirmation.setTitle(title);
+		confirmation.setArticle(article);
+		confirmation.open();
 	}
 
 	public static void createPopUp(String title,String article,int time) {
@@ -165,9 +168,12 @@ public abstract class FrameEvent{
 		FrameEvent.openMain();
 	}
 
-	public static void openBinbo(String playerName, String action, String binboName) {
+	public static void openBinbo(String playerName, String action) {
 		FrameEvent.closeMain();
-		binbo.open(playerName,action,binboName);
+		binbo.setPlayerName(playerName);
+		binbo.setBinboName(Binbo.getName());
+		binbo.setAction(action);
+		binbo.open();
 	}
 
 	public static void closeBinbo() {
@@ -187,12 +193,15 @@ public abstract class FrameEvent{
 
 	public static void closeNextGoal() {
 		goal.close();
-		property.open(Japan.getSaveGoalName(),2);
+		property.setTitle(Japan.getSaveGoalName() + "の物件情報");
+		property.setID(2);
+		property.open();
 	}
 
 	public static void openFullCardFromPlay() {
 		FrameEvent.closeMain();
-		cardFull.open(0);
+		cardFull.setID(0);
+		cardFull.open();
 	}
 
 	public static void closeFullCardFromPlay() {
@@ -202,7 +211,8 @@ public abstract class FrameEvent{
 
 	public static void openFullCardFromRandom() {
 		random.closeSave();
-		cardFull.open(1);
+		cardFull.setID(1);
+		cardFull.open();
 	}
 
 	public static void closeFullCardFromRandom() {
@@ -286,12 +296,14 @@ public abstract class FrameEvent{
 
 	public static void openBuyShop() {
 		shopFront.close();
-		shop.open(0);
+		shop.setID(0);
+		shop.open();
 	}
 
 	public static void openSellShop() {
 		shopFront.close();
-		shop.open(1);
+		shop.setID(1);
+		shop.open();
 	}
 
 	public static void closeShop() {
@@ -313,14 +325,18 @@ public abstract class FrameEvent{
 
 	public static void openRandom1(double rand) {
 		FrameEvent.closeMain();
-		random.open(1,rand);
+		random.setID(1);
+		random.setRand(rand);
+		random.open();
 	}
 
 	public static void openRandom2() {
 		if(ContainsEvent.isOwners()) {
 			int rndnum = new Random().nextInt(11)+1;
 			if(App.month==rndnum) {
-				random.open(2,rndnum);
+				random.setID(2);
+				random.setRand(rndnum);
+				random.open();
 			}
 		}
 	}
@@ -336,7 +352,9 @@ public abstract class FrameEvent{
 	}
 
 	public static void openPropertys(String massName,int id) {
-		property.open(massName,id);
+		property.setTitle(massName + "の物件情報");
+		property.setID(id);
+		property.open();
 		if(id==0) {
 			miniJapanMap.close();
 		}else if(id==1) {
