@@ -93,13 +93,13 @@ public class Player {
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
 			if(FrameEvent.getOrder()==0) {//順番入れ替え
-				if(FrameEvent.getCount()>i) {//player
+				if(playerCount>i) {//player
 					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {	//CPU
 					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}else {//順番初期値
-				if(FrameEvent.getCount()>i) {//player
+				if(playerCount>i) {//player
 					Player.players.put(i,new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {//CPU
 					Player.players.put(i,new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),false));

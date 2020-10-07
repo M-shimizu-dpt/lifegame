@@ -142,8 +142,9 @@ public class App {
     	Japan.init();
     	Ginga.init();
 
-    	int[] result = FrameEvent.openTitle();
-
+    	FrameEvent.openTitle();
+    	int[] result= {FrameEvent.getSetCount(),FrameEvent.getSetYear()};
+    	
     	int yearLimit = result[0];
     	int playerCount = result[1];
     	assert(playerCount>=0 && playerCount<=4);

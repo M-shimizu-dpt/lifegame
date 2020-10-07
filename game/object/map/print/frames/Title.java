@@ -20,25 +20,25 @@ public class Title extends JFrame implements ActionListener{
 	public Title() {
 		this.setTitle("桃大郎電鉄");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        super.setSize(800, 600);
+        super.setSize(400, 300);
         super.setLocationRelativeTo(null);
         super.setLayout(null);
 	}
 	
-	public int[] open() {
+	public static int count;
+	public static int year;
+	
+	public void open() {
 		JLayeredPane start = this.getLayeredPane();
    	
     	JButton startButton = new JButton("遊ぶ");
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	startButton.setBounds(600,490,180,60);
+    	startButton.setBounds(110,100,180,60);
     	startButton.addActionListener(this);
     	start.add(startButton);
     	this.setVisible(true);
-    	int list[]= {0,0};
-    	list[0]=FrameEvent.openSettingYear();
-    	list[1]=FrameEvent.openSettingPlayer();
+    	FrameEvent.openSetting();
     	
-
     	WaitThread wait = new WaitThread(10);
     	wait.start();
     	try {
@@ -46,8 +46,6 @@ public class Title extends JFrame implements ActionListener{
     	}catch(InterruptedException e) {
     		e.printStackTrace();
     	}
-    	
-    	return list;
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -56,5 +54,12 @@ public class Title extends JFrame implements ActionListener{
 			App.start();
     		this.setVisible(false);
     	}
+	}
+	
+	public int getSetYear() {
+		return year;
+	}
+	public int getSetCount() {
+		return count;
 	}
 }

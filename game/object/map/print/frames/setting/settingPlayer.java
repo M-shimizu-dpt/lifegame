@@ -15,6 +15,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import lifegame.game.event.FrameEvent;
+import lifegame.game.object.map.print.frames.Title;
 
 public class settingPlayer extends JFrame implements ActionListener {
 	
@@ -33,11 +34,11 @@ public class settingPlayer extends JFrame implements ActionListener {
 	public static ArrayList<String> setNames = new ArrayList<String>();
 	public static ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
 	
-	public int open() {
+	public void open() {
 		JLayeredPane start = this.getLayeredPane();
-    	JLabel labelTitle = new JLabel("player設定");
+    	JLabel labelTitle = new JLabel("プレイヤー設定");
     	labelTitle.setFont(new Font("SansSerif", Font.ITALIC, 50));
-    	labelTitle.setBounds(250, 10, 400, 60);
+    	labelTitle.setBounds(200, 10, 400, 60);
     	
     	JLabel labelPlayers = new JLabel("プレイヤーの人数は何人ですか？");
     	labelPlayers.setFont(new Font("SansSerif", Font.ITALIC, 20));
@@ -166,7 +167,8 @@ public class settingPlayer extends JFrame implements ActionListener {
     	setNames.add(textplayer4.getText());
     	
     	this.setVisible(true);
-    	return count;
+    	
+    	//return count;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -190,6 +192,8 @@ public class settingPlayer extends JFrame implements ActionListener {
 		
 		String cmd = e.getActionCommand();
 		if(cmd.equals("OK")) {
+			Title.count=count;
+			FrameEvent.openSettingYear();
 			this.setVisible(false);
     	}
 	}

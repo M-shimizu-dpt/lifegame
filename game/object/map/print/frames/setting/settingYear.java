@@ -13,8 +13,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import lifegame.game.event.WaitThread;
-import lifegame.game.main.App;
+import lifegame.game.object.map.print.frames.Title;
 
 public class settingYear extends JFrame implements ActionListener {
 	
@@ -28,11 +27,11 @@ public class settingYear extends JFrame implements ActionListener {
 	
 	public int year;
 	
-	public int open() {
+	public void open() {
 		JLayeredPane start = this.getLayeredPane();
-    	JLabel labelTitle = new JLabel("桃大郎電鉄");
+    	JLabel labelTitle = new JLabel("プレイ年数設定");
     	labelTitle.setFont(new Font("SansSerif", Font.ITALIC, 50));
-    	labelTitle.setBounds(250, 10, 400, 60);
+    	labelTitle.setBounds(200, 10, 400, 60);
     	//年数設定
     	JLabel labelYear = new JLabel("何年プレイしますか？(１～１００年)");
     	labelYear.setFont(new Font("SansSerif", Font.ITALIC, 20));
@@ -64,12 +63,13 @@ public class settingYear extends JFrame implements ActionListener {
     	
     	year=Integer.parseInt((String)textYear.getText());
     	
-    	return year;
+    	//return year;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("OK")) {
+			Title.year=year;
 			this.setVisible(false);
     	}
 	}
