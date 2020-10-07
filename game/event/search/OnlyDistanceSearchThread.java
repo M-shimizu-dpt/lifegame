@@ -48,7 +48,7 @@ public class OnlyDistanceSearchThread extends Thread{
 			count++;
 			ArrayList<Coordinates> can = new ArrayList<Coordinates>();
 			synchronized(OnlyDistanceSearchThread.lock2) {
-				can.addAll(Japan.getMovePossibles(nowMass));
+				can.addAll(Japan.getLinks(nowMass));
 			}
 			for(Coordinates possibles : can) {//移動可能マスを取得
 				synchronized(OnlyDistanceSearchThread.lock3) {

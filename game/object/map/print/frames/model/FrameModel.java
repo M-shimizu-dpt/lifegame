@@ -73,7 +73,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 
 
 	protected void drawLineInJapan(JLayeredPane lines,int x,int y,int size,int somethig) {
-		ArrayList<Coordinates> list = Japan.getMovePossibles(x, y);
+		ArrayList<Coordinates> list = Japan.getLinks(x, y);
 		for(Coordinates coor : list) {
 			JPanel line = new JPanel();
 			line.setBackground(Color.BLACK);
@@ -94,7 +94,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		}
 	}
 	protected void drawLineInJapan(JLayeredPane lines,Coordinates coor,int size,int somethig) {
-		ArrayList<Coordinates> list = Japan.getMovePossibles(coor);
+		ArrayList<Coordinates> list = Japan.getLinks(coor);
 		for(Coordinates coordinates : list) {
 			JPanel line = new JPanel();
 			line.setBackground(Color.BLACK);
@@ -162,7 +162,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 	}
 
 	protected void drawLineInGinga(JLayeredPane lines,int x,int y,int size,int somethig) {
-		ArrayList<Coordinates> list = Ginga.getMovePossibles(x, y);
+		ArrayList<Coordinates> list = Ginga.getLinks(x, y);
 		for(Coordinates coor : list) {
 			JPanel line = new JPanel();
 			line.setBackground(Color.BLACK);
@@ -183,7 +183,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		}
 	}
 	protected void drawLineInGinga(JLayeredPane lines,Coordinates coor,int size,int somethig) {
-		ArrayList<Coordinates> list = Ginga.getMovePossibles(coor);
+		ArrayList<Coordinates> list = Ginga.getLinks(coor);
 		for(Coordinates coordinates : list) {
 			JPanel line = new JPanel();
 			line.setBackground(Color.BLACK);

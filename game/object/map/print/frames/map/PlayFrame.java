@@ -335,7 +335,7 @@ public class PlayFrame extends FrameModel{
 		ArrayList<Boolean> vector = new ArrayList<Boolean>();
 		vector = Japan.getVector(Player.player.getNowMass(),1);
 		closeMoveButton();
-		for(Coordinates coor:Japan.getMovePossibles(Player.player.getNowMass())) {
+		for(Coordinates coor:Japan.getLinks(Player.player.getNowMass())) {
 			if(ContainsEvent.goalDistance(Player.player, Japan.getGoalDistance(coor))!=1)continue;
 			if(ContainsEvent.coor(coor, Player.player.getNowMass().getX()-1,Player.player.getNowMass().getY())) {
 				playLeft.setBackground(Color.MAGENTA);

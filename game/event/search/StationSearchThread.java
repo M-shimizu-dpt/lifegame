@@ -50,7 +50,7 @@ public class StationSearchThread extends SearchThreadModel{
 			//情報の取得・更新
 			super.count++;
 			synchronized(StationSearchThread.lock1) {
-				list = Japan.getMovePossibles(this.nowMass);
+				list = Japan.getLinks(this.nowMass);
 			}
 			super.moveTrajectory.add(new Coordinates(this.nowMass));
 
