@@ -70,11 +70,11 @@ public class settingPlayer extends JFrame implements ActionListener {
     	//count0.setFont(new Font("SansSerif", Font.ITALIC, 15));
     	//count0.setBounds(650, 200, 150, 50);
     	Count = new ButtonGroup();
-    	Count.add(count0);
+    	//Count.add(count0);
     	Count.add(count1);
     	Count.add(count2);
     	Count.add(count3);
-    	//Count.add(count4);
+    	Count.add(count4);
     	
     	//順番の設定
     	JLabel labelOrder = new JLabel("順番をランダムに入れ替えますか？");
