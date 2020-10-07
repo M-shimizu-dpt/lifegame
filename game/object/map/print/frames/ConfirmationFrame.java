@@ -14,13 +14,17 @@ import lifegame.game.event.FrameEvent;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class ConfirmationFrame extends FrameModel{
+	private String article;
 
 	public ConfirmationFrame() {
 
 	}
 
-	public void open(String title,String article) {
-		this.setTitle(title);
+	public void setArticle(String article) {
+		this.article=article;
+	}
+
+	public void open() {
 		JLayeredPane confirmation = this.getLayeredPane();
 
 		String artresult = FrameEvent.adjustText(article);

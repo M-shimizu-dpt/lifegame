@@ -20,21 +20,28 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class RandomFrame extends FrameModel{
 	private int id;
+	private int randInt;
+	private double randDouble;
+
 	public RandomFrame() {
 		id=-1;
 	}
 
-	public void open(int id,double rand) {
+	public void setRand(int rand) {
+		this.randInt=rand;
+	}
+	public void setRand(double rand) {
+		this.randDouble=rand;
+	}
+	public void setID(int id) {
 		this.id=id;
-		if(id==1) {
-			open1(rand);
-		}
 	}
 
-	public void open(int id,int rand) {
-		this.id=id;
-		if(id==2){
-			open2(rand);
+	public void open() {
+		if(id==1) {
+			open1(randDouble);
+		}else if(id==2){
+			open2(randInt);
 		}
 	}
 
