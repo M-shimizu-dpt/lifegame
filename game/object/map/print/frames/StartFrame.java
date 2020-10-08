@@ -24,7 +24,7 @@ import lifegame.game.main.App;
 public class StartFrame extends JFrame implements ActionListener{
 
 	public StartFrame() {
-		this.setTitle("桃大郎電鉄");
+		this.setTitle("挑大郎電鉄");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(800, 600);
         super.setLocationRelativeTo(null);
@@ -40,7 +40,7 @@ public class StartFrame extends JFrame implements ActionListener{
 
 	public int[] open() {
   		JLayeredPane start = this.getLayeredPane();
-    	JLabel labelTitle = new JLabel("桃大郎電鉄");
+    	JLabel labelTitle = new JLabel("挑大郎電鉄");
     	labelTitle.setFont(new Font("SansSerif", Font.ITALIC, 50));
     	labelTitle.setBounds(250, 10, 400, 60);
     	//年数設定
