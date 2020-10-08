@@ -42,7 +42,7 @@ public class GingaFrame extends FrameModel{
 
 	}
 	public void init() {
-		super.setTitle("桃大郎電鉄");
+		super.setTitle("挑大郎電鉄");
 		int distance=130;
 		this.getContentPane().setBackground(Color.DARK_GRAY);
 		for(Coordinates coor : Ginga.getAllCoordinates()) {

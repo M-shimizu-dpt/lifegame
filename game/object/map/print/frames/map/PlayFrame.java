@@ -41,7 +41,7 @@ public class PlayFrame extends FrameModel{
     }
 
     public void init(int playerCount) {
-    	this.setTitle("桃大郎電鉄");
+    	this.setTitle("挑大郎電鉄");
 
 		JLayeredPane play = this.getLayeredPane();
 
