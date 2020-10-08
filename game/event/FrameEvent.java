@@ -24,7 +24,7 @@ import lifegame.game.object.map.print.frames.GoalFrame;
 import lifegame.game.object.map.print.frames.InfoFrame;
 import lifegame.game.object.map.print.frames.RandomFrame;
 import lifegame.game.object.map.print.frames.StartFrame;
-import lifegame.game.object.map.print.frames.Title;
+import lifegame.game.object.map.print.frames.StartTitleFrame;
 import lifegame.game.object.map.print.frames.card.CardFrame;
 import lifegame.game.object.map.print.frames.card.DubbingFrame;
 import lifegame.game.object.map.print.frames.card.FullCardFrame;
@@ -40,6 +40,8 @@ import lifegame.game.object.map.print.frames.map.MiniJapanMapFrame;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
 import lifegame.game.object.map.print.frames.property.BuyPropertyFrame;
 import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
+import lifegame.game.object.map.print.frames.setting.Check;
+import lifegame.game.object.map.print.frames.setting.Setting;
 import lifegame.game.object.map.print.frames.setting.settingPlayer;
 import lifegame.game.object.map.print.frames.setting.settingYear;
 
@@ -67,9 +69,11 @@ public abstract class FrameEvent{
 	private static ShopFrontFrame shopFront = new ShopFrontFrame();
 	private static StartFrame start = new StartFrame();
 	private static GingaFrame ginga = new GingaFrame();
-	private static Title title = new Title();
+	private static Check check = new Check();
 	private static settingPlayer settingPlayer = new settingPlayer();
 	private static settingYear settingYear = new settingYear();
+	private static Setting setting = new Setting();
+	private static StartTitleFrame startTitle = new StartTitleFrame();
 
 	public static void openClosing() {
 		FrameEvent.closeMain();
@@ -585,16 +589,12 @@ public abstract class FrameEvent{
 		return artresult;
 	}
 
-	public static int[] openTitle() {
-		return title.open();
+	public static void openCheck() {
+		check.open();
 	}
 
-	public static int openSettingPlayer() {
-		return settingPlayer.open();
-	}
-
-	public static int getCount() {
-		return settingPlayer.count;
+	public static void openSettingPlayer() {
+		settingPlayer.open();
 	}
 
 	public static String getName(int index) {
@@ -609,10 +609,29 @@ public abstract class FrameEvent{
 		return settingPlayer.playerorder;
 	}
 
-	public static int openSettingYear() {
-		return settingYear.open();
+	public static void openSettingYear() {
+		settingYear.open();
+	}
+	
+	public static void openSetting() {
+		setting.open();
+	}
+	
+	public static int getPlayerCount() {
+		return check.getCount();
+	}
+	public static int getPlayYear() {
+		return check.getYear();
+	}
+	
+	public static void setPlayerCount() {
+		check.count = settingPlayer.count;
 	}
 
+	public static void setPlayYear() {
+		check.year = settingYear.year;
+	}
+	
 	public static void openMain() {
 		if(ContainsEvent.isNormalMap()) {
 			play.open();
@@ -675,9 +694,8 @@ public abstract class FrameEvent{
 		}
 		FrameEvent.moveMaps();
 	}
-
-	public static int getYear() {
-		return settingYear.year;
+	
+	public static void StartTitle() {
+		startTitle.open();
 	}
-
 }
