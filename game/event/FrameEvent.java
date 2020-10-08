@@ -172,9 +172,8 @@ public abstract class FrameEvent{
 		FrameEvent.openMain();
 	}
 
-	public static void openBinbo(String playerName, String action) {
+	public static void openBinbo(String action) {
 		FrameEvent.closeMain();
-		binbo.setPlayerName(playerName);
 		binbo.setBinboName(Binbo.getName());
 		binbo.setAction(action);
 		binbo.open();
@@ -476,7 +475,6 @@ public abstract class FrameEvent{
 	public static void moveMaps() {
 		if(ContainsEvent.isNormalMap()) {
 			play.moveMaps();
-			reloadMain();
 		}else if(ContainsEvent.isGingaMap()) {
 			ginga.moveMaps();
 		}else if(ContainsEvent.isBonbirasMap()) {
@@ -612,18 +610,18 @@ public abstract class FrameEvent{
 	public static void openSettingYear() {
 		settingYear.open();
 	}
-	
+
 	public static void openSetting() {
 		setting.open();
 	}
-	
+
 	public static int getPlayerCount() {
 		return check.getCount();
 	}
 	public static int getPlayYear() {
 		return check.getYear();
 	}
-	
+
 	public static void setPlayerCount() {
 		check.count = settingPlayer.count;
 	}
@@ -631,7 +629,7 @@ public abstract class FrameEvent{
 	public static void setPlayYear() {
 		check.year = settingYear.year;
 	}
-	
+
 	public static void openMain() {
 		if(ContainsEvent.isNormalMap()) {
 			play.open();
@@ -673,6 +671,7 @@ public abstract class FrameEvent{
 				Player.player.setGingaMap();
 				play.removePlayer(Player.player);
 				ginga.addPlayer(Player.player);
+				FrameEvent.moveMaps();
 			}else if(toMapID==2) {//norm to bonbiras
 
 			}
@@ -681,7 +680,10 @@ public abstract class FrameEvent{
 				Player.player.setNormalMap();
 				ginga.removePlayer(Player.player);
 				play.addPlayer(Player.player);
-				FrameEvent.moveMaps(Player.player,Japan.getGoalCoor());
+				play.moveMaps(Player.player,Japan.getGoalCoor(),Japan.getGoalName());
+				FrameEvent.moveMaps();
+			}else if(toMapID==1){//ginga to ginga
+				ginga.moveMapsStart(Player.player);
 			}else if(toMapID==2) {//ginga to bonbiras
 
 			}
@@ -692,9 +694,8 @@ public abstract class FrameEvent{
 
 			}
 		}
-		FrameEvent.moveMaps();
 	}
-	
+
 	public static void StartTitle() {
 		startTitle.open();
 	}

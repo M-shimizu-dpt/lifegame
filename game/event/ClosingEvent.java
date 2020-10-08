@@ -22,7 +22,7 @@ public abstract class ClosingEvent {
 	public static ArrayList<Integer[]> getProfitList(){
 		return ClosingEvent.allProfitList;
 	}
-	
+
 	public static Integer[] getProfitList(int index){
 		return ClosingEvent.allProfitList.get(index);
 	}
@@ -117,7 +117,7 @@ public abstract class ClosingEvent {
 	public static void closing() {
 		addProfit();
 		aggregateProfit();
-
+		FrameEvent.openRevenue();
 	}
 
 	//収益を加算

@@ -15,16 +15,11 @@ import lifegame.game.event.FrameEvent;
 import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class BinboFrame extends FrameModel{
-	private String playerName;
 	private String binboName;
 	private String action;
 
 	public BinboFrame() {
 
-	}
-
-	public void setPlayerName(String name) {
-		this.playerName=name;
 	}
 
 	public void setBinboName(String name) {

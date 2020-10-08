@@ -25,6 +25,7 @@ import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.NearestSearchThread;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
@@ -198,7 +199,6 @@ public class Player {
 					Thread.sleep(2000);
 				}
 				if(ContainsEvent.isUsedRandomCard()) {
-					CardEvent.resetFlags();
 					FrameEvent.ableMenu();
 					diceFlag=false;
 					App.turnEnd();
@@ -218,9 +218,11 @@ public class Player {
 			waitthread.join();
 			*/
 
-			if(Searcher.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
+			if(Player.player.getGoalDistance()>=this.getMove() || !ContainsEvent.isNormalMap()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuaddTrajectory();
 			}else {//目的地を超えてしまう場合
+				Searcher.searchShortestRoute(Player.player);
+				Searcher.searchCanMoveMass(Player.player);
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
 				//行くことが出来るマス取得
@@ -245,6 +247,7 @@ public class Player {
 					cpuMoveMaps(Searcher.canMoveTrajectoryList.get(Searcher.nearestMassToGoalList.get(0)).get(0));
 				}
 			}
+
 			//System.out.println("player.move:"+this.getMove()+"       終わりました");
 			if(this.getMove()>0) {
 				System.out.println("異常終了");
@@ -259,33 +262,53 @@ public class Player {
 
 	//cpuの移動操作(目的地までの最短経路で移動)
 	public void cpuaddTrajectory() throws InterruptedException{
-		if(Searcher.nearestTrajectoryList.get(Searcher.count).size()>0) {
-			ArrayList<Coordinates> list = Searcher.nearestTrajectoryList.get(Searcher.count).get(0);
-			for(Coordinates coor : list) {
-				if(Player.isStop()) {
-					WaitThread wait = new WaitThread(7);
-					wait.start();
-					wait.join();
-				}
-				int x = this.getNowMass().getX()-coor.getX();
-				int y = this.getNowMass().getY()-coor.getY();
-				if(x==0) {
-					if(y<0) {//下
-						FrameEvent.moveMaps(0,-130);
-					}else if(y>0) {//上
-						FrameEvent.moveMaps(0,130);
-					}
-				}else if(y==0) {
-					if(x>0) {//左
-						FrameEvent.moveMaps(130,0);
-					}else if(x<0) {//右
-						FrameEvent.moveMaps(-130,0);
-					}
-				}
-				FrameEvent.reloadInfo();
-				Thread.sleep(300);
-				if(this.getMove()<=0)break;
+		for(int i=0;i<Player.player.getMove();) {
+			if(Player.isStop()) {
+				WaitThread wait = new WaitThread(7);
+				wait.start();
+				wait.join();
 			}
+			ArrayList<Coordinates> list;
+			Coordinates next=new Coordinates();
+			if(ContainsEvent.isNormalMap()) {
+				list=Japan.getLinks();
+				for(Coordinates coor:list) {
+					System.out.println("now:"+getNowMass().getX()+","+getNowMass().getY()+"   next候補:"+coor.getX()+","+coor.getY());
+					if(Japan.getGoalDistance(this.getNowMass())>Japan.getGoalDistance(coor)) {
+						next=coor;
+					}
+				}
+			}else if(ContainsEvent.isGingaMap()) {
+				list=Ginga.getLinks();
+				for(Coordinates coor:list) {
+					if(Ginga.getGoalDistance(this.getNowMass())>Ginga.getGoalDistance(coor)) {
+						next=coor;
+					}
+				}
+			}else if(ContainsEvent.isBonbirasMap()) {
+				//bonbiras
+			}
+			System.out.println("next:"+next.getX()+","+next.getY());
+
+			System.out.println("move1:"+getMove());
+			int x = this.getNowMass().getX()-next.getX();
+			int y = this.getNowMass().getY()-next.getY();
+			if(x==0) {
+				if(y<0) {//下
+					FrameEvent.moveMaps(0,-130);
+				}else if(y>0) {//上
+					FrameEvent.moveMaps(0,130);
+				}
+			}else if(y==0) {
+				if(x>0) {//左
+					FrameEvent.moveMaps(130,0);
+				}else if(x<0) {//右
+					FrameEvent.moveMaps(-130,0);
+				}
+			}
+			FrameEvent.reloadInfo();
+			Thread.sleep(300);
+			System.out.println("move2:"+getMove());
 		}
 	}
 
@@ -432,7 +455,13 @@ public class Player {
 	}
 
 	public void setGoalDistance() {//最短距離をセット
-		this.goaldistance = Japan.getCoordinates(nowMass).getGoalDistance();
+		if(ContainsEvent.isNormalMap()) {
+			this.goaldistance = Japan.getCoordinates(nowMass).getGoalDistance();
+		}else if(ContainsEvent.isGingaMap()) {
+			this.goaldistance = Ginga.getCoordinates(nowMass).getGoalDistance();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	private void setMapID(int id) {

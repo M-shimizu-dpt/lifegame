@@ -506,6 +506,14 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
+	public static boolean isStation(String name) {
+		for(String coorName:Japan.getStationNameList()) {
+			if(coorName.equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public static boolean isStation(int x,int y) {
 		for(Coordinates coor:Japan.getStationCoorList()) {
 			if(ContainsEvent.coor(coor, x, y)) {

@@ -12,7 +12,6 @@ import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.MassEvent;
-import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
@@ -98,15 +97,12 @@ public class App {
 		  	first=false;
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
-		  	if(ContainsEvent.isNormalMap()) {
-		  		Player.player.setGoalDistance();//目的地までの最短経路を探索
-		  	}
+		  	Player.player.setGoalDistance();//目的地までの最短経路を探索
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!ContainsEvent.isPlayer()) {//cpu操作
-		  		Searcher.searchShortestRoute(Player.player);
 		  		Player.player.cpu();
 		  	}
 			WaitThread turnEnd  = new WaitThread(0);//ターン終了まで待機
@@ -146,7 +142,7 @@ public class App {
     	int[] result= {FrameEvent.getPlayerCount(),FrameEvent.getPlayYear()};
     	int playerCount = result[0];
     	int yearLimit = result[1];
-    	
+
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 
