@@ -12,8 +12,8 @@ public abstract class Ginga {
 	static final int size=8;
 	private static ArrayList<Coordinates> rareBlue = new ArrayList<Coordinates>();
 	private static ArrayList<Coordinates> rareYellow = new ArrayList<Coordinates>();
-	private static Coordinates start = new Coordinates(1,1);
-	private static Coordinates goal = new Coordinates(4,4);
+	private final static Coordinates start = new Coordinates(1,1);
+	private final static Coordinates goal = new Coordinates(4,4);
 	//private static Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
 	private static Map<Coordinates,Integer> goalDistance = new HashMap<Coordinates,Integer>();
 

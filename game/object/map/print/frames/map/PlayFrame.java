@@ -325,14 +325,12 @@ public class PlayFrame extends FrameModel{
 		MoveEvent.moveTo(player, to);
 	}
 
-	//プレイマップの画面遷移処理
-	public void returnMoveMaps(Player player,Coordinates to) {//駒の位置の配置方法を考える
+	//別マップから帰還時の画面遷移処理
+	public void moveMaps(Player player,Coordinates to,String toName) {//駒の位置の配置方法を考える
 		JLayeredPane play = this.getLayeredPane();
-		int x=(to.getX()-player.getNowMass().getX())*130;
-		int y=(to.getY()-player.getNowMass().getY())*130;
 		for(int i=0;i<play.getComponentCount();i++) {
-			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(player.getName())) {
-				play.getComponent(i).setLocation(to.getX()*130-play.getComponent(i).getX(),to.getY()*130-play.getComponent(i).getY());
+			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(toName)) {
+				player.getColt().setLocation(play.getComponent(i).getLocation().x+41,play.getComponent(i).getLocation().y+11);
 			}
 		}
 		MoveEvent.moveTo(player, to);

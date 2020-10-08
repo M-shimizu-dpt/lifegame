@@ -74,8 +74,12 @@ public class GingaFrame extends FrameModel{
 
 	//メイン画面での移動ボタンを非表示
 	public void closeMoveButton() {
-		gingaRight.setVisible(false);
+		gingaLeft.setBackground(Color.WHITE);
+		gingaRight.setBackground(Color.WHITE);
+		gingaTop.setBackground(Color.WHITE);
+		gingaBottom.setBackground(Color.WHITE);
 		gingaLeft.setVisible(false);
+		gingaRight.setVisible(false);
 		gingaTop.setVisible(false);
 		gingaBottom.setVisible(false);
 		moveLabel.setVisible(false);
@@ -193,11 +197,21 @@ public class GingaFrame extends FrameModel{
   	}
 
 	public void addPlayer(Player player) {
+		moveMapsStart(player);
 		this.getLayeredPane().add(player.getColt(),JLayeredPane.PALETTE_LAYER);
-		player.setMass(Ginga.getStartCoor());
 	}
 	public void removePlayer(Player player) {
 		this.getLayeredPane().remove(player.getColt());
+	}
+
+	public void moveMapsStart(Player player) {
+		JLayeredPane ginga = this.getLayeredPane();
+		for(int i=0;i<ginga.getComponentCount();i++) {
+			if(ginga.getComponent(i).getName()!=null && ginga.getComponent(i).getName().equals("S0")) {
+				player.getColt().setLocation(ginga.getComponent(i).getX()+21,ginga.getComponent(i).getY()+21);
+			}
+		}
+		player.setMass(Ginga.getStartCoor());
 	}
 
 	//次のプレイヤーをプレイ画面の真ん中に位置させる
@@ -253,11 +267,6 @@ public class GingaFrame extends FrameModel{
 		}
 	}
 
-	//@Deprecated
-	public void goalDebug() {
-		goal();
-	}
-
 	public void moveMaps(Player player,Coordinates to) {
 		JLayeredPane ginga = this.getLayeredPane();
 		int x=(to.getX()-player.getNowMass().getX())*130;
@@ -275,10 +284,9 @@ public class GingaFrame extends FrameModel{
 		MoveEvent.clearTrajectory();
 		Dice.clear();
 		BinboEvent.clearPredecessor();
+		FrameEvent.closeMain();
 		FrameEvent.transferMap(0);
-		System.out.println("player:"+Player.player.getNowMass().getX()+","+Player.player.getNowMass().getY());
-		System.out.println(Player.player.getMapID());
-		System.out.println("goal:"+Japan.getGoalCoor().getX()+","+Japan.getGoalCoor().getY());
+		FrameEvent.reloadMain();
 		massEvent();
 		goalflag=true;
 	}
