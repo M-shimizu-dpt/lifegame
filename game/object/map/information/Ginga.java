@@ -66,6 +66,10 @@ public abstract class Ginga {
 		thread.start();
 	}
 
+	public static ArrayList<Coordinates> getLinks() {
+		return getCoordinates(Player.player.getNowMass()).getLinks();
+	}
+
 	public static ArrayList<Coordinates> getLinks(Coordinates coor){
 		return getCoordinates(coor).getLinks();
 	}

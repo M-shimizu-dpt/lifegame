@@ -40,7 +40,6 @@ public class Card extends CardModel{
 
 	public static void init() {
 		resetFlags();
-		/*
 		//サイコロ数
 		cardList.add(new Card("急行カード",400,1,"サイコロを2つ回すことが出来る",0,2));
 		cardList.add(new Card("急行周遊カード",8000,2,"何度かサイコロを2つ回すことが出来る",0,2));
@@ -48,9 +47,8 @@ public class Card extends CardModel{
 		cardList.add(new Card("特急周遊カード",30000,3,"何度かサイコロを3つ回すことが出来る",0,3));
 		cardList.add(new Card("新幹線カード",7000,3,"サイコロを4つ回すことが出来る",0,4));
 		cardList.add(new Card("新幹線周遊カード",50000,4,"何度かサイコロを4つ回すことが出来る",0,4));
-		*/
 		cardList.add(new Card("のぞみカード",20000,4,"サイコロを5つ回すことが出来る",0,5));
-		/*
+
 		//固定値
 		cardList.add(new Card("1進めるカード",10000,3,"1マス進める",1,1));
 		cardList.add(new Card("2進めるカード",10000,3,"2マス進める",1,2));
@@ -80,8 +78,8 @@ public class Card extends CardModel{
 		//カードがもらえる
 		cardList.add(new Card("福袋カード",6000,2,"カードがたくさん出てくる",5));
 		cardList.add(new Card("ダビングカード",3000,2,"自分が持っているカードを複製することが出来る",5));
-*/
-		//別フレームに移動
+
+		//別次元に移動
 		cardList.add(new Card("銀河鉄道カード",0,5,"銀河に行くことが出来る",6));
 
 		Card.raritySort(Card.cardList);

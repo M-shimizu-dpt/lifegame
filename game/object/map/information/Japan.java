@@ -14,6 +14,7 @@ import java.util.Map;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.Searcher;
+import lifegame.game.object.Player;
 
 public abstract class Japan{
 	private static ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
@@ -1311,6 +1312,9 @@ public abstract class Japan{
 	}
 
 	//指定した座標から移動可能な座標一覧を取得
+	public static ArrayList<Coordinates> getLinks() {
+		return getCoordinates(Player.player.getNowMass()).getLinks();
+	}
 	public static ArrayList<Coordinates> getLinks(int x,int y) {
 		return getCoordinates(x,y).getLinks();
 	}

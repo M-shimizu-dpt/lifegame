@@ -142,7 +142,7 @@ public class Searcher{
 			SearchThread thread = new SearchThread(player.getNowMass(),SearchThread.searchTime+againtime);
 			thread.start();
 
-			WaitThread wt = new WaitThread(2);
+			WaitThread wt = new WaitThread(2,againtime);
 			wt.start();
 			try {
 				wt.join();
