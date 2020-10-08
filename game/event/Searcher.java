@@ -168,7 +168,7 @@ public class Searcher{
 		}
 	}
 
-	/*
+	@Deprecated
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
 	public static int searchShortestRouteSelectPlayer(Player selectedPlayer) {
 		//再探索は10回まで(1回で出てほしい…)
@@ -194,14 +194,14 @@ public class Searcher{
 				e.printStackTrace();
 			}
 			againtime+=100;
-			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+			System.out.println("again:"+(againtime/100)+"     id:"+thread1.getId());
 			endflag = true;
 			if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
 		}while(!endflag && againtime<1000);
 		return 0;
 	}
-	*/
 
+	@Deprecated
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
 	public static void searchShortestRouteAllPlayers() {
 		//再探索は10回まで(1回で出てほしい…)

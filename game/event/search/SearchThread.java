@@ -104,6 +104,7 @@ public class SearchThread extends SearchThreadModel{
 					thread.start();
 				}
 			}
+			if(me)break;
 		}
 	}
 

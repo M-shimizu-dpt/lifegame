@@ -25,6 +25,7 @@ import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.NearestSearchThread;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
@@ -432,7 +433,13 @@ public class Player {
 	}
 
 	public void setGoalDistance() {//最短距離をセット
-		this.goaldistance = Japan.getCoordinates(nowMass).getGoalDistance();
+		if(ContainsEvent.isNormalMap()) {
+			this.goaldistance = Japan.getCoordinates(nowMass).getGoalDistance();
+		}else if(ContainsEvent.isGingaMap()) {
+			this.goaldistance = Ginga.getCoordinates(nowMass).getGoalDistance();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	private void setMapID(int id) {

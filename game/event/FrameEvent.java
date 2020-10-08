@@ -168,9 +168,8 @@ public abstract class FrameEvent{
 		FrameEvent.openMain();
 	}
 
-	public static void openBinbo(String playerName, String action) {
+	public static void openBinbo(String action) {
 		FrameEvent.closeMain();
-		binbo.setPlayerName(playerName);
 		binbo.setBinboName(Binbo.getName());
 		binbo.setAction(action);
 		binbo.open();
@@ -472,7 +471,6 @@ public abstract class FrameEvent{
 	public static void moveMaps() {
 		if(ContainsEvent.isNormalMap()) {
 			play.moveMaps();
-			reloadMain();
 		}else if(ContainsEvent.isGingaMap()) {
 			ginga.moveMaps();
 		}else if(ContainsEvent.isBonbirasMap()) {
@@ -654,6 +652,8 @@ public abstract class FrameEvent{
 				Player.player.setGingaMap();
 				play.removePlayer(Player.player);
 				ginga.addPlayer(Player.player);
+				ginga.goalDebug();//debug
+				FrameEvent.moveMaps();
 			}else if(toMapID==2) {//norm to bonbiras
 
 			}
@@ -662,7 +662,8 @@ public abstract class FrameEvent{
 				Player.player.setNormalMap();
 				ginga.removePlayer(Player.player);
 				play.addPlayer(Player.player);
-				FrameEvent.moveMaps(Player.player,Japan.getGoalCoor());
+				play.returnMoveMaps(Player.player,Japan.getGoalCoor());
+				FrameEvent.moveMaps();
 			}else if(toMapID==2) {//ginga to bonbiras
 
 			}
@@ -673,7 +674,6 @@ public abstract class FrameEvent{
 
 			}
 		}
-		FrameEvent.moveMaps();
 	}
 
 	public static int getYear() {

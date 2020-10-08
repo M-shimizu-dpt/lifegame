@@ -98,12 +98,12 @@ public class App {
 		  	first=false;
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
-		  	if(ContainsEvent.isNormalMap()) {
-		  		Player.player.setGoalDistance();//目的地までの最短経路を探索
-		  	}
+		  	Player.player.setGoalDistance();//目的地までの最短経路を探索
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();
+		  	Player.player.addCard(Card.getCard(0));//debug
+		  	Player.player.addCard(Card.getCard(1));//debug
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!ContainsEvent.isPlayer()) {//cpu操作
 		  		Searcher.searchShortestRoute(Player.player);

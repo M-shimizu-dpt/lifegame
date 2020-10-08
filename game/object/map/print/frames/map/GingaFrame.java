@@ -54,7 +54,7 @@ public class GingaFrame extends FrameModel{
   	    initMenu();
   	    enableMenu();
 
-  	    moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count);
+  	    moveLabel = createText(500,100,250,50,10,"残り移動可能マス数:"+Player.player.getMove()+"　"+Japan.getGoalName()+"までの最短距離:"+Player.player.getGoalDistance());
     	moveLabel.setName("moves");
     	this.getLayeredPane().setBackground(Color.ORANGE);
     	closeMoveButton();
@@ -251,6 +251,11 @@ public class GingaFrame extends FrameModel{
 				massEvent();
 			}
 		}
+	}
+
+	//@Deprecated
+	public void goalDebug() {
+		goal();
 	}
 
 	public void moveMaps(Player player,Coordinates to) {

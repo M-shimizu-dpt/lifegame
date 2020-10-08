@@ -300,7 +300,7 @@ public class CardEvent{
 	}
 	private static void transferGinga() {
 		FrameEvent.closeMain();
-		FrameEvent.transferMap(1);//ボンビラス星があるならそこから移動する場合を追記
+		FrameEvent.transferMap(1);
 		FrameEvent.openMain();
 	}
 }

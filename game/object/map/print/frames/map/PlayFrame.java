@@ -1,6 +1,7 @@
 package lifegame.game.object.map.print.frames.map;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
@@ -198,6 +199,15 @@ public class PlayFrame extends FrameModel{
 		this.getLayeredPane().remove(player.getColt());
 	}
 
+	public Component getGoalComponent() {
+		for(Component comp:this.getLayeredPane().getComponents()) {
+			if(ContainsEvent.isGoal(comp.getName())) {
+				return comp;
+			}
+		}
+		return null;
+	}
+
 	//プレイマップの中央位置を初期位置(大阪)に設定
 	private void initMaps() {
 		JLayeredPane play = this.getLayeredPane();
@@ -249,7 +259,7 @@ public class PlayFrame extends FrameModel{
   	    play.add(waitButton,JLayeredPane.PALETTE_LAYER,0);
 	}
 
-	//次のプレイヤーをプレイ画面の真ん中に位置させる
+	//指定プレイヤーのcoltを画面の真ん中に位置させる
 	public void moveMaps() {
 		JLayeredPane play = this.getLayeredPane();
 		int x = 401 - Player.player.getColt().getX();
@@ -303,13 +313,26 @@ public class PlayFrame extends FrameModel{
 	}
 
 	//プレイマップの画面遷移処理
-	public void moveMaps(Player player,Coordinates to) {//playerのcoltの座標を変えるだけでできるかも
+	public void moveMaps(Player player,Coordinates to) {
 		JLayeredPane play = this.getLayeredPane();
 		int x=(to.getX()-player.getNowMass().getX())*130;
 		int y=(to.getY()-player.getNowMass().getY())*130;
 		for(int i=0;i<play.getComponentCount();i++) {
 			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(player.getName())) {
 				play.getComponent(i).setLocation(play.getComponent(i).getX()+x,play.getComponent(i).getY()+y);
+			}
+		}
+		MoveEvent.moveTo(player, to);
+	}
+
+	//プレイマップの画面遷移処理
+	public void returnMoveMaps(Player player,Coordinates to) {//駒の位置の配置方法を考える
+		JLayeredPane play = this.getLayeredPane();
+		int x=(to.getX()-player.getNowMass().getX())*130;
+		int y=(to.getY()-player.getNowMass().getY())*130;
+		for(int i=0;i<play.getComponentCount();i++) {
+			if(play.getComponent(i).getName()!=null && play.getComponent(i).getName().equals(player.getName())) {
+				play.getComponent(i).setLocation(to.getX()*130-play.getComponent(i).getX(),to.getY()*130-play.getComponent(i).getY());
 			}
 		}
 		MoveEvent.moveTo(player, to);

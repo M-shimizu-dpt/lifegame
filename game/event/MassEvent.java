@@ -50,8 +50,11 @@ public abstract class MassEvent {
 			}else{
 				if(ContainsEvent.goal(massName)) {
 					goal();
-				}else {
+				}else if(ContainsEvent.isStation(massName)){
 					FrameEvent.openPropertys(massName,2);
+				}else {
+					System.out.println("Error:MassName (MassEvent.massEvent(String))");
+					System.exit(0);
 				}
 			}
 		}else if(ContainsEvent.isBonbirasMap()) {
