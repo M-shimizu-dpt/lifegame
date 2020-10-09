@@ -79,7 +79,7 @@ public abstract class FrameEvent{
 
 	public static void openClosing() {
 		FrameEvent.closeMain();
-		confirmation.open("決算","決算",100,3000);
+		FrameEvent.createPopUp("決算","決算",100,3000);
 		ClosingEvent.closing();
 		try {//スムーズに決算処理に移れない可能性がある為、書き変える必要がある
 			Thread.sleep(3000);
@@ -109,11 +109,18 @@ public abstract class FrameEvent{
 	}
 
 	public static void createPopUp(String title,String article,int time) {
-		confirmation.open(title, article, time);
+		confirmation.setTitle(title);
+		confirmation.setArticle(article);
+		confirmation.setTime(time);
+		confirmation.open();
 	}
 
 	public static void createPopUp(String title,String article,int size,int time) {
-		confirmation.open(title, article, size, time);
+		confirmation.setTitle(title);
+		confirmation.setArticle(article);
+		confirmation.setTime(time);
+		confirmation.setTextSize(size);
+		confirmation.open();
 	}
 
 	public static void closePopUp() {
@@ -319,13 +326,12 @@ public abstract class FrameEvent{
 	//月が替わった時に何月か表示
 	public static void openMonthFrame() {//ConfirmationFrameにする
 		FrameEvent.closeMain();
-		confirmation.open(App.month + "月", App.month + "月",100, 3000);
+		FrameEvent.createPopUp(App.month + "月", App.month + "月",200, 3000);
 		try {
-			Thread.sleep(3000);
-		}catch(InterruptedException e) {
-			e.printStackTrace();
-		}
-		confirmation.close();
+  			Thread.sleep(3000);
+  		}catch(InterruptedException e) {
+  			e.printStackTrace();
+  		}
 	}
 
 	public static void openRandom1(double rand) {
@@ -601,11 +607,11 @@ public abstract class FrameEvent{
 			playname.setNames.clear();
 		}
 	}
-	
+
 	public static ArrayList<String> displayNames() {
 		return playname.setNames;
 	}
-	
+
 	public static void openSettingPlayer() {
 		SettingPlayer.open();
 	}
@@ -618,7 +624,7 @@ public abstract class FrameEvent{
 	public static ArrayList<Integer> displayOrder() {
 		return SettingPlayer.PlayerOrder;
 	}
-	
+
 	public static String getName(int index) {
 		return playname.getName(index);
 	}
@@ -634,18 +640,18 @@ public abstract class FrameEvent{
 	public static void openSettingYear() {
 		SettingYear.open();
 	}
-	
+
 	public static void openSetting() {
 		setting.open();
 	}
-	
+
 	public static int getPlayerCount() {
 		return check.getCount();
 	}
 	public static int getPlayYear() {
 		return check.getYear();
 	}
-	
+
 	public static void setPlayerCount() {
 		check.count = playname.number;
 	}
@@ -729,5 +735,8 @@ public abstract class FrameEvent{
 
 	public static boolean isRandom2Showing() {
 		return random.isShowing();
+	}
+	public static boolean isPopUpShowing() {
+		return confirmation.isShowing();
 	}
 }

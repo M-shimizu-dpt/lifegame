@@ -15,71 +15,70 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 
 public class ConfirmationFrame extends FrameModel{
 	private String article;
+	private int time;
+	private int size;
 
 	public ConfirmationFrame() {
+		resetValues();
+	}
 
+	public void resetValues() {
+		this.article="";
+		this.time=0;
+		this.size=0;
 	}
 
 	public void setArticle(String article) {
 		this.article=article;
 	}
 
+	public void setTime(int time) {
+		this.time=time;
+	}
+
+	public void setTextSize(int size) {
+		this.size=size;
+	}
+
 	public void open() {
 		JLayeredPane confirmation = this.getLayeredPane();
-
+		JLabel art;
 		String artresult = FrameEvent.adjustText(article);
-
-		JLabel art = createText(0,0,800,600,20,artresult);
+		if(this.size>0) {
+			art = createText(0,0,800,600,size,artresult);
+		}else {
+			art = createText(0,0,800,600,20,artresult);
+		}
 		art.setHorizontalAlignment(SwingConstants.LEFT);
 		art.setVerticalAlignment(SwingConstants.TOP);
 		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
-		JButton closeButton =createButton(700,500,70,50,10,"閉じる");
-		if(!ContainsEvent.isPlayer()) {
-			closeButton.setEnabled(false);
+		if(time>0) {
+			setCloseFrame();
+		}else{
+			JButton closeButton =createButton(700,500,70,50,10,"閉じる");
+			if(!ContainsEvent.isPlayer()) {
+				closeButton.setEnabled(false);
+			}
+			confirmation.add(closeButton,JLayeredPane.PALETTE_LAYER);
 		}
-		confirmation.add(closeButton,JLayeredPane.PALETTE_LAYER);
-	}
-
-	public void open(String title,String article,int time) {
-		this.setTitle(title);
-		JLayeredPane confirmation = this.getLayeredPane();
-		String artresult = FrameEvent.adjustText(article);
-		JLabel art = createText(0,0,800,600,20,artresult);
-		art.setHorizontalAlignment(SwingConstants.LEFT);
-		art.setVerticalAlignment(SwingConstants.TOP);
-		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
 		this.setVisible(true);
-
-		setCloseFrame(time);
 	}
 
-	public void open(String title,String article,int size,int time) {
-		this.setTitle(title);
-		JLayeredPane confirmation = this.getLayeredPane();
-		String artresult="<html><body>"+article+"</body></html>";
-		JLabel art = createText(0,0,800,600,size,artresult);
-		confirmation.add(art,JLayeredPane.DEFAULT_LAYER);
-		this.setVisible(true);
-
-		setCloseFrame(time);
-	}
-
-	public void setCloseFrame(int time) {
-		if(!ContainsEvent.isPlayer()) {//コードの行数を減らすためにif文をここに記載(可読性を上げるなら呼び出し元に書いた方がいいかも)
-			Timer timer = new Timer(false);
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					FrameEvent.closePopUp();
-				}
-			}, time);
-		}
+	public void setCloseFrame() {
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				FrameEvent.closePopUp();
+			}
+		}, time);
 	}
 
 	@Override
 	public void close() {
 		this.setVisible(false);
 		this.getLayeredPane().removeAll();
+		resetValues();
 	}
 
 	@Override

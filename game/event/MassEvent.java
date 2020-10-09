@@ -76,8 +76,33 @@ public abstract class MassEvent {
 		}
 		result += result*(App.year/10);
 		result -= result%100;
-		System.out.println(result);
 		Player.player.addMoney(result);
+		FrameEvent.closeMain();
+		if(ContainsEvent.isPlayer()) {
+			if(result<10000) {
+				FrameEvent.createPopUp("レア青マス", result+"万円貰いました!");
+			}else if(result%10000==0){
+				FrameEvent.createPopUp("レア青マス", result+"億円貰いました!");
+			}else {
+				FrameEvent.createPopUp("レア青マス", result/10000+"億"+result%10000+"万円貰いました!");
+			}
+		}else {
+			if(result<10000) {
+				FrameEvent.createPopUp("レア青マス", result+"万円貰いました!",2000);
+			}else if(result%10000==0){
+				FrameEvent.createPopUp("レア青マス", result+"億円貰いました!",2000);
+			}else {
+				FrameEvent.createPopUp("レア青マス", result/10000+"億"+result%10000+"万円貰いました!",2000);
+			}
+		}
+		WaitThread wait = new WaitThread(3);
+		wait.start();
+		try {
+			wait.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		FrameEvent.openMain();
 		if(rand.nextInt(100)<3) {
 			RandomEvent.randomEvent();
 		}else {
@@ -106,13 +131,26 @@ public abstract class MassEvent {
 			}
 		}
 		Player.player.addCard(Card.getCard(index));
-		System.out.println("Card Get! name:"+Card.getCard(index).getName()+"  rarity"+Card.getCard(index).getRarity());
+		FrameEvent.closeMain();
+		if(ContainsEvent.isPlayer()) {
+			FrameEvent.createPopUp("レア黄マス", Card.getCard(index).getName()+"を貰いました!");
+		}else {
+			FrameEvent.createPopUp("レア黄マス", Card.getCard(index).getName()+"を貰いました!",2000);
+		}
+		WaitThread wait = new WaitThread(3);
+		wait.start();
+		try {
+			wait.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		FrameEvent.openMain();
 		if(ContainsEvent.isMaxCard()) {
 			FrameEvent.openFullCardFromPlay();
-			WaitThread wait = new WaitThread(9);
-			wait.start();
+			WaitThread waitthread = new WaitThread(9);
+			waitthread.start();
 			try {
-				wait.join();
+				waitthread.join();
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -133,8 +171,33 @@ public abstract class MassEvent {
 		}
 		result += result*(App.year/10);
 		result -= result%100;
-		System.out.println(result);
 		Player.player.addMoney(result);
+		FrameEvent.closeMain();
+		if(ContainsEvent.isPlayer()) {
+			if(result<10000) {
+				FrameEvent.createPopUp("青マス", result+"万円貰いました!");
+			}else if(result%10000==0){
+				FrameEvent.createPopUp("青マス", result+"億円貰いました!");
+			}else {
+				FrameEvent.createPopUp("青マス", result/10000+"億"+result%10000+"万円貰いました!");
+			}
+		}else {
+			if(result<10000) {
+				FrameEvent.createPopUp("青マス", result+"万円貰いました!",2000);
+			}else if(result%10000==0){
+				FrameEvent.createPopUp("青マス", result+"億円貰いました!",2000);
+			}else {
+				FrameEvent.createPopUp("青マス", result/10000+"億"+result%10000+"万円貰いました!",2000);
+			}
+		}
+		WaitThread wait = new WaitThread(3);
+		wait.start();
+		try {
+			wait.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		FrameEvent.openMain();
 		if(rand.nextInt(100) < 3) {
 			RandomEvent.randomEvent();
 		}else {
@@ -151,8 +214,33 @@ public abstract class MassEvent {
 		}
 		result += result*(App.year/10);
 		result -= result%100;
-		System.out.println(-result);
 		Player.player.addMoney(-result);
+		FrameEvent.closeMain();
+		if(ContainsEvent.isPlayer()) {
+			if(result<10000) {
+				FrameEvent.createPopUp("赤マス", result+"万円無くなりました!");
+			}else if(result%10000==0){
+				FrameEvent.createPopUp("赤マス", result+"億円無くなりました!");
+			}else {
+				FrameEvent.createPopUp("赤マス", result/10000+"億"+result%10000+"万円無くなりました!");
+			}
+		}else{
+			if(result<10000) {
+				FrameEvent.createPopUp("赤マス", result+"万円無くなりました!",2000);
+			}else if(result%10000==0){
+				FrameEvent.createPopUp("赤マス", result+"億円無くなりました!",2000);
+			}else {
+				FrameEvent.createPopUp("赤マス", result/10000+"億"+result%10000+"万円無くなりました!",2000);
+			}
+		}
+		WaitThread wait = new WaitThread(3);
+		wait.start();
+		try {
+			wait.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		FrameEvent.openMain();
 		if(ContainsEvent.money(0) < 0 && ContainsEvent.isHaveProperty()) {
 			FrameEvent.openSellProperty();
 		}else{
@@ -184,13 +272,26 @@ public abstract class MassEvent {
 			}
 		}
 		Player.player.addCard(Card.getCard(index));
-		System.out.println("Card Get! name:"+Card.getCard(index).getName()+"  rarity"+Card.getCard(index).getRarity());
+		FrameEvent.closeMain();
+		if(ContainsEvent.isPlayer()) {
+			FrameEvent.createPopUp("黄マス", Card.getCard(index).getName()+"を貰いました!");
+		}else {
+			FrameEvent.createPopUp("黄マス", Card.getCard(index).getName()+"を貰いました!",2000);
+		}
+		WaitThread wait = new WaitThread(3);
+		wait.start();
+		try {
+			wait.join();
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		FrameEvent.openMain();
 		if(ContainsEvent.isMaxCard()) {
 			FrameEvent.openFullCardFromPlay();
-			WaitThread wait = new WaitThread(9);
-			wait.start();
+			WaitThread waitthread = new WaitThread(9);
+			waitthread.start();
 			try {
-				wait.join();
+				waitthread.join();
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}

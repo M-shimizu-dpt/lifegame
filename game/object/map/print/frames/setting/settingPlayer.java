@@ -12,13 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
 import lifegame.game.event.FrameEvent;
 
-public class settingPlayer extends JFrame implements ActionListener {
+public class SettingPlayer extends JFrame implements ActionListener {
 	
-	public settingPlayer() {
+	public SettingPlayer() {
 		this.setTitle("挑大郎電鉄");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(800, 600);
@@ -30,8 +28,7 @@ public class settingPlayer extends JFrame implements ActionListener {
 	ButtonGroup Order;
 	public int count;
 	public int playerorder;
-	public static ArrayList<String> setNames = new ArrayList<String>();
-	public static ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
+	public ArrayList<Integer> PlayerOrder = new ArrayList<Integer>();
 	
 	public void open() {
 		JLayeredPane start = this.getLayeredPane();
@@ -93,50 +90,9 @@ public class settingPlayer extends JFrame implements ActionListener {
     	Order.add(order1);
     	Order.add(order2);
     	
-    	//名前の変更設定
-    	JLabel labelPlayerName = new JLabel("名前を変更する場合は下に入力してください");
-    	labelPlayerName.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	labelPlayerName.setBounds(20, 300, 400, 50);
-
-    	JLabel player1 = new JLabel("1人目");
-    	player1.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	player1.setBounds(50, 350, 150, 50);
-    	JTextField textplayer1 = new JTextField("P1");
-    	textplayer1.setToolTipText("半角は7文字、全角は4文字以内で入力してください");
-    	textplayer1.setHorizontalAlignment(JTextField.CENTER);
-    	textplayer1.setFont(new Font("SansSerif",Font.BOLD,20));
-    	textplayer1.setBounds(50, 410, 150, 50);
-
-    	JLabel player2 = new JLabel("2人目");
-    	player2.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	player2.setBounds(225, 350, 150, 50);
-    	JTextField textplayer2 = new JTextField("P2");
-    	textplayer2.setToolTipText("半角は7文字、全角は4文字以内で入力してください");
-    	textplayer2.setHorizontalAlignment(JTextField.CENTER);
-    	textplayer2.setFont(new Font("SansSerif",Font.BOLD,20));
-    	textplayer2.setBounds(225, 410, 150, 50);
-
-    	JLabel player3 = new JLabel("3人目");
-    	player3.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	player3.setBounds(400, 350, 150, 50);
-    	JTextField textplayer3 = new JTextField("P3");
-    	textplayer3.setToolTipText("半角は7文字、全角は4文字以内で入力してください");
-    	textplayer3.setHorizontalAlignment(JTextField.CENTER);
-    	textplayer3.setFont(new Font("SansSerif",Font.BOLD,20));
-    	textplayer3.setBounds(400, 410, 150, 50);
-
-    	JLabel player4 = new JLabel("4人目");
-    	player4.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	player4.setBounds(575, 350, 150, 50);
-    	JTextField textplayer4 = new JTextField("P4");
-    	textplayer4.setToolTipText("半角は7文字、全角は4文字以内で入力してください");
-    	textplayer4.setHorizontalAlignment(JTextField.CENTER);
-    	textplayer4.setFont(new Font("SansSerif",Font.BOLD,20));
-    	textplayer4.setBounds(575, 410, 150, 50);
-		
 		JButton startButton = new JButton("OK");
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	startButton.setBounds(600,490,180,60);
+    	startButton.setBounds(580,490,180,60);
     	startButton.addActionListener(this);
     	
     	start.add(labelTitle);
@@ -146,25 +102,11 @@ public class settingPlayer extends JFrame implements ActionListener {
     	start.add(count3);
     	start.add(count4);
     	start.add(count0);
-    	start.add(labelPlayerName);
-    	start.add(player1);
-    	start.add(textplayer1);
-    	start.add(player2);
-    	start.add(textplayer2);
-    	start.add(player3);
-    	start.add(textplayer3);
-    	start.add(player4);
-    	start.add(textplayer4);
     	start.add(order1);
     	start.add(order2);
     	start.add(labelOrder);
     	start.add(startButton);
 
-    	setNames.add(textplayer1.getText());
-    	setNames.add(textplayer2.getText());
-    	setNames.add(textplayer3.getText());
-    	setNames.add(textplayer4.getText());
-    	
     	this.setVisible(true);
     	
 	}
@@ -187,18 +129,15 @@ public class settingPlayer extends JFrame implements ActionListener {
 		}else {
 			Collections.sort(PlayerOrder);//初期設定値
 		}
-		//System.out.println(PlayerOrder);
 		String cmd = e.getActionCommand();
 		if(cmd.equals("OK")) {
-			FrameEvent.setPlayerCount();
-			FrameEvent.openSettingYear();
+			FrameEvent.setPlayNumber();
+			FrameEvent.openSettingPlayName();
 			this.setVisible(false);
+			this.getLayeredPane().removeAll();
     	}
 	}
-	public String getName(int index) {
-		return setNames.get(index);
-	}
-
+	
 	public int getPlayerOrder(int index) {
 		return PlayerOrder.get(index);
 	}

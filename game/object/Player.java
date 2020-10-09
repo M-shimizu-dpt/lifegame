@@ -160,7 +160,6 @@ public class Player {
 	public void cardFullCPU() {
 		do{
 			this.removeCard(this.getCard(0));
-			//System.out.println("remove:"+this.getCard(0).getName());
 			priceSort(this.getCards());
 		}while(this.getCardSize()>8);
 	}
@@ -247,7 +246,6 @@ public class Player {
 				}
 			}
 
-			//System.out.println("player.move:"+this.getMove()+"       終わりました");
 			if(this.getMove()>0) {
 				System.out.println("異常終了");
 			}
@@ -272,7 +270,6 @@ public class Player {
 			if(ContainsEvent.isNormalMap()) {
 				list=Japan.getLinks();
 				for(Coordinates coor:list) {
-					System.out.println("now:"+getNowMass().getX()+","+getNowMass().getY()+"   next候補:"+coor.getX()+","+coor.getY());
 					if(Japan.getGoalDistance(this.getNowMass())>Japan.getGoalDistance(coor)) {
 						next=coor;
 					}
@@ -287,9 +284,7 @@ public class Player {
 			}else if(ContainsEvent.isBonbirasMap()) {
 				//bonbiras
 			}
-			System.out.println("next:"+next.getX()+","+next.getY());
 
-			System.out.println("move1:"+getMove());
 			int x = this.getNowMass().getX()-next.getX();
 			int y = this.getNowMass().getY()-next.getY();
 			if(x==0) {
@@ -307,7 +302,6 @@ public class Player {
 			}
 			FrameEvent.reloadInfo();
 			Thread.sleep(300);
-			System.out.println("move2:"+getMove());
 		}
 	}
 

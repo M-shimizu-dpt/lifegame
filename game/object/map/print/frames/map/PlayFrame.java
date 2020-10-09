@@ -262,6 +262,7 @@ public class PlayFrame extends FrameModel{
 	//指定プレイヤーのcoltを画面の真ん中に位置させる
 	public void moveMaps() {
 		JLayeredPane play = this.getLayeredPane();
+		System.out.println("count:"+play.getComponentCount());
 		int x = 401 - Player.player.getColt().getX();
 		int y = 301 - Player.player.getColt().getY();
 		String name;//if文が長すぎる為
