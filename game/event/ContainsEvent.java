@@ -634,7 +634,7 @@ public abstract class ContainsEvent {
 	}
 
 	public static boolean isBuyProperty(Property pt) {
-		return pt.getAmount()<Player.player.getMoney();
+		return pt.getAmount()<=Player.player.getMoney();
 	}
 	public static boolean isHaveProperty() {
 		return !Player.player.getPropertys().isEmpty();
