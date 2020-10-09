@@ -669,4 +669,7 @@ public abstract class ContainsEvent {
 	public static boolean isPlayer(Player player) {
 		return player.isPlayer();
 	}
+	public static boolean isRandom2Showing() {
+		return FrameEvent.isRandom2Showing();
+	}
 }

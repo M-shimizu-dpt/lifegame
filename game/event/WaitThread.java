@@ -1,5 +1,6 @@
 /*
  * id=0→ターンエンド待ち
+ * id=1→Random2Event終了待ち
  * id=2→最短経路探索待ち
  * id=4→移動可能マス探索待ち
  * id=5→ボンビーターン待ち
@@ -52,6 +53,15 @@ public class WaitThread extends Thread{
 				}
 			}
 			App.initTurnEndFlag();
+			break;
+		case 1:
+			while(ContainsEvent.isRandom2Showing()) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			break;
 		case 2:
 			while(System.currentTimeMillis()-Searcher.time <= SearchThread.searchTime+againtime) {
