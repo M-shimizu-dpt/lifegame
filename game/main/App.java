@@ -99,7 +99,7 @@ public class App {
 		  	first=false;
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
-		  	Player.player.setGoalDistance();//目的地までの最短経路を探索
+		  	Player.player.setGoalDistance();//目的地までの最短距離をマスから取得
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();

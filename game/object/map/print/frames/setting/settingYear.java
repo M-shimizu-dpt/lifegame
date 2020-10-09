@@ -15,9 +15,9 @@ import javax.swing.SpinnerNumberModel;
 
 import lifegame.game.event.FrameEvent;
 
-public class settingYear extends JFrame implements ActionListener {
+public class SettingYear extends JFrame implements ActionListener {
 	
-	public settingYear() {
+	public SettingYear() {
 		this.setTitle("挑大郎電鉄");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(800, 600);
@@ -26,6 +26,7 @@ public class settingYear extends JFrame implements ActionListener {
 	}
 	
 	public int year;
+	JFormattedTextField textYear;
 	
 	public void open() {
 		JLayeredPane start = this.getLayeredPane();
@@ -45,32 +46,42 @@ public class settingYear extends JFrame implements ActionListener {
     	spinnerYear.setBounds(350, 300, 150, 100);
     	JSpinner.NumberEditor model = new JSpinner.NumberEditor(spinnerYear);
     	spinnerYear.setEditor(model);
-    	JFormattedTextField textYear = model.getTextField();
+    	textYear = model.getTextField();
     	textYear.setEditable(false);
     	textYear.setBackground(Color.white);
     	
     	JButton startButton = new JButton("OK");
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	startButton.setBounds(600,490,180,60);
+    	startButton.setBounds(580,490,180,60);
     	startButton.addActionListener(this);
+    	JButton backButton = new JButton("戻る");
+    	backButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
+    	backButton.setBounds(20,490,180,60);
+    	backButton.addActionListener(this);
     	
     	this.setVisible(true);
     	start.add(labelTitle);
     	start.add(labelYear);
     	start.add(spinnerYear);
     	start.add(text);
+    	start.add(backButton);
     	start.add(startButton);
-    	
-    	year=Integer.parseInt((String)textYear.getText());
     	
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("OK")) {
+			year=Integer.parseInt((String)textYear.getText());
 			FrameEvent.setPlayYear();
 			FrameEvent.openCheck();
 			this.setVisible(false);
+			this.getLayeredPane().removeAll();
+    	}
+		else {
+    		FrameEvent.openSettingPlayName();
+    		this.setVisible(false);
+    		this.getLayeredPane().removeAll();
     	}
 	}
 	

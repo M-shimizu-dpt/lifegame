@@ -21,7 +21,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 public class GoalFrame extends FrameModel{
 
 	public GoalFrame() {
-		super.setSize(500, 300);
+		super.setSize(600, 300);
 	}
 
 	public void open() {
@@ -29,7 +29,7 @@ public class GoalFrame extends FrameModel{
 		JLayeredPane goal = this.getLayeredPane();
 		int goalMoney;
 		Random rand = new Random();
-		JButton closeButton = createButton(380,180,100,50,10,"閉じる");
+		JButton closeButton = createButton(480,180,100,50,10,"閉じる");
 		if(!ContainsEvent.isPlayer()) {
 			closeButton.setEnabled(false);
 		}
@@ -37,7 +37,7 @@ public class GoalFrame extends FrameModel{
 		goalMoney+=rand.nextInt(10000);
 		goalMoney-=goalMoney%100;
 		Player.player.addMoney(goalMoney);
-		JLabel label = createText(10,30,400,100,10,Player.player.getName()+"さんには地元民から援助金として"+System.lineSeparator()+goalMoney/10000+"億"+goalMoney%10000+"万円が寄付されます。");
+		JLabel label = createText(10,30,500,100,20,FrameEvent.adjustText(Player.player.getName()+"さんには地元民から援助金として"+System.lineSeparator()+goalMoney/10000+"億"+goalMoney%10000+"万円が寄付されます。"));
 		label.setBackground(Color.BLUE);
 		goal.add(closeButton);
 		goal.add(label);
@@ -48,7 +48,7 @@ public class GoalFrame extends FrameModel{
 	public void openNextGoal() {
 		this.setTitle("次の目的地");
 		JLayeredPane goal = this.getLayeredPane();
-		JButton closeButton = createButton(380,180,100,50,10,"閉じる");
+		JButton closeButton = createButton(480,180,100,50,10,"閉じる");
 		if(!ContainsEvent.isPlayer()) {
 			closeButton.setEnabled(false);
 		}
@@ -59,7 +59,7 @@ public class GoalFrame extends FrameModel{
 		FrameEvent.resetGoalColor();
 		Japan.changeGoal();
 		FrameEvent.setGoalColor();
-		JLabel label = createText(10,30,400,100,10,"次の目的地は"+Japan.getGoalName()+"です！");
+		JLabel label = createText(10,30,500,100,20,"次の目的地は"+Japan.getGoalName()+"です！");
 		label.setBackground(Color.BLUE);
 		goal.add(closeButton);
 		goal.add(label);

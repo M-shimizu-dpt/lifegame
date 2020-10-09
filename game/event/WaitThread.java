@@ -2,6 +2,7 @@
  * id=0→ターンエンド待ち
  * id=1→Random2Event終了待ち
  * id=2→最短経路探索待ち
+ * id=3→PopUp終了待ち
  * id=4→移動可能マス探索待ち
  * id=5→ボンビーターン待ち
  * id=7→一時停止
@@ -72,6 +73,15 @@ public class WaitThread extends Thread{
 				}
 			}
 			SearchThread.initSearchTime();
+			break;
+		case 3:
+			while(FrameEvent.isPopUpShowing()) {
+				try {
+					Thread.sleep(100);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			break;
 		case 4:
 			while(System.currentTimeMillis()-Searcher.time <= 500) {
