@@ -1,5 +1,6 @@
 package lifegame.game.object.map.print.frames;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import lifegame.game.event.ClosingEvent;
+import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.print.frames.model.FrameModel;
@@ -30,6 +32,11 @@ public class InfoFrame extends FrameModel{
 		ArrayList <JLabel> assetsList = new ArrayList<JLabel>();
 		ArrayList <JLabel> restMassList = new ArrayList<JLabel>();
 		for(int i=0;i<4;i++) {
+			if(ContainsEvent.isBinboPlayer(Player.getPlayer(i))) {
+				JLabel label = createText(570,100*i+120,100,100,20,"ボンビー");
+				label.setBackground(Color.RED);
+				nameList.add(label);
+			}
 			nameList.add(createText(20,100*i+120,100,100,20,Player.players.get(i).getName()));
 			//所持金情報
 			moneyList.add(createText(120,100*i+120,100,100,20,FrameEvent.convertMoney(Player.players.get(i).getMoney())));
