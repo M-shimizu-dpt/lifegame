@@ -18,7 +18,7 @@ public class FullCardFrame extends FrameModel{
 	private int id=-1;
 
 	public FullCardFrame() {
-		this.setSize(400,500);
+		super.setSize(400,500);
 	}
 
 	public void initThrowFlag() {
