@@ -67,7 +67,7 @@ public class ShopFrame extends FrameModel{
 			closeButton.setEnabled(false);
 		}
 		buyShop.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-		JLabel myMoney = createText(10,5,400,40,10,"所持金"+Player.player.getMoney());
+		JLabel myMoney = createText(10,5,400,40,10,"所持金"+FrameEvent.convertMoney(Player.player.getMoney()));
 		buyShop.add(myMoney);
 
 		for(int i=1; i<=canBuyCardList.size(); i++) {

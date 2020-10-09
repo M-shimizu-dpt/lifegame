@@ -55,6 +55,7 @@ public abstract class SaleEvent {
 		}
 		property.setOwner(Player.player.getName());
 		Japan.alreadys.add(property.getName()+index);
+		System.out.println("buy1");
 	}
 	public static void buyPropertys(Player player,String name, int index) {
 		Property property=Japan.getStaInProperty(name,index);
@@ -68,6 +69,7 @@ public abstract class SaleEvent {
 			property.setLevel(property.getLevel()+1);
 		}
 		Japan.alreadys.add(property.getName()+index);
+		System.out.println("buy2");
 	}
 	public static void sellPropertys(Property property) {
 		property.setOwner("");
@@ -87,6 +89,11 @@ public abstract class SaleEvent {
 		for(int index = 0;index<Japan.getStaInPropertySize(name);index++) {
 			if(ContainsEvent.isBuyProperty(Japan.getStaInProperty(name,index))) {
 				SaleEvent.buyPropertys(name, index);
+				try {
+					Thread.sleep(300);
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
 		}

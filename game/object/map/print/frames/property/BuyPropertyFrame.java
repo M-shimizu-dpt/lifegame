@@ -64,31 +64,33 @@ public class BuyPropertyFrame extends FrameModel{
 	//駅の物件情報を表示
 	public void open() {
 		String title = getTitle().split("の")[0];
-		this.setSize(800, 35*Japan.getStaInPropertySize(title)+150);
+		this.setSize(800, 35*Japan.getStaInPropertySize(title)+200);
 
 		Container propertys = this.getContentPane();
-		JButton closeButton = createButton(580,35*Japan.getStaInPropertySize(title)+50,180,50,10,"閉じる");
+		JButton closeButton = createButton(580,35*Japan.getStaInPropertySize(title)+100,180,50,10,"閉じる");
 		closeButton.setActionCommand("物件情報を閉じる");
 		if(!ContainsEvent.isPlayer()) {
 			closeButton.setEnabled(false);
 		}
 
 		JPanel info = new JPanel();
-		info.setBounds(10, 10, 780, 40);
+		info.setBounds(10, 0, 790, 50);
 		info.setLayout(null);
-		info.add(createText(150,10,200,40,20,"物件名"));
-		info.add(createText(400,10,150,40,20,"値段"));
-		info.add(createText(550,10,100,40,20,"利益率"));
-		info.add(createText(650,10,100,40,20,"所有者"));
+		info.add(createText(0,0,400,20,20,"所持金:"+FrameEvent.convertMoney(Player.player.getMoney())));
+		info.add(createText(150,20,200,30,20,"物件名"));
+		info.add(createText(150,20,200,30,20,"物件名"));
+		info.add(createText(400,20,150,30,20,"値段"));
+		info.add(createText(550,20,100,30,20,"利益率"));
+		info.add(createText(650,20,100,30,20,"所有者"));
 		if(Japan.getStation(title).isMono()) {
-			JLabel label = createText(750,10,30,40,20,"独");
+			JLabel label = createText(750,20,30,30,20,"独");
 			label.setBackground(Color.RED);
 			info.add(label);
 		}
 		propertys.add(info);
 		for(int i=0;i<Japan.getStaInPropertySize(title);i++) {
 			Property property = Japan.getStaInProperty(title,i);
-			JButton buyButton = createButton(20,15+(i+1)*35,80,30,10,"購入");
+			JButton buyButton = createButton(20,35+(i+1)*35,80,30,10,"購入");
 
 			if(property.getLevel()>=2 || (!property.getOwner().equals("") && !property.getOwner().equals(Player.player.getName()))
 					|| Player.player.getMoney()<property.getAmount() || !ContainsEvent.isPlayer() || id!=2) {
@@ -106,10 +108,10 @@ public class BuyPropertyFrame extends FrameModel{
 			buyButton.setActionCommand(title+"b:"+i);
 			propertys.add(buyButton);
 			int rate = property.getRate();//利益率(3段階)
-			propertys.add(createText(150,10+(i+1)*35,200,40,15,property.getName()));
-			propertys.add(createText(400,10+(i+1)*35,150,40,15,FrameEvent.convertMoney(property.getAmount())));
-			propertys.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
-			propertys.add(createText(650,10+(i+1)*35,100,40,15,property.getOwner()));
+			propertys.add(createText(150,30+(i+1)*35,200,40,15,property.getName()));
+			propertys.add(createText(400,30+(i+1)*35,150,40,15,FrameEvent.convertMoney(property.getAmount())));
+			propertys.add(createText(550,30+(i+1)*35,100,40,15,rate + "%"));
+			propertys.add(createText(650,30+(i+1)*35,100,40,15,property.getOwner()));
 		}
 		propertys.add(closeButton);
 

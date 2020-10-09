@@ -97,6 +97,12 @@ public class App {
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();
+
+		  	for(int i=0;i<9;i++) {
+		  		Player.player.addCard(Card.getCard(0));
+		  	}
+		  	FrameEvent.openFullCardFromPlay();
+
 		  	CardEvent.priceSort(Player.player.getCards());//プレイヤーが持つカードを価格順にソート
 		  	if(!ContainsEvent.isPlayer()) {//cpu操作
 		  		Player.player.cpu();
