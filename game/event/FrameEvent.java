@@ -42,8 +42,9 @@ import lifegame.game.object.map.print.frames.property.BuyPropertyFrame;
 import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
 import lifegame.game.object.map.print.frames.setting.Check;
 import lifegame.game.object.map.print.frames.setting.Setting;
-import lifegame.game.object.map.print.frames.setting.settingPlayer;
-import lifegame.game.object.map.print.frames.setting.settingYear;
+import lifegame.game.object.map.print.frames.setting.SettingPlayName;
+import lifegame.game.object.map.print.frames.setting.SettingPlayer;
+import lifegame.game.object.map.print.frames.setting.SettingYear;
 
 //FrameEventにする。
 public abstract class FrameEvent{
@@ -70,8 +71,9 @@ public abstract class FrameEvent{
 	private static StartFrame start = new StartFrame();
 	private static GingaFrame ginga = new GingaFrame();
 	private static Check check = new Check();
-	private static settingPlayer settingPlayer = new settingPlayer();
-	private static settingYear settingYear = new settingYear();
+	private static SettingPlayer SettingPlayer = new SettingPlayer();
+	private static SettingPlayName playname = new SettingPlayName();
+	private static SettingYear SettingYear = new SettingYear();
 	private static Setting setting = new Setting();
 	private static StartTitleFrame startTitle = new StartTitleFrame();
 
@@ -591,43 +593,68 @@ public abstract class FrameEvent{
 		check.open();
 	}
 
+	public static void openSettingPlayName() {
+		playname.open();
+	}
+	public static void resetPlayName() {
+		if(playname.setNames.size()!=0) {
+			playname.setNames.clear();
+		}
+	}
+	
+	public static ArrayList<String> displayNames() {
+		return playname.setNames;
+	}
+	
 	public static void openSettingPlayer() {
-		settingPlayer.open();
+		SettingPlayer.open();
+	}
+	public static void resetPlayOrder() {
+		if(SettingPlayer.PlayerOrder.size()!=0) {
+			SettingPlayer.PlayerOrder.clear();
+		}
 	}
 
+	public static ArrayList<Integer> displayOrder() {
+		return SettingPlayer.PlayerOrder;
+	}
+	
 	public static String getName(int index) {
-		return settingPlayer.getName(index);
+		return playname.getName(index);
 	}
 
 	public static int getPlayerOrder(int index) {
-		return settingPlayer.getPlayerOrder(index);
+		return SettingPlayer.getPlayerOrder(index);
 	}
 
 	public static int getOrder() {
-		return settingPlayer.playerorder;
+		return SettingPlayer.playerorder;
 	}
 
 	public static void openSettingYear() {
-		settingYear.open();
+		SettingYear.open();
 	}
-
+	
 	public static void openSetting() {
 		setting.open();
 	}
-
+	
 	public static int getPlayerCount() {
 		return check.getCount();
 	}
 	public static int getPlayYear() {
 		return check.getYear();
 	}
-
+	
 	public static void setPlayerCount() {
-		check.count = settingPlayer.count;
+		check.count = playname.number;
+	}
+	public static void setPlayNumber() {
+		playname.number = SettingPlayer.count;
 	}
 
 	public static void setPlayYear() {
-		check.year = settingYear.year;
+		check.year = SettingYear.year;
 	}
 
 	public static void openMain() {
