@@ -20,10 +20,13 @@ import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 
 public abstract class FrameModel extends JFrame implements ActionListener{
+	protected boolean defaultSize=false;
+	protected boolean cardSize=false;
+	protected boolean goalSize=false;
 
 	public FrameModel() {
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        super.setSize(800, 600);
+		super.setSize(800, 600);
         super.setLocationRelativeTo(null);
         super.setLayout(null);
 	}
@@ -61,7 +64,7 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		return text;
 	}
 
-	//textを作成
+	//imageを作成
 	public JLabel createImage(int x,int y,int w,int h,int size,String image) {
 		ImageIcon icon = new ImageIcon(image);
 		assert icon==null : "null";
@@ -71,7 +74,6 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		images.setBounds(x, y, w, h);
 		return images;
 	}
-
 
 	protected void drawLineInJapan(JLayeredPane lines,int x,int y,int size,int somethig) {
 		ArrayList<Coordinates> list = Japan.getLinks(x, y);

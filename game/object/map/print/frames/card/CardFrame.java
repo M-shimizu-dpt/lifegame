@@ -17,7 +17,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 public class CardFrame extends FrameModel{
 	public CardFrame() {
 		this.setTitle("カード一覧");
-		this.setSize(700,500);
+		super.setSize(700,500);
 	}
 
 	public void open() {
