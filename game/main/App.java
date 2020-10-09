@@ -5,8 +5,6 @@
 
 package lifegame.game.main;
 
-import java.util.ArrayList;
-
 import lifegame.game.event.BinboEvent;
 import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
@@ -60,10 +58,6 @@ public class App {
   			FrameEvent.openMonthFrame();
   		}else {
     		if(App.turn==3) {
-    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
-    			for(Player player:Player.players.values()) {
-    				moneyList.add(player.getMoney());
-    			}
     			if(App.month==3) {
     				FrameEvent.openClosing();
 	    			App.year++;

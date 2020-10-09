@@ -89,21 +89,9 @@ public class GingaFrame extends FrameModel{
 	public void reloadInfo() {
 		mainInfo.setVisible(false);
 		if(ContainsEvent.isEffect()){
-			if(Player.player.getMoney()<10000) {
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
-			}else if(Player.player.getMoney()%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
-			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
-			}
+			mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
 		}else {
-			if(Player.player.getMoney()<10000) {
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス");
-			}else if(Player.player.getMoney()%10000==0){
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス");
-			}else {//今登録している物件では呼ばれないかも
-				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()/10000+"億　"+Player.player.getMoney()%10000+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス");
-			}
+			mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス");
 		}
 		mainInfo.setVisible(true);
 	}
@@ -302,7 +290,7 @@ public class GingaFrame extends FrameModel{
 
 	private void initMenu() {
 		JLayeredPane ginga = this.getLayeredPane();
-		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+Player.player.getName()+"　持ち金："+Player.player.getMoney()+"万円　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count+"マス");
+		mainInfo = createText(10,10,770,30,17,"自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"までの最短距離:"+Searcher.count+"マス");
 		mainInfo.setBackground(Color.BLUE);
 		mainInfo.setName(Player.player.getName()+Player.player.getMoney());
 		ginga.add(mainInfo,JLayeredPane.PALETTE_LAYER,0);

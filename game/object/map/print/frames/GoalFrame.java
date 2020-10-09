@@ -37,7 +37,7 @@ public class GoalFrame extends FrameModel{
 		goalMoney+=rand.nextInt(10000);
 		goalMoney-=goalMoney%100;
 		Player.player.addMoney(goalMoney);
-		JLabel label = createText(10,30,500,100,20,FrameEvent.adjustText(Player.player.getName()+"さんには地元民から援助金として"+System.lineSeparator()+goalMoney/10000+"億"+goalMoney%10000+"万円が寄付されます。"));
+		JLabel label = createText(10,30,500,100,20,FrameEvent.adjustText(Player.player.getName()+"さんには地元民から援助金として"+System.lineSeparator()+FrameEvent.convertMoney(goalMoney)+"が寄付されます。"));
 		label.setBackground(Color.BLUE);
 		goal.add(closeButton);
 		goal.add(label);

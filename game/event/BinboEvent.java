@@ -263,7 +263,7 @@ public abstract class BinboEvent{
 			if(ContainsEvent.name(card,cardname)) {
 				Player.player.addCard(card);
 				Player.player.addMoney(-card.getBuyPrice()*2);
-				return "二倍のお金で"+cardname+"をかってきたのねん"+","+Player.player.getName()+"は金額:"+card.getBuyPrice()*2+"万円を支払った。";
+				return "二倍のお金で"+cardname+"をかってきたのねん"+","+Player.player.getName()+"は金額:"+FrameEvent.convertMoney(card.getBuyPrice()*2)+"を支払った。";
 			}
 		}
 		return "予期しない,リターン";
@@ -346,7 +346,7 @@ public abstract class BinboEvent{
 		result = rand.nextInt(25);
 		result += result+(App.year/10)+50;
 		Player.player.addMoney(-result);
-		return "お小遣いほちいのねん"+","+Player.player.getName()+"は金額:"+result+"万円を支払った。";
+		return "お小遣いほちいのねん"+","+Player.player.getName()+"は金額:"+FrameEvent.convertMoney(result)+"を支払った。";
 	}
 
 	public static String happyMoney() {
@@ -359,7 +359,7 @@ public abstract class BinboEvent{
 		result -= result%100;
 		System.out.println(result);
 		Player.player.addMoney(result);
-		return "貧乏なあなたにさしあげましょう"+","+Player.player.getName()+"は金額:"+result+"万円をもらった。";
+		return "貧乏なあなたにさしあげましょう"+","+Player.player.getName()+"は金額:"+FrameEvent.convertMoney(result)+"をもらった。";
 	}
 
 	public static String typhoon() {

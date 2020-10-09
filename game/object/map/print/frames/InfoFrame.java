@@ -32,22 +32,10 @@ public class InfoFrame extends FrameModel{
 		for(int i=0;i<4;i++) {
 			nameList.add(createText(20,100*i+120,100,100,20,Player.players.get(i).getName()));
 			//所持金情報
-			if(Player.players.get(i).getMoney()<10000) {
-				moneyList.add(createText(120,100*i+120,100,100,20,Player.players.get(i).getMoney() + "万円"));
-			}else if(Player.players.get(i).getMoney()%10000==0){
-				moneyList.add(createText(120,100*i+120,100,100,20,Player.players.get(i).getMoney()/10000 + "億円"));
-			}else {
-				moneyList.add(createText(120,100*i+120,150,100,20,Player.players.get(i).getMoney()/10000 + "億　" + Player.players.get(i).getMoney()%10000 + "万円"));
-			}
+			moneyList.add(createText(120,100*i+120,100,100,20,FrameEvent.convertMoney(Player.players.get(i).getMoney())));
 			//資産情報
 			if(i==0)ClosingEvent.nowAllAssets();
-			if((ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])<10000) {
-				assetsList.add(createText(270,100*i+120,100,100,20,String.valueOf(ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])+"万円"));
-			}else if((ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])%10000 == 0) {
-				assetsList.add(createText(270,100*i+120,100,100,20,String.valueOf((ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])/10000)+"億円"));
-			}else {
-				assetsList.add(createText(270,100*i+120,150,100,20,String.valueOf((ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])/10000)+"億"+String.valueOf((ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])%10000)+"万円"));
-			}
+			assetsList.add(createText(270,100*i+120,100,100,20,FrameEvent.convertMoney(ClosingEvent.getNowAssetsList(ClosingEvent.getNowAssetsListSize()-1)[i])));
 			//目的地までの残りマス数
 			restMassList.add(createText(420,100*i+120,100,100,20,String.valueOf(Player.players.get(i).getGoalDistance())+"マス"));
 		}

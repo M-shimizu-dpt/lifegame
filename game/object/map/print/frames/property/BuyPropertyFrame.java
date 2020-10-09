@@ -87,9 +87,6 @@ public class BuyPropertyFrame extends FrameModel{
 		}
 		propertys.add(info);
 		for(int i=0;i<Japan.getStaInPropertySize(title);i++) {
-			//JPanel property = new JPanel();
-			//property.setBounds(10, 15+(i+1)*35, 40, 15);
-			//property.setLayout(null);
 			Property property = Japan.getStaInProperty(title,i);
 			JButton buyButton = createButton(20,15+(i+1)*35,80,30,10,"購入");
 
@@ -110,17 +107,9 @@ public class BuyPropertyFrame extends FrameModel{
 			propertys.add(buyButton);
 			int rate = property.getRate();//利益率(3段階)
 			propertys.add(createText(150,10+(i+1)*35,200,40,15,property.getName()));
-			if(property.getAmount()<10000) {
-				propertys.add(createText(400,10+(i+1)*35,150,40,15,property.getAmount()+"万円"));
-			}else if(property.getAmount()%10000==0){
-				propertys.add(createText(400,10+(i+1)*35,150,40,15,property.getAmount()/10000+"億円"));
-			}else {//今登録している物件では呼ばれないかも
-				propertys.add(createText(400,10+(i+1)*35,150,40,15,property.getAmount()/10000+"億"+property.getAmount()%10000+"万円"));
-			}
+			propertys.add(createText(400,10+(i+1)*35,150,40,15,FrameEvent.convertMoney(property.getAmount())));
 			propertys.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
 			propertys.add(createText(650,10+(i+1)*35,100,40,15,property.getOwner()));
-			//property.setVisible(true);
-			//propertys.add(property);
 		}
 		propertys.add(closeButton);
 
