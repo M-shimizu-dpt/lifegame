@@ -89,7 +89,9 @@ public class App {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {
   				FrameEvent.openRandom2();
-  				Thread.sleep(3000);
+  				WaitThread randomEnd=new WaitThread(1);
+  				randomEnd.start();
+  				randomEnd.join();
   			}
 	  		if(ContainsEvent.isEnd(endYear)) {
 		  		break;

@@ -163,7 +163,6 @@ public class Player {
 			//System.out.println("remove:"+this.getCard(0).getName());
 			priceSort(this.getCards());
 		}while(this.getCardSize()>8);
-		FrameEvent.throwEnd();
 	}
 
 	public static void priceSort(ArrayList<Card> cards){

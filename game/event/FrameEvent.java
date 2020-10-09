@@ -726,4 +726,8 @@ public abstract class FrameEvent{
 	public static void StartTitle() {
 		startTitle.open();
 	}
+
+	public static boolean isRandom2Showing() {
+		return random.isShowing();
+	}
 }

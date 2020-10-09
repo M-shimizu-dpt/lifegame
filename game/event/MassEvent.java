@@ -48,7 +48,7 @@ public abstract class MassEvent {
 			}else if(massName.substring(0, 1).equals("S")) {
 				shopEvent();
 			}else{
-				if(ContainsEvent.goal(massName)) {
+				if(ContainsEvent.isGoal(massName)) {
 					goal();
 				}else if(ContainsEvent.isStation(massName)){
 					FrameEvent.openPropertys(massName,2);

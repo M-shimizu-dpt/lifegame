@@ -216,10 +216,6 @@ public abstract class ContainsEvent {
 		return station.getName().equals(name);
 	}
 
-	public static boolean goal(String name) {
-		return Japan.getGoalName().equals(name);
-	}
-
 	public static int cardRarity(int rarity1,int rarity2) {
 		if(rarity1>rarity2) {
 			return 1;
@@ -672,5 +668,8 @@ public abstract class ContainsEvent {
 	}
 	public static boolean isPlayer(Player player) {
 		return player.isPlayer();
+	}
+	public static boolean isRandom2Showing() {
+		return FrameEvent.isRandom2Showing();
 	}
 }
