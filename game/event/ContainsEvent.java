@@ -392,18 +392,22 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
-	public static boolean isBinboPlayer(Player targetPlayer, Collection<Player> players) {
-		for(Player player:players) {
-			if(id(targetPlayer,player))return true;
-		}
-		return false;
-	}
 	public static boolean isTogether() {
 		return !Binbo.getSameMassPlayers().isEmpty();
 	}
 	public static boolean isBinboPlayer() {
 		Player player = Binbo.getBinboPlayer();
 		return player!=null;
+	}
+	public static boolean isBinboPlayer(Player player) {
+		if(!ContainsEvent.isBinboPlayer())return false;
+		return ContainsEvent.id(player.getID(),Binbo.getBinboPlayer().getID());
+	}
+	public static boolean isBinboPlayer(Player targetPlayer, Collection<Player> players) {
+		for(Player player:players) {
+			if(id(targetPlayer,player))return true;
+		}
+		return false;
 	}
 	public static boolean isBonbyPredecessor() {
 		return !Binbo.getBonbyPredecessor().isEmpty();
