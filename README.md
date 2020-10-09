@@ -110,3 +110,5 @@
 > 2) WindowがEventにプレイヤーが持つカード一覧の取得を依頼
 > 3) EventがPlayerのCard情報を取得しWindowに渡す
 > 4) Windowがその情報を基に画面に表示
+
+aa
