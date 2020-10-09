@@ -73,12 +73,18 @@ public class Check extends JFrame implements ActionListener{
 		PlayName4.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName4.setBounds(400, 350, 200, 30);
 
-//		JButton changePlayer = new JButton("player情報変更");
-//		changePlayer.setFont(new Font("SansSerif", Font.ITALIC, 20));
-//		changePlayer.setBounds(340, 500, 180, 60);
-//		JButton changeYear = new JButton("年数変更");
-//		changeYear.setFont(new Font("SansSerif", Font.ITALIC, 20));
-//		changeYear.setBounds(530, 500, 150, 60);
+		JButton changePlayerCount = new JButton("人数変更");
+		changePlayerCount.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		changePlayerCount.setBounds(20, 500, 150, 60);
+		changePlayerCount.addActionListener(this);
+		JButton changePlayerName = new JButton("名前変更");
+		changePlayerName.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		changePlayerName.setBounds(190, 500, 150, 60);
+		changePlayerName.addActionListener(this);
+		JButton changeYear = new JButton("年数変更");
+		changeYear.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		changeYear.setBounds(360, 500, 150, 60);
+		changeYear.addActionListener(this);
 
     	JButton startButton = new JButton("遊ぶ");
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
@@ -98,8 +104,9 @@ public class Check extends JFrame implements ActionListener{
     	start.add(PlayName3);
     	start.add(Order4);
     	start.add(PlayName4);
-//    	start.add(changePlayer);
-//    	start.add(changeYear);
+    	start.add(changePlayerCount);
+    	start.add(changePlayerName);
+    	start.add(changeYear);
     	start.add(startButton);
     	this.setVisible(true);
 
@@ -110,6 +117,23 @@ public class Check extends JFrame implements ActionListener{
 		if(cmd.equals("遊ぶ")) {
 			App.start();
     		this.setVisible(false);
+    	}else if(cmd.equals("人数変更")) {
+    		FrameEvent.resetPlayOrder();
+    		FrameEvent.resetPlayName();
+    		System.out.println(FrameEvent.displayNames());
+			System.out.println(FrameEvent.displayOrder());
+    		FrameEvent.openSettingPlayer();
+    		this.setVisible(false);
+			this.getLayeredPane().removeAll();
+    	}else if(cmd.equals("名前変更")){
+    		FrameEvent.resetPlayName();
+    		FrameEvent.openSettingPlayName();
+    		this.setVisible(false);
+			this.getLayeredPane().removeAll();
+    	}else {
+    		FrameEvent.openSettingYear();
+    		this.setVisible(false);
+			this.getLayeredPane().removeAll();
     	}
 	}
 
