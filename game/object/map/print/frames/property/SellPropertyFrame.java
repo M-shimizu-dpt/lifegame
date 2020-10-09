@@ -38,13 +38,7 @@ public class SellPropertyFrame extends FrameModel{
 			int rate = property.getRate();//利益率(3段階)
 			int pMoney = property.getAmount()/2;
 			sellStation.add(createText(150,10+(i+1)*35,200,40,15,property.getName()));
-			if(pMoney<10000) {
-				sellStation.add(createText(400,10+(i+1)*35,150,40,15,pMoney+"万円"));
-			}else if(pMoney%10000==0){
-				sellStation.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億円"));
-			}else {//今登録している物件では呼ばれないかも
-				sellStation.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億"+pMoney%10000+"万円"));
-			}
+			sellStation.add(createText(400,10+(i+1)*35,150,40,15,FrameEvent.convertMoney(pMoney)));
 			sellStation.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
 			sellStation.add(createText(650,10+(i+1)*35,100,40,15,property.getOwner()));
 			i++;

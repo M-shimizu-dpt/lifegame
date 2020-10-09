@@ -263,7 +263,7 @@ public class CardEvent{
 		Player.player.getAnotherPlayer().addBuff(card.getAbility(), period);
 	}
 	private static void richest() {
-		int maxMoney=0;
+		long maxMoney=0;
 		for(Player player:Player.players.values()) {
 			if(ContainsEvent.money(player, maxMoney)>0) {
 				maxMoney=player.getMoney();

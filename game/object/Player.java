@@ -45,7 +45,7 @@ public class Player {
 	private int id;//識別番号
 	private String name;//名前
 	private Coordinates nowMass;//現在地
-	private int money;//所持金
+	private long money;//所持金
 	private int move;//進めるマス
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
 	private int mapID;
@@ -142,7 +142,7 @@ public class Player {
 		cards.add(card);
 	}
 
-	public void addMoney(int money) {
+	public void addMoney(long money) {
 		this.money += money;
 	}
 
@@ -374,7 +374,7 @@ public class Player {
 		return this.id;
 	}
 
-	public int getMoney() {
+	public long getMoney() {
 		return this.money;
 	}
 

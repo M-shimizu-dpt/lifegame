@@ -739,4 +739,68 @@ public abstract class FrameEvent{
 	public static boolean isPopUpShowing() {
 		return confirmation.isShowing();
 	}
+
+	public static String convertMoney(long money) {//垓以上は変換できない
+		long million=money%(int)Math.pow(10, 4);
+		long billion=(money-million)%(int)Math.pow(10, 8);
+		long trillion=(money-money%(int)Math.pow(10, 8))%(int)Math.pow(10, 12);
+		long quadrillion=(long)((long)((double)money-(double)money%Math.pow(10, 12))%Math.pow(10, 16));
+		if(quadrillion!=0) {//京あり
+			if(trillion!=0) {//兆あり
+				if(billion!=0) {//億あり
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+					}
+				}else {//億なし
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆円";
+					}
+				}
+			}else {//兆なし
+				if(billion!=0) {//億あり
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+					}
+				}else {//億なし
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京円";
+					}
+				}
+			}
+		}else if(trillion!=0) {//兆あり
+			if(billion!=0) {//億あり
+				if(million!=0) {//万あり
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+				}else {//万なし
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+				}
+			}else {//億なし
+				if(million!=0) {//万あり
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(million)+"万円";
+				}else {//万なし
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆円";
+				}
+			}
+		}else if(billion!=0){//億あり
+			if(million!=0) {//万あり
+				return String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+			}else {//万なし
+				return String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+			}
+		}else {//億なし
+			if(million!=0) {//万あり
+				return String.valueOf(million)+"万円";
+			}else {//万なし
+				return "0万円";
+			}
+		}
+	}
 }

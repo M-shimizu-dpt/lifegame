@@ -79,7 +79,7 @@ public abstract class ContainsEvent {
 	public static boolean id(Card card,int id) {
 		return card.getID()==id;
 	}
-	public static int money(int money) {
+	public static int money(long money) {
 		if(Player.player.getMoney()>money) {
 			return 1;
 		}else if(Player.player.getMoney()<money) {
@@ -88,7 +88,7 @@ public abstract class ContainsEvent {
 			return 0;
 		}
 	}
-	public static int money(int money1,int money2) {
+	public static int money(long money1,long money2) {
 		if(money1>money2) {
 			return 1;
 		}else if(money1<money2){
@@ -115,7 +115,7 @@ public abstract class ContainsEvent {
 			return 0;
 		}
 	}
-	public static int money(Player player,int money) {
+	public static int money(Player player,long money) {
 		if(player.getMoney()>money) {
 			return 1;
 		}else if(player.getMoney()<money){

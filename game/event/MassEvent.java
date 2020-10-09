@@ -79,21 +79,9 @@ public abstract class MassEvent {
 		Player.player.addMoney(result);
 		FrameEvent.closeMain();
 		if(ContainsEvent.isPlayer()) {
-			if(result<10000) {
-				FrameEvent.createPopUp("レア青マス", result+"万円貰いました!");
-			}else if(result%10000==0){
-				FrameEvent.createPopUp("レア青マス", result+"億円貰いました!");
-			}else {
-				FrameEvent.createPopUp("レア青マス", result/10000+"億"+result%10000+"万円貰いました!");
-			}
+			FrameEvent.createPopUp("レア青マス", FrameEvent.convertMoney(result)+"貰いました!");
 		}else {
-			if(result<10000) {
-				FrameEvent.createPopUp("レア青マス", result+"万円貰いました!",2000);
-			}else if(result%10000==0){
-				FrameEvent.createPopUp("レア青マス", result+"億円貰いました!",2000);
-			}else {
-				FrameEvent.createPopUp("レア青マス", result/10000+"億"+result%10000+"万円貰いました!",2000);
-			}
+			FrameEvent.createPopUp("レア青マス", FrameEvent.convertMoney(result)+"貰いました!",2000);
 		}
 		WaitThread wait = new WaitThread(3);
 		wait.start();
@@ -174,21 +162,9 @@ public abstract class MassEvent {
 		Player.player.addMoney(result);
 		FrameEvent.closeMain();
 		if(ContainsEvent.isPlayer()) {
-			if(result<10000) {
-				FrameEvent.createPopUp("青マス", result+"万円貰いました!");
-			}else if(result%10000==0){
-				FrameEvent.createPopUp("青マス", result+"億円貰いました!");
-			}else {
-				FrameEvent.createPopUp("青マス", result/10000+"億"+result%10000+"万円貰いました!");
-			}
+			FrameEvent.createPopUp("青マス", FrameEvent.convertMoney(result)+"貰いました!");
 		}else {
-			if(result<10000) {
-				FrameEvent.createPopUp("青マス", result+"万円貰いました!",2000);
-			}else if(result%10000==0){
-				FrameEvent.createPopUp("青マス", result+"億円貰いました!",2000);
-			}else {
-				FrameEvent.createPopUp("青マス", result/10000+"億"+result%10000+"万円貰いました!",2000);
-			}
+			FrameEvent.createPopUp("青マス", FrameEvent.convertMoney(result)+"貰いました!",2000);
 		}
 		WaitThread wait = new WaitThread(3);
 		wait.start();
@@ -217,21 +193,9 @@ public abstract class MassEvent {
 		Player.player.addMoney(-result);
 		FrameEvent.closeMain();
 		if(ContainsEvent.isPlayer()) {
-			if(result<10000) {
-				FrameEvent.createPopUp("赤マス", result+"万円無くなりました!");
-			}else if(result%10000==0){
-				FrameEvent.createPopUp("赤マス", result+"億円無くなりました!");
-			}else {
-				FrameEvent.createPopUp("赤マス", result/10000+"億"+result%10000+"万円無くなりました!");
-			}
+			FrameEvent.createPopUp("赤マス", FrameEvent.convertMoney(result)+"無くなりました!");
 		}else{
-			if(result<10000) {
-				FrameEvent.createPopUp("赤マス", result+"万円無くなりました!",2000);
-			}else if(result%10000==0){
-				FrameEvent.createPopUp("赤マス", result+"億円無くなりました!",2000);
-			}else {
-				FrameEvent.createPopUp("赤マス", result/10000+"億"+result%10000+"万円無くなりました!",2000);
-			}
+			FrameEvent.createPopUp("赤マス", FrameEvent.convertMoney(result)+"無くなりました!",2000);
 		}
 		WaitThread wait = new WaitThread(3);
 		wait.start();
