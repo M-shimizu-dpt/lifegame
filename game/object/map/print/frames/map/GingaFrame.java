@@ -89,9 +89,13 @@ public class GingaFrame extends FrameModel{
 	public void reloadInfo() {
 		mainInfo.setVisible(false);
 		if(ContainsEvent.isEffect()){
-			mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
+			if(Player.player.getEffect()==-3) {
+				mainInfo.setText("自社情報 "+"名前："+Player.player.getName()+" 持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+" "+App.year+"年目 "+App.month+"月 "+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス 牛歩ｶｰﾄﾞ効果発動中");
+			}else {
+				mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス　効果発動中("+Player.player.getEffect()+")");
+			}
 		}else {
-			mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Ginga.getGoalDistance()+"マス");
+			mainInfo.setText("自社情報　"+"名前："+Player.player.getName()+"　持ち金："+FrameEvent.convertMoney(Player.player.getMoney())+"　"+App.year+"年目　"+App.month+"月　"+Japan.getGoalName()+"まで"+Player.player.getGoalDistance()+"マス");
 		}
 		mainInfo.setVisible(true);
 	}
