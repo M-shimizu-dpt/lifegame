@@ -149,7 +149,7 @@ public class RandomFrame extends FrameModel{
 	 */
 	private void open2(int rndnum) {
 
-		//System.out.println("year:"+App.year+"\tmonth:"+App.month+"\trndnum:"+rndnum);
+		//System.out.println("year:"+App.year+" month:"+App.month+" rndnum:"+rndnum+" turn:"+App.turn);
 
 		this.setTitle("トピックス");
 		JLayeredPane Random2 = this.getLayeredPane();
