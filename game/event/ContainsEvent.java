@@ -594,6 +594,22 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
+	public static boolean isWarp(int x,int y) {
+		for(Coordinates coor:Japan.getWarpCoorList()) {
+			if(ContainsEvent.coor(coor, x, y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isWarp(Coordinates coordinates) {
+		for(Coordinates coor:Japan.getWarpCoorList()) {
+			if(ContainsEvent.coor(coor, coordinates)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public static boolean isDefaultGoalDistance(Player player) {
 		return player.getGoalDistance()==500;
 	}

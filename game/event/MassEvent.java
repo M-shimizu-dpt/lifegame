@@ -47,6 +47,8 @@ public abstract class MassEvent {
 				yellowEvent();
 			}else if(massName.substring(0, 1).equals("S")) {
 				shopEvent();
+			}else if(massName.substring(0, 1).equals("W")) {
+				warpEvent();
 			}else{
 				if(ContainsEvent.isGoal(massName)) {
 					goal();
@@ -272,4 +274,8 @@ public abstract class MassEvent {
 		FrameEvent.openShopFront();
 	}
 
+	//店マスイベント
+	private static void warpEvent() {
+		FrameEvent.openWarp();
+	}
 }

@@ -22,6 +22,8 @@ public abstract class Japan{
 	private static ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
 	private static ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
 	private static ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
+	private static ArrayList<Coordinates> warp = new ArrayList<Coordinates>();//ワープマスの座標一覧
+	private static Map<Coordinates,String> warpName = new HashMap<Coordinates,String>();
 	private static Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
 	private static Station goal;//目的地
 	private static Station saveGoal;//ゴール保存用
@@ -478,7 +480,7 @@ public abstract class Japan{
 		railBoolMapping.put(blue.get(19),getBoolList(true,true,false,true));
 		railBoolMapping.put(blue.get(20),getBoolList(false,false,true,true));
 		railBoolMapping.put(blue.get(21),getBoolList(false,true,true,true));
-		railBoolMapping.put(blue.get(22),getBoolList(false,true,true,false));
+		railBoolMapping.put(blue.get(22),getBoolList(false,true,true,true));
 
 		//赤マス
 		red.add(new Coordinates(1,7));
@@ -584,7 +586,7 @@ public abstract class Japan{
 		railBoolMapping.put(yellow.get(2),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(3),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(4),getBoolList(true,true,false,false));
-		railBoolMapping.put(yellow.get(5),getBoolList(true,false,false,true));
+		railBoolMapping.put(yellow.get(5),getBoolList(true,false,true,true));
 		railBoolMapping.put(yellow.get(6),getBoolList(false,false,false,true));
 		railBoolMapping.put(yellow.get(7),getBoolList(false,true,false,true));
 		railBoolMapping.put(yellow.get(8),getBoolList(true,true,false,false));
@@ -620,6 +622,15 @@ public abstract class Japan{
 		railBoolMapping.put(shop.get(2),getBoolList(true,true,false,false));
 		railBoolMapping.put(shop.get(3),getBoolList(false,false,true,true));
 		railBoolMapping.put(shop.get(4),getBoolList(false,true,false,false));
+
+		//ワープ
+		warp.add(new Coordinates(15,3));//右上の青マスの右
+		warp.add(new Coordinates(4,11));//堺の左上
+
+		warpName.put(warp.get(0),"大垣書店");
+		warpName.put(warp.get(1),"大阪湾");
+		railBoolMapping.put(warp.get(0), getBoolList(false,false,true,false));
+		railBoolMapping.put(warp.get(1), getBoolList(false,false,false,true));
 
 		createLink();
 	}
@@ -758,6 +769,32 @@ public abstract class Japan{
 							}
 						}else {
 							shop.get(getIndexOfShop(from)).addLinks(to);
+						}
+					}
+				}
+				if(ContainsEvent.isWarp(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(0))) {
+						if(x==2) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else {
+							warp.get(getIndexOfWarp(from)).addLinks(to);
 						}
 					}
 				}
@@ -900,6 +937,30 @@ public abstract class Japan{
 		return shopCoor;
 	}
 
+	//ワープマスの座標一覧を取得
+	public static ArrayList<Coordinates> getWarpCoorList(){
+		return warp;
+	}
+
+	//要素番号で指定した店マスの座標を取得
+	public static Coordinates getWarpCoor(int index) {
+		Coordinates warpCoor = warp.get(index);
+		return warpCoor;
+	}
+
+	public static Coordinates getWarpCoor(String to) {
+		for(Coordinates coor:warp) {
+			if(warpName.get(coor).equals(to)) {
+				return coor;
+			}
+		}
+		return null;
+	}
+
+	public static ArrayList<String> getWarpNameList(){
+		return new ArrayList<String>(warpName.values());
+	}
+
 	//駅の一覧を取得
 	public static ArrayList<Station> getStationList(){
 		return stations;
@@ -1035,6 +1096,7 @@ public abstract class Japan{
 		list.addAll(red);
 		list.addAll(yellow);
 		list.addAll(shop);
+		list.addAll(warp);
 		Collections.sort(list,new Comparator<Coordinates>() {
         	public int compare(Coordinates cost1,Coordinates cost2) {
 				return Integer.compare(cost1.getY(), cost2.getY());
@@ -1120,6 +1182,8 @@ public abstract class Japan{
 		if(result!=-1)return result;
 		result=getIndexOfShop(x,y);
 		if(result!=-1)return result;
+		result=getIndexOfWarp(x,y);
+		if(result!=-1)return result;
 
 		return -1;
 	}
@@ -1135,7 +1199,8 @@ public abstract class Japan{
 		if(result!=-1)return result;
 		result=getIndexOfShop(coor);
 		if(result!=-1)return result;
-
+		result=getIndexOfWarp(coor);
+		if(result!=-1)return result;
 		return -1;
 	}
 
@@ -1146,7 +1211,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfStation(Coordinates coor){
@@ -1155,7 +1219,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1175,7 +1238,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1186,7 +1248,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfRed(Coordinates coor){
@@ -1195,7 +1256,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1206,7 +1266,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfYellow(Coordinates coor){
@@ -1215,7 +1274,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1226,7 +1284,6 @@ public abstract class Japan{
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfShop(Coordinates coor){
@@ -1235,7 +1292,24 @@ public abstract class Japan{
 				return list;
 			}
 		}
+		return -1;
+	}
 
+	//指定の座標のワープマスの配列番号を取得
+	public static int getIndexOfWarp(int x,int y){
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),x,y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfWarp(Coordinates coor){
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),coor)) {//駅の座標が来たら
+				return list;
+			}
+		}
 		return -1;
 	}
 
@@ -1276,7 +1350,11 @@ public abstract class Japan{
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
-
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),x/size,y/size)) {
+				return railBoolMapping.get(warp.get(list));
+			}
+		}
 		return null;
 	}
 	public static ArrayList<Boolean> getVector(Coordinates coor,int size){
@@ -1307,7 +1385,11 @@ public abstract class Japan{
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
-
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),x/size,y/size)) {
+				return railBoolMapping.get(warp.get(list));
+			}
+		}
 		return null;
 	}
 
