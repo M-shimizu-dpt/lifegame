@@ -76,14 +76,14 @@ public class SettingPlayer extends JFrame implements ActionListener {
     	JLabel labelOrder = new JLabel("順番をランダムに入れ替えますか？");
     	labelOrder.setBounds(20, 200, 350, 50);
     	labelOrder.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	JRadioButton order1 = new JRadioButton("入れ替える");
+    	JRadioButton order1 = new JRadioButton("入れ替える",true);
     	order1.addActionListener(this);
-    	order1.setActionCommand("0");
+    	order1.setActionCommand("a");
     	order1.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	order1.setBounds(100, 250, 150, 50);
-    	JRadioButton order2 = new JRadioButton("そのまま",true);
+    	JRadioButton order2 = new JRadioButton("そのまま");
     	order2.addActionListener(this);
-    	order2.setActionCommand("1");
+    	order2.setActionCommand("b");
     	order2.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	order2.setBounds(450, 250, 150, 50);
     	Order = new ButtonGroup();
@@ -117,18 +117,28 @@ public class SettingPlayer extends JFrame implements ActionListener {
 		
 		//順番決め
 		String odr = Order.getSelection().getActionCommand();
-		playerorder=Integer.valueOf(odr);
+		int docomo;
+		if(odr.equals("a")) {
+			docomo=0;
+		}else {
+			docomo=1;
+		}
+		
+		playerorder=Integer.valueOf(docomo);
 		if(PlayerOrder.size()!=0) {
 			PlayerOrder.clear();
 		}
 		for(int i=0;i<4;i++) {
 			PlayerOrder.add(i);
 		}
+		
 		if(playerorder==0) {
 			Collections.shuffle(PlayerOrder);//順番のシャッフル
 		}else {
 			Collections.sort(PlayerOrder);//初期設定値
 		}
+		
+		
 		String cmd = e.getActionCommand();
 		if(cmd.equals("OK")) {
 			FrameEvent.setPlayNumber();

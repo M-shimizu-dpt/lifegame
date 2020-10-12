@@ -3,7 +3,6 @@ package lifegame.game.object.map.print.frames.setting;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,8 +25,10 @@ public class Check extends JFrame implements ActionListener{
 
 	public int count;
 	public int year;
+	public String[] namelist;
 
 	public void open() {
+		
 		JLayeredPane start = this.getLayeredPane();
 		JLabel Text = new JLabel("この内容で開始します");
 		Text.setFont(new Font("SansSerif", Font.ITALIC, 20));
@@ -58,18 +59,25 @@ public class Check extends JFrame implements ActionListener{
 		Order4.setBounds(100, 350, 200, 30);
 		//プレイヤーの名前
 		JLabel PlayName = new JLabel("プレイヤー名");
+		
+		FrameEvent.CheckSort();
+
+//		for(int i=0;i<4;i++) {
+//			System.out.println("ゲーム中の順番"+(i+1)+":"+namelist[i]);
+//		}
+		
 		PlayName.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName.setBounds(400, 140, 200, 30);
-		JLabel PlayName1 = new JLabel(FrameEvent.getName(FrameEvent.getPlayerOrder(0)));
+		JLabel PlayName1 = new JLabel(namelist[0]);
 		PlayName1.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName1.setBounds(400, 200, 200, 30);
-		JLabel PlayName2 = new JLabel(FrameEvent.getName(FrameEvent.getPlayerOrder(1)));
+		JLabel PlayName2 = new JLabel(namelist[1]);
 		PlayName2.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName2.setBounds(400, 250, 200, 30);
-		JLabel PlayName3 = new JLabel(FrameEvent.getName(FrameEvent.getPlayerOrder(2)));
+		JLabel PlayName3 = new JLabel(namelist[2]);
 		PlayName3.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName3.setBounds(400, 300, 200, 30);
-		JLabel PlayName4 = new JLabel(FrameEvent.getName(FrameEvent.getPlayerOrder(3)));
+		JLabel PlayName4 = new JLabel(namelist[3]);
 		PlayName4.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName4.setBounds(400, 350, 200, 30);
 
@@ -109,13 +117,14 @@ public class Check extends JFrame implements ActionListener{
     	start.add(changeYear);
     	start.add(startButton);
     	this.setVisible(true);
-
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if(cmd.equals("遊ぶ")) {
-			App.start();
+			//System.out.println(FrameEvent.displayNames());
+			//System.out.println(FrameEvent.displayOrder());
+    		App.start();
     		this.setVisible(false);
     	}else if(cmd.equals("人数変更")) {
     		FrameEvent.resetPlayOrder();
