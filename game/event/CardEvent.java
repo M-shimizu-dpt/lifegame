@@ -260,7 +260,7 @@ public class CardEvent{
 		do {
 			period = rand.nextInt(5);
 		}while(period <= 1);
-		Player.player.getAnotherPlayer().addBuff(card.getAbility(), period);
+		Player.player.getAnotherPlayers().addBuff(card.getAbility(), period);
 	}
 	private static void richest() {
 		long maxMoney=0;

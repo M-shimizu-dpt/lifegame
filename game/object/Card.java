@@ -68,7 +68,7 @@ public class Card extends CardModel{
 		cardList.add(new Card("星に願いをカード",40000,2,"最寄りのカードショップに移動することが出来る",2));
 
 		//バフ・デバフ
-		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、誰かが進むマスを3マス減らす",3,-3));
+		cardList.add(new Card("牛歩カード",4000,3,"しばらくの間、1マスしか進めません",3,-3));
 
 		//お金がもらえる
 		cardList.add(new Card("一頭地を抜くカード",40000,3,"一番お金を持っている人と同じだけお金がもらえる",4));
