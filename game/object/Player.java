@@ -341,6 +341,14 @@ public class Player {
 		}while(rand != this.id);
 		return players.get(rand);
 	}
+	
+	public Player getAnotherPlayers() {
+		int rand;
+		do {
+			rand = new Random().nextInt(4);
+		}while(rand == this.id);
+		return players.get(rand);
+	}
 
 	public Buff getBuff() {
 		return this.buff;
