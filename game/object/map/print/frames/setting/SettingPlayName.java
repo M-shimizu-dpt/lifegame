@@ -246,7 +246,8 @@ public class SettingPlayName extends JFrame implements ActionListener {
 	        	setNames.add(textplayer3.getText());
 	        	setNames.add(textplayer4.getText());
 	    	}
-			System.out.println(setNames);
+			//System.out.println(FrameEvent.displayNames());
+			//System.out.println(FrameEvent.displayOrder());
 			FrameEvent.setPlayerCount();
 			FrameEvent.openSettingYear();
 			this.setVisible(false);
