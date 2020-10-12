@@ -23,8 +23,10 @@ import lifegame.game.object.map.print.frames.DiceFrame;
 import lifegame.game.object.map.print.frames.GoalFrame;
 import lifegame.game.object.map.print.frames.InfoFrame;
 import lifegame.game.object.map.print.frames.RandomFrame;
+import lifegame.game.object.map.print.frames.SelectWarpFrame;
 import lifegame.game.object.map.print.frames.StartFrame;
 import lifegame.game.object.map.print.frames.StartTitleFrame;
+import lifegame.game.object.map.print.frames.WarpFrame;
 import lifegame.game.object.map.print.frames.card.CardFrame;
 import lifegame.game.object.map.print.frames.card.DubbingFrame;
 import lifegame.game.object.map.print.frames.card.FullCardFrame;
@@ -76,6 +78,8 @@ public abstract class FrameEvent{
 	private static SettingYear SettingYear = new SettingYear();
 	private static Setting setting = new Setting();
 	private static StartTitleFrame startTitle = new StartTitleFrame();
+	private static WarpFrame warp = new WarpFrame();
+	private static SelectWarpFrame selectWarp = new SelectWarpFrame();
 
 	public static void openClosing() {
 		FrameEvent.closeMain();
@@ -321,6 +325,28 @@ public abstract class FrameEvent{
 	public static void closeShop() {
 		shop.close();
 		shopFront.open();
+	}
+
+	public static void openWarp() {
+		FrameEvent.closeMain();
+		warp.open();
+	}
+	public static void closeWarp() {
+		warp.close();
+		if(new Random().nextInt(100) < 3) {
+			RandomEvent.randomEvent();
+		}else {
+			MassEvent.massEventEnd();
+		}
+		FrameEvent.openMain();
+	}
+	public static void openSelectWarp() {
+		warp.close();
+		selectWarp.open();
+	}
+	public static void closeSelectWarp() {
+		selectWarp.close();
+		warp.open();
 	}
 
 	//月が替わった時に何月か表示

@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -54,11 +55,35 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		return button;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected JList createList(int x,int y,int w,int h,int size,ArrayList<String> name) {
+		JList list = new JList(name.toArray());
+		list.setFont(new Font("SansSerif", Font.ITALIC, size));
+		list.setBounds(x,y,w,h);
+		return list;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected JList createList(Coordinates coor,int w,int h,int size,ArrayList<String> name) {
+		JList list = new JList(name.toArray());
+		list.setFont(new Font("SansSerif", Font.ITALIC, size));
+		list.setBounds(coor.getX(),coor.getY(),w,h);
+		return list;
+	}
+
 	//textを作成
 	public JLabel createText(int x,int y,int w,int h,int size,String name) {
 		JLabel text = new JLabel(name,SwingConstants.CENTER);
 		text.setOpaque(true);
 		text.setBounds(x, y, w, h);
+		text.setFont(new Font("SansSerif", Font.ITALIC, size));
+		text.setName(name);
+		return text;
+	}
+	public JLabel createText(Coordinates coor,int w,int h,int size,String name) {
+		JLabel text = new JLabel(name,SwingConstants.CENTER);
+		text.setOpaque(true);
+		text.setBounds(coor.getX(), coor.getY(), w, h);
 		text.setFont(new Font("SansSerif", Font.ITALIC, size));
 		text.setName(name);
 		return text;
@@ -72,6 +97,15 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		JLabel images = new JLabel(icon);
 		images.setOpaque(true);
 		images.setBounds(x, y, w, h);
+		return images;
+	}
+	public JLabel createImage(Coordinates coor,int w,int h,int size,String image) {
+		ImageIcon icon = new ImageIcon(image);
+		assert icon==null : "null";
+		System.out.println("h:"+icon.getIconHeight()+"   w:"+icon.getIconWidth());
+		JLabel images = new JLabel(icon);
+		images.setOpaque(true);
+		images.setBounds(coor.getX(), coor.getY(), w, h);
 		return images;
 	}
 
@@ -120,22 +154,22 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 	//駅以外のマスを作成
 	protected JPanel createMassInJapan(int j,int i,int distance) {
 		JPanel mass = new JPanel();
+		mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 		if(ContainsEvent.isBlue(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.BLUE);
 			mass.setName("B"+Japan.getIndexOfBlue(j, i));
 		}else if(ContainsEvent.isRed(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.RED);
 			mass.setName("R"+Japan.getIndexOfRed(j, i));
 		}else if(ContainsEvent.isYellow(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.YELLOW);
 			mass.setName("Y"+Japan.getIndexOfYellow(j, i));
 		}else if(ContainsEvent.isShop(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.GRAY);
 			mass.setName("S"+Japan.getIndexOfShop(j, i));
+		}else if(ContainsEvent.isWarp(j,i)) {
+			mass.setBackground(Color.GREEN);
+			mass.setName("W"+Japan.getIndexOfWarp(j, i));
 		}
 		return mass;
 	}
@@ -144,22 +178,22 @@ public abstract class FrameModel extends JFrame implements ActionListener{
 		JPanel mass = new JPanel();
 		int j=coor.getX();
 		int i=coor.getY();
+		mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 		if(ContainsEvent.isBlue(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.BLUE);
 			mass.setName("B"+Japan.getIndexOfBlue(j, i));
 		}else if(ContainsEvent.isRed(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.RED);
 			mass.setName("R"+Japan.getIndexOfRed(j, i));
 		}else if(ContainsEvent.isYellow(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.YELLOW);
 			mass.setName("Y"+Japan.getIndexOfYellow(j, i));
 		}else if(ContainsEvent.isShop(j,i)) {
-			mass.setBounds(j*distance, i*distance, distance/3, distance/3);
 			mass.setBackground(Color.GRAY);
 			mass.setName("S"+Japan.getIndexOfShop(j, i));
+		}else if(ContainsEvent.isWarp(j,i)) {
+			mass.setBackground(Color.GREEN);
+			mass.setName("W"+Japan.getIndexOfWarp(j, i));
 		}
 		return mass;
 	}
