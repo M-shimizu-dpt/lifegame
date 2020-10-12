@@ -369,11 +369,13 @@ public abstract class FrameEvent{
 
 	public static void openRandom2() {
 		if(ContainsEvent.isOwners()) {
-			int rndnum = new Random().nextInt(11)+1;
-			if(App.month==rndnum) {
-				random.setID(2);
-				random.setRand(rndnum);
-				random.open();
+			if(App.turn==0) {
+				int rndnum = new Random().nextInt(11)+1;
+				if(App.month==rndnum) {
+					random.setID(2);
+					random.setRand(rndnum);
+					random.open();
+				}
 			}
 		}
 	}
