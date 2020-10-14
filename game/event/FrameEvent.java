@@ -135,6 +135,17 @@ public abstract class FrameEvent{
 		play.open();
 	}
 
+	public static void openDiceBinbo() {
+		play.close();
+		dice.invisibleCloseButton();
+		dice.open();
+	}
+
+	public static void closeDiceBinbo() {
+		dice.closeButtonOpen();
+		dice.close();
+	}
+
 	public static void openBinbo(String playerName, String action, String binboName) {
 		play.close();
 		binbo.open(playerName,action,binboName);

@@ -7,7 +7,7 @@ import lifegame.game.object.map.print.animation.DiceAnimationThread;
 
 public abstract class DiceEvent {
 	//サイコロ操作
-	public static void shuffleDice() {
+	public static void movePlayer() {
 		DiceAnimationThread.end();
 		Player.player.setMove(Dice.shuffle(Player.player));
 		Searcher.searchCanMoveMass(Player.player);
@@ -23,5 +23,12 @@ public abstract class DiceEvent {
 		FrameEvent.closeMenu();
 		Dice.clear();
 		CardEvent.resetUsedCard();
+	}
+
+	public static void shuffleDiceBinboEvent() {
+		DiceAnimationThread.end();
+		BinboEvent.addDiceResult(Dice.shuffle());
+		FrameEvent.closeMenu();
+		Dice.clear();
 	}
 }

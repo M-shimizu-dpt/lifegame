@@ -186,7 +186,7 @@ public class Player {
 		if(diceFlag) {
 			//処理を待たないと一瞬表示されるだけになる
 			//FrameEvent.openDice();
-			DiceEvent.shuffleDice();
+			DiceEvent.movePlayer();
 			Thread.sleep(500);
 			//FrameEvent.closeDice();
 

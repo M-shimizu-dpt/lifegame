@@ -17,7 +17,17 @@ public abstract class Binbo{
 	//private ArrayList<Coordinates> allplayernowMass = new ArrayList<Coordinates>();//将来的に全員にbufさせるために全員の位置を取得する
 
 	private static boolean diceflag = false;//BinboEventによるさいころ振る処理に入るかどうかのTF
+	private static int diceresult = 0;//BinboEventによるさいころ振る処理に入るかどうかのTF
 
+	public static int isdiceresult() {
+		return diceresult;
+	}
+	public static void setdiceresult(int result) {
+		diceresult = result;
+	}
+	public static void cleardiceresult() {
+		diceresult = 0;
+	}
 	public static boolean isDiceFlag() {
 		return diceflag;
 	}
