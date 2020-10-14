@@ -27,6 +27,17 @@ public abstract class Dice {
 		System.out.println("result:"+Dice.result+"  num:"+Dice.num);
 		return Dice.result;
 	}
+	public static int shuffle() {
+		for(int i=0;i<Dice.num;i++) {//サイコロの数だけサイコロを回わす；
+			Random rand = new Random();
+			Dice.result += rand.nextInt(6)+1;
+			if(Dice.result<=0) {
+				Dice.result=1;
+			}
+		}
+		System.out.println("result:"+Dice.result+"  num:"+Dice.num);
+		return Dice.result;
+	}
 
 	public static void init() {
 		clearResult();

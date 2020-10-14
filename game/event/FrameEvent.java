@@ -185,6 +185,17 @@ public abstract class FrameEvent{
 		FrameEvent.openMain();
 	}
 
+	public static void openDiceBinbo() {
+		play.close();
+		dice.invisibleCloseButton();
+		dice.open();
+	}
+
+	public static void closeDiceBinbo() {
+		dice.closeButtonOpen();
+		dice.close();
+	}
+
 	public static void openBinbo(String action) {
 		FrameEvent.closeMain();
 		binbo.setBinboName(Binbo.getName());
@@ -626,10 +637,10 @@ public abstract class FrameEvent{
 	public static void openCheck() {
 		check.open();
 	}
-	
+
 	public static void CheckSort() {
 		check.namelist = new String[4];
-		
+
 		for(int j=0;j<4;j++) {
 			int[] namenumber = new int[4];
 			for(int i=0;i<4;i++) {
@@ -639,7 +650,7 @@ public abstract class FrameEvent{
 			}
 			check.namelist[j]=FrameEvent.getName(namenumber[j]);
 		}
-		
+
 	}
 
 	public static void openSettingPlayName() {

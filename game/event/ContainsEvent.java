@@ -689,6 +689,18 @@ public abstract class ContainsEvent {
 	public static boolean isPlayer(Player player) {
 		return player.isPlayer();
 	}
+
+	public static boolean isBinboDice() {
+		return Binbo.isDiceFlag();
+	}
+	public static boolean isFrameDiceBinbo(int result) {
+		if((result ==3 ||result==4)&&(binboNameNormal()||binboNameKing())){
+			return true;
+		}else {
+			return false;
+		}
+	}
+
 	public static boolean isRandom2Showing() {
 		return FrameEvent.isRandom2Showing();
 	}

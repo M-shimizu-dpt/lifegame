@@ -19,7 +19,9 @@ public abstract class BinboEvent{
 			Binbo.setName("ボンビー");
 		}
 	}
-
+	public static void setDice(int result) {
+		Binbo.setdiceresult(result);
+	}
 	public static void addSameMassPlayer() {
 		int turn = Player.player.getID();
 		Player player;
@@ -37,12 +39,29 @@ public abstract class BinboEvent{
 			}
 		}
 	}
+	public static void clearDiceFlag() {
+		Binbo.clearDiceFlag();
+	}
 
 	//binboのターンメソッド
 	public static void start() {
 		System.out.println("binbo");
-		String action = randomBinboEvent();
-		//String action = cardLost();//debug
+		int result = randomBinbo();
+		if(ContainsEvent.isFrameDiceBinbo(result)) {
+			if(Binbo.getBinboPlayer().isPlayer()) {
+				randomBinboEvent();
+			}else {
+				Random rand = new Random();
+				int  diceresult = rand.nextInt(100)%6+1;
+				addDiceResult(diceresult);
+			}
+		}else {
+			String action = randomBinboEvent(result);
+			binboFrameEvent(action);
+		}
+	}
+
+	public static void binboFrameEvent(String action) {
 		if(action=="変身") {
 			Binbo.clearTurnCount();
 			FrameEvent.openBinbo(Binbo.getName()+"に変化した");
@@ -80,7 +99,18 @@ public abstract class BinboEvent{
 		}
 	}
 
-
+	public static void addDiceResult(int result) {
+		String text = "";
+		if(ContainsEvent.binboNameKing()) {
+			Player.player.addMoney(-result*10000);
+			text = "さいころ振ったたくさんお金もらってやるぞ。"+ result*1000 +"円取られてしまった";
+		}else {
+			Player.player.addMoney(-result*1000);
+			text = "さいころ振った値だけお金もらうねん。" + result*1000 +"円取られてしまった";
+		}
+		clearDiceFlag();
+		binboFrameEvent(text);
+	}
 
 	//ボンビー擦り付けメソッド--進んだ際
 	public static void passingGoBonby() {
@@ -128,6 +158,15 @@ public abstract class BinboEvent{
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int nextbonbyplayer;
+		//ArrayList<Player> gingaplayer = new ArrayList<Player>();//銀河の人リスト
+		/*
+		for(int i=0;i<Player.players.size();i++) {//銀河にいるひと取得
+			if(ContainsEvent.isGingaMap(Player.players.get(i))){
+				gingaplayer.add(Player.players.get(i));
+			}
+		}
+		*/
+		//if(gingaplayer.isEmpty()) {
 		for(int i=0;i<Player.players.size();i++) {
 			System.out.println(Player.players.get(i).getGoalDistance()+"最長距離"+i);
 			if(ContainsEvent.goalDistance(Player.players.get(i),maxdistance)==1) {
@@ -141,6 +180,23 @@ public abstract class BinboEvent{
 			}
 		}
 		nextbonbyplayer = nextbonbylist.get(rand.nextInt(100)%nextbonbylist.size());//同じ距離にいた場合ランダム
+			/*
+		}else {//銀河鉄道のいるひと
+			for(Player player : gingaplayer) {
+				System.out.println(player.getGoalDistance()+"最長距離"+player.getName());
+				if(ContainsEvent.goalDistance(player,maxdistance)==1) {
+					if(ContainsEvent.goalDistance(player,maxdistance)!=0) {
+						if(nextbonbylist!=null) {
+							nextbonbylist.clear();
+						}
+						maxdistance = player.getGoalDistance();
+					}
+					nextbonbylist.add(player.getID());
+				}
+			}
+			nextbonbyplayer = nextbonbylist.get(rand.nextInt(100)%nextbonbylist.size());//同じ距離にいた場合ランダム
+		}*/
+
 		Binbo.setPlayerBinbo(Player.players.get(nextbonbyplayer));
 	}
 
@@ -151,8 +207,7 @@ public abstract class BinboEvent{
 	}
 
 	//ランダムイベント
-	private static String randomBinboEvent() {
-		int result = randomBinbo();
+	private static String randomBinboEvent(int result) {
 		String event;
 		if(ContainsEvent.binboNameBaby()) {
 			result += Binbo.getTurnCount();
@@ -182,43 +237,44 @@ public abstract class BinboEvent{
 				event= "変身";
 			}
 		}else if(ContainsEvent.binboNameKing()){
-			result += Binbo.getTurnCount();
-			if(result<1) {
+			if(result==0||result==1) {
 				//"カード増やす";
 				event= kingCardbuy();
-			}else if(result<3) {
+			}else if(result==2) {
 				//"物件";
 				event= kingProperty();
-			}else if(result<5) {
-				//"さいころ降らす";
-				event= kingDice();
-			}else if(result<7) {
+				//}else if(result==3||result==4){
+				//	Binboさいころの目だけお金とる
+				//(containsEventに記述)仕様のため、最初の条件分岐で
+					//ランダムの値で3,4がでた場合はそのEventに行く
+			}else if(result==5) {
 				//"カードなくす";
 				event= kingCardSell();
-			}else if(result==8) {
+			}else if(result==6) {
 				//"プレイヤー移動系";
 				event= kingMovePlayer();
 			}else{
 				//"ボンビラス";
 				event= kingMoveBonbiras();
 			}
-			if(result + Binbo.getTurnCount()>9) {
+			if(result + Binbo.getTurnCount()>8) {
 				makeOver();
 				event= "変身";
 			}
 		}else {
 			int changeresult = result + Binbo.getTurnCount();
 			if(changeresult<10) {
-				if(result<2) {
+				if(result==0||result==1) {
 					//"カード増やす";
 					event= cardBuy();
-				}else if(result<4) {
+				}else if(result==2) {
 					// "物件";d
 					event=property();
-				}else if(result<5) {
-					//"さいころ降らす";
-					event= dice();
-				}else if(result<7) {
+				//}else if(result==3||result==4){
+				//	Binboさいころの目だけお金とる
+				//(containsEventに記述)仕様のため、最初の条件分岐で
+					//ランダムの値で3,4がでた場合はそのEventに行く
+				}else if(result==5) {
 					//"カードなくす";
 					event=cardLost();
 				}else{
@@ -231,10 +287,12 @@ public abstract class BinboEvent{
 			}
 			Binbo.addTurnCount();
 		}
-		//event = cardLost();//debug
+		//event = dice();//debug
 		return event;
 	}
-
+	public static void randomBinboEvent() {
+		dice();
+	}
 	//ボンビーが成るメソッド
 	public static void makeOver() {
 		String name;
@@ -280,15 +338,10 @@ public abstract class BinboEvent{
 			return "お金にこまってそうなのねん。だから物件売ろうと思うのねん。でも売れる物件ないにょろ～,"+Player.player.getName()+"は物件を売られなくて済んだ。";
 		}
 	}
-
-
-
-	public static String dice() {
-		//FrameEvent.openDice();
-		return "さいころふるゲームをじっそうしたいにょろ。,でもまだ実装できてないにょろ~~";
+	public static void dice() {
+		Binbo.setDiceFlag();
+		FrameEvent.openDiceBinbo();
 	}
-
-
 
 	public static String cardLost() {
 		Card card;

@@ -134,6 +134,7 @@ public class CardEvent{
 					coor = CardEvent.starsHope();
 				}else{//ぶっ飛び用
 					coor = useRandomAbility();
+					Card.usedCardAfterNotEvent();
 				}
 				FrameEvent.moveMaps(Player.player,coor);
 				//Player.player.getNowMass().setValue(coor);
