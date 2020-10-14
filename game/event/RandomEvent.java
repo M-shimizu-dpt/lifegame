@@ -9,20 +9,6 @@ import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 
 public abstract class RandomEvent {
-	private static boolean random2EndFlag=false;//randomイベントが終わるまで待つためのフラグ
-
-	public static void end() {
-		random2EndFlag=true;
-	}
-
-	public static void initEndFlag() {
-		random2EndFlag=false;
-	}
-
-	public static boolean isEnd() {
-		return random2EndFlag;
-	}
-
 	public static void randomEvent() {//playFrameの変化を追記
 		Random rand = new Random();
 		double randomNum = rand.nextDouble();

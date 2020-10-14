@@ -5,18 +5,16 @@
 
 package lifegame.game.main;
 
-import java.util.ArrayList;
-
 import lifegame.game.event.BinboEvent;
 import lifegame.game.event.CardEvent;
 import lifegame.game.event.ContainsEvent;
 import lifegame.game.event.FrameEvent;
 import lifegame.game.event.MassEvent;
-import lifegame.game.event.Searcher;
 import lifegame.game.event.WaitThread;
 import lifegame.game.object.Card;
 import lifegame.game.object.Dice;
 import lifegame.game.object.Player;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 
 public class App {
@@ -60,10 +58,6 @@ public class App {
   			FrameEvent.openMonthFrame();
   		}else {
     		if(App.turn==3) {
-    			ArrayList<Integer> moneyList = new ArrayList<Integer>();
-    			for(Player player:Player.players.values()) {
-    				moneyList.add(player.getMoney());
-    			}
     			if(App.month==3) {
     				FrameEvent.openClosing();
 	    			App.year++;
@@ -89,7 +83,9 @@ public class App {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {
   				FrameEvent.openRandom2();
-  				Thread.sleep(3000);
+  				WaitThread randomEnd=new WaitThread(1);
+  				randomEnd.start();
+  				randomEnd.join();
   			}
 	  		if(ContainsEvent.isEnd(endYear)) {
 		  		break;
@@ -97,7 +93,7 @@ public class App {
 		  	first=false;
 		  	Player.setNowPlayer();//このターンのプレイヤーを選定
 		  	FrameEvent.waitButtonUpdate();
-		  	Searcher.searchShortestRoute(Player.player);//目的地までの最短経路を探索
+		  	Player.player.setGoalDistance();//目的地までの最短距離をマスから取得
 		  	Japan.saveGoal();
 		  	FrameEvent.moveMaps();//画面遷移が少し遅い
 		  	FrameEvent.reloadMain();
@@ -125,7 +121,7 @@ public class App {
 					bonbyTurnEnd.join();
 				}
 			}
-			Thread.sleep(1000);
+			FrameEvent.closeMain();
 			CardEvent.resetFlags();
 			Japan.alreadys.clear();//このターンに購入した物件リストを初期化
 		}
@@ -136,11 +132,13 @@ public class App {
 
     private void run() {
     	Japan.init();
+    	Ginga.init();
 
-    	int[] result = FrameEvent.openTitle();
+    	FrameEvent.StartTitle();
+    	int[] result= {FrameEvent.getPlayerCount(),FrameEvent.getPlayYear()};
+    	int playerCount = result[0];
+    	int yearLimit = result[1];
 
-    	int yearLimit = result[0];
-	int playerCount = result[1];
     	assert(playerCount>=0 && playerCount<=4);
     	assert(yearLimit>0 && yearLimit<=100);
 

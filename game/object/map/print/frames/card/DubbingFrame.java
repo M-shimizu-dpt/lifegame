@@ -18,7 +18,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 public class DubbingFrame extends FrameModel{
 
 	public DubbingFrame() {
-		this.setSize(700,500);
+		super.setSize(700,500);
 	}
 
 	public void open() {

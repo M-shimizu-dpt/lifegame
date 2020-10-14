@@ -37,7 +37,7 @@ public class ShopFrame extends FrameModel{
 	}
 	private void reopen() {
 		close();
-		open(this.id);
+		open();
 	}
 
 	public void setCardList(ArrayList<Card> cardList) {
@@ -46,13 +46,15 @@ public class ShopFrame extends FrameModel{
 	public void clearCardList() {
 		canBuyCardList.clear();
 	}
-	public void open(int id) {
+	public void setID(int id) {
+		this.id=id;
+	}
+	public void open() {
 		if(id==0) {
 			openBuyShop();
 		}else if(id==1) {
 			openSellShop();
 		}
-		this.id=id;
 		this.setVisible(true);
 	}
 
@@ -65,7 +67,7 @@ public class ShopFrame extends FrameModel{
 			closeButton.setEnabled(false);
 		}
 		buyShop.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
-		JLabel myMoney = createText(10,5,400,40,10,"所持金"+Player.player.getMoney());
+		JLabel myMoney = createText(10,5,400,40,10,"所持金"+FrameEvent.convertMoney(Player.player.getMoney()));
 		buyShop.add(myMoney);
 
 		for(int i=1; i<=canBuyCardList.size(); i++) {
@@ -97,7 +99,7 @@ public class ShopFrame extends FrameModel{
 		shopSell.add(closeButton,JLayeredPane.PALETTE_LAYER,0);
 		for(int i=1; i<=Player.player.getCardSize(); i++) {
 			JButton sellButton = createButton(500,i*50,70,50,10,"売却");
-			if(!ContainsEvent.isPlayer()) {
+			if(!ContainsEvent.isPlayer() || Player.player.getCardName(i).equals("銀河鉄道カード")) {
 				sellButton.setEnabled(false);
 			}
 			sellButton.setActionCommand(Player.player.getCardName(i-1)+":s");

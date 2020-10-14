@@ -46,7 +46,7 @@ public class NearestSearchThread extends SearchThreadModel{
 
 			count++;
 			synchronized(NearestSearchThread.lock1) {
-				list = Japan.getMovePossibles(this.nowMass);
+				list = Japan.getLinks(this.nowMass);
 			}
 			moveTrajectory.add(new Coordinates(nowMass));
 			for(Coordinates goal:goals) {

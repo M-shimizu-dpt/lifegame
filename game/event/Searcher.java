@@ -11,6 +11,7 @@ import java.util.Map;
 
 import lifegame.game.event.search.MassSearchThread;
 import lifegame.game.event.search.NearestSearchThread;
+import lifegame.game.event.search.OnlyDistanceSearchThread;
 import lifegame.game.event.search.OnlyDistanceSearchThread1;
 import lifegame.game.event.search.OnlyDistanceSearchThread2;
 import lifegame.game.event.search.OnlyDistanceSearchThread3;
@@ -32,6 +33,12 @@ public class Searcher{
 
 	public static int count;//目的のマスまでの最短距離
 	public static long time;//マルチスレッド開始からの経過時間
+
+
+	public static void searchGoalDistance() {
+		OnlyDistanceSearchThread thread = new OnlyDistanceSearchThread();
+		thread.start();
+	}
 
 	//行くことが出来るマスを探索
 	public static int searchCanMoveMass(Player player) {
@@ -135,7 +142,7 @@ public class Searcher{
 			SearchThread thread = new SearchThread(player.getNowMass(),SearchThread.searchTime+againtime);
 			thread.start();
 
-			WaitThread wt = new WaitThread(2);
+			WaitThread wt = new WaitThread(2,againtime);
 			wt.start();
 			try {
 				wt.join();
@@ -161,7 +168,7 @@ public class Searcher{
 		}
 	}
 
-	/*
+	@Deprecated
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
 	public static int searchShortestRouteSelectPlayer(Player selectedPlayer) {
 		//再探索は10回まで(1回で出てほしい…)
@@ -187,14 +194,14 @@ public class Searcher{
 				e.printStackTrace();
 			}
 			againtime+=100;
-			System.out.println("again:"+(againtime/100)+"     id:"+thread.getId());
+			System.out.println("again:"+(againtime/100)+"     id:"+thread1.getId());
 			endflag = true;
 			if(ContainsEvent.isDefaultGoalDistance(selectedPlayer))endflag=false;
 		}while(!endflag && againtime<1000);
 		return 0;
 	}
-	*/
 
+	@Deprecated
 	//目的地までの最短距離を計算し、最短ルートを取得(指定したプレイヤーの最短距離の探索)
 	public static void searchShortestRouteAllPlayers() {
 		//再探索は10回まで(1回で出てほしい…)

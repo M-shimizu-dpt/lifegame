@@ -86,6 +86,7 @@ public class CardEvent{
 				do {//今まで選出したカードと今回選出したカードが被った場合は再選
 					flag=true;
 					index = rand.nextInt(Card.getCardListSize());
+					if(Card.getCard(index).getName().equals("銀河鉄道カード")) continue;
 					for(Card card : canBuyCardlist) {
 						if(ContainsEvent.name(card, Card.getCard(index))) {
 							flag=false;
@@ -131,7 +132,7 @@ public class CardEvent{
 					coor = CardEvent.nearestStation();
 				}else if(card.getName().equals("星に願いをカード")){
 					coor = CardEvent.starsHope();
-				}else {//ぶっ飛び用
+				}else{//ぶっ飛び用
 					coor = useRandomAbility();
 				}
 				FrameEvent.moveMaps(Player.player,coor);
@@ -157,6 +158,11 @@ public class CardEvent{
 				}else if(card.getName().equals("ダビングカード")) {
 					CardEvent.dubbing();
 					Card.resetUsedRandom();
+				}
+			}else if(card.getID()==6) {
+				if(card.getName().equals("銀河鉄道カード")){
+					CardEvent.transferGinga();
+					Card.usedCardAfterNotEvent();
 				}
 			}
 		}
@@ -186,7 +192,7 @@ public class CardEvent{
 		do {
 			x=rand.nextInt(17);
 			y=rand.nextInt(17);
-		}while(!ContainsEvent.isMass(x, y));
+		}while(!ContainsEvent.isMassInJapan(x, y));
 		movedMass.setValue(x, y);
 		//System.out.println("random move  x:"+x+"  y:"+y);
 		return movedMass;
@@ -254,10 +260,10 @@ public class CardEvent{
 		do {
 			period = rand.nextInt(5);
 		}while(period <= 1);
-		Player.player.getAnotherPlayer().addBuff(card.getAbility(), period);
+		Player.player.getAnotherPlayers().addBuff(card.getAbility(), period);
 	}
 	private static void richest() {
-		int maxMoney=0;
+		long maxMoney=0;
 		for(Player player:Player.players.values()) {
 			if(ContainsEvent.money(player, maxMoney)>0) {
 				maxMoney=player.getMoney();
@@ -291,5 +297,10 @@ public class CardEvent{
 	}
 	private static void dubbing() {
 		FrameEvent.openDubbing();
+	}
+	private static void transferGinga() {
+		FrameEvent.closeMain();
+		FrameEvent.transferMap(1);
+		FrameEvent.openMain();
 	}
 }

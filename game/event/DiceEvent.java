@@ -10,7 +10,9 @@ public abstract class DiceEvent {
 	public static void movePlayer() {
 		DiceAnimationThread.end();
 		Player.player.setMove(Dice.shuffle(Player.player));
-		Searcher.searchCanMoveMass(Player.player);
+		if(ContainsEvent.isNormalMap()) {
+			Searcher.searchCanMoveMass(Player.player);
+		}
 		if(Player.player.getMove()==0) {//DiceFrameかもっと上位のレベルで書くべき？
 			App.turnEnd();
 			//MassEvent.massEvent(FrameEvent.getNowMassName());

@@ -21,32 +21,27 @@ public class SellPropertyFrame extends FrameModel{
 	public void open() {
 		int takeProCount=0;
 		int i=0;
-		JLayeredPane sellStation = this.getLayeredPane();
-		sellStation.add(createText(150,10,200,40,20,"物件名"));
-		sellStation.add(createText(400,10,150,40,20,"値段"));
-		sellStation.add(createText(550,10,100,40,20,"利益率"));
-		sellStation.add(createText(650,10,100,40,20,"所有者"));
+		JLayeredPane sellProperty = this.getLayeredPane();
+		sellProperty.add(createText(0,0,400,20,20,"所持金:"+FrameEvent.convertMoney(Player.player.getMoney())));
+		sellProperty.add(createText(150,20,200,40,20,"物件名"));
+		sellProperty.add(createText(400,20,150,40,20,"値段"));
+		sellProperty.add(createText(550,20,100,40,20,"利益率"));
+		sellProperty.add(createText(650,20,100,40,20,"所有者"));
 		for(Property property:Player.player.getPropertys()) {
 			takeProCount++;
-			JButton sellButton = createButton(80,15+(takeProCount+1)*35,60,30,10,"売却");
+			JButton sellButton = createButton(80,35+(takeProCount+1)*35,60,30,10,"売却");
 			sellButton.setActionCommand(property.getName()+"s:"+i);
 			if(!ContainsEvent.isPlayer()) {
 				sellButton.setEnabled(false);
 			}
 
-			sellStation.add(sellButton);
+			sellProperty.add(sellButton);
 			int rate = property.getRate();//利益率(3段階)
 			int pMoney = property.getAmount()/2;
-			sellStation.add(createText(150,10+(i+1)*35,200,40,15,property.getName()));
-			if(pMoney<10000) {
-				sellStation.add(createText(400,10+(i+1)*35,150,40,15,pMoney+"万円"));
-			}else if(pMoney%10000==0){
-				sellStation.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億円"));
-			}else {//今登録している物件では呼ばれないかも
-				sellStation.add(createText(400,10+(i+1)*35,150,40,15,pMoney/10000+"億"+pMoney%10000+"万円"));
-			}
-			sellStation.add(createText(550,10+(i+1)*35,100,40,15,rate + "%"));
-			sellStation.add(createText(650,10+(i+1)*35,100,40,15,property.getOwner()));
+			sellProperty.add(createText(150,30+(i+1)*35,200,40,15,property.getName()));
+			sellProperty.add(createText(400,30+(i+1)*35,150,40,15,FrameEvent.convertMoney(pMoney)));
+			sellProperty.add(createText(550,30+(i+1)*35,100,40,15,rate + "%"));
+			sellProperty.add(createText(650,30+(i+1)*35,100,40,15,property.getOwner()));
 			i++;
 		}
 		this.setSize(800, 35*Player.player.getPropertys().size()+150);

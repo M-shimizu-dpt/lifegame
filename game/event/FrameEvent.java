@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lifegame.game.main.App;
+import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
@@ -22,8 +23,10 @@ import lifegame.game.object.map.print.frames.DiceFrame;
 import lifegame.game.object.map.print.frames.GoalFrame;
 import lifegame.game.object.map.print.frames.InfoFrame;
 import lifegame.game.object.map.print.frames.RandomFrame;
+import lifegame.game.object.map.print.frames.SelectWarpFrame;
 import lifegame.game.object.map.print.frames.StartFrame;
-import lifegame.game.object.map.print.frames.Title;
+import lifegame.game.object.map.print.frames.StartTitleFrame;
+import lifegame.game.object.map.print.frames.WarpFrame;
 import lifegame.game.object.map.print.frames.card.CardFrame;
 import lifegame.game.object.map.print.frames.card.DubbingFrame;
 import lifegame.game.object.map.print.frames.card.FullCardFrame;
@@ -31,17 +34,24 @@ import lifegame.game.object.map.print.frames.card.ShopFrame;
 import lifegame.game.object.map.print.frames.card.ShopFrontFrame;
 import lifegame.game.object.map.print.frames.closing.AssetsFrame;
 import lifegame.game.object.map.print.frames.closing.RevenueFrame;
-import lifegame.game.object.map.print.frames.map.AllMapFrame;
-import lifegame.game.object.map.print.frames.map.MiniMapFrame;
+import lifegame.game.object.map.print.frames.map.AllGingaMapFrame;
+import lifegame.game.object.map.print.frames.map.AllJapanMapFrame;
+import lifegame.game.object.map.print.frames.map.GingaFrame;
+import lifegame.game.object.map.print.frames.map.MiniGingaMapFrame;
+import lifegame.game.object.map.print.frames.map.MiniJapanMapFrame;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
 import lifegame.game.object.map.print.frames.property.BuyPropertyFrame;
 import lifegame.game.object.map.print.frames.property.SellPropertyFrame;
-import lifegame.game.object.map.print.frames.setting.settingPlayer;
-import lifegame.game.object.map.print.frames.setting.settingYear;
+import lifegame.game.object.map.print.frames.setting.Check;
+import lifegame.game.object.map.print.frames.setting.Setting;
+import lifegame.game.object.map.print.frames.setting.SettingPlayName;
+import lifegame.game.object.map.print.frames.setting.SettingPlayer;
+import lifegame.game.object.map.print.frames.setting.SettingYear;
 
 //FrameEventにする。
 public abstract class FrameEvent{
-	private static AllMapFrame allMap = new AllMapFrame();
+	private static AllJapanMapFrame allJapanMap = new AllJapanMapFrame();
+	private static AllGingaMapFrame allGingaMap = new AllGingaMapFrame();
 	private static AssetsFrame assets = new AssetsFrame();
 	private static BinboFrame binbo = new BinboFrame();
 	private static CardFrame card = new CardFrame();
@@ -51,7 +61,8 @@ public abstract class FrameEvent{
 	private static FullCardFrame cardFull = new FullCardFrame();
 	private static GoalFrame goal = new GoalFrame();
 	private static InfoFrame info = new InfoFrame();
-	private static MiniMapFrame miniMap = new MiniMapFrame();
+	private static MiniJapanMapFrame miniJapanMap = new MiniJapanMapFrame();
+	private static MiniGingaMapFrame miniGingaMap = new MiniGingaMapFrame();
 	private static PlayFrame play = new PlayFrame();//メインフレーム
 	private static BuyPropertyFrame property = new BuyPropertyFrame();
 	private static RandomFrame random = new RandomFrame();
@@ -60,13 +71,19 @@ public abstract class FrameEvent{
 	private static ShopFrame shop = new ShopFrame();
 	private static ShopFrontFrame shopFront = new ShopFrontFrame();
 	private static StartFrame start = new StartFrame();
-	private static Title title = new Title();
-	private static settingPlayer settingPlayer = new settingPlayer();
-	private static settingYear settingYear = new settingYear();
+	private static GingaFrame ginga = new GingaFrame();
+	private static Check check = new Check();
+	private static SettingPlayer SettingPlayer = new SettingPlayer();
+	private static SettingPlayName playname = new SettingPlayName();
+	private static SettingYear SettingYear = new SettingYear();
+	private static Setting setting = new Setting();
+	private static StartTitleFrame startTitle = new StartTitleFrame();
+	private static WarpFrame warp = new WarpFrame();
+	private static SelectWarpFrame selectWarp = new SelectWarpFrame();
 
 	public static void openClosing() {
-		play.close();
-		confirmation.open("決算","決算",100,3000);
+		FrameEvent.closeMain();
+		FrameEvent.createPopUp("決算","決算",100,3000);
 		ClosingEvent.closing();
 		try {//スムーズに決算処理に移れない可能性がある為、書き変える必要がある
 			Thread.sleep(3000);
@@ -86,19 +103,28 @@ public abstract class FrameEvent{
 
 	public static void closeAssets() {
 		assets.close();
-		play.open();//すぐに非表示にする為、必要ない。
+		FrameEvent.openMain();//すぐに非表示にする為、必要ない。
 	}
 
 	public static void createPopUp(String title,String article) {
-		confirmation.open(title,article);
+		confirmation.setTitle(title);
+		confirmation.setArticle(article);
+		confirmation.open();
 	}
 
 	public static void createPopUp(String title,String article,int time) {
-		confirmation.open(title, article, time);
+		confirmation.setTitle(title);
+		confirmation.setArticle(article);
+		confirmation.setTime(time);
+		confirmation.open();
 	}
 
 	public static void createPopUp(String title,String article,int size,int time) {
-		confirmation.open(title, article, size, time);
+		confirmation.setTitle(title);
+		confirmation.setArticle(article);
+		confirmation.setTime(time);
+		confirmation.setTextSize(size);
+		confirmation.open();
 	}
 
 	public static void closePopUp() {
@@ -106,33 +132,57 @@ public abstract class FrameEvent{
 	}
 
 	public static void openMiniMap() {
-		play.close();
-		miniMap.open();
+		FrameEvent.closeMain();
+		if(ContainsEvent.isNormalMap()) {
+			miniJapanMap.open();
+		}else if(ContainsEvent.isGingaMap()) {
+			miniGingaMap.open();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void closeMiniMap() {
-		miniMap.close();
-		play.open();
+		if(ContainsEvent.isNormalMap()) {
+			miniJapanMap.close();
+		}else if(ContainsEvent.isGingaMap()) {
+			miniGingaMap.close();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
+		FrameEvent.openMain();
 	}
 
 	public static void openAllMap() {
-		play.close();
-		allMap.open();
+		FrameEvent.closeMain();
+		if(ContainsEvent.isNormalMap()) {
+			allJapanMap.open();
+		}else if(ContainsEvent.isGingaMap()) {
+			allGingaMap.open();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void closeAllMap() {
-		allMap.close();
-		play.open();
+		if(ContainsEvent.isNormalMap()) {
+			allJapanMap.close();
+		}else if(ContainsEvent.isGingaMap()) {
+			allGingaMap.close();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
+		FrameEvent.openMain();
 	}
 
 	public static void openDice() {
-		play.close();
+		FrameEvent.closeMain();
 		dice.open();
 	}
 
 	public static void closeDice() {
 		dice.close();
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void openDiceBinbo() {
@@ -146,18 +196,20 @@ public abstract class FrameEvent{
 		dice.close();
 	}
 
-	public static void openBinbo(String playerName, String action, String binboName) {
-		play.close();
-		binbo.open(playerName,action,binboName);
+	public static void openBinbo(String action) {
+		FrameEvent.closeMain();
+		binbo.setBinboName(Binbo.getName());
+		binbo.setAction(action);
+		binbo.open();
 	}
 
 	public static void closeBinbo() {
 		binbo.close();
-		play.open();
+		//FrameEvent.openMain();
 	}
 
 	public static void openGoal() {
-		play.close();
+		FrameEvent.closeMain();
 		goal.open();
 	}
 
@@ -168,22 +220,26 @@ public abstract class FrameEvent{
 
 	public static void closeNextGoal() {
 		goal.close();
-		property.open(Japan.getSaveGoalName(),2);
+		property.setTitle(Japan.getSaveGoalName() + "の物件情報");
+		property.setID(2);
+		property.open();
 	}
 
 	public static void openFullCardFromPlay() {
-		play.close();
-		cardFull.open(0);
+		FrameEvent.closeMain();
+		cardFull.setID(0);
+		cardFull.open();
 	}
 
 	public static void closeFullCardFromPlay() {
 		cardFull.close();
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void openFullCardFromRandom() {
 		random.closeSave();
-		cardFull.open(1);
+		cardFull.setID(1);
+		cardFull.open();
 	}
 
 	public static void closeFullCardFromRandom() {
@@ -192,7 +248,7 @@ public abstract class FrameEvent{
 	}
 
 	public static void openDubbing() {
-		play.close();
+		FrameEvent.closeMain();
 		dubbing.open();
 	}
 
@@ -203,31 +259,31 @@ public abstract class FrameEvent{
 		}else {
 			App.turnEnd();
 		}
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void openInfo() {
-		play.close();
+		FrameEvent.closeMain();
 		info.open();
 	}
 
 	public static void closeInfo() {
 		info.close();
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void openCard() {
-		play.close();
+		FrameEvent.closeMain();
 		card.open();
 	}
 
 	public static void closeCard() {
 		card.close();
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void openSellProperty() {
-		play.close();
+		FrameEvent.closeMain();
 		sellStation.open();
 	}
 
@@ -238,7 +294,7 @@ public abstract class FrameEvent{
 		}else {
 			MassEvent.massEventEnd();
 		}
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static int[] openStartFrame() {
@@ -247,7 +303,7 @@ public abstract class FrameEvent{
 
 	public static void openShopFront() {
 		ArrayList<Card> cardList = CardEvent.getElectedCard();
-		play.close();
+		FrameEvent.closeMain();
 		shopFront.setCardList(cardList);
 		shop.setCardList(cardList);
 		shopFront.open();
@@ -262,17 +318,19 @@ public abstract class FrameEvent{
 		}else {
 			MassEvent.massEventEnd();
 		}
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void openBuyShop() {
 		shopFront.close();
-		shop.open(0);
+		shop.setID(0);
+		shop.open();
 	}
 
 	public static void openSellShop() {
 		shopFront.close();
-		shop.open(1);
+		shop.setID(1);
+		shop.open();
 	}
 
 	public static void closeShop() {
@@ -280,28 +338,55 @@ public abstract class FrameEvent{
 		shopFront.open();
 	}
 
+	public static void openWarp() {
+		FrameEvent.closeMain();
+		warp.open();
+	}
+	public static void closeWarp() {
+		warp.close();
+		if(new Random().nextInt(100) < 3) {
+			RandomEvent.randomEvent();
+		}else {
+			MassEvent.massEventEnd();
+		}
+		FrameEvent.openMain();
+	}
+	public static void openSelectWarp() {
+		warp.close();
+		selectWarp.open();
+	}
+	public static void closeSelectWarp() {
+		selectWarp.close();
+		warp.open();
+	}
+
 	//月が替わった時に何月か表示
 	public static void openMonthFrame() {//ConfirmationFrameにする
-		play.close();
-		confirmation.open(App.month + "月", App.month + "月",100, 3000);
+		FrameEvent.closeMain();
+		FrameEvent.createPopUp(App.month + "月", App.month + "月",200, 3000);
 		try {
-			Thread.sleep(3000);
-		}catch(InterruptedException e) {
-			e.printStackTrace();
-		}
-		confirmation.close();
+  			Thread.sleep(3000);
+  		}catch(InterruptedException e) {
+  			e.printStackTrace();
+  		}
 	}
 
 	public static void openRandom1(double rand) {
-		play.close();
-		random.open(1,rand);
+		FrameEvent.closeMain();
+		random.setID(1);
+		random.setRand(rand);
+		random.open();
 	}
 
 	public static void openRandom2() {
 		if(ContainsEvent.isOwners()) {
-			int rndnum = new Random().nextInt(11)+1;
-			if(App.month==rndnum) {
-				random.open(2,rndnum);
+			if(App.turn==0) {
+				int rndnum = new Random().nextInt(11)+1;
+				if(App.month==rndnum) {
+					random.setID(2);
+					random.setRand(rndnum);
+					random.open();
+				}
 			}
 		}
 	}
@@ -309,7 +394,7 @@ public abstract class FrameEvent{
 	public static void closeRandom() {
 		random.close();
 		MassEvent.massEventEnd();
-		play.open();
+		FrameEvent.openMain();
 	}
 
 	public static void closeRandom2() {
@@ -317,44 +402,62 @@ public abstract class FrameEvent{
 	}
 
 	public static void openPropertys(String massName,int id) {
-		property.open(massName,id);
+		property.setTitle(massName + "の物件情報");
+		property.setID(id);
+		property.open();
 		if(id==0) {
-			miniMap.close();
+			miniJapanMap.close();
 		}else if(id==1) {
-			allMap.close();
+			allJapanMap.close();
 		}else if(id==2) {
-			play.close();
+			FrameEvent.closeMain();
 		}
 	}
 
 	public static void closePropertys() {
 		property.close();
 		if(property.getID()==0) {
-			miniMap.open();
+			miniJapanMap.open();
 		}else if(property.getID()==1) {
-			allMap.open();
+			allJapanMap.open();
 		}else if(property.getID()==2) {
 			if(new Random().nextInt(100) < 3) {
 				RandomEvent.randomEvent();
 			}else {
 				MassEvent.massEventEnd();
-				play.open();
+				FrameEvent.openMain();
 			}
 		}
 	}
 
-
-
 	public static void closeMoveButton() {
-		play.closeMoveButton();
+		if(ContainsEvent.isNormalMap()) {
+			play.closeMoveButton();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.closeMoveButton();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//return bonbiras
+		}
 	}
 
 	public static void printMenu() {
-		play.printMenu();
+		if(ContainsEvent.isNormalMap()) {
+			play.printMenu();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.printMenu();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//return bonbiras
+		}
 	}
 
 	public static void ableMenu() {
-		play.ableMenu();
+		if(ContainsEvent.isNormalMap()) {
+			play.ableMenu();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.ableMenu();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//return bonbiras
+		}
 	}
 
 	public static void throwEnd() {
@@ -362,15 +465,34 @@ public abstract class FrameEvent{
 	}
 
 	public static void printMoveButton() {
-		play.printMoveButton();
+		if(ContainsEvent.isNormalMap()) {
+			play.printMoveButton();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.printMoveButton();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//return bonbiras
+		}
 	}
 
 	public static String getNowMassName() {
-		return play.getNowMassName();
+		if(ContainsEvent.isNormalMap()) {
+			return play.getNowMassName();
+		}else if(ContainsEvent.isGingaMap()) {
+			return ginga.getNowMassName();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//return bonbiras
+		}
+		return null;
 	}
 
 	public static void closeMenu() {
-		play.closeMenu();
+		if(ContainsEvent.isNormalMap()) {
+			play.closeMenu();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.closeMenu();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void setGoalColor() {
@@ -383,37 +505,75 @@ public abstract class FrameEvent{
 
 	public static void init(int playerCount){
 		play.init(playerCount);
+		ginga.init();
 	}
 
 	public static void waitButtonUpdate() {
-  		play.waitButtonUpdate();
+  		if(ContainsEvent.isNormalMap()) {
+			play.waitButtonUpdate();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.waitButtonUpdate();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
+	//銀河から帰ってきた後しっかりとplayFrameの中心に目的地があるか確認する
 	public static void moveMaps() {
-		play.moveMaps();
+		if(ContainsEvent.isNormalMap()) {
+			play.moveMaps();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.moveMaps();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void moveMaps(int x,int y) {
-		play.moveMaps(x,y);
+		if(ContainsEvent.isNormalMap()) {
+			play.moveMaps(x,y);
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.moveMaps(x,y);
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void moveMaps(Player player,Coordinates to) {
-		play.moveMaps(player, to);
+		if(ContainsEvent.isNormalMap()) {
+			play.moveMaps(player, to);
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.moveMaps(player, to);
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void moveMapsEvent() {
-		play.moveMapsEvent();
+		if(ContainsEvent.isNormalMap()) {
+			play.moveMapsEvent();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.moveMapsEvent();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void reloadInfo() {
-		play.reloadInfo();
+		if(ContainsEvent.isNormalMap()) {
+			play.reloadInfo();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.reloadInfo();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
 	}
 
 	public static void reloadMain() {
-		play.close();
-		play.reloadInfo();
-		play.printMenu();
-		play.open();
+		FrameEvent.closeMain();
+		FrameEvent.reloadInfo();
+		FrameEvent.printMenu();
+		FrameEvent.openMain();
 	}
 
 	//最終結果表示
@@ -428,7 +588,14 @@ public abstract class FrameEvent{
 	}
 
 	public static boolean isPlayShowing() {
-		return play.isShowing();
+		if(ContainsEvent.isNormalMap()) {
+			return play.isShowing();
+		}else if(ContainsEvent.isGingaMap()) {
+			return ginga.isShowing();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//return bonbiras
+		}
+		return false;
 	}
 
 	public static boolean isThrowed() {
@@ -467,36 +634,227 @@ public abstract class FrameEvent{
 		return artresult;
 	}
 
-	public static int[] openTitle() {
-		return title.open();
+	public static void openCheck() {
+		check.open();
 	}
 
-	public static int openSettingPlayer() {
-		return settingPlayer.open();
+	public static void CheckSort() {
+		check.namelist = new String[4];
+
+		for(int j=0;j<4;j++) {
+			int[] namenumber = new int[4];
+			for(int i=0;i<4;i++) {
+				if(FrameEvent.getPlayerOrder(i)==j) {
+					namenumber[j]=i;
+				}
+			}
+			check.namelist[j]=FrameEvent.getName(namenumber[j]);
+		}
+
 	}
 
-	public static int getCount() {
-		return settingPlayer.count;
+	public static void openSettingPlayName() {
+		playname.open();
+	}
+	public static void resetPlayName() {
+		if(playname.setNames.size()!=0) {
+			playname.setNames.clear();
+		}
+	}
+
+	public static ArrayList<String> displayNames() {
+		return playname.setNames;
+	}
+
+	public static void openSettingPlayer() {
+		SettingPlayer.open();
+	}
+	public static void resetPlayOrder() {
+		if(SettingPlayer.PlayerOrder.size()!=0) {
+			SettingPlayer.PlayerOrder.clear();
+		}
+	}
+
+	public static ArrayList<Integer> displayOrder() {
+		return SettingPlayer.PlayerOrder;
 	}
 
 	public static String getName(int index) {
-		return settingPlayer.getName(index);
+		return playname.getName(index);
 	}
 
 	public static int getPlayerOrder(int index) {
-		return settingPlayer.getPlayerOrder(index);
+		return SettingPlayer.getPlayerOrder(index);
 	}
 
 	public static int getOrder() {
-		return settingPlayer.playerorder;
+		return SettingPlayer.playerorder;
 	}
 
-	public static int openSettingYear() {
-		return settingYear.open();
+	public static void openSettingYear() {
+		SettingYear.open();
 	}
 
-	public static int getYear() {
-		return settingYear.year;
+	public static void openSetting() {
+		setting.open();
 	}
 
+	public static int getPlayerCount() {
+		return check.getCount();
+	}
+	public static int getPlayYear() {
+		return check.getYear();
+	}
+
+	public static void setPlayerCount() {
+		check.count = playname.number;
+	}
+	public static void setPlayNumber() {
+		playname.number = SettingPlayer.count;
+	}
+
+	public static void setPlayYear() {
+		check.year = SettingYear.year;
+	}
+
+	public static void openMain() {
+		if(ContainsEvent.isNormalMap()) {
+			play.open();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.open();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras.open();??
+		}
+	}
+	public static void closeMain() {
+		if(ContainsEvent.isNormalMap()) {
+			play.close();
+		}else if(ContainsEvent.isGingaMap()) {
+			ginga.close();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras.close();??
+		}
+	}
+
+	public static void resetMapGoalColor() {
+		allJapanMap.resetGoalColor();
+		miniJapanMap.resetGoalColor();
+	}
+
+	public static void setMapGoalColor() {
+		allJapanMap.setGoalColor();
+		miniJapanMap.setGoalColor();
+	}
+
+	public static void transferMap(int toMapID) {
+		/*
+		 * フラグ切り替え
+		 * 移動元のフレームから消す
+		 * 移動先のフレームに追加
+		 * 正しい位置に配置
+		 */
+		if(ContainsEvent.isNormalMap()) {
+			if(toMapID==1) {//norm to ginga
+				Player.player.setGingaMap();
+				play.removePlayer(Player.player);
+				ginga.addPlayer(Player.player);
+				FrameEvent.moveMaps();
+			}else if(toMapID==2) {//norm to bonbiras
+
+			}
+		}else if(ContainsEvent.isGingaMap()) {
+			if(toMapID==0) {//ginga to norm
+				Player.player.setNormalMap();
+				ginga.removePlayer(Player.player);
+				play.addPlayer(Player.player);
+				play.moveMaps(Player.player,Japan.getGoalCoor(),Japan.getGoalName());
+				FrameEvent.moveMaps();
+			}else if(toMapID==1){//ginga to ginga
+				ginga.moveMapsStart(Player.player);
+			}else if(toMapID==2) {//ginga to bonbiras
+
+			}
+		}else if(ContainsEvent.isBonbirasMap()) {
+			if(toMapID==0) {//bonbiras to norm
+
+			}else if(toMapID==1) {//bonbiras to ginga
+
+			}
+		}
+	}
+
+	public static void StartTitle() {
+		startTitle.open();
+	}
+
+	public static boolean isRandom2Showing() {
+		return random.isShowing();
+	}
+	public static boolean isPopUpShowing() {
+		return confirmation.isShowing();
+	}
+
+	public static String convertMoney(long money) {//垓以上は変換できない
+		long million=money%(int)Math.pow(10, 4);
+		long billion=(money-million)%(int)Math.pow(10, 8);
+		long trillion=(money-money%(int)Math.pow(10, 8))%(int)Math.pow(10, 12);
+		long quadrillion=(long)((long)((double)money-(double)money%Math.pow(10, 12))%Math.pow(10, 16));
+		if(quadrillion!=0) {//京あり
+			if(trillion!=0) {//兆あり
+				if(billion!=0) {//億あり
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+					}
+				}else {//億なし
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money/(int)Math.pow(10, 8))+"兆円";
+					}
+				}
+			}else {//兆なし
+				if(billion!=0) {//億あり
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+					}
+				}else {//億なし
+					if(million!=0) {//万あり
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京"+String.valueOf(million)+"万円";
+					}else {//万なし
+						return String.valueOf(money/(int)Math.pow(10, 12))+"京円";
+					}
+				}
+			}
+		}else if(trillion!=0) {//兆あり
+			if(billion!=0) {//億あり
+				if(million!=0) {//万あり
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+				}else {//万なし
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+				}
+			}else {//億なし
+				if(million!=0) {//万あり
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆"+String.valueOf(million)+"万円";
+				}else {//万なし
+					return String.valueOf(money/(int)Math.pow(10, 8))+"兆円";
+				}
+			}
+		}else if(billion!=0){//億あり
+			if(million!=0) {//万あり
+				return String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億"+String.valueOf(million)+"万円";
+			}else {//万なし
+				return String.valueOf(money%(int)Math.pow(10, 8)/(int)Math.pow(10, 4))+"億円";
+			}
+		}else {//億なし
+			if(million!=0) {//万あり
+				return String.valueOf(million)+"万円";
+			}else {//万なし
+				return "0万円";
+			}
+		}
+	}
 }

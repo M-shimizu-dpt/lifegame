@@ -62,7 +62,7 @@ public class SearchThread extends SearchThreadModel{
 			count++;
 			ArrayList<Coordinates> can = new ArrayList<Coordinates>();
 			synchronized(SearchThread.lock1) {
-				can.addAll(Japan.getMovePossibles(super.nowMass));
+				can.addAll(Japan.getLinks(super.nowMass));
 			}
 			for(Coordinates possibles : can) {//移動可能マスを取得
 				boolean conti=false;
@@ -104,6 +104,7 @@ public class SearchThread extends SearchThreadModel{
 					thread.start();
 				}
 			}
+			if(me)break;
 		}
 	}
 

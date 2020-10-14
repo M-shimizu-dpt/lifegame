@@ -25,6 +25,7 @@ import lifegame.game.event.WaitThread;
 import lifegame.game.event.search.NearestSearchThread;
 import lifegame.game.main.App;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.print.frames.map.PlayFrame;
@@ -38,15 +39,16 @@ public class Player {
 
 	private Buff buff;//一定期間の持続効果
 	private ArrayList<Card> cards;//所持カード一覧(持てるカードは8枚まで)
-	private JLabel colt;//プレイヤーの駒
+	private JLabel colt=new JLabel();//プレイヤーの駒
 	private boolean cpuflag;
 	private int goaldistance;
 	private int id;//識別番号
 	private String name;//名前
 	private Coordinates nowMass;//現在地
-	private int money;//所持金
+	private long money;//所持金
 	private int move;//進めるマス
 	private ArrayList<Property> propertys;//プレイヤーが保有している物件情報
+	private int mapID;
 
 	public Player(String name,int money,int id,boolean cpuflag) {
 		this.money=0;
@@ -55,6 +57,7 @@ public class Player {
 		this.cards = new ArrayList<Card>();
 		this.propertys = new ArrayList<Property>();
 		this.id=id;
+		this.mapID=0;
 		this.cpuflag=cpuflag;
 		setName(name);
 		addMoney(money);
@@ -68,16 +71,36 @@ public class Player {
 		return Player.players.get(index);
 	}
 
+	public static Player getNextPlayer() {
+		if(Player.player.getID()==3) {
+			return Player.getPlayer(0);
+		}else {
+			return Player.getPlayer(Player.player.getID()+1);
+		}
+	}
+
+	public static Player getNormalPlayer() {
+		int id=Player.player.getID();
+		for(int i=id;i>-1;i--) {
+
+			if(ContainsEvent.isNormalMap(Player.getPlayer(i)))return Player.getPlayer(i);
+			if(i==0) {
+				i=4;
+			}
+		}
+		return null;
+	}
+
 	public static void initPlayers(PlayFrame playFrame,int playerCount) {
 		for(int i=0;i<4;i++) {
 			if(FrameEvent.getOrder()==0) {//順番入れ替え
-				if(FrameEvent.getCount()>i) {//player
+				if(playerCount>i) {//player
 					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {	//CPU
 					Player.players.put(FrameEvent.getPlayerOrder(i),new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),false));
 				}
 			}else {//順番初期値
-				if(FrameEvent.getCount()>i) {//player
+				if(playerCount>i) {//player
 					Player.players.put(i,new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),true));
 				}else {//CPU
 					Player.players.put(i,new Player(FrameEvent.getName(i),1000,FrameEvent.getPlayerOrder(i),false));
@@ -119,7 +142,7 @@ public class Player {
 		cards.add(card);
 	}
 
-	public void addMoney(int money) {
+	public void addMoney(long money) {
 		this.money += money;
 	}
 
@@ -137,10 +160,8 @@ public class Player {
 	public void cardFullCPU() {
 		do{
 			this.removeCard(this.getCard(0));
-			//System.out.println("remove:"+this.getCard(0).getName());
 			priceSort(this.getCards());
 		}while(this.getCardSize()>8);
-		FrameEvent.throwEnd();
 	}
 
 	public static void priceSort(ArrayList<Card> cards){
@@ -176,7 +197,6 @@ public class Player {
 					Thread.sleep(2000);
 				}
 				if(ContainsEvent.isUsedRandomCard()) {
-					CardEvent.resetFlags();
 					FrameEvent.ableMenu();
 					diceFlag=false;
 					App.turnEnd();
@@ -196,9 +216,11 @@ public class Player {
 			waitthread.join();
 			*/
 
-			if(Searcher.count>=this.getMove()) {//出目が目的地に届かないもしくは、目的地に着く場合
+			if(Player.player.getGoalDistance()>=this.getMove() || !ContainsEvent.isNormalMap()) {//出目が目的地に届かないもしくは、目的地に着く場合
 				cpuaddTrajectory();
 			}else {//目的地を超えてしまう場合
+				Searcher.searchShortestRoute(Player.player);
+				Searcher.searchCanMoveMass(Player.player);
 				//ゴールから最も近い移動可能マスを選出し、移動する
 				boolean flag=false;
 				//行くことが出来るマス取得
@@ -223,7 +245,7 @@ public class Player {
 					cpuMoveMaps(Searcher.canMoveTrajectoryList.get(Searcher.nearestMassToGoalList.get(0)).get(0));
 				}
 			}
-			//System.out.println("player.move:"+this.getMove()+"       終わりました");
+
 			if(this.getMove()>0) {
 				System.out.println("異常終了");
 			}
@@ -237,32 +259,49 @@ public class Player {
 
 	//cpuの移動操作(目的地までの最短経路で移動)
 	public void cpuaddTrajectory() throws InterruptedException{
-		if(Searcher.nearestTrajectoryList.get(Searcher.count).size()>0) {
-			ArrayList<Coordinates> list = Searcher.nearestTrajectoryList.get(Searcher.count).get(0);
-			for(Coordinates coor : list) {
-				if(Player.isStop()) {
-					WaitThread wait = new WaitThread(7);
-					wait.start();
-					wait.join();
-				}
-				int x = this.getNowMass().getX()-coor.getX();
-				int y = this.getNowMass().getY()-coor.getY();
-				if(x==0) {
-					if(y<0) {//下
-						FrameEvent.moveMaps(0,-130);
-					}else if(y>0) {//上
-						FrameEvent.moveMaps(0,130);
-					}
-				}else if(y==0) {
-					if(x>0) {//左
-						FrameEvent.moveMaps(130,0);
-					}else if(x<0) {//右
-						FrameEvent.moveMaps(-130,0);
-					}
-				}
-				Thread.sleep(300);
-				if(this.getMove()<=0)break;
+		for(int i=0;i<Player.player.getMove();) {
+			if(Player.isStop()) {
+				WaitThread wait = new WaitThread(7);
+				wait.start();
+				wait.join();
 			}
+			ArrayList<Coordinates> list;
+			Coordinates next=new Coordinates();
+			if(ContainsEvent.isNormalMap()) {
+				list=Japan.getLinks();
+				for(Coordinates coor:list) {
+					if(Japan.getGoalDistance(this.getNowMass())>Japan.getGoalDistance(coor)) {
+						next=coor;
+					}
+				}
+			}else if(ContainsEvent.isGingaMap()) {
+				list=Ginga.getLinks();
+				for(Coordinates coor:list) {
+					if(Ginga.getGoalDistance(this.getNowMass())>Ginga.getGoalDistance(coor)) {
+						next=coor;
+					}
+				}
+			}else if(ContainsEvent.isBonbirasMap()) {
+				//bonbiras
+			}
+
+			int x = this.getNowMass().getX()-next.getX();
+			int y = this.getNowMass().getY()-next.getY();
+			if(x==0) {
+				if(y<0) {//下
+					FrameEvent.moveMaps(0,-130);
+				}else if(y>0) {//上
+					FrameEvent.moveMaps(0,130);
+				}
+			}else if(y==0) {
+				if(x>0) {//左
+					FrameEvent.moveMaps(130,0);
+				}else if(x<0) {//右
+					FrameEvent.moveMaps(-130,0);
+				}
+			}
+			FrameEvent.reloadInfo();
+			Thread.sleep(300);
 		}
 	}
 
@@ -289,6 +328,7 @@ public class Player {
 					FrameEvent.moveMaps(-130,0);
 				}
 			}
+			FrameEvent.reloadInfo();
 			Thread.sleep(300);
 			if(this.getMove()<=0)break;
 		}
@@ -299,6 +339,14 @@ public class Player {
 		do {
 			rand = new Random().nextInt(4);
 		}while(rand != this.id);
+		return players.get(rand);
+	}
+	
+	public Player getAnotherPlayers() {
+		int rand;
+		do {
+			rand = new Random().nextInt(4);
+		}while(rand == this.id);
 		return players.get(rand);
 	}
 
@@ -334,7 +382,7 @@ public class Player {
 		return this.id;
 	}
 
-	public int getMoney() {
+	public long getMoney() {
 		return this.money;
 	}
 
@@ -391,17 +439,45 @@ public class Player {
 		sellPropertyFrame.sellPropertys(this.getProperty(0));
 	}
 
+	public void setBonbirasMap() {
+		setMapID(2);
+	}
+
 	public void setColt(JLabel colt) {
 		this.colt = colt;
 	}
 
+	public void setGingaMap() {
+		setMapID(1);
+	}
+
 	public void setGoalDistance(int distance) {//最短距離をセット
 		this.goaldistance = distance;
-		//System.out.println(this.getGoalDistance()+"最長距離   :   名前 : "+this.getName());
+	}
+
+	public void setGoalDistance() {//最短距離をセット
+		if(ContainsEvent.isNormalMap()) {
+			this.goaldistance = Japan.getCoordinates(nowMass).getGoalDistance();
+		}else if(ContainsEvent.isGingaMap()) {
+			this.goaldistance = Ginga.getCoordinates(nowMass).getGoalDistance();
+		}else if(ContainsEvent.isBonbirasMap()) {
+			//bonbiras
+		}
+	}
+
+	private void setMapID(int id) {
+		this.mapID=id;
+	}
+
+	public int getMapID() {
+		return this.mapID;
 	}
 
 	public void setMass(int x,int y) {
 		this.nowMass.setValue(x, y);
+	}
+	public void setMass(Coordinates coor) {
+		this.nowMass.setValue(coor);
 	}
 
 	public void setMove(int move) {
@@ -410,6 +486,10 @@ public class Player {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setNormalMap() {
+		setMapID(0);
 	}
 
 	public void addBuff(int ability,int period) {

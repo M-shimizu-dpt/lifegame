@@ -17,9 +17,10 @@ public abstract class Dice {
 		for(int i=0;i<Dice.num;i++) {//サイコロの数だけサイコロを回わす；
 			if(ContainsEvent.isUsedFixedCard())break;//初めからresultが入力されていれば
 			Random rand = new Random();
-			Dice.result += rand.nextInt(6)+1+player.getEffect();
-			if(Dice.result<=0) {
+			if(player.getEffect()<=-3) {
 				Dice.result=1;
+			}else {
+				Dice.result += rand.nextInt(6)+1+player.getEffect();
 			}
 			player.getBuff().elapsed();
 		}

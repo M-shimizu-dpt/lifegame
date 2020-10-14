@@ -10,19 +10,19 @@ public abstract class ClosingEvent {
 	public static boolean closingEndFlag=false;//決算処理が終了するのを待つためのフラグ
 	public static int maxProfit=100;//最高収益(グラフ作成用)
 	public static int minProfit=0;//最低収益(グラフ作成用)
-	public static int maxAssets=100;//最高資産(グラフ作成用)
-	public static int minAssets=0;//最低資産(グラフ作成用)
+	public static long maxAssets=100;//最高資産(グラフ作成用)
+	public static long minAssets=0;//最低資産(グラフ作成用)
 
 	private static ArrayList<Integer[]> allProfitList = new ArrayList<Integer[]>();//各プレイヤーの総収益(過去も含む)
-	private static ArrayList<Integer[]> allAssetsList = new ArrayList<Integer[]>();//各プレイヤーの総資産(過去も含む)
-	private static ArrayList<Integer[]> rank = new ArrayList<Integer[]>();
-	private static ArrayList<Integer[]> nowAssetsList = new ArrayList<Integer[]>();
+	private static ArrayList<long[]> allAssetsList = new ArrayList<long[]>();//各プレイヤーの総資産(過去も含む)
+	private static ArrayList<long[]> rank = new ArrayList<long[]>();
+	private static ArrayList<long[]> nowAssetsList = new ArrayList<long[]>();
 	private static ArrayList<Integer[]> nowProfitList = new ArrayList<Integer[]>();
 
 	public static ArrayList<Integer[]> getProfitList(){
 		return ClosingEvent.allProfitList;
 	}
-	
+
 	public static Integer[] getProfitList(int index){
 		return ClosingEvent.allProfitList.get(index);
 	}
@@ -35,15 +35,15 @@ public abstract class ClosingEvent {
 		ClosingEvent.allProfitList.add(list);
 	}
 
-	public static void addAssetsList(Integer[] list){
+	public static void addAssetsList(long[] list){
 		ClosingEvent.allAssetsList.add(list);
 	}
 
-	public static ArrayList<Integer[]> getAssetsList(){
+	public static ArrayList<long[]> getAssetsList(){
 		return ClosingEvent.allAssetsList;
 	}
 
-	public static Integer[] getAssetsList(int index){
+	public static long[] getAssetsList(int index){
 		return ClosingEvent.allAssetsList.get(index);
 	}
 
@@ -51,17 +51,17 @@ public abstract class ClosingEvent {
 		return ClosingEvent.allAssetsList.size();
 	}
 
-	public static Integer[] getRankList(int index){
+	public static long[] getRankList(int index){
 		return ClosingEvent.rank.get(index);
 	}
 
 
 
-	public static ArrayList<Integer[]> getNowAssetsList(){
+	public static ArrayList<long[]> getNowAssetsList(){
 		return ClosingEvent.nowAssetsList;
 	}
 
-	public static Integer[] getNowAssetsList(int index){
+	public static long[] getNowAssetsList(int index){
 		return ClosingEvent.nowAssetsList.get(index);
 	}
 
@@ -85,13 +85,13 @@ public abstract class ClosingEvent {
 		ClosingEvent.nowProfitList.add(list);
 	}
 
-	public static void addNowAssetsList(Integer[] list){
+	public static void addNowAssetsList(long[] list){
 		ClosingEvent.nowAssetsList.add(list);
 	}
 
 	public static void nowAllAssets() {
 		Integer nowprofitList[] = {0,0,0,0};
-		Integer nowassetsList[] = {0,0,0,0};
+		long nowassetsList[] = {0,0,0,0};
 
 		for(int i=0;i<4;i++) {
 			Player.players.get(i).addProfit();
@@ -117,7 +117,7 @@ public abstract class ClosingEvent {
 	public static void closing() {
 		addProfit();
 		aggregateProfit();
-
+		FrameEvent.openRevenue();
 	}
 
 	//収益を加算
@@ -144,7 +144,7 @@ public abstract class ClosingEvent {
 
 	//総資産を集計
 	public static void aggregateAssets() {
-		Integer assetsList[] = {0,0,0,0};
+		long assetsList[] = {0,0,0,0};
 		for(int i=0;i<4;i++) {
 			assetsList[i]+=Player.players.get(i).getMoney();
 			for(Property property : Player.players.get(i).getPropertys()) {

@@ -9,6 +9,7 @@ import lifegame.game.object.Binbo;
 import lifegame.game.object.Card;
 import lifegame.game.object.Player;
 import lifegame.game.object.map.information.Coordinates;
+import lifegame.game.object.map.information.Ginga;
 import lifegame.game.object.map.information.Japan;
 import lifegame.game.object.map.information.Property;
 import lifegame.game.object.map.information.Station;
@@ -78,7 +79,7 @@ public abstract class ContainsEvent {
 	public static boolean id(Card card,int id) {
 		return card.getID()==id;
 	}
-	public static int money(int money) {
+	public static int money(long money) {
 		if(Player.player.getMoney()>money) {
 			return 1;
 		}else if(Player.player.getMoney()<money) {
@@ -87,7 +88,7 @@ public abstract class ContainsEvent {
 			return 0;
 		}
 	}
-	public static int money(int money1,int money2) {
+	public static int money(long money1,long money2) {
 		if(money1>money2) {
 			return 1;
 		}else if(money1<money2){
@@ -114,7 +115,7 @@ public abstract class ContainsEvent {
 			return 0;
 		}
 	}
-	public static int money(Player player,int money) {
+	public static int money(Player player,long money) {
 		if(player.getMoney()>money) {
 			return 1;
 		}else if(player.getMoney()<money){
@@ -213,10 +214,6 @@ public abstract class ContainsEvent {
 	}
 	public static boolean name(Station station,String name) {
 		return station.getName().equals(name);
-	}
-
-	public static boolean goal(String name) {
-		return Japan.getGoalName().equals(name);
 	}
 
 	public static int cardRarity(int rarity1,int rarity2) {
@@ -351,9 +348,47 @@ public abstract class ContainsEvent {
 	public static boolean isGoal(Station station) {
 		return station.getName().equals(Japan.getGoalName());
 	}
-	public static boolean isBinboPlayer(Player targetPlayer, Collection<Player> players) {
-		for(Player player:players) {
-			if(id(targetPlayer,player))return true;
+	public static boolean isGoalInGinga(int x,int y) {
+		return ContainsEvent.coor(Ginga.getGoalCoor(),x,y);
+	}
+	public static boolean isGoalInGinga(Coordinates coor) {
+		return ContainsEvent.coor(coor,Ginga.getGoalCoor());
+	}
+	public static boolean isStartInGinga(int x,int y) {
+		return ContainsEvent.coor(Ginga.getStartCoor(),x,y);
+	}
+	public static boolean isStartInGinga(Coordinates coor) {
+		return ContainsEvent.coor(coor,Ginga.getStartCoor());
+	}
+	public static boolean isBlueInGinga(int x,int y) {
+		for(Coordinates blue:Ginga.getBlueList()) {
+			if(ContainsEvent.coor(blue,x,y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isBlueInGinga(Coordinates coor) {
+		for(Coordinates blue:Ginga.getBlueList()) {
+			if(ContainsEvent.coor(blue,coor)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isYellowInGinga(int x,int y) {
+		for(Coordinates yellow:Ginga.getYellowList()) {
+			if(ContainsEvent.coor(yellow,x,y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isYellowInGinga(Coordinates coor) {
+		for(Coordinates yellow:Ginga.getYellowList()) {
+			if(ContainsEvent.coor(yellow,coor)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -363,6 +398,16 @@ public abstract class ContainsEvent {
 	public static boolean isBinboPlayer() {
 		Player player = Binbo.getBinboPlayer();
 		return player!=null;
+	}
+	public static boolean isBinboPlayer(Player player) {
+		if(!ContainsEvent.isBinboPlayer())return false;
+		return ContainsEvent.id(player.getID(),Binbo.getBinboPlayer().getID());
+	}
+	public static boolean isBinboPlayer(Player targetPlayer, Collection<Player> players) {
+		for(Player player:players) {
+			if(id(targetPlayer,player))return true;
+		}
+		return false;
 	}
 	public static boolean isBonbyPredecessor() {
 		return !Binbo.getBonbyPredecessor().isEmpty();
@@ -396,22 +441,40 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
+	public static boolean isNormalMap() {
+		return Player.player.getMapID()==0;
+	}
+	public static boolean isNormalMap(Player player) {
+		return player.getMapID()==0;
+	}
+	public static boolean isGingaMap() {
+		return Player.player.getMapID()==1;
+	}
+	public static boolean isGingaMap(Player player) {
+		return player.getMapID()==1;
+	}
+	public static boolean isBonbirasMap() {
+		return Player.player.getMapID()==2;
+	}
+	public static boolean isBonbirasMap(Player player) {
+		return player.getMapID()==2;
+	}
 	public static boolean isMinRange(Coordinates now,Coordinates start,Coordinates goal){
-		int Tolerances = 2;
-		return now.getMaxCost(start,goal) - now.getCost() <=  Tolerances;
+		int tolerances = 2;
+		return now.getMaxCost(start,goal) - now.getCost() <=  tolerances;
 	}
 	public static boolean isNormRange(Coordinates now,Coordinates start,Coordinates goal){
-		int Tolerances = 4;
-		return now.getMaxCost(start,goal) - now.getCost() <=  Tolerances;
+		int tolerances = 4;
+		return now.getMaxCost(start,goal) - now.getCost() <=  tolerances;
 	}
 	public static boolean isMaxRange(Coordinates now,Coordinates start,Coordinates goal){
-		int Tolerances = 5;
-		return now.getMaxCost(start,goal) - now.getCost() <=  Tolerances;
+		int tolerances = 5;
+		return now.getMaxCost(start,goal) - now.getCost() <=  tolerances;
 	}
 	public static boolean isBestRange(Coordinates now,Coordinates start) {
 		return now.getCost() <= now.getMaxCost(start,Japan.getGoalCoor());
 	}
-	public static boolean isMass(int x,int y) {
+	public static boolean isMassInJapan(int x,int y) {
 		for(Coordinates coor:Japan.getAllCoordinates()) {
 			if(ContainsEvent.coor(coor, x, y)) {
 				return true;
@@ -419,9 +482,33 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
-	public static boolean isMass(Coordinates coordinates) {
+	public static boolean isMassInJapan(Coordinates coordinates) {
 		for(Coordinates coor:Japan.getAllCoordinates()) {
 			if(ContainsEvent.coor(coor, coordinates)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isMassInGinga(int x,int y) {
+		for(Coordinates coor:Ginga.getAllCoordinates()) {
+			if(ContainsEvent.coor(coor, x, y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isMassInGinga(Coordinates coordinates) {
+		for(Coordinates coor:Ginga.getAllCoordinates()) {
+			if(ContainsEvent.coor(coor, coordinates)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isStation(String name) {
+		for(String coorName:Japan.getStationNameList()) {
+			if(coorName.equals(name)) {
 				return true;
 			}
 		}
@@ -507,6 +594,22 @@ public abstract class ContainsEvent {
 		}
 		return false;
 	}
+	public static boolean isWarp(int x,int y) {
+		for(Coordinates coor:Japan.getWarpCoorList()) {
+			if(ContainsEvent.coor(coor, x, y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean isWarp(Coordinates coordinates) {
+		for(Coordinates coor:Japan.getWarpCoorList()) {
+			if(ContainsEvent.coor(coor, coordinates)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public static boolean isDefaultGoalDistance(Player player) {
 		return player.getGoalDistance()==500;
 	}
@@ -551,7 +654,7 @@ public abstract class ContainsEvent {
 	}
 
 	public static boolean isBuyProperty(Property pt) {
-		return pt.getAmount()<Player.player.getMoney();
+		return pt.getAmount()<=Player.player.getMoney();
 	}
 	public static boolean isHaveProperty() {
 		return !Player.player.getPropertys().isEmpty();
@@ -586,6 +689,7 @@ public abstract class ContainsEvent {
 	public static boolean isPlayer(Player player) {
 		return player.isPlayer();
 	}
+
 	public static boolean isBinboDice() {
 		return Binbo.isDiceFlag();
 	}
@@ -595,5 +699,9 @@ public abstract class ContainsEvent {
 		}else {
 			return false;
 		}
+	}
+
+	public static boolean isRandom2Showing() {
+		return FrameEvent.isRandom2Showing();
 	}
 }

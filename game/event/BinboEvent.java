@@ -47,7 +47,6 @@ public abstract class BinboEvent{
 	public static void start() {
 		System.out.println("binbo");
 		int result = randomBinbo();
-		result =4;
 		if(ContainsEvent.isFrameDiceBinbo(result)) {
 			randomBinboEvent();
 		}else {
@@ -59,9 +58,9 @@ public abstract class BinboEvent{
 	public static void binboFrameEvent(String action) {
 		if(action=="変身") {
 			Binbo.clearTurnCount();
-			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),Binbo.getName()+"に変化した",Binbo.getName());
+			FrameEvent.openBinbo(Binbo.getName()+"に変化した");
 		}else {
-			FrameEvent.openBinbo(Binbo.getBinboPlayer().getName(),action,Binbo.getName());
+			FrameEvent.openBinbo(action);
 		}
 	}
 
@@ -95,9 +94,16 @@ public abstract class BinboEvent{
 	}
 
 	public static void addDiceResult(int result) {
-		Player.player.addMoney(-result*1000);
+		String text = "";
+		if(ContainsEvent.binboNameKing()) {
+			Player.player.addMoney(-result*10000);
+			text = "さいころ振ったたくさんお金もらってやるぞ。"+ result*1000 +"円取られてしまった";
+		}else {
+			Player.player.addMoney(-result*1000);
+			text = "さいころ振った値だけお金もらうねん。" + result*1000 +"円取られてしまった";
+		}
 		clearDiceFlag();
-		binboFrameEvent("aaaa");
+		binboFrameEvent(text);
 	}
 
 	//ボンビー擦り付けメソッド--進んだ際
@@ -283,7 +289,7 @@ public abstract class BinboEvent{
 			if(ContainsEvent.name(card,cardname)) {
 				Player.player.addCard(card);
 				Player.player.addMoney(-card.getBuyPrice()*2);
-				return "二倍のお金で"+cardname+"をかってきたのねん"+","+Player.player.getName()+"は金額:"+card.getBuyPrice()*2+"万円を支払った。";
+				return "二倍のお金で"+cardname+"をかってきたのねん"+","+Player.player.getName()+"は金額:"+FrameEvent.convertMoney(card.getBuyPrice()*2)+"を支払った。";
 			}
 		}
 		return "予期しない,リターン";
@@ -361,7 +367,7 @@ public abstract class BinboEvent{
 		result = rand.nextInt(25);
 		result += result+(App.year/10)+50;
 		Player.player.addMoney(-result);
-		return "お小遣いほちいのねん"+","+Player.player.getName()+"は金額:"+result+"万円を支払った。";
+		return "お小遣いほちいのねん"+","+Player.player.getName()+"は金額:"+FrameEvent.convertMoney(result)+"を支払った。";
 	}
 
 	public static String happyMoney() {
@@ -374,7 +380,7 @@ public abstract class BinboEvent{
 		result -= result%100;
 		System.out.println(result);
 		Player.player.addMoney(result);
-		return "貧乏なあなたにさしあげましょう"+","+Player.player.getName()+"は金額:"+result+"万円をもらった。";
+		return "貧乏なあなたにさしあげましょう"+","+Player.player.getName()+"は金額:"+FrameEvent.convertMoney(result)+"をもらった。";
 	}
 
 	public static String typhoon() {

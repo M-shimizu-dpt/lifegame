@@ -12,16 +12,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lifegame.game.event.ContainsEvent;
+import lifegame.game.event.FrameEvent;
+import lifegame.game.event.Searcher;
+import lifegame.game.object.Player;
 
-public abstract class Japan {
+public abstract class Japan{
 	private static ArrayList<Station> stations = new ArrayList<Station>();//駅一覧
 	private static ArrayList<Coordinates> blue = new ArrayList<Coordinates>();//青マスの座標一覧
 	private static ArrayList<Coordinates> red = new ArrayList<Coordinates>();//赤マスの座標一覧
 	private static ArrayList<Coordinates> yellow = new ArrayList<Coordinates>();//黄マスの座標一覧
 	private static ArrayList<Coordinates> shop = new ArrayList<Coordinates>();//カード屋の座標一覧
+	private static ArrayList<Coordinates> warp = new ArrayList<Coordinates>();//ワープマスの座標一覧
+	private static Map<Coordinates,String> warpName = new HashMap<Coordinates,String>();
 	private static Map<Coordinates,ArrayList<Boolean>> railBoolMapping = new HashMap<Coordinates,ArrayList<Boolean>>();//移動可能方向
-	private static Map<Coordinates,ArrayList<Coordinates>> railMapping = new HashMap<Coordinates,ArrayList<Coordinates>>();//移動可能座標
-	private static Station goal;//目的地の要素番号
+	private static Station goal;//目的地
 	private static Station saveGoal;//ゴール保存用
 	public static ArrayList<String> alreadys = new ArrayList<String>();//そのターンに購入した物件リスト(連続購入を防ぐため)
 
@@ -476,7 +480,7 @@ public abstract class Japan {
 		railBoolMapping.put(blue.get(19),getBoolList(true,true,false,true));
 		railBoolMapping.put(blue.get(20),getBoolList(false,false,true,true));
 		railBoolMapping.put(blue.get(21),getBoolList(false,true,true,true));
-		railBoolMapping.put(blue.get(22),getBoolList(false,true,true,false));
+		railBoolMapping.put(blue.get(22),getBoolList(false,true,true,true));
 
 		//赤マス
 		red.add(new Coordinates(1,7));
@@ -582,7 +586,7 @@ public abstract class Japan {
 		railBoolMapping.put(yellow.get(2),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(3),getBoolList(true,true,false,false));
 		railBoolMapping.put(yellow.get(4),getBoolList(true,true,false,false));
-		railBoolMapping.put(yellow.get(5),getBoolList(true,false,false,true));
+		railBoolMapping.put(yellow.get(5),getBoolList(true,false,true,true));
 		railBoolMapping.put(yellow.get(6),getBoolList(false,false,false,true));
 		railBoolMapping.put(yellow.get(7),getBoolList(false,true,false,true));
 		railBoolMapping.put(yellow.get(8),getBoolList(true,true,false,false));
@@ -619,6 +623,19 @@ public abstract class Japan {
 		railBoolMapping.put(shop.get(3),getBoolList(false,false,true,true));
 		railBoolMapping.put(shop.get(4),getBoolList(false,true,false,false));
 
+		//ワープ
+		warp.add(new Coordinates(15,3));//右上の青マスの右
+		warp.add(new Coordinates(4,11));//堺の左上
+
+		warpName.put(warp.get(0),"大垣書店");
+		warpName.put(warp.get(1),"大阪湾");
+		railBoolMapping.put(warp.get(0), getBoolList(false,false,true,false));
+		railBoolMapping.put(warp.get(1), getBoolList(false,false,false,true));
+
+		createLink();
+	}
+
+	private static void createLink() {
 		//リンク作成
 		for(Coordinates from : getAllCoordinates()) {
 			for(Coordinates to : getAllCoordinates()) {
@@ -631,26 +648,25 @@ public abstract class Japan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(stations.get(getIndexOfStation(from)).getCoordinates()).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 							}
 						}else {
 							stations.get(getIndexOfStation(from)).getCoordinates().addLinks(to);
 						}
 					}
-					railMapping.put(stations.get(getIndexOfStation(from)).getCoordinates(),stations.get(getIndexOfStation(from)).getCoordinates().getLinks());
 				}
 				if(ContainsEvent.isBlue(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(3)) ||
@@ -658,26 +674,25 @@ public abstract class Japan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(blue.get(getIndexOfBlue(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								blue.get(getIndexOfBlue(from)).addLinks(to);
 							}
 						}else {
 							blue.get(getIndexOfBlue(from)).addLinks(to);
 						}
 					}
-					railMapping.put(blue.get(getIndexOfBlue(from)),blue.get(getIndexOfBlue(from)).getLinks());
 				}
 				if(ContainsEvent.isRed(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(red.get(getIndexOfRed(from))).get(3)) ||
@@ -685,26 +700,25 @@ public abstract class Japan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(red.get(getIndexOfRed(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								red.get(getIndexOfRed(from)).addLinks(to);
 							}
 						}else {
 							red.get(getIndexOfRed(from)).addLinks(to);
 						}
 					}
-					railMapping.put(red.get(getIndexOfRed(from)),red.get(getIndexOfRed(from)).getLinks());
 				}
 				if(ContainsEvent.isYellow(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(3)) ||
@@ -712,26 +726,25 @@ public abstract class Japan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(yellow.get(getIndexOfYellow(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								yellow.get(getIndexOfYellow(from)).addLinks(to);
 							}
 						}else {
 							yellow.get(getIndexOfYellow(from)).addLinks(to);
 						}
 					}
-					railMapping.put(yellow.get(getIndexOfYellow(from)),yellow.get(getIndexOfYellow(from)).getLinks());
 				}
 				if(ContainsEvent.isShop(from)) {
 					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(3)) ||
@@ -739,26 +752,51 @@ public abstract class Japan {
 							((x==-1 || x==-2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(1)) ||
 							((x==1 || x==2) && y==0 && railBoolMapping.get(shop.get(getIndexOfShop(from))).get(0))) {
 						if(x==2) {
-							if(!ContainsEvent.isMass(from.getX()-1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(x==-2) {
-							if(!ContainsEvent.isMass(from.getX()+1,from.getY())) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(y==2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()-1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else if(y==-2) {
-							if(!ContainsEvent.isMass(from.getX(),from.getY()+1)) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
 								shop.get(getIndexOfShop(from)).addLinks(to);
 							}
 						}else {
 							shop.get(getIndexOfShop(from)).addLinks(to);
 						}
 					}
-					railMapping.put(shop.get(getIndexOfShop(from)),shop.get(getIndexOfShop(from)).getLinks());
+				}
+				if(ContainsEvent.isWarp(from)) {
+					if((x==0 && (y==-1 || y==-2) && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(3)) ||
+							(x==0 && (y==1 || y==2) && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(2)) ||
+							((x==-1 || x==-2) && y==0 && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(1)) ||
+							((x==1 || x==2) && y==0 && railBoolMapping.get(warp.get(getIndexOfWarp(from))).get(0))) {
+						if(x==2) {
+							if(!ContainsEvent.isMassInJapan(from.getX()-1,from.getY())) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else if(x==-2) {
+							if(!ContainsEvent.isMassInJapan(from.getX()+1,from.getY())) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else if(y==2) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()-1)) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else if(y==-2) {
+							if(!ContainsEvent.isMassInJapan(from.getX(),from.getY()+1)) {
+								warp.get(getIndexOfWarp(from)).addLinks(to);
+							}
+						}else {
+							warp.get(getIndexOfWarp(from)).addLinks(to);
+						}
+					}
 				}
 			}
 		}
@@ -769,6 +807,28 @@ public abstract class Japan {
 		for(int i=0;i<getAllCoordinates().size();i++) {
 			getAllCoordinates().get(i).close();
 		}
+	}
+
+	public static void resetGoalDistance() {
+		for(Coordinates coor:getAllCoordinates()) {
+			coor.setGoalDistance(100);
+		}
+	}
+
+	public static void setGoalDistance() {
+		resetGoalDistance();
+		Searcher.searchGoalDistance();
+	}
+
+	public static void setGoalDistance(Coordinates coor,int distance) {
+		getCoordinates(coor).setGoalDistance(distance);
+	}
+
+	public static int getGoalDistance(Coordinates coor) {
+		return getCoordinates(coor).getGoalDistance();
+	}
+	public static int getGoalDistance(int x,int y) {
+		return getCoordinates(x,y).getGoalDistance();
 	}
 
 	//ゴールの座標を取得
@@ -875,6 +935,30 @@ public abstract class Japan {
 	public static Coordinates getShopCoor(int index) {
 		Coordinates shopCoor = shop.get(index);
 		return shopCoor;
+	}
+
+	//ワープマスの座標一覧を取得
+	public static ArrayList<Coordinates> getWarpCoorList(){
+		return warp;
+	}
+
+	//要素番号で指定した店マスの座標を取得
+	public static Coordinates getWarpCoor(int index) {
+		Coordinates warpCoor = warp.get(index);
+		return warpCoor;
+	}
+
+	public static Coordinates getWarpCoor(String to) {
+		for(Coordinates coor:warp) {
+			if(warpName.get(coor).equals(to)) {
+				return coor;
+			}
+		}
+		return null;
+	}
+
+	public static ArrayList<String> getWarpNameList(){
+		return new ArrayList<String>(warpName.values());
 	}
 
 	//駅の一覧を取得
@@ -1012,6 +1096,7 @@ public abstract class Japan {
 		list.addAll(red);
 		list.addAll(yellow);
 		list.addAll(shop);
+		list.addAll(warp);
 		Collections.sort(list,new Comparator<Coordinates>() {
         	public int compare(Coordinates cost1,Coordinates cost2) {
 				return Integer.compare(cost1.getY(), cost2.getY());
@@ -1060,6 +1145,9 @@ public abstract class Japan {
 			}
 		}
 		goal = getStation(x,y);
+		FrameEvent.setMapGoalColor();
+
+  		Japan.setGoalDistance();
 	}
 
 	//ゴールマスを変更
@@ -1074,7 +1162,11 @@ public abstract class Japan {
 
 			}
 		}
+		FrameEvent.resetMapGoalColor();
 		goal = getStation(x,y);
+		FrameEvent.setMapGoalColor();
+
+  		Japan.setGoalDistance();
 	}
 
 	//指定の座標のマスの配列番号を取得
@@ -1089,6 +1181,8 @@ public abstract class Japan {
 		result=getIndexOfYellow(x,y);
 		if(result!=-1)return result;
 		result=getIndexOfShop(x,y);
+		if(result!=-1)return result;
+		result=getIndexOfWarp(x,y);
 		if(result!=-1)return result;
 
 		return -1;
@@ -1105,7 +1199,8 @@ public abstract class Japan {
 		if(result!=-1)return result;
 		result=getIndexOfShop(coor);
 		if(result!=-1)return result;
-
+		result=getIndexOfWarp(coor);
+		if(result!=-1)return result;
 		return -1;
 	}
 
@@ -1116,7 +1211,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfStation(Coordinates coor){
@@ -1125,7 +1219,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1145,7 +1238,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1156,7 +1248,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfRed(Coordinates coor){
@@ -1165,7 +1256,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1176,7 +1266,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfYellow(Coordinates coor){
@@ -1185,7 +1274,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 
@@ -1196,7 +1284,6 @@ public abstract class Japan {
 				return list;
 			}
 		}
-
 		return -1;
 	}
 	public static int getIndexOfShop(Coordinates coor){
@@ -1205,7 +1292,24 @@ public abstract class Japan {
 				return list;
 			}
 		}
+		return -1;
+	}
 
+	//指定の座標のワープマスの配列番号を取得
+	public static int getIndexOfWarp(int x,int y){
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),x,y)) {//駅の座標が来たら
+				return list;
+			}
+		}
+		return -1;
+	}
+	public static int getIndexOfWarp(Coordinates coor){
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),coor)) {//駅の座標が来たら
+				return list;
+			}
+		}
 		return -1;
 	}
 
@@ -1246,7 +1350,11 @@ public abstract class Japan {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
-
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),x/size,y/size)) {
+				return railBoolMapping.get(warp.get(list));
+			}
+		}
 		return null;
 	}
 	public static ArrayList<Boolean> getVector(Coordinates coor,int size){
@@ -1277,42 +1385,23 @@ public abstract class Japan {
 				return railBoolMapping.get(shop.get(list));
 			}
 		}
-
+		for(int list=0;list<warp.size();list++) {
+			if(ContainsEvent.coor(warp.get(list),x/size,y/size)) {
+				return railBoolMapping.get(warp.get(list));
+			}
+		}
 		return null;
 	}
 
 	//指定した座標から移動可能な座標一覧を取得
-	public static ArrayList<Coordinates> getMovePossibles(int x,int y) {
-		if(ContainsEvent.isStation(x,y)) {
-			return railMapping.get(stations.get(getIndexOfStation(x,y)).getCoordinates());
-		}else if(ContainsEvent.isBlue(x,y)) {
-			return railMapping.get(blue.get(getIndexOfBlue(x,y)));
-		}else if(ContainsEvent.isRed(x,y)) {
-			return railMapping.get(red.get(getIndexOfRed(x,y)));
-		}else if(ContainsEvent.isYellow(x,y)) {
-			return railMapping.get(yellow.get(getIndexOfYellow(x,y)));
-		}else if(ContainsEvent.isShop(x,y)) {
-			return railMapping.get(shop.get(getIndexOfShop(x,y)));
-		}else {
-
-			return null;
-		}
+	public static ArrayList<Coordinates> getLinks() {
+		return getCoordinates(Player.player.getNowMass()).getLinks();
 	}
-	public static ArrayList<Coordinates> getMovePossibles(Coordinates coor) {
-		if(ContainsEvent.isStation(coor)) {
-			return railMapping.get(stations.get(getIndexOfStation(coor)).getCoordinates());
-		}else if(ContainsEvent.isBlue(coor)) {
-			return railMapping.get(blue.get(getIndexOfBlue(coor)));
-		}else if(ContainsEvent.isRed(coor)) {
-			return railMapping.get(red.get(getIndexOfRed(coor)));
-		}else if(ContainsEvent.isYellow(coor)) {
-			return railMapping.get(yellow.get(getIndexOfYellow(coor)));
-		}else if(ContainsEvent.isShop(coor)) {
-			return railMapping.get(shop.get(getIndexOfShop(coor)));
-		}else {
-
-			return null;
-		}
+	public static ArrayList<Coordinates> getLinks(int x,int y) {
+		return getCoordinates(x,y).getLinks();
+	}
+	public static ArrayList<Coordinates> getLinks(Coordinates coor) {
+		return getCoordinates(coor).getLinks();
 	}
 
 }

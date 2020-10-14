@@ -17,7 +17,7 @@ import lifegame.game.object.map.print.frames.model.FrameModel;
 public class CardFrame extends FrameModel{
 	public CardFrame() {
 		this.setTitle("カード一覧");
-		this.setSize(700,500);
+		super.setSize(700,500);
 	}
 
 	public void open() {
@@ -30,7 +30,7 @@ public class CardFrame extends FrameModel{
         JLabel titleText = createText(420,10,100,40,30,"説明");
         for(int i=0;i<Player.player.getCardSize();i++) {
         	JButton useButton = createButton(10,35*(i+1)+30,70,30,10,"使用");
-        	if(!ContainsEvent.isPlayer()) {
+        	if(!ContainsEvent.isPlayer() || (!ContainsEvent.isNormalMap() && Player.player.getCard(i).getID()==2)) {
     			useButton.setEnabled(false);
     		}
         	//ここにプレイヤーの所持カード一覧を作成し、使用ボタンとカード名をリンクさせる。
