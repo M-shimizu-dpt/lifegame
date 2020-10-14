@@ -48,7 +48,13 @@ public abstract class BinboEvent{
 		System.out.println("binbo");
 		int result = randomBinbo();
 		if(ContainsEvent.isFrameDiceBinbo(result)) {
-			randomBinboEvent();
+			if(Binbo.getBinboPlayer().isPlayer()) {
+				randomBinboEvent();
+			}else {
+				Random rand = new Random();
+				int  diceresult = rand.nextInt(100)%6+1;
+				addDiceResult(diceresult);
+			}
 		}else {
 			String action = randomBinboEvent(result);
 			binboFrameEvent(action);
@@ -152,6 +158,15 @@ public abstract class BinboEvent{
 		Random rand = new Random();
 		int maxdistance = 0;//最長距離比較
 		int nextbonbyplayer;
+		//ArrayList<Player> gingaplayer = new ArrayList<Player>();//銀河の人リスト
+		/*
+		for(int i=0;i<Player.players.size();i++) {//銀河にいるひと取得
+			if(ContainsEvent.isGingaMap(Player.players.get(i))){
+				gingaplayer.add(Player.players.get(i));
+			}
+		}
+		*/
+		//if(gingaplayer.isEmpty()) {
 		for(int i=0;i<Player.players.size();i++) {
 			System.out.println(Player.players.get(i).getGoalDistance()+"最長距離"+i);
 			if(ContainsEvent.goalDistance(Player.players.get(i),maxdistance)==1) {
@@ -165,6 +180,23 @@ public abstract class BinboEvent{
 			}
 		}
 		nextbonbyplayer = nextbonbylist.get(rand.nextInt(100)%nextbonbylist.size());//同じ距離にいた場合ランダム
+			/*
+		}else {//銀河鉄道のいるひと
+			for(Player player : gingaplayer) {
+				System.out.println(player.getGoalDistance()+"最長距離"+player.getName());
+				if(ContainsEvent.goalDistance(player,maxdistance)==1) {
+					if(ContainsEvent.goalDistance(player,maxdistance)!=0) {
+						if(nextbonbylist!=null) {
+							nextbonbylist.clear();
+						}
+						maxdistance = player.getGoalDistance();
+					}
+					nextbonbylist.add(player.getID());
+				}
+			}
+			nextbonbyplayer = nextbonbylist.get(rand.nextInt(100)%nextbonbylist.size());//同じ距離にいた場合ランダム
+		}*/
+
 		Binbo.setPlayerBinbo(Player.players.get(nextbonbyplayer));
 	}
 
