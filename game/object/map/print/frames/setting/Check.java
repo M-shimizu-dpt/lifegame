@@ -3,6 +3,8 @@ package lifegame.game.object.map.print.frames.setting;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -81,23 +83,28 @@ public class Check extends JFrame implements ActionListener{
 		PlayName4.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		PlayName4.setBounds(400, 350, 200, 30);
 
-		JButton changePlayerCount = new JButton("人数変更");
+		JButton changePlayerCount = new JButton("1.人数変更");
 		changePlayerCount.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		changePlayerCount.setBounds(20, 500, 150, 60);
 		changePlayerCount.addActionListener(this);
-		JButton changePlayerName = new JButton("名前変更");
+		changePlayerCount.setMnemonic(KeyEvent.VK_1);
+		JButton changePlayerName = new JButton("2.名前変更");
 		changePlayerName.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		changePlayerName.setBounds(190, 500, 150, 60);
 		changePlayerName.addActionListener(this);
-		JButton changeYear = new JButton("年数変更");
+		changePlayerName.setMnemonic(KeyEvent.VK_2);
+		JButton changeYear = new JButton("3.年数変更");
 		changeYear.setFont(new Font("SansSerif", Font.ITALIC, 20));
 		changeYear.setBounds(360, 500, 150, 60);
 		changeYear.addActionListener(this);
+		changeYear.setMnemonic(KeyEvent.VK_3);
 
-    	JButton startButton = new JButton("遊ぶ");
+    	JButton startButton = new JButton("OK");
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	startButton.setBounds(690,500,90,60);
     	startButton.addActionListener(this);
+    	getRootPane().setDefaultButton(startButton);
+    	startButton.setMnemonic(KeyEvent.VK_O);
 
     	start.add(Text);
     	start.add(Year);
@@ -121,20 +128,16 @@ public class Check extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		if(cmd.equals("遊ぶ")) {
-			//System.out.println(FrameEvent.displayNames());
-			//System.out.println(FrameEvent.displayOrder());
+		if(cmd.equals("OK")) {
     		App.start();
     		this.setVisible(false);
-    	}else if(cmd.equals("人数変更")) {
+    	}else if(cmd.equals("1.人数変更")) {
     		FrameEvent.resetPlayOrder();
     		FrameEvent.resetPlayName();
-    		System.out.println(FrameEvent.displayNames());
-			System.out.println(FrameEvent.displayOrder());
     		FrameEvent.openSettingPlayer();
     		this.setVisible(false);
 			this.getLayeredPane().removeAll();
-    	}else if(cmd.equals("名前変更")){
+    	}else if(cmd.equals("2.名前変更")){
     		FrameEvent.resetPlayName();
     		FrameEvent.openSettingPlayName();
     		this.setVisible(false);

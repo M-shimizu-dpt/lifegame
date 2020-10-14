@@ -3,6 +3,7 @@ package lifegame.game.object.map.print.frames.setting;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -198,10 +199,13 @@ public class SettingPlayName extends JFrame implements ActionListener {
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	startButton.setBounds(580,490,180,60);
     	startButton.addActionListener(this);
-    	JButton backButton = new JButton("戻る");
+    	getRootPane().setDefaultButton(startButton);
+    	startButton.setMnemonic(KeyEvent.VK_O);
+    	JButton backButton = new JButton("Back");
     	backButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	backButton.setBounds(20,490,180,60);
     	backButton.addActionListener(this);
+    	backButton.setMnemonic(KeyEvent.VK_B);
     	
     	start.add(player1);
     	start.add(player2);
@@ -246,8 +250,6 @@ public class SettingPlayName extends JFrame implements ActionListener {
 	        	setNames.add(textplayer3.getText());
 	        	setNames.add(textplayer4.getText());
 	    	}
-			//System.out.println(FrameEvent.displayNames());
-			//System.out.println(FrameEvent.displayOrder());
 			FrameEvent.setPlayerCount();
 			FrameEvent.openSettingYear();
 			this.setVisible(false);
