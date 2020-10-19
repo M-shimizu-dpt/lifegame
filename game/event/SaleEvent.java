@@ -94,8 +94,17 @@ public abstract class SaleEvent {
 				}catch(InterruptedException e) {
 					e.printStackTrace();
 				}
+				System.out.println(Player.player.getName()+"は"+Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+				FrameEvent.createPopUp("物件購入",Player.player.getName()+"は"+Japan.getStaInProperty(name,index).getName()+"を購入",800);
+				WaitThread wait = new WaitThread(3);
+				wait.start();
+				try {
+					wait.join();
+				}catch(InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			//System.out.println(Japan.getStaInProperty(name,index).getName()+"を購入"+"("+index+")");
+			
 		}
 	}
 	public static void lostPropertys(Property property) {

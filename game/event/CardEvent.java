@@ -173,7 +173,17 @@ public class CardEvent{
 		Card.used();
 		useAbility(card);
 
-		if(!ContainsEvent.isPlayer()) System.out.println("Use Card!  "+card.getName()+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
+		if(!ContainsEvent.isPlayer()) {
+			FrameEvent.createPopUp(card.getName(), Player.player.getName()+"は"+card.getName()+"を使用した", 3000);
+			WaitThread wait = new WaitThread(3);
+			wait.start();
+			try {
+				wait.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}//CPU以外も何を使ったかわかるようになるとさらに良い
+//		if(!ContainsEvent.isPlayer()) System.out.println("Use Card!  "+card.getName()+"   user:"+Player.player.getName());//何を使ったか表示(ポップアップに変更すべき)
 
 		//周遊カードの場合は確率でカードを破壊
 		if(card.getName().split("周遊").length==2) {

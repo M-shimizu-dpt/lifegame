@@ -78,7 +78,7 @@ public class App {
   	private void play(int endYear) throws InterruptedException{
   		Boolean first=true;
   		Player.setStopFlag(false);
-  		BinboEvent.initBinbo(true);//debugモード→true
+  		BinboEvent.initBinbo(false);//debugモード→true
   		while(true) {
   			monthUpdate(first);
   			if(ContainsEvent.isOwners()) {

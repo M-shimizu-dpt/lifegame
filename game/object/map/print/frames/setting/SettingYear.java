@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -54,10 +55,13 @@ public class SettingYear extends JFrame implements ActionListener {
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	startButton.setBounds(580,490,180,60);
     	startButton.addActionListener(this);
-    	JButton backButton = new JButton("戻る");
+    	getRootPane().setDefaultButton(startButton);
+    	startButton.setMnemonic(KeyEvent.VK_O);
+    	JButton backButton = new JButton("Back");
     	backButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	backButton.setBounds(20,490,180,60);
     	backButton.addActionListener(this);
+    	backButton.setMnemonic(KeyEvent.VK_B);
     	
     	this.setVisible(true);
     	start.add(labelTitle);

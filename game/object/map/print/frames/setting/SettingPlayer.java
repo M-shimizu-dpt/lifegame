@@ -3,6 +3,7 @@ package lifegame.game.object.map.print.frames.setting;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -40,31 +41,36 @@ public class SettingPlayer extends JFrame implements ActionListener {
     	labelPlayers.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	labelPlayers.setBounds(20, 100, 300, 50);
     	
-    	JRadioButton count1 = new JRadioButton("人間:1 VS CPU:3",true);
+    	JRadioButton count1 = new JRadioButton("1.人間:1 VS CPU:3",true);
     	count1.addActionListener(this);
     	count1.setActionCommand("1");
     	count1.setFont(new Font("SansSerif", Font.ITALIC, 15));
-    	count1.setBounds(50, 150, 150, 50);
-    	JRadioButton count2 = new JRadioButton("人間:2 VS CPU:2");
+    	count1.setBounds(50, 150, 180, 50);
+    	count1.setMnemonic(KeyEvent.VK_1);
+    	JRadioButton count2 = new JRadioButton("2.人間:2 VS CPU:2");
     	count2.addActionListener(this);
     	count2.setActionCommand("2");
     	count2.setFont(new Font("SansSerif", Font.ITALIC, 15));
-    	count2.setBounds(200, 150, 150, 50);
-    	JRadioButton count3 = new JRadioButton("人間:3 VS CPU:1");
+    	count2.setBounds(230, 150, 180, 50);
+    	count2.setMnemonic(KeyEvent.VK_2);
+    	JRadioButton count3 = new JRadioButton("3.人間:3 VS CPU:1");
     	count3.addActionListener(this);
     	count3.setActionCommand("3");
     	count3.setFont(new Font("SansSerif", Font.ITALIC, 15));
-    	count3.setBounds(350, 150, 150, 50);
-    	JRadioButton count4 = new JRadioButton("人間:4 VS CPU:0");
+    	count3.setBounds(410, 150, 180, 50);
+    	count3.setMnemonic(KeyEvent.VK_3);
+    	JRadioButton count4 = new JRadioButton("4.人間:4 VS CPU:0");
     	count4.addActionListener(this);
     	count4.setActionCommand("4");
     	count4.setFont(new Font("SansSerif", Font.ITALIC, 15));
-    	count4.setBounds(500, 150, 150, 50);
-    	JRadioButton count0 = new JRadioButton("人間:0 VS CPU:4");//
+    	count4.setBounds(590, 150, 180, 50);
+    	count4.setMnemonic(KeyEvent.VK_4);
+    	JRadioButton count0 = new JRadioButton("0.人間:0 VS CPU:4");//
     	count0.addActionListener(this);
     	count0.setActionCommand("0");
     	count0.setFont(new Font("SansSerif", Font.ITALIC, 15));
-    	count0.setBounds(650, 150, 150, 50);
+    	count0.setBounds(770, 150, 180, 50);
+    	count0.setMnemonic(KeyEvent.VK_0);
     	Count = new ButtonGroup();
     	Count.add(count0);
     	Count.add(count1);
@@ -76,16 +82,18 @@ public class SettingPlayer extends JFrame implements ActionListener {
     	JLabel labelOrder = new JLabel("順番をランダムに入れ替えますか？");
     	labelOrder.setBounds(20, 200, 350, 50);
     	labelOrder.setFont(new Font("SansSerif", Font.ITALIC, 20));
-    	JRadioButton order1 = new JRadioButton("入れ替える",true);
+    	JRadioButton order1 = new JRadioButton("A:入れ替える",true);
     	order1.addActionListener(this);
     	order1.setActionCommand("a");
     	order1.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	order1.setBounds(100, 250, 150, 50);
-    	JRadioButton order2 = new JRadioButton("そのまま");
+    	order1.setMnemonic(KeyEvent.VK_A);
+    	JRadioButton order2 = new JRadioButton("B:そのまま");
     	order2.addActionListener(this);
     	order2.setActionCommand("b");
     	order2.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	order2.setBounds(450, 250, 150, 50);
+    	order2.setMnemonic(KeyEvent.VK_B);
     	Order = new ButtonGroup();
     	Order.add(order1);
     	Order.add(order2);
@@ -94,6 +102,8 @@ public class SettingPlayer extends JFrame implements ActionListener {
     	startButton.setFont(new Font("SansSerif", Font.ITALIC, 20));
     	startButton.setBounds(580,490,180,60);
     	startButton.addActionListener(this);
+    	getRootPane().setDefaultButton(startButton);
+    	startButton.setMnemonic(KeyEvent.VK_O);
     	
     	start.add(labelTitle);
     	start.add(labelPlayers);
